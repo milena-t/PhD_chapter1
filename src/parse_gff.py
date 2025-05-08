@@ -78,6 +78,33 @@ class Feature:
     the gff columns are:
     contig,source,category_,start,stop,score,strandedness,frame,otherproperties
     """
-    def __init__(self, contig:str):
-        self.contig = contig
+    def __init__(self, feature_id:str, contig:str, category:FeatureCategory, start:int, end:int, strandedness:str, frame:str, parent_id=None, child_id=None):
         
+        self.feature_id = feature_id
+
+        self.contig = contig
+        self.category = category 
+        self.start = start
+        self.end = end
+        self.strandedness = strandedness
+        self.frame = frame
+
+        # since this is general for all features, parent ID and child ID are default None, since they're not always present
+        self.parent_id = parent_id 
+        self.child_id = child_id
+
+    def __repr__(self):
+        return "Feature"
+    
+    def __str__(self):
+        return(
+            f"""
+            Feature ID: {self.feature_id}, Feature category: {self.category}
+            \tParent ID: {self.parent_id}, 
+            \tchild ID: {self.child_id}
+            \tOn contig: {self.contig}, from {self.start} to {self.end} (on strand {self.strandedness})
+            """
+        )
+
+
+print(Feature("1", "contig1", FeatureCategory.Gene, 1, 100, "+", ".", parent_id=None, child_id= ["child1", "child2"]))
