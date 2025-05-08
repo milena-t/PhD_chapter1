@@ -1,15 +1,15 @@
 """Tests all code in src.weather.Milena_utils."""
 import unittest
 
-from parse_gff_old import is_zero
+from src.parse_gff import Feature
 
 class TestMilenaUtils(unittest.TestCase):
 
     """Class to test the code in src.weather.Milena_utils."""
 
     def test_is_zero_has_documentation(self):
-        """The function 'is_zero' has documentation."""
-        self.assertTrue(is_zero.__doc__)
+        """The class 'Feature' has documentation."""
+        self.assertTrue(Feature.__doc__)
 
     def test_is_zero_has_filled_documentation(self):
         """The function 'is_zero' has documentation."""
