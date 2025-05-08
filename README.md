@@ -4,4 +4,7 @@ This is all the code that was used in the first chapter of my thesis where i inv
 # Pipeline
 
 ## Repeatmasking
+Use repeatmodeller and repeatmasker to re-mask all assemblies
 
+## Genome annotation
+Use BRAKER3 with the orthoDB arthropoda dataset to uniformly annotate all genomes. no RNAseq!
