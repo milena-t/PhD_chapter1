@@ -5,7 +5,7 @@
 #  - Are they intron-less?
 
 
-import parse_gff as gff
+import parse_gff_old as gff
 import pandas as pd
 
 

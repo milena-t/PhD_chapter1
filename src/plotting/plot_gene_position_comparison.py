@@ -4,7 +4,7 @@ import pandas as pd
 import csv
 from dataclasses import dataclass
 
-import parse_gff
+import parse_gff_old
 import matplotlib.pyplot as plt
 import numpy as np
 from tqdm import tqdm
