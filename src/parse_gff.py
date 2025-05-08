@@ -75,6 +75,9 @@ def categorize_string(s):
 class Feature:
     """
     any feature that could be present in the gff file
+    the gff columns are:
+    contig,source,category_,start,stop,score,strandedness,frame,otherproperties
     """
-    def __init__(self):
-        pass
+    def __init__(self, contig:str):
+        self.contig = contig
+        

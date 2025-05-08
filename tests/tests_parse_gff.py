@@ -1,11 +1,9 @@
-"""Tests all code in src.weather.Milena_utils."""
+"""Tests all code in src.parse_gff"""
 import unittest
 
 from src.parse_gff import Feature
 
 class TestFeatureClass(unittest.TestCase):
-
-    """Class to test the code in src.weather.Milena_utils."""
 
     def test_Feature_has_documentation(self):
         """The class 'Feature' has documentation."""
