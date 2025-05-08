@@ -1,5 +1,5 @@
 # my bash scripts
-This file contains all bash scripts that don't directly interact with python scripts.
+This file contains all bash scripts. Both the standalone ones and the ones that are used to run python scripts
 
 ## getting protein sets
 ### `run_braker.sh`
@@ -10,3 +10,9 @@ After braker returns a gtf file, this file will be filtered to remove overlappin
 
 ### `get_fasta_from_gff.sh`
 After the gff is filtered, extract a fasta file of all annotated genes, one proteinfasta (.faa) and one nucleotidefasta (.fna)
+
+### `annotation_statistics.sh`
+Use the AGAT package to extract some basic annotation statistics.
+
+### `filter_bad_proteins.sh`
+calls the src/filter_bad_proteins.py script which filters out proteins that don't have correct start and stop codons. Does not work on nucleotide fasta, only proteinfasta
