@@ -106,5 +106,5 @@ class Feature:
             """
         )
 
-
-print(Feature("1", "contig1", FeatureCategory.Gene, 1, 100, "+", ".", parent_id=None, child_id= ["child1", "child2"]))
+if __name__ == "__main__":
+    print(Feature("1", "contig1", FeatureCategory.Gene, 1, 100, "+", ".", parent_id=None, child_id= ["child1", "child2"]))

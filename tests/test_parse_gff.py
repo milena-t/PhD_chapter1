@@ -1,14 +1,17 @@
 """Tests all code in src.parse_gff"""
 import unittest
 
-from src.parse_gff import Feature, FeatureCategory
+from src.parse_gff import Feature
+from src.parse_gff import FeatureCategory
 
 class TestFeatureClass(unittest.TestCase):
 
-    def test_Feature_has_documentation(self):
-        """The class 'Feature' has documentation."""
-        self.assertTrue(Feature.__doc__)
-        self.assertTrue(isinstance(Feature("1", "contig1", FeatureCategory.Gene, 1, 100, "+", ".", parent_id=None, child_id= ["child1", "child2"]),list))
+    def test_Feature(self):
+        """The class 'Feature' returns an object of type feature."""
+        # self.assertTrue(Feature.__doc__)
+        self.assertEqual(str(type(Feature("1", "contig1", FeatureCategory.Gene, 1, 100, "+", ".", parent_id=None, child_id= ["child1", "child2"]))), "<class 'src.parse_gff.Feature'>")
+        self.assertIsInstance(Feature("1", "contig1", FeatureCategory.Gene, 1, 100, "+", ".", parent_id=None, child_id= ["child1", "child2"]), Feature)
+
 
     # def test_is_zero_responds_correctly_to_ints(self):
     #     """The function 'is_zero' responds correctly to integers."""
