@@ -24,6 +24,68 @@ def split_at_second_occurrence(s, char = "_"):
         return species
 
 
+def get_single_exon_transcripts(parsed_gff_dict, verbose=False):
+    transcripts_single_exon = {}
+    transcripts_multi_exon = {}
+    for feature_id, feature_object in parsed_gff_dict.items():
+        if parsed_gff_dict[feature_id].category == FeatureCategory.Transcript:
+            exons = [child_feature for child_feature in feature_object.child_ids_list if parsed_gff_dict[child_feature].category == FeatureCategory.Exon]
+            if len(exons) == 1:
+                transcripts_single_exon[feature_id] = feature_object
+            else:
+                transcripts_multi_exon[feature_id] = feature_object
+        else:
+            continue
+    if verbose:
+        print(f"{len(transcripts_single_exon)+len(transcripts_multi_exon)} total transcripts\n\t{len(transcripts_multi_exon)} of which are multi-exon, \n\t{len(transcripts_single_exon)} of which are single exon")
+    return(transcripts_single_exon, transcripts_multi_exon)
+
+
+def get_transcript_lengths(parsed_gff_dict,verbose=False):
+    transcript_lengths = {} 
+    for trans_id, attributes in parsed_gff_dict.items():
+        if attributes.category == FeatureCategory.Transcript:
+            exons = attributes.child_ids_list
+            length = 0
+            for exon in exons:
+                exon = parsed_gff_dict[exon]
+                exon_length = int(exon.end) - int(exon.start)
+                exon_length = abs(exon_length)
+                length += exon_length
+            transcript_lengths[trans_id] = length
+    if verbose:
+        mean_transcript_length = sum(list(transcript_lengths.values()))/len(transcript_lengths)
+        print(f"mean transcript length: {mean_transcript_length}")
+    return(transcript_lengths)
+
+def print_single_exon_stats(filepath, include_list = True):
+    try:
+        gff_dict = parse_gff3_general(filepath)
+    except:
+        raise RuntimeError("parsing gone wrong")
+    no_transcripts = {key : value for key, value in gff_dict.items() if value.category == FeatureCategory.Transcript}
+    no_genes = {key : value for key, value in gff_dict.items() if value.category == FeatureCategory.Gene}
+    print(f"total number of transcripts: {len(no_transcripts)}")
+    print(f"total number of top-level features (genes): {len(no_genes)}")
+
+    aobt_single_exon, aobt_multi_exon = get_single_exon_transcripts(gff_dict)
+    print(f"no. single exon transcripts: {len(aobt_single_exon)}")
+    if include_list:
+        single_exon_IDs = ",".join(aobt_single_exon)
+        print(f"list of single-exon transcript IDs: {single_exon_IDs}")
+    print(f"no. multi exon transcripts: {len(aobt_multi_exon)}")
+    if include_list:
+        multi_exon_IDs = ",".join(aobt_multi_exon)
+        print(f"list of single-exon transcript IDs: {multi_exon_IDs }")
+
+    single_exon_transcript_lengths = get_transcript_lengths(aobt_single_exon)
+    mean_len = sum(single_exon_transcript_lengths.values())/len(single_exon_transcript_lengths)
+    print(f"{len(single_exon_transcript_lengths)} single-exon transcripts with average length {mean_len:.6}")
+
+    multi_exon_transcript_lengths = get_transcript_lengths(aobt_multi_exon)
+    mean_len = sum(multi_exon_transcript_lengths.values())/len(multi_exon_transcript_lengths)
+    print(f"{len(multi_exon_transcript_lengths)} multi-exon transcripts with average length {mean_len:.6}")
+
 
 
 
@@ -242,6 +304,89 @@ def parse_gff3_general(filepath:str, verbose = True, only_genes = False):
         print(f"\t  * total number of features: {len(genome_annotation)}")
             
     return genome_annotation
+
+
+def parse_gff3_by_contig(filepath:str, verbose = True, featurecategory = FeatureCategory.Gene):
+    """
+    parse the gff into a dictionary by contig { contig : [ FeatureCategory.Gene ] } 
+    This includes by default only genes, not any of the child features, 
+    the featurecategory variable is optional and can be set to pick other features than genes, for example exons
+    """
+
+    genome_annotation:dict = {}
+
+    if verbose:
+        start_time = time.perf_counter()
+        print(f" --> parse by contig")
+        print(f"File that is being parsed: {filepath}")
+        print(f"feature category that was set for the output: {featurecategory}")
+
+    with open(filepath, "r") as file:
+        linelist = file.readlines()
+
+        # in the attributes column, the "ID" tag and the actual ID can be two things:
+        #  * ID=gene1234 (gff2 i think?)
+        #  * ID gene1234 (gff3)
+        # determine separator (" " or "=") so that I don't have to test in every line
+        # look 10 lines from the end to avoid leading or tailing comment lines in the file
+        tail_line = linelist[-10].split("\t")[-1].split(";")[0]
+        separator = " "
+        if "=" in tail_line:
+            separator = "="
+
+        count_feature = 0
+        for line in tqdm(linelist):
+            
+            # Skip empty lines or lines starting with a comment character
+            line = line.strip()
+            if not line or line.startswith('#'):
+                continue
+            
+            # more info on file format and columns here: https://www.ensembl.org/info/website/upload/gff.html?redirect=no
+            contig,source,category_,start,stop,score,strandedness,frame,attributes_=[c for c in line.split("\t") if len(c)>0]
+            category = categorize_string(category_)
+
+            if category != featurecategory:
+                # There's only genes supposed to be included, skip everything that isn't a gene
+                continue
+            
+            else:
+                if verbose:
+                    count_feature += 1
+
+                attributes={}
+                for attr in attributes_.strip().split(";"):
+                    attr = attr.strip()
+                    try:
+                        key,value=attr.split(separator)[-2:]
+                    except:
+                        continue
+
+                    if "," in attr:
+                        attributes[key]=value.split(",")[0]
+                    else:
+                        attributes[key]=value
+            
+                ## check that ID and Parent are detected correctly
+                if "ID" not in attributes:
+                        raise RuntimeError(f"no id property found for gene in line: {line}")
+
+                ## add Feature to the output dict
+                new_feature=Feature(feature_id=attributes["ID"],contig = contig,category=category,start=start,end=stop,strandedness=strandedness, frame=frame)
+                if new_feature.contig not in genome_annotation:
+                    genome_annotation[new_feature.contig]=[new_feature]
+                else:
+                    genome_annotation[new_feature.contig].append(new_feature)
+
+    if verbose:
+        end_time = time.perf_counter()
+        execution_time = end_time - start_time
+        print(f"\tparsing time: {execution_time:.2f} seconds")
+        print(f"\t  * number of contigs: {len(genome_annotation)}")
+        print(f"\t  * {featurecategory} features: {count_feature}")
+            
+    return genome_annotation
+
 
 
 if __name__ == "__main__":
