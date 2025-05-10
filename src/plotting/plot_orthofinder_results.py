@@ -1,16 +1,11 @@
 import pandas as pd
 from collections import Counter
 from statistics import mean, stdev
-import re
+import src.parse_gff as gff
 
 import matplotlib.pyplot as plt
-import numpy as np
-import matplotlib as mpl
-from matplotlib.colors import LinearSegmentedColormap, ListedColormap
-import seaborn as sns
 import os
 import subprocess as sp
-from tqdm import tqdm
 
 ####!!
 # on uppmax load biopython/1.80-py3.10.8 to use argparse!
@@ -143,29 +138,6 @@ def get_species_counts(orthogroups_file, species_names, hierarchical = False):
     species_counts = Counter(gf_merged)
     return(species_counts)
 
-def split_at_second_occurrence(s, char): # split the gene string at the second occurence of "_" to get only the species name
-    if s.count(char)<2:
-        return s
-    else:
-        second_occurrence = s.find(char, 2) # start after the first occurence of "_"
-        species = s[:second_occurrence]
-        return species
-
-def make_species_order_from_tree(newick_tree_path):
-    """
-    Takes a newick tree and extracts a list of all leaf names in order of occurence
-    Makes it possible to align x-axes in later plots with trees
-    """
-    # Regular expression to extract leaf names
-    # This matches strings between commas, parentheses, and before colons.
-    leaf_pattern = r'(?<=\(|,)([a-zA-Z0-9_]+)(?=:)'
-    with open(newick_tree_path, "r") as newick_tree_file:
-        newick_tree_string = newick_tree_file.readlines()[0]
-        # print(newick_tree_string)
-        leaf_names = re.findall(leaf_pattern, newick_tree_string)
-        # leaf names are like "A_obtectus_filtered_proteinfasta" but we only care about the species names in the beginning
-        species_names = [split_at_second_occurrence(leaf, "_") for leaf in leaf_names]
-    return species_names
 
 #####################################################
 ###### Get Orthogroups per species
@@ -538,7 +510,7 @@ if __name__ == '__main__':
                         }
 
 
-    species_names = make_species_order_from_tree(args.common_tree)
+    species_names = gff.make_species_order_from_tree(args.common_tree)
     # print(species_names)
 
     ## check if the input is a directory 

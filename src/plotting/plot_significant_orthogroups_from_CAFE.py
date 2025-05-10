@@ -9,22 +9,6 @@ import pandas as pd
 import src.parse_gff as gff
 
 
-def make_species_order_from_tree(newick_tree_path):
-    """
-    Takes a newick tree and extracts a list of all leaf names in order of occurence
-    Makes it possible to align x-axes in later plots with trees
-    """
-    # Regular expression to extract leaf names
-    # This matches strings between commas, parentheses, and before colons.
-    leaf_pattern = r'(?<=\(|,)([a-zA-Z0-9_]+)(?=:)'
-    with open(newick_tree_path, "r") as newick_tree_file:
-        newick_tree_string = newick_tree_file.readlines()[0]
-        # print(newick_tree_string)
-        leaf_names = re.findall(leaf_pattern, newick_tree_string)
-        # leaf names are like "A_obtectus_filtered_proteinfasta" but we only care about the species names in the beginning
-        species_names = [gff.split_at_second_occurrence(leaf, "_") for leaf in leaf_names]
-    return species_names
-
 def read_orthogroups_input(filepath):
     """
     read the input tsv with the orthogroup numbers into a dict of dicts
@@ -284,7 +268,7 @@ def plot_means(native, orthoDB, whole_genome_stats, species_names, x_category = 
 if __name__ == "__main__":
 
     tree = "/Users/miltr339/Box Sync/code/annotation_pipeline/annotation_scripts_ordered/14_species_orthofinder_tree.nw"
-    species_names = make_species_order_from_tree(tree)
+    species_names = gff.make_species_order_from_tree(tree)
 
     orthogroups_native = "/Users/miltr339/Box Sync/code/CAFE/CAFE_input_native_from_N0.tsv"
     orthogroups_orthoDB = "/Users/miltr339/Box Sync/code/CAFE/CAFE_input_orthoDB_TE_filtered.tsv"

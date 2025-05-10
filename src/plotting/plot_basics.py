@@ -9,32 +9,10 @@ import subprocess as sp
 import os
 import re
 import matplotlib.pyplot as plt
-import parse_gff as gff 
+import src.parse_gff as gff 
 from Bio import SeqIO
 
-def split_at_second_occurrence(s, char="_"): # split the gene string at the second occurence of "_" to get only the species name
-    if s.count(char)<2:
-        return s
-    else:
-        second_occurrence = s.find(char, 2) # start after the first occurence of "_"
-        species = s[:second_occurrence]
-        return species
 
-def make_species_order_from_tree(newick_tree_path):
-    """
-    Takes a newick tree and extracts a list of all leaf names in order of occurence
-    Makes it possible to align x-axes in later plots with trees
-    """
-    # Regular expression to extract leaf names
-    # This matches strings between commas, parentheses, and before colons.
-    leaf_pattern = r'(?<=\(|,)([a-zA-Z0-9_]+)(?=:)'
-    with open(newick_tree_path, "r") as newick_tree_file:
-        newick_tree_string = newick_tree_file.readlines()[0]
-        # print(newick_tree_string)
-        leaf_names = re.findall(leaf_pattern, newick_tree_string)
-        # leaf names are like "A_obtectus_filtered_proteinfasta" but we only care about the species names in the beginning
-        species_names = [split_at_second_occurrence(leaf, "_") for leaf in leaf_names]
-    return species_names
 
 def get_gene_conuts_from_annot(species_names, files_dir):
     files_list = os.listdir(files_dir)
@@ -229,10 +207,10 @@ if __name__ == "__main__":
 
         try:
             tree = "/Users/miltr339/Box Sync/code/annotation_pipeline/annotation_scripts_ordered/14_species_orthofinder_tree.nw"
-            species_names = make_species_order_from_tree(tree)
+            species_names = gff.make_species_order_from_tree(tree)
         except:
             tree = "/Users/milena/Box Sync/code/annotation_pipeline/annotation_scripts_ordered/14_species_orthofinder_tree.nw"
-            species_names = make_species_order_from_tree(tree)
+            species_names = gff.make_species_order_from_tree(tree)
 
         genome_sizes_dict = {"D_melanogaster" : 180,
                         "I_luminosus" : 842,

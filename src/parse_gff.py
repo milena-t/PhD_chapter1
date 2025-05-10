@@ -4,7 +4,7 @@ import pandas as pd
 from tqdm import tqdm
 import subprocess as sp
 import tempfile
-import os
+import re
 
 
 
@@ -22,6 +22,23 @@ def split_at_second_occurrence(s, char = "_"):
         second_occurrence = s.find(char, first_occurrence + 1)
         species = s[:second_occurrence]
         return species
+    
+
+def make_species_order_from_tree(newick_tree_path):
+    """
+    Takes a newick tree and extracts a list of all leaf names in order of occurence
+    Makes it possible to align x-axes in later plots with trees
+    """
+    # Regular expression to extract leaf names
+    # This matches strings between commas, parentheses, and before colons.
+    leaf_pattern = r'(?<=\(|,)([a-zA-Z0-9_]+)(?=:)'
+    with open(newick_tree_path, "r") as newick_tree_file:
+        newick_tree_string = newick_tree_file.readlines()[0]
+        # print(newick_tree_string)
+        leaf_names = re.findall(leaf_pattern, newick_tree_string)
+        # leaf names are like "A_obtectus_filtered_proteinfasta" but we only care about the species names in the beginning
+        species_names = [split_at_second_occurrence(leaf, "_") for leaf in leaf_names]
+    return species_names
 
 
 def get_single_exon_transcripts(parsed_gff_dict, verbose=False):
