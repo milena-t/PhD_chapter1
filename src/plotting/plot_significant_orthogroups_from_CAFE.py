@@ -5,17 +5,9 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from statistics import mean
 import numpy as np
-from decimal import Decimal
 import pandas as pd
+import src.parse_gff as gff
 
-
-def split_at_second_occurrence(s, char="_"): # split the gene string at the second occurence of "_" to get only the species name
-    if s.count(char)<2:
-        return s
-    else:
-        second_occurrence = s.find(char, 2) # start after the first occurence of "_"
-        species = s[:second_occurrence]
-        return species
 
 def make_species_order_from_tree(newick_tree_path):
     """
@@ -30,7 +22,7 @@ def make_species_order_from_tree(newick_tree_path):
         # print(newick_tree_string)
         leaf_names = re.findall(leaf_pattern, newick_tree_string)
         # leaf names are like "A_obtectus_filtered_proteinfasta" but we only care about the species names in the beginning
-        species_names = [split_at_second_occurrence(leaf, "_") for leaf in leaf_names]
+        species_names = [gff.split_at_second_occurrence(leaf, "_") for leaf in leaf_names]
     return species_names
 
 def read_orthogroups_input(filepath):
@@ -49,9 +41,7 @@ def read_orthogroups_input(filepath):
             ...
         }
     }
-
     """
-
     with open(filepath, "r") as orthogroups_file:
         orthogroups_lines = orthogroups_file.readlines()
         species = orthogroups_lines[0].strip().split("\t")[2:]
@@ -79,10 +69,14 @@ def get_sig_orthogroups(filepath, p_sig = 0.05):
     return(sig_list, cafe_list)
 
 
-def get_means(orthogroups_dict, sig_list, all_cafe_list, species_names):
+def get_means(orthogroups_dict, sig_list, all_cafe_list, species_names = []):
     """
     get mean orthogroup sizes in all species for both significant and non-significant orthogroups
     """
+
+    if len(species_names)==0:
+        OGs = list(orthogroups_dict.keys())
+        species_names = list(orthogroups_dict[OGs[0]].keys())
 
     all_unsig = {species : [] for species in species_names}
     all_sig = {species : [] for species in species_names}
