@@ -269,7 +269,7 @@ if __name__ == "__main__":
             'unassigned' : {'T_castaneum': 10225, 'C_maculatus__': 2141, 'c_maculatus_only_orthoDB': 2800, 'c_maculatus_all_proteinrefs': 2094, 'c_maculatus_RNA_simple': 138, 'c_maculatus_RNA_combined': 196, 'A_obtectus': 7114}
         }
         Kaufmann_labels = {'C_maculatus__' : "RNA same population", 'c_maculatus_only_orthoDB' : "no RNA", 'c_maculatus_RNA_combined' : "DE RNA different population", 'c_maculatus_RNA_simple' : "RNA different population"}
-        # plot_Kaufmann_annotation_comparison(Kaufman_cmac_annotation_comparison, Kaufmann_labels, filename = "Kaufmann_annotation_comparison.png")
+        plot_Kaufmann_annotation_comparison(Kaufman_cmac_annotation_comparison, Kaufmann_labels, filename = "Kaufmann_annotation_comparison.png")
 
 
         ## plot just the gene numbers from the two (three) annotation methods
