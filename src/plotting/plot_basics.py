@@ -7,9 +7,10 @@
 
 import subprocess as sp
 import os
-import re
 import matplotlib.pyplot as plt
-import src.parse_gff as gff 
+import matplotlib.patches as mpatches
+import parse_gff as gff 
+# import src.parse_gff as gff 
 from Bio import SeqIO
 
 
@@ -158,13 +159,14 @@ def plot_histogram_protein_lengths(native_path:str, orthoDB_path:str, species_na
     print(f"plot saved in the current working directory as: {filename}")
 
 
-def plot_all_species_protein_length_distribution(native_files:dict, orthoDB_files:dict, columns = 3, no_bins = 20, max_length = 1000, filename = "protein_lengths_histogram.png"):
+def plot_all_species_protein_length_distribution(native_files:dict, orthoDB_files:dict, columns = 3, no_bins = 20, max_length = 1000, filename = "protein_lengths_histogram.png", legend_in_last = True):
     """
     plot a grid of histograms for all species. input is dictionaries with species names as keys and filepaths to aminoacid fasta files as values
     """
     cols = columns
     rows = int(len(native_files)/cols)  +1
     fig, axes = plt.subplots(rows, cols, figsize=(12, 15))
+    fs = 15
 
     colors = {
         "orthoDB" : "#F2933A",
@@ -182,13 +184,26 @@ def plot_all_species_protein_length_distribution(native_files:dict, orthoDB_file
         species_name = species.replace("_", ". ")
         print(f"\tin position {row+1},{col+1}: \t{species_name}")
 
-
         # Plot histogram on the corresponding subplot axis
-        axes[row, col].hist([native_lengths, orthoDB_lengths], bins=no_bins, histtype="bar", color = [colors["native"], colors["orthoDB"]], label=["native", "orthoDB"])
-        
+        axes[row, col].hist([native_lengths, orthoDB_lengths], bins=no_bins, histtype="bar", color = [colors["native"], colors["orthoDB"]])
         axes[row, col].set_title(f'{species_name}')
         axes[row, col].set_xlabel('')
         axes[row, col].set_ylabel('')
+    
+    # add legend to last plot square
+    if legend_in_last == True:
+        idx_max = len(native_files.keys())
+        row = idx_max // cols
+        col = idx_max % cols
+        axes[row, col].axis('off')
+        axes[row, col].set_title(f'{species_name}')
+        handles = []
+        labels = [] 
+        handles.append(mpatches.Patch(color=colors["native"]))
+        labels.append("native")
+        handles.append(mpatches.Patch(color=colors["orthoDB"]))
+        labels.append("orthoDB")
+        axes[row, col].legend(handles, labels, fontsize = fs, loc='center', title_fontsize = fs)
     
     # Set a single x-axis label for all subplots
     x_label = f"protein length (Aminoacids, up to {max_length})"
@@ -198,6 +213,7 @@ def plot_all_species_protein_length_distribution(native_files:dict, orthoDB_file
 
     plt.savefig(filename, dpi = 300, transparent = True)
     print(f"plot saved in current working directory as: {filename}")
+
 
 
 if __name__ == "__main__":
@@ -267,7 +283,7 @@ if __name__ == "__main__":
     ### plot protein length histograms
     ## filepaths
     if True:
-        native_dir = "/Users/milena/work/native_proteinseqs"
+        native_dir = "/Users/miltr339/work/native_proteinseqs"
         native_files = {
             "A_obtectus" : f"{native_dir}/A_obtectus.faa",
             "A_verrucosus" : f"{native_dir}/A_verrucosus.faa",
@@ -285,7 +301,7 @@ if __name__ == "__main__":
             "Z_morio" : f"{native_dir}/Z_morio.faa",
         }
 
-        orthoDB_dir = "/Users/milena/work/orthoDB_proteinseqs_TE_filtered"
+        orthoDB_dir = "/Users/miltr339/work/orthoDB_proteinseqs_TE_filtered"
         orthoDB_files = {
             "A_obtectus" : f"{orthoDB_dir}/A_obtectus_filtered_proteinfasta_TE_filtered.fa",
             "A_verrucosus" : f"{orthoDB_dir}/A_verrucosus_filtered_proteinfasta_TE_filtered.fa",
