@@ -7,4 +7,4 @@ This is all the code that was used in the first chapter of my thesis where i inv
 Use repeatmodeller and repeatmasker to re-mask all assemblies
 
 ## Genome annotation
-Use BRAKER3 with the orthoDB arthropoda dataset to uniformly annotate all genomes. no RNAseq!
+Use BRAKER3 with the orthoDB arthropoda dataset to uniformly annotate all genomes. no RNAseq! See the paper that i will hopefully publish on this for justification.
