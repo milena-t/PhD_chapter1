@@ -406,8 +406,7 @@ def parse_gff3_by_contig(filepath:str, verbose = True, featurecategory = Feature
 
 
 
-if __name__ == "__main__":
-    print(Feature("1", "contig1", FeatureCategory.Gene, 1, 100, "+", ".", parent_id=None))
-
-    obtectus_test_native = "/Users/milena/work/native_annot_gff/acanthoscelides_obtectus.gff.isoform_filtered"
-    parse_gff3_general(obtectus_test_native)
+# if __name__ == "__main__":
+#     print(Feature("1", "contig1", FeatureCategory.Gene, 1, 100, "+", ".", parent_id=None))
+#     obtectus_test_native = "/Users/milena/work/native_annot_gff/acanthoscelides_obtectus.gff.isoform_filtered"
+#     parse_gff3_general(obtectus_test_native)
