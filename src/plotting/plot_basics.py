@@ -130,9 +130,9 @@ def plot_gene_counts(native_annot_dir, species_tree, orthoDB_annot_dir="", ortho
 
     fig, (ax_data, ax_tree) = plt.subplots(2, 1, figsize=(10, 15), gridspec_kw={'height_ratios': [1, 2]})
     
-    
+    # plot tree manually with leaves pointing upwards
     species_names_unsorted = plot_tree_manually(species_tree, ax_tree)
-    print(species_names_unsorted)
+    # get species order from plotted tree
     species_coords_sorted = sorted(list(species_names_unsorted.keys()))
     species_names = [species_names_unsorted[species_coord] for species_coord in species_coords_sorted]
 
@@ -384,7 +384,7 @@ if __name__ == "__main__":
             plot_gene_counts(native_annot_dir=native_annot, species_tree=tree, orthoDB_filtered_annot_dir=orthoDB_TE_filtered, filename="only_genome_size_14_species.png")
         except:
             tree = "/Users/miltr339/Box Sync/code/annotation_pipeline/annotation_scripts_ordered/14_species_orthofinder_tree.nw"
-            plot_gene_counts(native_annot_dir=native_annot, species_tree=tree, orthoDB_filtered_annot_dir=orthoDB_TE_filtered, filename="only_genome_size_14_species.png")
+            plot_gene_counts(native_annot_dir=native_annot, species_tree=tree, orthoDB_filtered_annot_dir=orthoDB_TE_filtered, filename="only_number_of_genes_with_tree.png")
         # plot_gene_counts(native_annot_dir=native_annot, orthoDB_annot_dir=orthoDB_annot, species_names=species_names, orthoDB_filtered_annot_dir=orthoDB_TE_filtered, filename="only_genome_size_14_species_with_TE_filtering.png")
 
     
