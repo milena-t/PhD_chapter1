@@ -18,6 +18,7 @@ from Bio import SeqIO
 def get_gene_conuts_from_annot(species_names, files_dir):
     files_list = os.listdir(files_dir)
     gene_nums_dict = {}
+    gene_nums_dict_from_annot = {}
     search_string = "gene\t"
     if "fa" in files_list[0].split(".")[-1] or "fna" in files_list[0].split(".")[-1]:
         search_string = ">"
@@ -35,10 +36,17 @@ def get_gene_conuts_from_annot(species_names, files_dir):
 
         gene_nums_dict[species_name] = int(num_hits.strip())
 
+        ### if you want to compare the counting with grep to parse_gff:
+        # if search_string == "gene\t":
+        #     annot_dir = gff.parse_gff3_general(filepath=filepath, only_genes=True, verbose=False)
+        #     gene_nums_dict_from_annot[species_name] = len(annot_dir)
+        # if gene_nums_dict[species_name] != gene_nums_dict_from_annot[species_name]:
+        #     print(f"{files_dir}/{species_name} -->  grep: {gene_nums_dict[species_name]} ,  parse_gff: {gene_nums_dict_from_annot[species_name]}")
+
     return(gene_nums_dict)
 
 
-def plot_gene_counts(native_annot_dir, orthoDB_annot_dir, species_names, orthoDB_filtered_annot_dir="", filename = "only_genome_sizes_14_species.png"):
+def plot_gene_counts(native_annot_dir, species_names, orthoDB_annot_dir="", orthoDB_filtered_annot_dir="", filename = "only_genome_sizes_14_species.png"):
     fs = 15 # set font size
     # plot each column in the dataframe as a line in the same plot thorugh a for-loop
     fig = plt.figure(figsize=(10,8))
@@ -52,17 +60,24 @@ def plot_gene_counts(native_annot_dir, orthoDB_annot_dir, species_names, orthoDB
     ncol_legend = 0
 
     native_gene_nos = get_gene_conuts_from_annot(species_names, native_annot_dir)
-    orthoDB_gene_nos = get_gene_conuts_from_annot(species_names, orthoDB_annot_dir)
 
     native_gene_list = [native_gene_nos[species] for species in species_names]
-    orthoDB_gene_list = [orthoDB_gene_nos[species] for species in species_names]
     ax.plot(species_names, native_gene_list, label = "native annotation", color = "#b82946") # red
-    ax.plot(species_names, orthoDB_gene_list, label = "orthoDB uniform annotation", color = "#4d7298") # blue
 
     if len(orthoDB_filtered_annot_dir)>0:
         orthoDB_filtered_gene_nos = get_gene_conuts_from_annot(species_names, orthoDB_filtered_annot_dir)
         orthoDB_filtered_gene_list = [orthoDB_filtered_gene_nos[species] for species in species_names]
         ax.plot(species_names, orthoDB_filtered_gene_list, label = "orthoDB TE-filtered", color = "#F2933A") # orange
+        ymax = max(native_gene_list+orthoDB_filtered_gene_list)*1.1
+    
+    if len(orthoDB_annot_dir)>0:
+        orthoDB_gene_nos = get_gene_conuts_from_annot(species_names, orthoDB_annot_dir)
+        orthoDB_gene_list = [orthoDB_gene_nos[species] for species in species_names]
+        ax.plot(species_names, orthoDB_gene_list, label = "orthoDB uniform annotation", color = "#4d7298") # blue
+        ymax = max(native_gene_list+orthoDB_gene_list)*1.1
+
+    if len(orthoDB_annot_dir)>0 and len(orthoDB_filtered_annot_dir)>0:
+        ymax = max(native_gene_list+orthoDB_gene_list+orthoDB_filtered_gene_list)*1.1
 
     ax.set_ylabel(ylab, fontsize = fs)
     plt.xticks(labels=[species.replace("_", ". ") for species in species_names], ticks=species_names, rotation = 90, fontsize = fs)
@@ -72,7 +87,7 @@ def plot_gene_counts(native_annot_dir, orthoDB_annot_dir, species_names, orthoDB
     ax.grid(True)
     ax.yaxis.grid(False)
 
-    ymax = max(native_gene_list+orthoDB_gene_list)*1.1
+    
     ax.set_ylim(5e3,ymax)
 
     plt.tight_layout()
@@ -269,14 +284,14 @@ if __name__ == "__main__":
             'unassigned' : {'T_castaneum': 10225, 'C_maculatus__': 2141, 'c_maculatus_only_orthoDB': 2800, 'c_maculatus_all_proteinrefs': 2094, 'c_maculatus_RNA_simple': 138, 'c_maculatus_RNA_combined': 196, 'A_obtectus': 7114}
         }
         Kaufmann_labels = {'C_maculatus__' : "RNA same population", 'c_maculatus_only_orthoDB' : "no RNA", 'c_maculatus_RNA_combined' : "DE RNA different population", 'c_maculatus_RNA_simple' : "RNA different population"}
-        plot_Kaufmann_annotation_comparison(Kaufman_cmac_annotation_comparison, Kaufmann_labels, filename = "Kaufmann_annotation_comparison.png")
+        # plot_Kaufmann_annotation_comparison(Kaufman_cmac_annotation_comparison, Kaufmann_labels, filename = "Kaufmann_annotation_comparison.png")
 
 
         ## plot just the gene numbers from the two (three) annotation methods
         orthoDB_annot = "/Users/miltr339/work/orthoDB_annotations/"
         orthoDB_TE_filtered = "/Users/miltr339/work/orthoDB_proteinseqs_TE_filtered/" # "/proj/naiss2023-6-65/Milena/gene_family_analysis/orthofinder_only_orthoDB_annotations/protein_sequences_TE_filtered/"
         native_annot = "/Users/miltr339/work/native_annotations/all_native_annot/"
-        # plot_gene_counts(native_annot_dir=native_annot, orthoDB_annot_dir=orthoDB_annot, species_names=species_names)
+        plot_gene_counts(native_annot_dir=native_annot, species_names=species_names, orthoDB_filtered_annot_dir=orthoDB_TE_filtered, filename="only_genome_size_14_species.png")
         # plot_gene_counts(native_annot_dir=native_annot, orthoDB_annot_dir=orthoDB_annot, species_names=species_names, orthoDB_filtered_annot_dir=orthoDB_TE_filtered, filename="only_genome_size_14_species_with_TE_filtering.png")
 
     
@@ -324,4 +339,4 @@ if __name__ == "__main__":
     # for species in native_files.keys():
     #     plot_histogram_protein_lengths(native_files[species], orthoDB_files[species], species_name=species, filename = f"protein_lengths_histogram_{species}.png")
     
-    plot_all_species_protein_length_distribution(native_files, orthoDB_files)
+    # plot_all_species_protein_length_distribution(native_files, orthoDB_files)
