@@ -11,8 +11,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import parse_gff as gff 
 # import src.parse_gff as gff 
-from Bio import SeqIO
-
+from Bio import SeqIO, Phylo
 
 
 def get_gene_conuts_from_annot(species_names, files_dir):
@@ -46,13 +45,97 @@ def get_gene_conuts_from_annot(species_names, files_dir):
     return(gene_nums_dict)
 
 
-def plot_gene_counts(native_annot_dir, species_names, orthoDB_annot_dir="", orthoDB_filtered_annot_dir="", filename = "only_genome_sizes_14_species.png"):
+def get_coords(tree):
+    """
+    Traverse tree and assign x/y positions for each clade.
+    The tree orientation is intended with leaves pointing upwards in a normal x/y coordinate system
+    """
+    coords = {}
+    x = 0
+    max_depth = 0 # get position of the deepest leaf so that you can align all the leaf labels later
+    leaf_names = []
+    
+    # recursion through every node of the tree
+    def assign(clade, depth):
+        nonlocal x
+        nonlocal max_depth
+        
+        if depth>max_depth:
+            max_depth = depth
+        if clade.is_terminal():
+            coords[clade] = (x, depth) # depth is the distance from the root
+            x += 1 # orientation of the node along the x-axis (left/right orientation)
+        else:
+            for child in clade.clades:
+                assign(child, depth + clade.branch_length if clade.branch_length else depth)
+            # if the node has multiple children, determine the x coordinates of all the children and take the mean to center the line in the middle above the children
+            child_coords = [coords[c][0] for c in clade.clades]
+            coords[clade] = (sum(child_coords) / len(child_coords), depth)
+
+    assign(tree.root, 0)
+
+    return coords, max_depth
+
+
+
+def plot_tree_manually(species_tree, ax_tree, add_leaf_label=False):
+    """
+    plot a phylogenetic tree (newick format in a file in species_tree)
+    manually so that the leaves point upwards. 
+    ax_tree is the plot axis defined in fig, ax_tree = plt.subplots()
+    """
+    tree = Phylo.read(species_tree, "newick")
+    tree.ladderize()
+    coords, max_depth = get_coords(tree)
+    leaf_names = {}
+    # Draw manually
+    for clade in tree.find_clades(order="level"):
+        x, y = coords[clade]
+
+        # Draw a horizontal line from this node to its children
+        for child in clade.clades:
+            x2, y2 = coords[child]
+
+            # Vertical line
+            ax_tree.plot([x2, x2], [y, y2], color="black")
+            # Horizontal line
+            ax_tree.plot([x, x2], [y, y], color="black")
+
+        # Draw labels on tips
+        if clade.is_terminal():
+            ax_tree.plot([x, x], [y, y + max_depth-y + 0.2], color="black")
+            if add_leaf_label:
+                ax_tree.text(x, y + max_depth-y + 0.25, clade.name, ha="center", va="bottom", rotation=90)
+            leaf_names[x] = clade.name
+
+    # Adjust and flip y-axis so tree grows upwards
+    ax_tree.set_ylim(ax_tree.get_ylim()[::-1])  # Invert Y axis
+    ax_tree.invert_yaxis()
+    ax_tree.axis("off")
+    return leaf_names
+
+
+def plot_gene_counts(native_annot_dir, species_tree, orthoDB_annot_dir="", orthoDB_filtered_annot_dir="", filename = "only_genome_sizes_14_species.png"):
+    """
+    plot gene counts from annotations (or proteinfasta, but preferably annotation), with a species tree on the x-axis
+    """
+    
+    species_names = gff.make_species_order_from_tree(species_tree)
+    
+    
     fs = 15 # set font size
     # plot each column in the dataframe as a line in the same plot thorugh a for-loop
-    fig = plt.figure(figsize=(10,8))
+    # fig = plt.figure(figsize=(10,8))
+    # ax = fig.add_subplot(1, 1, 1)
+
+    fig, (ax_data, ax_tree) = plt.subplots(2, 1, figsize=(10, 15), gridspec_kw={'height_ratios': [1, 2]})
     
-    ax = fig.add_subplot(1, 1, 1)
     
+    species_names_unsorted = plot_tree_manually(species_tree, ax_tree)
+    print(species_names_unsorted)
+    species_coords_sorted = sorted(list(species_names_unsorted.keys()))
+    species_names = [species_names_unsorted[species_coord] for species_coord in species_coords_sorted]
+
     ylab="Number of annotated genes"
     # get a list of lists with [native, orthoDB] number of gene families per species
 
@@ -62,37 +145,38 @@ def plot_gene_counts(native_annot_dir, species_names, orthoDB_annot_dir="", orth
     native_gene_nos = get_gene_conuts_from_annot(species_names, native_annot_dir)
 
     native_gene_list = [native_gene_nos[species] for species in species_names]
-    ax.plot(species_names, native_gene_list, label = "native annotation", color = "#b82946") # red
+    ax_data.plot(species_names, native_gene_list, label = "native annotation", color = "#b82946") # red
 
     if len(orthoDB_filtered_annot_dir)>0:
         orthoDB_filtered_gene_nos = get_gene_conuts_from_annot(species_names, orthoDB_filtered_annot_dir)
         orthoDB_filtered_gene_list = [orthoDB_filtered_gene_nos[species] for species in species_names]
-        ax.plot(species_names, orthoDB_filtered_gene_list, label = "orthoDB TE-filtered", color = "#F2933A") # orange
+        ax_data.plot(species_names, orthoDB_filtered_gene_list, label = "orthoDB TE-filtered", color = "#F2933A") # orange
         ymax = max(native_gene_list+orthoDB_filtered_gene_list)*1.1
     
     if len(orthoDB_annot_dir)>0:
         orthoDB_gene_nos = get_gene_conuts_from_annot(species_names, orthoDB_annot_dir)
         orthoDB_gene_list = [orthoDB_gene_nos[species] for species in species_names]
-        ax.plot(species_names, orthoDB_gene_list, label = "orthoDB uniform annotation", color = "#4d7298") # blue
+        ax_data.plot(species_names, orthoDB_gene_list, label = "orthoDB uniform annotation", color = "#4d7298") # blue
         ymax = max(native_gene_list+orthoDB_gene_list)*1.1
 
     if len(orthoDB_annot_dir)>0 and len(orthoDB_filtered_annot_dir)>0:
         ymax = max(native_gene_list+orthoDB_gene_list+orthoDB_filtered_gene_list)*1.1
 
-    ax.set_ylabel(ylab, fontsize = fs)
-    plt.xticks(labels=[species.replace("_", ". ") for species in species_names], ticks=species_names, rotation = 90, fontsize = fs)
+    ax_data.set_ylabel(ylab, fontsize = fs)
+    # plt.xticks(ticks=range(len(species_names)), labels=[species.replace("_", ". ") for species in species_names], rotation = 90, fontsize = fs)
+    ax_data.set_xticklabels([species.replace("_", ". ") for species in species_names], rotation=90, fontsize=fs)
     
-    legend = ax.legend(fontsize = fs)
+    legend = ax_data.legend(fontsize = fs)
     # rotate legend text by 90 degrees (but it looks like shit)
     # legend = ax.legend(fontsize = fs, ncol=2)
     # for text in legend.get_texts():
     #     text.set_rotation(90)
 
     # set grid only for X axis ticks 
-    ax.grid(True)
-    ax.yaxis.grid(False)
+    ax_data.grid(True)
+    ax_data.yaxis.grid(False)
     
-    ax.set_ylim(5e3,ymax)
+    ax_data.set_ylim(5e3,ymax)
 
     plt.tight_layout()
 
@@ -295,7 +379,12 @@ if __name__ == "__main__":
         orthoDB_annot = "/Users/miltr339/work/orthoDB_annotations/"
         orthoDB_TE_filtered = "/Users/miltr339/work/orthoDB_proteinseqs_TE_filtered/" # "/proj/naiss2023-6-65/Milena/gene_family_analysis/orthofinder_only_orthoDB_annotations/protein_sequences_TE_filtered/"
         native_annot = "/Users/miltr339/work/native_annotations/all_native_annot/"
-        plot_gene_counts(native_annot_dir=native_annot, species_names=species_names, orthoDB_filtered_annot_dir=orthoDB_TE_filtered, filename="only_genome_size_14_species.png")
+        try:
+            tree = "/Users/milena/Box Sync/code/annotation_pipeline/annotation_scripts_ordered/14_species_orthofinder_tree.nw"
+            plot_gene_counts(native_annot_dir=native_annot, species_tree=tree, orthoDB_filtered_annot_dir=orthoDB_TE_filtered, filename="only_genome_size_14_species.png")
+        except:
+            tree = "/Users/miltr339/Box Sync/code/annotation_pipeline/annotation_scripts_ordered/14_species_orthofinder_tree.nw"
+            plot_gene_counts(native_annot_dir=native_annot, species_tree=tree, orthoDB_filtered_annot_dir=orthoDB_TE_filtered, filename="only_genome_size_14_species.png")
         # plot_gene_counts(native_annot_dir=native_annot, orthoDB_annot_dir=orthoDB_annot, species_names=species_names, orthoDB_filtered_annot_dir=orthoDB_TE_filtered, filename="only_genome_size_14_species_with_TE_filtering.png")
 
     
