@@ -131,8 +131,8 @@ class FeatureCategory(str,Enum):
 string_to_category = { # define aliases when some strings should map to the same feature category
     "gene": FeatureCategory.Gene,
     "pseudogene": FeatureCategory.Gene,
-    "sequence_feature": FeatureCategory.Gene,
-    "mobile_genetic_element": FeatureCategory.Gene,
+    "sequence_feature": FeatureCategory.Region,
+    "mobile_genetic_element": FeatureCategory.Region,
     "CDS": FeatureCategory.CDS,
     "cds": FeatureCategory.CDS, 
     "exon": FeatureCategory.Exon,
