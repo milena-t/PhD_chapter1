@@ -82,11 +82,15 @@ def plot_gene_counts(native_annot_dir, species_names, orthoDB_annot_dir="", orth
     ax.set_ylabel(ylab, fontsize = fs)
     plt.xticks(labels=[species.replace("_", ". ") for species in species_names], ticks=species_names, rotation = 90, fontsize = fs)
     
-    ax.legend(fontsize = fs)
+    legend = ax.legend(fontsize = fs)
+    # rotate legend text by 90 degrees (but it looks like shit)
+    # legend = ax.legend(fontsize = fs, ncol=2)
+    # for text in legend.get_texts():
+    #     text.set_rotation(90)
+
     # set grid only for X axis ticks 
     ax.grid(True)
     ax.yaxis.grid(False)
-
     
     ax.set_ylim(5e3,ymax)
 
