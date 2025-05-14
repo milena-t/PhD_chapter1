@@ -1,14 +1,11 @@
 # plot the results from compare_gene_positions.sh
 
-import pandas as pd
-import csv
 from dataclasses import dataclass
 
-import src.parse_gff as gff
+# import src.parse_gff as gff
+import parse_gff as gff
 import matplotlib.pyplot as plt
-import numpy as np
-from tqdm import tqdm
-import src.parse_gff as gff
+from plot_basics import plot_tree_manually
 
 # to correctly compute the overlap, first correct the contig names of the orthoDB annotation to match the native annotations with correct_native_contig_names_for_bedtools_intersect.py
 # files generated on uppmax are here: /proj/naiss2023-6-65/Milena/annotation_pipeline/annotation_evaluation/gene_position_comparison_native_vs_orhtoDB
@@ -360,11 +357,17 @@ def get_plot_numbers(overlap_lists, onetoone_list, ratio = True, verbose = False
 
 def plot_all_species_values(all_values_native_dict, all_values_orthoDB_dict, species_names_list = [], filename = ""):
     """
-    Plot all of the values, species names specify the order in the x axis
+    Plot all of the values, species names specify the order in the x axis.
+    species_names_list can be a list of species names that determines the order, 
+    or it can be 
     """
 
     if len(species_names_list) == 0:
         species_names_list = list(all_values_orthoDB_dict.keys())
+    elif len(species_names_list) > 0 and type(species_names_list) == str:
+        # if the species name is actually a string then assume it's a filepath to a newick tree
+        # don't give an axis to plot and it will just return a species tree order
+        species_names_list = plot_tree_manually(species_names_list)
     
 
     fs = 13 # set font size
@@ -414,7 +417,10 @@ def plot_all_species_values(all_values_native_dict, all_values_orthoDB_dict, spe
     plt.xticks(labels=[species.replace("_", ". ") for species in species_names_list], ticks=species_names_list, rotation = 90, fontsize = fs)
     plt.tight_layout()
     ax.set_ylabel(ylab, fontsize = fs)
-    plt.legend()
+
+    handles, labels = ax.get_legend_handles_labels()
+    labels = [label.replace("_", " ").replace("orthoDB", "uniform") for label in labels]
+    ax.legend(handles, labels)
 
     # set x-axis grid
     ax.grid(True)
