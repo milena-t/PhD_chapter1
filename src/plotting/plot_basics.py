@@ -115,7 +115,7 @@ def plot_tree_manually(species_tree, ax_tree = None, add_leaf_label=False):
         ax_tree.set_ylim(ax_tree.get_ylim()[::-1])  # Invert Y axis
         ax_tree.invert_yaxis()
         ax_tree.axis("off")
-        
+
     return leaf_names
 
 
@@ -150,13 +150,13 @@ def plot_gene_counts(native_annot_dir, species_tree, orthoDB_annot_dir="", ortho
     if len(orthoDB_filtered_annot_dir)>0:
         orthoDB_filtered_gene_nos = get_gene_conuts_from_annot(species_names, orthoDB_filtered_annot_dir)
         orthoDB_filtered_gene_list = [orthoDB_filtered_gene_nos[species] for species in species_names]
-        ax_data.plot(species_names, orthoDB_filtered_gene_list, label = "orthoDB TE-filtered", color = "#F2933A") # orange
+        ax_data.plot(species_names, orthoDB_filtered_gene_list, label = "uniform (TE-filtered)", color = "#F2933A") # orange
         ymax = max(native_gene_list+orthoDB_filtered_gene_list)*1.1
     
     if len(orthoDB_annot_dir)>0:
         orthoDB_gene_nos = get_gene_conuts_from_annot(species_names, orthoDB_annot_dir)
         orthoDB_gene_list = [orthoDB_gene_nos[species] for species in species_names]
-        ax_data.plot(species_names, orthoDB_gene_list, label = "orthoDB uniform annotation", color = "#4d7298") # blue
+        ax_data.plot(species_names, orthoDB_gene_list, label = "uniform unfiltered", color = "#4d7298") # blue
         ymax = max(native_gene_list+orthoDB_gene_list)*1.1
 
     if len(orthoDB_annot_dir)>0 and len(orthoDB_filtered_annot_dir)>0:
@@ -167,10 +167,6 @@ def plot_gene_counts(native_annot_dir, species_tree, orthoDB_annot_dir="", ortho
     ax_data.set_xticklabels([species.replace("_", ". ") for species in species_names], rotation=90, fontsize=fs)
     
     legend = ax_data.legend(fontsize = fs)
-    # rotate legend text by 90 degrees (but it looks like shit)
-    # legend = ax.legend(fontsize = fs, ncol=2)
-    # for text in legend.get_texts():
-    #     text.set_rotation(90)
 
     # set grid only for X axis ticks 
     ax_data.grid(True)
@@ -305,7 +301,7 @@ def plot_all_species_protein_length_distribution(native_files:dict, orthoDB_file
         handles.append(mpatches.Patch(color=colors["native"]))
         labels.append("native")
         handles.append(mpatches.Patch(color=colors["orthoDB"]))
-        labels.append("orthoDB")
+        labels.append("uniform")
         axes[row, col].legend(handles, labels, fontsize = fs, loc='center', title_fontsize = fs)
     
     # Set a single x-axis label for all subplots
