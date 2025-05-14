@@ -78,7 +78,7 @@ def get_coords(tree):
 
 
 
-def plot_tree_manually(species_tree, ax_tree, add_leaf_label=False):
+def plot_tree_manually(species_tree, ax_tree = None, add_leaf_label=False):
     """
     plot a phylogenetic tree (newick format in a file in species_tree)
     manually so that the leaves point upwards. 
@@ -96,22 +96,26 @@ def plot_tree_manually(species_tree, ax_tree, add_leaf_label=False):
         for child in clade.clades:
             x2, y2 = coords[child]
 
-            # Vertical line
-            ax_tree.plot([x2, x2], [y, y2], color="black")
-            # Horizontal line
-            ax_tree.plot([x, x2], [y, y], color="black")
+            if ax_tree != None:
+                # Vertical line
+                ax_tree.plot([x2, x2], [y, y2], color="black")
+                # Horizontal line
+                ax_tree.plot([x, x2], [y, y], color="black")
 
         # Draw labels on tips
         if clade.is_terminal():
-            ax_tree.plot([x, x], [y, y + max_depth-y + 0.2], color="black")
-            if add_leaf_label:
-                ax_tree.text(x, y + max_depth-y + 0.25, clade.name, ha="center", va="bottom", rotation=90)
+            if ax_tree != None:
+                ax_tree.plot([x, x], [y, y + max_depth-y + 0.2], color="black")
+                if add_leaf_label:
+                    ax_tree.text(x, y + max_depth-y + 0.25, clade.name, ha="center", va="bottom", rotation=90)
             leaf_names[x] = clade.name
 
     # Adjust and flip y-axis so tree grows upwards
-    ax_tree.set_ylim(ax_tree.get_ylim()[::-1])  # Invert Y axis
-    ax_tree.invert_yaxis()
-    ax_tree.axis("off")
+    if ax_tree != None:
+        ax_tree.set_ylim(ax_tree.get_ylim()[::-1])  # Invert Y axis
+        ax_tree.invert_yaxis()
+        ax_tree.axis("off")
+        
     return leaf_names
 
 
@@ -122,11 +126,7 @@ def plot_gene_counts(native_annot_dir, species_tree, orthoDB_annot_dir="", ortho
     
     species_names = gff.make_species_order_from_tree(species_tree)
     
-    
     fs = 15 # set font size
-    # plot each column in the dataframe as a line in the same plot thorugh a for-loop
-    # fig = plt.figure(figsize=(10,8))
-    # ax = fig.add_subplot(1, 1, 1)
 
     fig, (ax_data, ax_tree) = plt.subplots(2, 1, figsize=(10, 15), gridspec_kw={'height_ratios': [1, 2]})
     
