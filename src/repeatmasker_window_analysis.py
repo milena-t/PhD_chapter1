@@ -1,10 +1,7 @@
-## compute non-overlapping windows of repeat abundance over chromosomes.
-## according to gff files returned by repeatmasker identifying all repeat locations and types in the assembly
-
-## includes a (really cool in my extremely humble and unbiased opinion) plotting function as well, but the windows can be exportet as 
-## a tsv file as well for statistical analysis
-
-## grep -v '^##' A_obtectus_repeats.out.gff|cut -f3|sort|uniq
+#####
+# Analysis and plotting of repeatmasker output, see documentation below or repeatmasker_window_analysis.py -h
+# Milena R. Trabert, 2025
+#####
 
 import parse_gff as gff
 import parse_repeats as repeats
@@ -28,7 +25,7 @@ def parse_args():
     # Create the parser
     program_description = """\n
 A script to calculate repeat abundance in non-overlapping windows over an entire assembly from repeatmasker output.
-Results can be plotted in a stacked histogram or returned as tsv files. 
+Results can be plotted in a stacked histogram (plot mode) or returned as tsv files (table mode). 
 
 
 ------------------------- quick start
@@ -37,9 +34,9 @@ python3 repeatmasker_window_analysis.py --masker_outfile your_assembly.fna.ori.o
 
 ------------------------- dependencies
 
- *  On uppmax, load biopython/1.80-py3.10.8 (to use argparse)
+ *  On uppmax, load biopython/1.80-py3.10.8 to use argparse (base python doesn't include it).
  *  The parse_repeats.py file that contains the dataclass for the repeat files, the parse_gff.py file contains other utilities
-        (keep in the same directory as this script or in $PATH to make the import work!)
+        (keep in the same directory as this script or in $PATH to make the import work!). 
  *  Libraries imported in this script and in parse_repeats.py and parse_gff.py:
         - sys, re, os, subprocess, argparse
         - tqdm, random, time
@@ -47,14 +44,17 @@ python3 repeatmasker_window_analysis.py --masker_outfile your_assembly.fna.ori.o
         - matplotlib
         (they can all be installed through pip. Sorry if I forgot any, I'm sure the compiler will tell you)
 
-------------------------- other information
+------------------------- documentation
 
-You can run in two modes, plot mode or table mode. Plot mode returns a plot with a stacked histogram of all the 
-repeat categories (overlap filtered! so that there is never more than 100% repeat coverage in a sequence due to
-overlapping repeat annotations. See get_repeat_abundance function documentation for details.) and a line for the 
-number of annotated genes in the same windows if you include an annotation.
+This script analyzes repeatmasker output. You can run in two modes, plot mode or table mode. Plot mode returns 
+a plot with a stacked histogram of all the repeat categories (overlap filtered! Repeat annotations can be nested within each other, 
+where two or more repeats cover the same stretch of sequence, which can result in a >100% repeat coverage in some windows. 
+I am filtering out repeat categories that overlap with others so that each base is only covered by one repeat annotation.
+This filtering likely warps the category proportion in some windows, because it is likely that there are more bases of some categories 
+removed than others. See get_repeat_abundance function documentation for details). If you include a genome annotation, 
+a line for the number of annotated genes in the same windows is added. You can add up to two annotations to compare them.
 Table mode returns the same by-window information as a tsv file with the proportion of basepairs in each window 
-covered by each repeat category (NOT overlap filtered, so there can be more bp repeats in a window than the number
+covered by each repeat category (NOT overlap filtered, so there can be more bp covered by all repeats in a window than the number
 of masked bp or even the window length) and also the number of bp and ratio covered by coding regions (exons). If the masked
 assembly is given it will also include the number of unmasked bp in each window.
 
@@ -62,12 +62,10 @@ It takes as input two of the repeatmasker output files, and since I didn't exact
 it would probably be good if they were in the same directory and didn't have their names changed from what 
 repeatmasker named them by default (in case i have a hardcoded string in a filename somewhere i forgot to remove).
 
-The runtime depends on the overall repeat content and on how fragmented the assembly is. 
-If your assembly is long and fragmented, it takes long to loop through many small contigs, 
-and if there are many repeats, it takes long to sum all of them up per window. 
-Short windows increase the total number of windows computed and plotted, which also increases the runtime.
-In any case, the longest runtime i managed to achieve with my data was 3:30 min.
-
+The runtime depends on the overall repeat content and on how fragmented the assembly is. I have tried my best to optimize, 
+but if your assembly is long and fragmented, it takes long to loop through many small contigs, and if there are many repeats, 
+it takes long to sum all of them up per window. Short windows increase the total number of windows computed and plotted, 
+which also increases the runtime. In any case, the longest runtime i managed to achieve with my data was 3:30 min.
 
 ------------------------- good luck! 
 
@@ -160,7 +158,7 @@ def get_contig_lengths(gff_path:str) -> dict[str, list[int]]:
 
 def get_window_intervals(contig_coords:list[int], window_length:int) -> list[list[int]]:
     """
-    get the intervals of the sliding windows in a list of lists like this:
+    get the intervals of the non-overlapping windows in a list of lists like this:
     [ [window1_start, window1_end] ,  [window2_start, window2_end] ,  ... ]
     """
     contig_end = contig_coords[1]
