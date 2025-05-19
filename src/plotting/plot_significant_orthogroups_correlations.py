@@ -5,7 +5,11 @@
 #  - Are they intron-less?
 
 
-import src.parse_gff as gff
+
+import parse_gff as gff
+import pandas as pd
+
+
 
 
 def get_sig_orthogroups(filepath, p_sig = 0.05):
