@@ -1,14 +1,13 @@
 # plot the results from compare_gene_positions.sh
 
-import pandas as pd
-import csv
 from dataclasses import dataclass
 
-import parse_gff_old
+
+# import src.parse_gff as gff
+import parse_gff as gff
+
 import matplotlib.pyplot as plt
-import numpy as np
-from tqdm import tqdm
-import re
+from plot_basics import plot_tree_manually
 
 # to correctly compute the overlap, first correct the contig names of the orthoDB annotation to match the native annotations with correct_native_contig_names_for_bedtools_intersect.py
 # files generated on uppmax are here: /proj/naiss2023-6-65/Milena/annotation_pipeline/annotation_evaluation/gene_position_comparison_native_vs_orhtoDB
@@ -358,38 +357,19 @@ def get_plot_numbers(overlap_lists, onetoone_list, ratio = True, verbose = False
 
 
 
-def split_at_second_occurrence(s, char): # split the gene string at the second occurence of "_" to get only the species name
-    if s.count(char)<2:
-        return s
-    else:
-        second_occurrence = s.find(char, 2) # start after the first occurence of "_"
-        species = s[:second_occurrence]
-        return species
-
-def make_species_order_from_tree(newick_tree_path):
-    """
-    Takes a newick tree and extracts a list of all leaf names in order of occurence
-    Makes it possible to align x-axes in later plots with trees
-    """
-    # Regular expression to extract leaf names
-    # This matches strings between commas, parentheses, and before colons.
-    leaf_pattern = r'(?<=\(|,)([a-zA-Z0-9_]+)(?=:)'
-    with open(newick_tree_path, "r") as newick_tree_file:
-        newick_tree_string = newick_tree_file.readlines()[0]
-        # print(newick_tree_string)
-        leaf_names = re.findall(leaf_pattern, newick_tree_string)
-        # leaf names are like "A_obtectus_filtered_proteinfasta" but we only care about the species names in the beginning
-        species_names = [split_at_second_occurrence(leaf, "_") for leaf in leaf_names]
-    return species_names
-
-
 def plot_all_species_values(all_values_native_dict, all_values_orthoDB_dict, species_names_list = [], filename = ""):
     """
-    Plot all of the values, species names specify the order in the x axis
+    Plot all of the values, species names specify the order in the x axis.
+    species_names_list can be a list of species names that determines the order, 
+    or it can be 
     """
 
     if len(species_names_list) == 0:
         species_names_list = list(all_values_orthoDB_dict.keys())
+    elif len(species_names_list) > 0 and type(species_names_list) == str:
+        # if the species name is actually a string then assume it's a filepath to a newick tree
+        # don't give an axis to plot and it will just return a species tree order
+        species_names_list = plot_tree_manually(species_names_list)
     
 
     fs = 13 # set font size
@@ -439,7 +419,10 @@ def plot_all_species_values(all_values_native_dict, all_values_orthoDB_dict, spe
     plt.xticks(labels=[species.replace("_", ". ") for species in species_names_list], ticks=species_names_list, rotation = 90, fontsize = fs)
     plt.tight_layout()
     ax.set_ylabel(ylab, fontsize = fs)
-    plt.legend()
+
+    handles, labels = ax.get_legend_handles_labels()
+    labels = [label.replace("_", " ").replace("orthoDB", "uniform") for label in labels]
+    ax.legend(handles, labels)
 
     # set x-axis grid
     ax.grid(True)
@@ -637,7 +620,7 @@ if __name__ == "__main__":
         # print(f"orthoDB: \n\t{all_species_values_orthoDB}")
         
         tree_filepath = "/Users/miltr339/Box Sync/code/annotation_pipeline/annotation_scripts_ordered/14_species_orthofinder_tree.nw"
-        species_order = make_species_order_from_tree(tree_filepath)
+        species_order = gff.make_species_order_from_tree(tree_filepath)
 
         plot_all_species_values(all_values_native_dict=all_species_values_native, all_values_orthoDB_dict=all_species_values_orthoDB, species_names_list=species_order, filename = "annotaion_overlaps_transcript_level.png")
 
@@ -684,6 +667,6 @@ if __name__ == "__main__":
         # print(f"orthoDB: \n\t{all_species_values_orthoDB}")
         
         tree_filepath = "/Users/miltr339/Box Sync/code/annotation_pipeline/annotation_scripts_ordered/14_species_orthofinder_tree.nw"
-        species_order = make_species_order_from_tree(tree_filepath)
+        species_order = gff.make_species_order_from_tree(tree_filepath)
 
         plot_all_species_values(all_values_native_dict=all_species_values_native, all_values_orthoDB_dict=all_species_values_orthoDB, species_names_list=species_order, filename = "annotaion_overlaps_exon_level.png")

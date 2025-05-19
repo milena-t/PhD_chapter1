@@ -5,17 +5,11 @@
 #  - Are they intron-less?
 
 
-import parse_gff_old as gff
+
+import parse_gff as gff
 import pandas as pd
 
 
-def split_at_second_occurrence(s, char="_"): # split the gene string at the second occurence of "_" to get only the species name
-    if s.count(char)<2:
-        return s
-    else:
-        second_occurrence = s.find(char, 2) # start after the first occurence of "_"
-        species = s[:second_occurrence]
-        return species
 
 
 def get_sig_orthogroups(filepath, p_sig = 0.05):
@@ -77,7 +71,7 @@ def parse_orthogroups_dict(filepath, sig_list:list[str] = []):
             orthogroup = f"{orthogroup}_{i}" # add index to orthogroup ID
             out_dict[orthogroup] = {}
             for column in range(3, len(orthogroup_line)):
-                species = split_at_second_occurrence(headers[column])
+                species = gff.split_at_second_occurrence(headers[column])
                 try:
                     if len(orthogroup_line[column].split(", "))>0:
                         # the transcripts contain a "species_name_" prefix, remove that here
