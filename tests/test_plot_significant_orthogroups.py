@@ -1,5 +1,4 @@
 import unittest
-import src.plotting.plot_significant_orthogroups_correlations as cor_plot
 import src.plotting.plot_significant_orthogroups_from_CAFE as sig_plot
 
 class TestCAFE_sig_orthogroups(unittest.TestCase):
