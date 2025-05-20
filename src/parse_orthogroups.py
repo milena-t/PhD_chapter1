@@ -5,11 +5,7 @@
 #  - Are they intron-less?
 
 
-
 import parse_gff as gff
-import pandas as pd
-
-
 
 
 def get_sig_orthogroups(filepath, p_sig = 0.05):
@@ -57,18 +53,22 @@ def parse_orthogroups_dict(filepath, sig_list:list[str] = []):
         headers = N0_infile[0].strip().split("\t")
         for i, orthogroup_line in enumerate(N0_infile[1:]):
             orthogroup_line = orthogroup_line.strip().split("\t")
-            orthogroup = orthogroup_line[1]
-            og_number = int(orthogroup[3:])
+            orthogroup = orthogroup_line[0] # column 0 for the hierarchical one, otherwise 1 for the old one (which is deprecated because of duplicates)
             
-            ## count duplicate orthogroup IDs
-            if og_number - old_og_number != 1:
-                duplicates_count += 1
-            old_og_number = og_number
+            try:
+                og_number = int(orthogroup[3:])
+
+                ## count duplicate orthogroup IDs, They are all immediately after each other so no need to save all numbers in a list
+                if og_number - old_og_number != 1:
+                    duplicates_count += 1
+                old_og_number = og_number
+                orthogroup = f"{orthogroup}_{i}" # add index to orthogroup ID
+            except:
+                pass
 
             if len(sig_list)>0 and orthogroup not in sig_list:
                 continue # skip this orthogroup
             
-            orthogroup = f"{orthogroup}_{i}" # add index to orthogroup ID
             out_dict[orthogroup] = {}
             for column in range(3, len(orthogroup_line)):
                 species = gff.split_at_second_occurrence(headers[column])
@@ -82,7 +82,7 @@ def parse_orthogroups_dict(filepath, sig_list:list[str] = []):
                     out_dict[orthogroup][species] = []
             # print(f"{i} --> {orthogroup}")
             # break
-    print(duplicates_count)
+    print(f"{duplicates_count} orthogroups with duplicate names" )
     return(out_dict)
 
             
@@ -141,4 +141,3 @@ if __name__ == "__main__":
     # print(orthoDB_orthogroups_sig_only)
     print(f"{len(sig_orthoDB_list)} significant orthogroups in CAFE output")
     print(f"{len(orthoDB_orthogroups)} orthogroups in total, {len(orthoDB_orthogroups_sig_only)} left after filtering for only CAFE-significant ones")
-    print(list(orthoDB_orthogroups_sig_only.keys()))
