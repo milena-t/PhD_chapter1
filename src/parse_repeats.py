@@ -36,12 +36,8 @@ class Repeat:
             feature_stats[feature] = {len(self.features[feature])}
         return feature_stats
     
-    @property
-    def __string__(self):
-        print(self.category)
-        print(f"repeat category: {self.repeat_category}, repeat family: {self.repeat_family}")
-        print(f"on contig: {self.contig} ;  from {str(self.start)} to {str(self.stop)} ;  on strand: {self.strandedness}")
-        print(f"Annotation source: {self.source}")
+    def __str__(self):
+        return(f"""repeat category: {self.repeat_category}") on contig: {self.contig} ;  from {str(self.start)} to {str(self.stop)}""")
         
 
 

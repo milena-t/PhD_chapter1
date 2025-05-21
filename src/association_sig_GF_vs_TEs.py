@@ -64,14 +64,18 @@ def make_cumulative_TE_table(orthogroups_path:str, n:int, species:str, repeats_a
         int_stop = transcript.end + n
 
         # start filling first half before the coding region
-        repeat_before_transcript = (repeat for repeat in repeats_dict[transcript.contig] if repeat.start < transcript.start or repeat.stop >int_start or (repeat.start < int_start and repeat.stop >int_stop))
+        repeat_before_transcript = (repeat for repeat in repeats_dict[transcript.contig] if (repeat.stop < transcript.start and repeat.stop > int_start) or (repeat.start >int_start and repeat.start<transcript.start) or (repeat.start < int_start and repeat.stop >int_stop))
+        #num_repeats = 0
         for index, base in enumerate(range(int_start, transcript.start)):
             for repeat in repeat_before_transcript:
                 if base >= repeat.start and base <= repeat.stop:
+                    #num_repeats += 1
                     before_transcript[repeat.repeat_category][index] += 1
+        # print(f"{index}, {base}: {num_repeats}")
 
+        continue
         # fill out the second half after the coding region
-        repeat_after_transcript = (repeat for repeat in repeats_dict[transcript.contig] if repeat.start < int_stop or repeat.stop > transcript.end or (repeat.start < transcript.end and repeat.stop > int_stop))
+        repeat_after_transcript = (repeat for repeat in repeats_dict[transcript.contig] if (repeat.start < int_stop and repeat.start>transcript.end) or (repeat.stop > transcript.end and repeat.stop<int_stop) or (repeat.start < transcript.end and repeat.stop > int_stop))
         for index, base in enumerate(range(transcript.end, int_stop)):
             for repeat in repeat_after_transcript:
                 if base >= repeat.start and base <= repeat.stop:
@@ -124,6 +128,25 @@ if __name__ == "__main__":
         "Z_morio" : f"{repeats_dir}Z_morio_assembly_genomic.fna.out",
     }
 
+    repeats_dir_work = "/Users/miltr339/work/repeatmasking/repeat_gffs/"
+    repeats_out_work = {
+        "A_obtectus" : f"{repeats_dir_work}A_obtectus_masking.ori.out",
+        "A_verrucosus" : f"{repeats_dir_work}A_verrucosus_masking.ori.out",
+        "B_siliquastri" : f"{repeats_dir_work}B_siliquastri_masking.ori.out",
+        "C_analis" : f"{repeats_dir_work}C_analis_masking.ori.out",
+        "C_chinensis" : f"{repeats_dir_work}C_chinensis_masking.ori.out",
+        "C_maculatus" : f"{repeats_dir_work}C_maculatus_superscaffolded_masking.ori.out",
+        "C_septempunctata" : f"{repeats_dir_work}C_septempunctata_masking.ori.out",
+        "D_melanogaster" : f"{repeats_dir_work}D_melanogaster_masking.ori.out",
+        "D_ponderosae" : f"{repeats_dir_work}D_ponderosae_masking.ori.out",
+        "I_luminosus" : f"{repeats_dir_work}I_luminosus_masking.ori.out",
+        "P_pyralis" : f"{repeats_dir_work}P_pyralis_masking.ori.out",
+        "R_ferrugineus" : f"{repeats_dir_work}R_ferrugineus_masking.ori.out",
+        "T_castaneum" : f"{repeats_dir_work}T_castaneum_masking.ori.out",
+        "T_molitor" : f"{repeats_dir_work}T_molitor_masking.ori.out",
+        "Z_morio" : f"{repeats_dir_work}Z_morio_masking.ori.out",
+    }
+
     orthoDB_annot_dir = "/Users/milena/work/orthoDB_annotations/"
     orthoDB_annotations = {
         "A_obtectus" : f"{orthoDB_annot_dir}A_obtectus_orthoDB_filtered.gff",
@@ -143,18 +166,42 @@ if __name__ == "__main__":
         "Z_morio" : f"{orthoDB_annot_dir}Z_morio_orthoDB_filtered.gff",
     }
 
+    orthoDB_annot_dir_work = "/Users/miltr339/work/orthoDB_annotations/"
+    orthoDB_annotations_work = {
+        "A_obtectus" : f"{orthoDB_annot_dir_work}A_obtectus_braker_isoform_filtered.gff",
+        "A_verrucosus" : f"{orthoDB_annot_dir_work}A_verrucosus_braker_isoform_filtered.gff",
+        "B_siliquastri" : f"{orthoDB_annot_dir_work}B_siliquastri_braker_isoform_filtered.gff",
+        "C_analis" : f"{orthoDB_annot_dir_work}C_analis_braker_isoform_filtered.gff",
+        "C_chinensis" : f"{orthoDB_annot_dir_work}C_chinensis_braker_isoform_filtered.gff",
+        "C_maculatus" : f"{orthoDB_annot_dir_work}C_maculatus_superscaffolded_annotation_isoform_filtered.gff",
+        "C_septempunctata" : f"{orthoDB_annot_dir_work}C_septempunctata_braker_isoform_filtered.gff",
+        "D_melanogaster" : f"{orthoDB_annot_dir_work}D_melanogaster_braker_isoform_filtered.gff",
+        "D_ponderosae" : f"{orthoDB_annot_dir_work}D_ponderosae_braker_isoform_filtered.gff",
+        "I_luminosus" : f"{orthoDB_annot_dir_work}I_luminosus_braker_isoform_filtered.gff",
+        "P_pyralis" : f"{orthoDB_annot_dir_work}P_pyralis_braker_isoform_filtered.gff",
+        "R_ferrugineus" : f"{orthoDB_annot_dir_work}R_ferrugineus_braker_isoform_filtered.gff",
+        "T_castaneum" : f"{orthoDB_annot_dir_work}T_castaneum_braker_isoform_filtered.gff",
+        "T_molitor" : f"{orthoDB_annot_dir_work}T_molitor_braker_isoform_filtered.gff",
+        "Z_morio" : f"{orthoDB_annot_dir_work}Z_morio_braker_isoform_filtered.gff",
+    }
+
     orthogroups_native = "/Users/milena/work/orthofinder/native_orthogroups/N0.tsv"
     orthogroups_orthoDB = "/Users/milena/work/orthofinder/orthoDB_uniform_masking_orthogroups/N0.tsv"
-    sig_native = "/Users/milena/Box Sync/code/CAFE/native_from_N0_Base_family_results.txt"
-    sig_orthoDB = "/Users/milena/Box Sync/code/CAFE/orthoDB_TE_filtered_Base_family_results.txt"
+    orthogroups_native = "/Users/miltr339/work/orthofinder/native_orthogroups/N0.tsv"
+    orthogroups_orthoDB = "/Users/miltr339/work/orthofinder/orthoDB_uniform_masking_orthogroups/N0.tsv"
+    sig_native = "/Users/miltr339/Box Sync/code/CAFE/native_from_N0_Base_family_results.txt"
+    sig_orthoDB = "/Users/miltr339/Box Sync/code/CAFE/orthoDB_TE_filtered_Base_family_results.txt"
 
 
     species = "A_obtectus"
     print(f"orthoDB {species}: ")
-    for species in repeats_out.keys():
-        ## uv run python3 for quicker runtimes
-        sig_orthoDB_list, all_orthogroups_list = OGs.get_sig_orthogroups(sig_orthoDB)
+    # for species in repeats_out.keys():
+    ## uv run python3 for quicker runtimes
+    sig_orthoDB_list, all_orthogroups_list = OGs.get_sig_orthogroups(sig_orthoDB)
+    try:
         before_transcript, after_transcript = make_cumulative_TE_table(orthogroups_orthoDB, n=50, species=species, repeats_annot_path=repeats_out[species], genome_annot_path=orthoDB_annotations[species], sig_orthogroups=sig_orthoDB_list)
-        gff.write_dict_to_file(before_transcript, f"{species}_cumulative_repeats_before_sig_transcripts.txt")
-        gff.write_dict_to_file(after_transcript, f"{species}_cumulative_repeats_after_sig_transcripts.txt")
+    except:
+        before_transcript, after_transcript = make_cumulative_TE_table(orthogroups_orthoDB, n=200, species=species, repeats_annot_path=repeats_out_work[species], genome_annot_path=orthoDB_annotations_work[species], sig_orthogroups=sig_orthoDB_list)
+    gff.write_dict_to_file(before_transcript, f"{species}_cumulative_repeats_before_sig_transcripts.txt")
+    gff.write_dict_to_file(after_transcript, f"{species}_cumulative_repeats_after_sig_transcripts.txt")
     
