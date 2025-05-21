@@ -64,18 +64,16 @@ def make_cumulative_TE_table(orthogroups_path:str, n:int, species:str, repeats_a
         int_stop = transcript.end + n
 
         # start filling first half before the coding region
-        repeat_before_transcript = (repeat for repeat in repeats_dict[transcript.contig] if (repeat.stop < transcript.start and repeat.stop > int_start) or (repeat.start >int_start and repeat.start<transcript.start) or (repeat.start < int_start and repeat.stop >int_stop))
+        repeat_before_transcript = [repeat for repeat in repeats_dict[transcript.contig] if (repeat.stop < transcript.start and repeat.stop > int_start) or (repeat.start >int_start and repeat.start<transcript.start) or (repeat.start < int_start and repeat.stop >int_stop)]
         #num_repeats = 0
         for index, base in enumerate(range(int_start, transcript.start)):
             for repeat in repeat_before_transcript:
                 if base >= repeat.start and base <= repeat.stop:
-                    #num_repeats += 1
+                    # print(f"{repeat.start} < {base} [{index}] < {repeat.stop}, {repeat}")
                     before_transcript[repeat.repeat_category][index] += 1
-        # print(f"{index}, {base}: {num_repeats}")
-
-        continue
+        
         # fill out the second half after the coding region
-        repeat_after_transcript = (repeat for repeat in repeats_dict[transcript.contig] if (repeat.start < int_stop and repeat.start>transcript.end) or (repeat.stop > transcript.end and repeat.stop<int_stop) or (repeat.start < transcript.end and repeat.stop > int_stop))
+        repeat_after_transcript = [repeat for repeat in repeats_dict[transcript.contig] if (repeat.start < int_stop and repeat.start>transcript.end) or (repeat.stop > transcript.end and repeat.stop<int_stop) or (repeat.start < transcript.end and repeat.stop > int_stop)]
         for index, base in enumerate(range(transcript.end, int_stop)):
             for repeat in repeat_after_transcript:
                 if base >= repeat.start and base <= repeat.stop:
@@ -193,15 +191,14 @@ if __name__ == "__main__":
     sig_orthoDB = "/Users/miltr339/Box Sync/code/CAFE/orthoDB_TE_filtered_Base_family_results.txt"
 
 
-    species = "A_obtectus"
+    # species = "A_obtectus"
+    species = "B_siliquastri"
     print(f"orthoDB {species}: ")
     # for species in repeats_out.keys():
     ## uv run python3 for quicker runtimes
     sig_orthoDB_list, all_orthogroups_list = OGs.get_sig_orthogroups(sig_orthoDB)
-    try:
-        before_transcript, after_transcript = make_cumulative_TE_table(orthogroups_orthoDB, n=50, species=species, repeats_annot_path=repeats_out[species], genome_annot_path=orthoDB_annotations[species], sig_orthogroups=sig_orthoDB_list)
-    except:
-        before_transcript, after_transcript = make_cumulative_TE_table(orthogroups_orthoDB, n=200, species=species, repeats_annot_path=repeats_out_work[species], genome_annot_path=orthoDB_annotations_work[species], sig_orthogroups=sig_orthoDB_list)
+    # before_transcript, after_transcript = make_cumulative_TE_table(orthogroups_orthoDB, n=50, species=species, repeats_annot_path=repeats_out[species], genome_annot_path=orthoDB_annotations[species], sig_orthogroups=sig_orthoDB_list)
+    before_transcript, after_transcript = make_cumulative_TE_table(orthogroups_orthoDB, n=500, species=species, repeats_annot_path=repeats_out_work[species], genome_annot_path=orthoDB_annotations_work[species], sig_orthogroups=sig_orthoDB_list)
     gff.write_dict_to_file(before_transcript, f"{species}_cumulative_repeats_before_sig_transcripts.txt")
     gff.write_dict_to_file(after_transcript, f"{species}_cumulative_repeats_after_sig_transcripts.txt")
     
