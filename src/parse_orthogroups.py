@@ -100,7 +100,8 @@ please pick one of the header names instead: \n\t{headers} \nor:\n\t{headers_cle
                 try:
                     OG_species = orthogroup_line[column].split(", ")
                 except:
-                    raise RuntimeError(f"no column {column} found  in {orthogroup_line}")
+                    OG_species = ['']
+                    # raise RuntimeError(f"no column {column} found  in {orthogroup_line}")
 
                 if len(OG_species)>0 and OG_species != ['']:
                     # the transcripts contain a "species_name_" prefix, remove that here
