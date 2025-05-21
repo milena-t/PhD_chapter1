@@ -563,7 +563,7 @@ def plot_repeat_abundance(species_abundances, species_categories, gff_filepath, 
     }
 
     genes_line_color = "#890000"
-    genes_line_color2 = "#262CA6" #TODO
+    genes_line_color2 = "#262CA6" 
     ## if there are repeat categories that are not representd in the colors, identify them and assign random colors. 
 
     not_colored_categories = [rep_cat for rep_cat in categories_inferred if rep_cat not in categories_default]

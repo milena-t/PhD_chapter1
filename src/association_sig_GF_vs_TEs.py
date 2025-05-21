@@ -8,7 +8,99 @@ import parse_gff as gff
 import parse_repeats as repeats
 import parse_orthogroups as OGs
 
+from tqdm import tqdm
 
+def get_all_repeat_categories(repeats_dict):
+    all_contigs = []
+    for contig in repeats_dict.keys():
+        all_contigs.append(list(set([repeat_instance.repeat_category for repeat_instance in repeats_dict[contig]])))
+    all_types = [rep_type for contig_list in all_contigs for rep_type in contig_list]
+    all_types = list(set(all_types))
+    return(all_types)
+
+
+
+
+def make_cumulative_TE_table(orthogroups_path:str, n:int, species:str, repeats_annot_path:str, genome_annot_path:str, sig_orthogroups = []):
+    """
+    This function only analyzes one species at a time!
+    make a table for the surrounding n bases upstream and downstream of each gene where each base is a row 
+    and each column is the sum of how often this base is annotated as the TE-category across all transcripts
+    optionally: provide a sig_transcripts list to not include all transcripts that are in orthogroups_path
+    """
+    orthoDB_orthogroups = OGs.parse_orthogroups_dict(orthogroups_path, sig_orthogroups, species=species)
+    genes_dict = gff.parse_gff3_general(genome_annot_path, verbose=False, keep_feature_category=gff.FeatureCategory.Transcript)
+    transcripts_ids = list(genes_dict.keys())
+    repeats_dict = repeats.parse_repeats_repeatmasker_outfile(repeats_annot_path, verbose=False)
+    repeats_categories = get_all_repeat_categories(repeats_dict=repeats_dict)
+    repeats_categories.sort()
+    print(repeats_categories)
+
+    before_transcript = { cat : [0]*n for cat in repeats_categories} ## dict with lists for each category from 0 to n, each sub-list covering all the categories at base n
+    after_transcript = { cat : [0]*n for cat in repeats_categories} 
+    """
+    number of transcript where the base i positions before transcript start is covered by each TE category. 
+    Order given by the list in repeats_categories
+    {                 0                 n
+        category1 : [ 0 , 5, 43, 0, 0, ...],
+                      n                2*n
+        category2 : [ 0 , 7, 37, 4, 0, ...], 
+        ...
+    }
+    """
+    all_transcript_IDs = []
+    for transcripts_list in orthoDB_orthogroups.values():
+        for transcript_id in transcripts_list:
+            transcript_id = transcript_id[:-2] # remove the "_1" suffix
+            all_transcript_IDs.append(transcript_id)
+    
+    for transcript_id in tqdm(all_transcript_IDs):
+        try:
+            transcript = genes_dict[transcript_id]
+        except:
+            raise RuntimeError(f"{transcript_id} can not be found in {genome_annot_path}")
+        # start and end of the interval surrounding this transcript
+        int_start = transcript.start - n
+        int_stop = transcript.end + n
+
+        # start filling first half before the coding region
+        repeat_before_transcript = (repeat for repeat in repeats_dict[transcript.contig] if repeat.start < transcript.start or repeat.stop >int_start or (repeat.start < int_start and repeat.stop >int_stop))
+        for index, base in enumerate(range(int_start, transcript.start)):
+            for repeat in repeat_before_transcript:
+                if base >= repeat.start and base <= repeat.stop:
+                    before_transcript[repeat.repeat_category][index] += 1
+
+        # fill out the second half after the coding region
+        repeat_after_transcript = (repeat for repeat in repeats_dict[transcript.contig] if repeat.start < int_stop or repeat.stop > transcript.end or (repeat.start < transcript.end and repeat.stop > int_stop))
+        for index, base in enumerate(range(transcript.end, int_stop)):
+            for repeat in repeat_after_transcript:
+                if base >= repeat.start and base <= repeat.stop:
+                    after_transcript[repeat.repeat_category][index] += 1
+            
+    return before_transcript, after_transcript
+
+
+
+colors = {
+        'Unknown' : "#C1C1C1" , # light grey
+        # orange
+        'DNA' : "#FF9000" , # Princeton orange
+        # green
+        'LTR' : "#6E8448" , # reseda green
+        'RC' : "#8EA861" , # asparagus 
+        # red
+        'tRNA' : "#C14953" , # bittersweet shimmer
+        'rRNA' : "#D0767E" , # old rose
+        'snRNA' : "#7A2A30" , # wine
+        # blue 
+        'LINE' : "#3476AD" , # UCLA blue
+        'SINE': "#72A8D5" , # ruddy blue
+        # '' : "#2A618D" , #lapis lazuli
+        # dark red-brown
+        'Low_complexity' : "#3A3335" , # Jet 
+        'Satellite' : "#564D4F" , #Wenge 
+        'Simple_repeat' : "#827376" , #Taupe gray
+    }
 
 
 if __name__ == "__main__":
@@ -57,11 +149,12 @@ if __name__ == "__main__":
     sig_orthoDB = "/Users/milena/Box Sync/code/CAFE/orthoDB_TE_filtered_Base_family_results.txt"
 
 
-    print("orthoDB : ")
-    sig_orthoDB_list, all_orthogroups_list = OGs.get_sig_orthogroups(sig_orthoDB)
-    # print(sig_orthoDB_list)
-    orthoDB_orthogroups_sig_only = OGs.parse_orthogroups_dict(orthogroups_orthoDB, sig_orthoDB_list)
-    print(len(orthoDB_orthogroups_sig_only))
-    orthoDB_orthogroups = OGs.parse_orthogroups_dict(orthogroups_orthoDB)
-    orthoDB_read_orthogroups = list(orthoDB_orthogroups.keys())
-    print(f"{len(orthoDB_read_orthogroups)} orthogroups read, {orthoDB_read_orthogroups[0:10]}")
+    species = "A_obtectus"
+    print(f"orthoDB {species}: ")
+    for species in repeats_out.keys():
+        ## uv run python3 for quicker runtimes
+        sig_orthoDB_list, all_orthogroups_list = OGs.get_sig_orthogroups(sig_orthoDB)
+        before_transcript, after_transcript = make_cumulative_TE_table(orthogroups_orthoDB, n=50, species=species, repeats_annot_path=repeats_out[species], genome_annot_path=orthoDB_annotations[species], sig_orthogroups=sig_orthoDB_list)
+        gff.write_dict_to_file(before_transcript, f"{species}_cumulative_repeats_before_sig_transcripts.txt")
+        gff.write_dict_to_file(after_transcript, f"{species}_cumulative_repeats_after_sig_transcripts.txt")
+    

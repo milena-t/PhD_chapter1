@@ -1,9 +1,6 @@
 from enum import Enum
 import time
-import pandas as pd
 from tqdm import tqdm
-import subprocess as sp
-import tempfile
 import re
 
 
@@ -22,6 +19,16 @@ def split_at_second_occurrence(s, char = "_"):
         second_occurrence = s.find(char, first_occurrence + 1)
         species = s[:second_occurrence]
         return species
+    
+def write_dict_to_file(dict, filename):
+    with open(filename, "w") as outfile:
+        for key, value_list in dict.items():
+            try:
+                value_str = ','.join(value_list)
+            except:
+                value_str = ','.join([str(element) for element in value_list])
+            outfile.write(f"{key}:{value_str}\n")
+        print("file saved in current working directory as: "+filename)
     
 
 def make_species_order_from_tree(newick_tree_path):
@@ -213,7 +220,7 @@ class Feature:
         )
 
 
-def parse_gff3_general(filepath:str, verbose = True, only_genes = False):
+def parse_gff3_general(filepath:str, verbose = True, only_genes = False, keep_feature_category=None):
     """
     Read a gff file specified in the filepath and parse it into a dictionary of Feature IDs and instances of the Feature class
     {
@@ -231,7 +238,8 @@ def parse_gff3_general(filepath:str, verbose = True, only_genes = False):
         print(f"File that is being parsed: {filepath}")
         if only_genes:
             print(f"------------------------------------------------------\n!! only_genes = True !!  ==> all non-gene features are excluded\n------------------------------------------------------")
-
+        if keep_feature_category is not None:
+            print(f"------------------------------------------------------\n!! only features of {keep_feature_category} included \n------------------------------------------------------")
     with open(filepath, "r") as file:
         linelist = file.readlines()
 
@@ -263,7 +271,8 @@ def parse_gff3_general(filepath:str, verbose = True, only_genes = False):
             if only_genes and category != FeatureCategory.Gene:
                 # If there's only genes supposed to be included, skip everything that isn't a gene
                 continue
-            
+            if keep_feature_category != category_:
+                continue
             # for the child of Gene features, some annotations use "transcript" and some use "mRNA"
             if verbose:
                 if category_ == "mRNA":
@@ -296,7 +305,7 @@ def parse_gff3_general(filepath:str, verbose = True, only_genes = False):
             
             ## add the feature to its parent if relevant
             parent_id = None
-            if "Parent" in attributes:
+            if "Parent" in attributes and keep_feature_category==None:
                 parent_id = attributes["Parent"]
                 if parent_id in genome_annotation:
                     genome_annotation[parent_id].add_child(attributes["ID"])
@@ -305,7 +314,7 @@ def parse_gff3_general(filepath:str, verbose = True, only_genes = False):
                     raise RuntimeError(f"Feature {attributes['ID']} has a parent ID {parent_id} that does not exist prior to it.")           
 
             ## add Feature to the output dict
-            new_feature=Feature(feature_id=attributes["ID"],contig = contig,category=category,start=start,end=stop,strandedness=strandedness, frame=frame, parent_id=parent_id)
+            new_feature=Feature(feature_id=attributes["ID"],contig = contig,category=category,start=int(start),end=int(stop),strandedness=strandedness, frame=frame, parent_id=parent_id)
             genome_annotation[new_feature.feature_id]=new_feature
 
     if verbose:
