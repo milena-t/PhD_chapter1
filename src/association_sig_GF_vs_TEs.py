@@ -287,11 +287,28 @@ if __name__ == "__main__":
                 failed.append(species)
         print(f"failed species: {failed}")
 
+    # compute the TE abundance around all transcripts
+    if True:
+        all_species = list(repeats_out.keys())
+        # failed = ['A_verrucosus', 'C_chinensis', 'D_ponderosae', 'I_luminosus', 'R_ferrugineus', 'T_molitor', 'Z_morio']
+        failed = []
+        for species in all_species:
+            print(f"orthoDB {species}: ")
+            ## uv run python3 for quicker runtimes
+            sig_orthoDB_list, all_orthogroups_list = OGs.get_sig_orthogroups(sig_orthoDB)
+            try:
+                # before_transcript, after_transcript = make_cumulative_TE_table(orthogroups_orthoDB, n=50, species=species, repeats_annot_path=repeats_out[species], genome_annot_path=orthoDB_annotations[species], sig_orthogroups=sig_orthoDB_list)
+                before_transcript, after_transcript = make_cumulative_TE_table(orthogroups_orthoDB, n=10000, species=species, repeats_annot_path=repeats_out_work[species], genome_annot_path=orthoDB_annotations_work[species])
+                gff.write_dict_to_file(before_transcript, f"{species}_cumulative_repeats_before_all_transcripts.txt")
+                gff.write_dict_to_file(after_transcript, f"{species}_cumulative_repeats_after_all_transcripts.txt")
+            except: 
+                failed.append(species)
+        print(f"failed species: {failed}")
 
 
 
     work_out_dir = "/Users/miltr339/work/PhD_code/"
-    before_transcript = {
+    sig_before_transcript = {
         "A_obtectus" : f"{work_out_dir}A_obtectus_cumulative_repeats_before_sig_transcripts.txt",
         "A_verrucosus" : f"{work_out_dir}A_verrucosus_cumulative_repeats_before_sig_transcripts.txt",
         "B_siliquastri" : f"{work_out_dir}B_siliquastri_cumulative_repeats_before_sig_transcripts.txt",
@@ -308,7 +325,7 @@ if __name__ == "__main__":
         "T_molitor" : f"{work_out_dir}T_molitor_cumulative_repeats_before_sig_transcripts.txt",
         "Z_morio" : f"{work_out_dir}Z_morio_cumulative_repeats_before_sig_transcripts.txt",
     }
-    after_transcript = {
+    sig_after_transcript = {
         "A_obtectus" : f"{work_out_dir}A_obtectus_cumulative_repeats_after_sig_transcripts.txt",
         "A_verrucosus" : f"{work_out_dir}A_verrucosus_cumulative_repeats_after_sig_transcripts.txt",
         "B_siliquastri" : f"{work_out_dir}B_siliquastri_cumulative_repeats_after_sig_transcripts.txt",
@@ -326,14 +343,15 @@ if __name__ == "__main__":
         "Z_morio" : f"{work_out_dir}Z_morio_cumulative_repeats_after_sig_transcripts.txt",
     }
     
-    all_species = list(repeats_out.keys())
-    for species in all_species:
-        print(f"plot {species}")
-        # get total number of transcripts that are part of significantly rapidly evolving orthogroups in this species
-        sig_orthoDB_list, all_orthogroups_list = OGs.get_sig_orthogroups(sig_orthoDB)
-        orthoDB_orthogroups = OGs.parse_orthogroups_dict(orthogroups_orthoDB, sig_orthoDB_list, species=species)
-        all_transcript_IDs = get_sig_transcripts(orthoDB_orthogroups)
-        num_transcripts = len(all_transcript_IDs)
-
-        plot_TE_abundance(before_transcript[species], after_transcript[species], all_transcripts = num_transcripts, filename=f"cumulative_repeat_presence_around_transcripts_{species}.png")
-        # plot the TE abundance around significant transcripts
+    if False:
+        all_species = list(repeats_out.keys())
+        for species in all_species:
+            print(f"plot {species}")
+            # get total number of transcripts that are part of significantly rapidly evolving orthogroups in this species
+            sig_orthoDB_list, all_orthogroups_list = OGs.get_sig_orthogroups(sig_orthoDB)
+            orthoDB_orthogroups = OGs.parse_orthogroups_dict(orthogroups_orthoDB, sig_orthoDB_list, species=species)
+            all_transcript_IDs = get_sig_transcripts(orthoDB_orthogroups)
+            num_transcripts = len(all_transcript_IDs)
+        
+            plot_TE_abundance(before_transcript[species], after_transcript[species], all_transcripts = num_transcripts, filename=f"cumulative_repeat_presence_around_transcripts_{species}.png")
+            # plot the TE abundance around significant transcripts
