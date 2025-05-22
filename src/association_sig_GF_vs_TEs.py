@@ -4,9 +4,12 @@ for TE presence via a stacked barplot. Each bar is a base, and the coverage is h
 annotated on that base
 """
 
+import numpy as np
 import parse_gff as gff
 import parse_repeats as repeats
 import parse_orthogroups as OGs
+import matplotlib.pyplot as plt
+from math import ceil
 
 from tqdm import tqdm
 
@@ -19,6 +22,13 @@ def get_all_repeat_categories(repeats_dict):
     return(all_types)
 
 
+def get_sig_transcripts(orthoDB_orthogroups):
+    all_transcript_IDs = []
+    for transcripts_list in orthoDB_orthogroups.values():
+        for transcript_id in transcripts_list:
+            transcript_id = transcript_id[:-2] # remove the "_1" suffix
+            all_transcript_IDs.append(transcript_id)
+    return all_transcript_IDs
 
 
 def make_cumulative_TE_table(orthogroups_path:str, n:int, species:str, repeats_annot_path:str, genome_annot_path:str, sig_orthogroups = []):
@@ -29,8 +39,10 @@ def make_cumulative_TE_table(orthogroups_path:str, n:int, species:str, repeats_a
     optionally: provide a sig_transcripts list to not include all transcripts that are in orthogroups_path
     """
     orthoDB_orthogroups = OGs.parse_orthogroups_dict(orthogroups_path, sig_orthogroups, species=species)
+    all_transcript_IDs = get_sig_transcripts(orthoDB_orthogroups)
+
     genes_dict = gff.parse_gff3_general(genome_annot_path, verbose=False, keep_feature_category=gff.FeatureCategory.Transcript)
-    transcripts_ids = list(genes_dict.keys())
+    
     repeats_dict = repeats.parse_repeats_repeatmasker_outfile(repeats_annot_path, verbose=False)
     repeats_categories = get_all_repeat_categories(repeats_dict=repeats_dict)
     repeats_categories.sort()
@@ -48,13 +60,9 @@ def make_cumulative_TE_table(orthogroups_path:str, n:int, species:str, repeats_a
         ...
     }
     """
-    all_transcript_IDs = []
     missing_in_annot_transcripts = []
     contigs_with_no_repeats = [] 
-    for transcripts_list in orthoDB_orthogroups.values():
-        for transcript_id in transcripts_list:
-            transcript_id = transcript_id[:-2] # remove the "_1" suffix
-            all_transcript_IDs.append(transcript_id)
+
     
     for transcript_id in tqdm(all_transcript_IDs):
         try:
@@ -95,8 +103,18 @@ def make_cumulative_TE_table(orthogroups_path:str, n:int, species:str, repeats_a
 
 
 
+def plot_TE_abundance(before_filepath:str, after_filepath:str, all_transcripts:int, filename = "cumulative_repeat_presence_around_transcripts.png"):
+    """
+    plot the cumulative repeat presence per base before and after a transcript (before and after infile paths)
+    infiles generated from make_cumulative_TE_table
+    """
+    
+    before_dict = gff.read_dict_from_file(before_filepath)
+    before_dict = { key : [int(v) for v in value] for key, value in before_dict.items()}
+    after_dict = gff.read_dict_from_file(after_filepath)
+    after_dict = { key : [int(v) for v in value] for key, value in after_dict.items()}
 
-colors = {
+    colors = {
         'Unknown' : "#C1C1C1" , # light grey
         # orange
         'DNA' : "#FF9000" , # Princeton orange
@@ -110,12 +128,53 @@ colors = {
         # blue 
         'LINE' : "#3476AD" , # UCLA blue
         'SINE': "#72A8D5" , # ruddy blue
+        'SINE?': "#72A8D5" , # ruddy blue
         # '' : "#2A618D" , #lapis lazuli
         # dark red-brown
         'Low_complexity' : "#3A3335" , # Jet 
         'Satellite' : "#564D4F" , #Wenge 
         'Simple_repeat' : "#827376" , #Taupe gray
     }
+
+    fs = 15 # set font size
+
+    fig, ax = plt.subplots(1, 1, figsize=(20, 10))
+    rep_classes = list(before_dict.keys())
+    num_bp = len(before_dict[rep_classes[0]])
+    x_before = range(-num_bp, 0)
+    x_after = range(num_bp)
+
+    max = 0
+    for rep_class in rep_classes:
+
+        max_before = np.max(before_dict[rep_class])
+        max_after = np.max(after_dict[rep_class])
+        if max_before>max:
+            max=max_before
+        if max_after>max:
+            max=max_after
+
+        ax.plot(x_before, before_dict[rep_class], label = rep_class, color = colors[rep_class])
+        ax.plot(x_after, after_dict[rep_class], color = colors[rep_class])
+
+    plt.vlines(x= 0, ymin=0, ymax=max, colors="#000000", linestyles="dashed", label="transcript border")
+    ax.set_xlim([-num_bp, num_bp*1.35])
+    plt.xticks(range(-num_bp, num_bp+1, int(num_bp/5)), fontsize = fs)
+    tick_max = int(ceil(max/100))*100
+    plt.yticks(range(0, tick_max+1, 100), fontsize = fs)
+
+    plt.legend(loc = "upper right", fontsize = fs)
+
+    species = gff.split_at_second_occurrence(before_filepath.split("/")[-1])
+    species = species.replace("_", ". ")
+    plt.title(f"{species} transcript surroundings {num_bp} up and downstream", fontsize = fs*1.5)
+    plt.xlabel(f"basepairs upstream and downstream from transcript", fontsize = fs)
+    plt.ylabel(f"number of transcripts in which this base is a repeat ({num_transcripts} transcripts in total)", fontsize = fs)
+
+    plt.tight_layout()
+    plt.savefig(filename, dpi = 300, transparent = True)
+    print("Figure saved in the current working directory directory as: "+filename)
+
 
 
 if __name__ == "__main__":
@@ -207,24 +266,30 @@ if __name__ == "__main__":
     # species = "A_obtectus"
     # species = "B_siliquastri"
 
-    # failed = ['A_verrucosus', 'C_chinensis', 'C_maculatus', 'D_ponderosae', 'I_luminosus', 'R_ferrugineus', 'T_molitor', 'Z_morio']
     ### TODO figure out what is wrong with C. maculatus??
         # 115 transcripts in sig. transcripts not found in annotation and were skipped (in C. maculatus this might be due to the liftover?)
 
-
     # compute the TE abundance around significant transcripts
-    if True:
-        all = list(repeats_out.keys())
-        failed = ['A_verrucosus', 'C_chinensis', 'D_ponderosae', 'I_luminosus', 'R_ferrugineus', 'T_molitor', 'Z_morio']
-        for species in failed:
+    if False:
+        all_species = list(repeats_out.keys())
+        # failed = ['A_verrucosus', 'C_chinensis', 'D_ponderosae', 'I_luminosus', 'R_ferrugineus', 'T_molitor', 'Z_morio']
+        failed = []
+        for species in all_species:
             print(f"orthoDB {species}: ")
             ## uv run python3 for quicker runtimes
             sig_orthoDB_list, all_orthogroups_list = OGs.get_sig_orthogroups(sig_orthoDB)
-            # before_transcript, after_transcript = make_cumulative_TE_table(orthogroups_orthoDB, n=50, species=species, repeats_annot_path=repeats_out[species], genome_annot_path=orthoDB_annotations[species], sig_orthogroups=sig_orthoDB_list)
-            before_transcript, after_transcript = make_cumulative_TE_table(orthogroups_orthoDB, n=1000, species=species, repeats_annot_path=repeats_out_work[species], genome_annot_path=orthoDB_annotations_work[species], sig_orthogroups=sig_orthoDB_list)
-            gff.write_dict_to_file(before_transcript, f"{species}_cumulative_repeats_before_sig_transcripts.txt")
-            gff.write_dict_to_file(after_transcript, f"{species}_cumulative_repeats_after_sig_transcripts.txt")
-                
+            try:
+                # before_transcript, after_transcript = make_cumulative_TE_table(orthogroups_orthoDB, n=50, species=species, repeats_annot_path=repeats_out[species], genome_annot_path=orthoDB_annotations[species], sig_orthogroups=sig_orthoDB_list)
+                before_transcript, after_transcript = make_cumulative_TE_table(orthogroups_orthoDB, n=10000, species=species, repeats_annot_path=repeats_out_work[species], genome_annot_path=orthoDB_annotations_work[species], sig_orthogroups=sig_orthoDB_list)
+                gff.write_dict_to_file(before_transcript, f"{species}_cumulative_repeats_before_sig_transcripts.txt")
+                gff.write_dict_to_file(after_transcript, f"{species}_cumulative_repeats_after_sig_transcripts.txt")
+            except: 
+                failed.append(species)
+        print(f"failed species: {failed}")
+
+
+
+
     work_out_dir = "/Users/miltr339/work/PhD_code/"
     before_transcript = {
         "A_obtectus" : f"{work_out_dir}A_obtectus_cumulative_repeats_before_sig_transcripts.txt",
@@ -261,4 +326,14 @@ if __name__ == "__main__":
         "Z_morio" : f"{work_out_dir}Z_morio_cumulative_repeats_after_sig_transcripts.txt",
     }
     
-    # plot the TE abundance around significant transcripts
+    all_species = list(repeats_out.keys())
+    for species in all_species:
+        print(f"plot {species}")
+        # get total number of transcripts that are part of significantly rapidly evolving orthogroups in this species
+        sig_orthoDB_list, all_orthogroups_list = OGs.get_sig_orthogroups(sig_orthoDB)
+        orthoDB_orthogroups = OGs.parse_orthogroups_dict(orthogroups_orthoDB, sig_orthoDB_list, species=species)
+        all_transcript_IDs = get_sig_transcripts(orthoDB_orthogroups)
+        num_transcripts = len(all_transcript_IDs)
+
+        plot_TE_abundance(before_transcript[species], after_transcript[species], all_transcripts = num_transcripts, filename=f"cumulative_repeat_presence_around_transcripts_{species}.png")
+        # plot the TE abundance around significant transcripts
