@@ -30,6 +30,15 @@ def write_dict_to_file(dict, filename):
             outfile.write(f"{key}:{value_str}\n")
         print("file saved in current working directory as: "+filename)
     
+def read_dict_from_file(filepath):
+    out_dict = {}
+    with open(filepath, "r") as infile:
+        lines =infile.readlines()
+        for line in lines:
+            key, value = line.strip().split(":")
+            out_dict[key] = value.split(",")
+    return out_dict
+
 
 def make_species_order_from_tree(newick_tree_path):
     """
