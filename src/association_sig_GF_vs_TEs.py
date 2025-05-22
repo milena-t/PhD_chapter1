@@ -49,6 +49,8 @@ def make_cumulative_TE_table(orthogroups_path:str, n:int, species:str, repeats_a
     }
     """
     all_transcript_IDs = []
+    missing_in_annot_transcripts = []
+    contigs_with_no_repeats = [] 
     for transcripts_list in orthoDB_orthogroups.values():
         for transcript_id in transcripts_list:
             transcript_id = transcript_id[:-2] # remove the "_1" suffix
@@ -58,13 +60,19 @@ def make_cumulative_TE_table(orthogroups_path:str, n:int, species:str, repeats_a
         try:
             transcript = genes_dict[transcript_id]
         except:
-            raise RuntimeError(f"{transcript_id} can not be found in {genome_annot_path}")
+            # raise RuntimeError(f"{transcript_id} can not be found in {genome_annot_path}")
+            missing_in_annot_transcripts.append(transcript_id)
+            continue
         # start and end of the interval surrounding this transcript
         int_start = transcript.start - n
         int_stop = transcript.end + n
 
         # start filling first half before the coding region
-        repeat_before_transcript = [repeat for repeat in repeats_dict[transcript.contig] if (repeat.stop < transcript.start and repeat.stop > int_start) or (repeat.start >int_start and repeat.start<transcript.start) or (repeat.start < int_start and repeat.stop >int_stop)]
+        try:
+            repeat_before_transcript = [repeat for repeat in repeats_dict[transcript.contig] if (repeat.stop < transcript.start and repeat.stop > int_start) or (repeat.start >int_start and repeat.start<transcript.start) or (repeat.start < int_start and repeat.stop >int_stop)]
+        except:
+            contigs_with_no_repeats.append(transcript.contig)
+            continue
         #num_repeats = 0
         for index, base in enumerate(range(int_start, transcript.start)):
             for repeat in repeat_before_transcript:
@@ -78,8 +86,13 @@ def make_cumulative_TE_table(orthogroups_path:str, n:int, species:str, repeats_a
             for repeat in repeat_after_transcript:
                 if base >= repeat.start and base <= repeat.stop:
                     after_transcript[repeat.repeat_category][index] += 1
-            
+    if len(missing_in_annot_transcripts)>0:
+        print(f"{len(missing_in_annot_transcripts)} transcripts in sig. transcripts not found in annotation and were skipped (in C. maculatus this might be due to the liftover?)")
+    if len(contigs_with_no_repeats)>0:
+        print(f"{len(contigs_with_no_repeats)} contigs with significant genes but no repeats on them")
     return before_transcript, after_transcript
+
+
 
 
 
@@ -183,22 +196,69 @@ if __name__ == "__main__":
         "Z_morio" : f"{orthoDB_annot_dir_work}Z_morio_braker_isoform_filtered.gff",
     }
 
-    orthogroups_native = "/Users/milena/work/orthofinder/native_orthogroups/N0.tsv"
-    orthogroups_orthoDB = "/Users/milena/work/orthofinder/orthoDB_uniform_masking_orthogroups/N0.tsv"
     orthogroups_native = "/Users/miltr339/work/orthofinder/native_orthogroups/N0.tsv"
     orthogroups_orthoDB = "/Users/miltr339/work/orthofinder/orthoDB_uniform_masking_orthogroups/N0.tsv"
+    # orthogroups_native = "/Users/milena/work/orthofinder/native_orthogroups/N0.tsv"
+    # orthogroups_orthoDB = "/Users/milena/work/orthofinder/orthoDB_uniform_masking_orthogroups/N0.tsv"
     sig_native = "/Users/miltr339/Box Sync/code/CAFE/native_from_N0_Base_family_results.txt"
     sig_orthoDB = "/Users/miltr339/Box Sync/code/CAFE/orthoDB_TE_filtered_Base_family_results.txt"
 
 
     # species = "A_obtectus"
-    species = "B_siliquastri"
-    print(f"orthoDB {species}: ")
-    # for species in repeats_out.keys():
-    ## uv run python3 for quicker runtimes
-    sig_orthoDB_list, all_orthogroups_list = OGs.get_sig_orthogroups(sig_orthoDB)
-    # before_transcript, after_transcript = make_cumulative_TE_table(orthogroups_orthoDB, n=50, species=species, repeats_annot_path=repeats_out[species], genome_annot_path=orthoDB_annotations[species], sig_orthogroups=sig_orthoDB_list)
-    before_transcript, after_transcript = make_cumulative_TE_table(orthogroups_orthoDB, n=500, species=species, repeats_annot_path=repeats_out_work[species], genome_annot_path=orthoDB_annotations_work[species], sig_orthogroups=sig_orthoDB_list)
-    gff.write_dict_to_file(before_transcript, f"{species}_cumulative_repeats_before_sig_transcripts.txt")
-    gff.write_dict_to_file(after_transcript, f"{species}_cumulative_repeats_after_sig_transcripts.txt")
+    # species = "B_siliquastri"
+
+    # failed = ['A_verrucosus', 'C_chinensis', 'C_maculatus', 'D_ponderosae', 'I_luminosus', 'R_ferrugineus', 'T_molitor', 'Z_morio']
+    ### TODO figure out what is wrong with C. maculatus??
+        # 115 transcripts in sig. transcripts not found in annotation and were skipped (in C. maculatus this might be due to the liftover?)
+
+
+    # compute the TE abundance around significant transcripts
+    if True:
+        all = list(repeats_out.keys())
+        failed = ['A_verrucosus', 'C_chinensis', 'D_ponderosae', 'I_luminosus', 'R_ferrugineus', 'T_molitor', 'Z_morio']
+        for species in failed:
+            print(f"orthoDB {species}: ")
+            ## uv run python3 for quicker runtimes
+            sig_orthoDB_list, all_orthogroups_list = OGs.get_sig_orthogroups(sig_orthoDB)
+            # before_transcript, after_transcript = make_cumulative_TE_table(orthogroups_orthoDB, n=50, species=species, repeats_annot_path=repeats_out[species], genome_annot_path=orthoDB_annotations[species], sig_orthogroups=sig_orthoDB_list)
+            before_transcript, after_transcript = make_cumulative_TE_table(orthogroups_orthoDB, n=1000, species=species, repeats_annot_path=repeats_out_work[species], genome_annot_path=orthoDB_annotations_work[species], sig_orthogroups=sig_orthoDB_list)
+            gff.write_dict_to_file(before_transcript, f"{species}_cumulative_repeats_before_sig_transcripts.txt")
+            gff.write_dict_to_file(after_transcript, f"{species}_cumulative_repeats_after_sig_transcripts.txt")
+                
+    work_out_dir = "/Users/miltr339/work/PhD_code/"
+    before_transcript = {
+        "A_obtectus" : f"{work_out_dir}A_obtectus_cumulative_repeats_before_sig_transcripts.txt",
+        "A_verrucosus" : f"{work_out_dir}A_verrucosus_cumulative_repeats_before_sig_transcripts.txt",
+        "B_siliquastri" : f"{work_out_dir}B_siliquastri_cumulative_repeats_before_sig_transcripts.txt",
+        "C_analis" : f"{work_out_dir}C_analis_cumulative_repeats_before_sig_transcripts.txt",
+        "C_chinensis" : f"{work_out_dir}C_chinensis_cumulative_repeats_before_sig_transcripts.txt",
+        "C_maculatus" : f"{work_out_dir}C_maculatus_cumulative_repeats_before_sig_transcripts.txt",
+        "C_septempunctata" : f"{work_out_dir}C_septempunctata_cumulative_repeats_before_sig_transcripts.txt",
+        "D_melanogaster" : f"{work_out_dir}D_melanogaster_cumulative_repeats_before_sig_transcripts.txt",
+        "D_ponderosae" : f"{work_out_dir}D_ponderosae_cumulative_repeats_before_sig_transcripts.txt",
+        "I_luminosus" : f"{work_out_dir}I_luminosus_cumulative_repeats_before_sig_transcripts.txt",
+        "P_pyralis" : f"{work_out_dir}P_pyralis_cumulative_repeats_before_sig_transcripts.txt",
+        "R_ferrugineus" : f"{work_out_dir}R_ferrugineus_cumulative_repeats_before_sig_transcripts.txt",
+        "T_castaneum" : f"{work_out_dir}T_castaneum_cumulative_repeats_before_sig_transcripts.txt",
+        "T_molitor" : f"{work_out_dir}T_molitor_cumulative_repeats_before_sig_transcripts.txt",
+        "Z_morio" : f"{work_out_dir}Z_morio_cumulative_repeats_before_sig_transcripts.txt",
+    }
+    after_transcript = {
+        "A_obtectus" : f"{work_out_dir}A_obtectus_cumulative_repeats_after_sig_transcripts.txt",
+        "A_verrucosus" : f"{work_out_dir}A_verrucosus_cumulative_repeats_after_sig_transcripts.txt",
+        "B_siliquastri" : f"{work_out_dir}B_siliquastri_cumulative_repeats_after_sig_transcripts.txt",
+        "C_analis" : f"{work_out_dir}C_analis_cumulative_repeats_after_sig_transcripts.txt",
+        "C_chinensis" : f"{work_out_dir}C_chinensis_cumulative_repeats_after_sig_transcripts.txt",
+        "C_maculatus" : f"{work_out_dir}C_maculatus_cumulative_repeats_after_sig_transcripts.txt",
+        "C_septempunctata" : f"{work_out_dir}C_septempunctata_cumulative_repeats_after_sig_transcripts.txt",
+        "D_melanogaster" : f"{work_out_dir}D_melanogaster_cumulative_repeats_after_sig_transcripts.txt",
+        "D_ponderosae" : f"{work_out_dir}D_ponderosae_cumulative_repeats_after_sig_transcripts.txt",
+        "I_luminosus" : f"{work_out_dir}I_luminosus_cumulative_repeats_after_sig_transcripts.txt",
+        "P_pyralis" : f"{work_out_dir}P_pyralis_cumulative_repeats_after_sig_transcripts.txt",
+        "R_ferrugineus" : f"{work_out_dir}R_ferrugineus_cumulative_repeats_after_sig_transcripts.txt",
+        "T_castaneum" : f"{work_out_dir}T_castaneum_cumulative_repeats_after_sig_transcripts.txt",
+        "T_molitor" : f"{work_out_dir}T_molitor_cumulative_repeats_after_sig_transcripts.txt",
+        "Z_morio" : f"{work_out_dir}Z_morio_cumulative_repeats_after_sig_transcripts.txt",
+    }
     
+    # plot the TE abundance around significant transcripts
