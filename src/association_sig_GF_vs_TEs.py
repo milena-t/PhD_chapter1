@@ -31,18 +31,18 @@ def get_sig_transcripts(orthoDB_orthogroups):
     return all_transcript_IDs
 
 
-def make_cumulative_TE_table(orthogroups_path:str, n:int, species:str, repeats_annot_path:str, genome_annot_path:str, sig_orthogroups = []):
+def make_cumulative_TE_table(orthogroups_path:str, n:int, species:str, repeats_annot_path:str, genome_annot_path:str, sig_orthogroups = [], count_transcripts = False):
     """
     This function only analyzes one species at a time!
     make a table for the surrounding n bases upstream and downstream of each gene where each base is a row 
     and each column is the sum of how often this base is annotated as the TE-category across all transcripts
     optionally: provide a sig_transcripts list to not include all transcripts that are in orthogroups_path
+    if count_transcripts it only returns a list that includes all the transcripts that were included in the computtion
     """
     orthoDB_orthogroups = OGs.parse_orthogroups_dict(orthogroups_path, sig_orthogroups, species=species)
     all_transcript_IDs = get_sig_transcripts(orthoDB_orthogroups)
 
     genes_dict = gff.parse_gff3_general(genome_annot_path, verbose=False, keep_feature_category=gff.FeatureCategory.Transcript)
-    
     repeats_dict = repeats.parse_repeats_repeatmasker_outfile(repeats_annot_path, verbose=False)
     repeats_categories = get_all_repeat_categories(repeats_dict=repeats_dict)
     repeats_categories.sort()
@@ -63,10 +63,13 @@ def make_cumulative_TE_table(orthogroups_path:str, n:int, species:str, repeats_a
     missing_in_annot_transcripts = []
     contigs_with_no_repeats = [] 
 
-    
+    all_transcripts_list = []
     for transcript_id in tqdm(all_transcript_IDs):
         try:
             transcript = genes_dict[transcript_id]
+            if count_transcripts:
+                all_transcripts_list.append(transcript_id)
+                continue
         except:
             # raise RuntimeError(f"{transcript_id} can not be found in {genome_annot_path}")
             missing_in_annot_transcripts.append(transcript_id)
@@ -94,16 +97,21 @@ def make_cumulative_TE_table(orthogroups_path:str, n:int, species:str, repeats_a
             for repeat in repeat_after_transcript:
                 if base >= repeat.start and base <= repeat.stop:
                     after_transcript[repeat.repeat_category][index] += 1
+    
     if len(missing_in_annot_transcripts)>0:
         print(f"{len(missing_in_annot_transcripts)} transcripts in sig. transcripts not found in annotation and were skipped (in C. maculatus this might be due to the liftover?)")
     if len(contigs_with_no_repeats)>0:
         print(f"{len(contigs_with_no_repeats)} contigs with significant genes but no repeats on them")
-    return before_transcript, after_transcript
+    
+    if not count_transcripts:
+        return before_transcript, after_transcript
+    elif count_transcripts:
+        return all_transcripts_list
 
 
 
 
-def plot_TE_abundance(before_filepath:str, after_filepath:str, all_transcripts:int, filename = "cumulative_repeat_presence_around_transcripts.png"):
+def plot_TE_abundance(before_filepath:str, after_filepath:str, sig_transcripts:int, all_before_filepath:str = "", all_after_filepath:str = "", all_transcripts:int = 0, filename = "cumulative_repeat_presence_around_transcripts.png"):
     """
     plot the cumulative repeat presence per base before and after a transcript (before and after infile paths)
     infiles generated from make_cumulative_TE_table
@@ -114,6 +122,15 @@ def plot_TE_abundance(before_filepath:str, after_filepath:str, all_transcripts:i
     after_dict = gff.read_dict_from_file(after_filepath)
     after_dict = { key : [int(v) for v in value] for key, value in after_dict.items()}
 
+    all_before_dict = {}
+    all_after_dict = {}
+    if all_before_filepath !="" and all_after_filepath !="" :
+        
+        all_before_dict = gff.read_dict_from_file(all_before_filepath)
+        all_before_dict = { key : [int(v) for v in value] for key, value in all_before_dict.items()}
+        all_after_dict = gff.read_dict_from_file(all_after_filepath)
+        all_after_dict = { key : [int(v) for v in value] for key, value in all_after_dict.items()}
+        
     colors = {
         'Unknown' : "#C1C1C1" , # light grey
         # orange
@@ -144,35 +161,35 @@ def plot_TE_abundance(before_filepath:str, after_filepath:str, all_transcripts:i
     x_before = range(-num_bp, 0)
     x_after = range(num_bp)
 
-    max = 0
+    max_percentage = 0
     for rep_class in rep_classes:
 
-        max_before = np.max(before_dict[rep_class])
-        max_after = np.max(after_dict[rep_class])
-        if max_before>max:
-            max=max_before
-        if max_after>max:
-            max=max_after
+        ax.plot(x_before, [i/sig_transcripts*100 for i in before_dict[rep_class]], label = rep_class, color = colors[rep_class])
+        ax.plot(x_after, [i/sig_transcripts*100 for i in after_dict[rep_class]], color = colors[rep_class])
+        
+        if all_before_dict !={} and all_after_dict !={} and all_transcripts!=0:
+            ## TODO set up max percentage
+            ax.plot(x_before, [i/all_transcripts*100 for i in all_before_dict[rep_class]], color = colors[rep_class], linestyle = (0, (1, 10)))                    
+            ax.plot(x_after, [i/all_transcripts*100 for i in all_after_dict[rep_class]], color = colors[rep_class], linestyle = (0, (1, 10)))                
+    
+    if max_percentage == 0:
+        max_percentage= 100
 
-        ax.plot(x_before, before_dict[rep_class], label = rep_class, color = colors[rep_class])
-        ax.plot(x_after, after_dict[rep_class], color = colors[rep_class])
-
-    plt.vlines(x= 0, ymin=0, ymax=max, colors="#000000", linestyles="dashed", label="transcript border")
+    plt.vlines(x= 0, ymin=0, ymax=max_percentage, colors="#000000", linestyles="dashed", label="transcript border")
     ax.set_xlim([-num_bp, num_bp*1.35])
     plt.xticks(range(-num_bp, num_bp+1, int(num_bp/5)), fontsize = fs)
-    tick_max = int(ceil(max/100))*100
-    plt.yticks(range(0, tick_max+1, 100), fontsize = fs)
+    plt.yticks(range(0, max_percentage+1, 10), fontsize = fs)
 
     plt.legend(loc = "upper right", fontsize = fs)
 
     species = gff.split_at_second_occurrence(before_filepath.split("/")[-1])
     species = species.replace("_", ". ")
-    plt.title(f"{species} transcript surroundings {num_bp} up and downstream", fontsize = fs*1.5)
+    plt.title(f"{species} transcript surroundings {num_bp} bp up and downstream", fontsize = fs*1.5)
     plt.xlabel(f"basepairs upstream and downstream from transcript", fontsize = fs)
-    plt.ylabel(f"number of transcripts in which this base is a repeat ({num_transcripts} transcripts in total)", fontsize = fs)
+    plt.ylabel(f"percent of transcripts in which this base is a repeat", fontsize = fs)
 
     plt.tight_layout()
-    plt.savefig(filename, dpi = 300, transparent = True)
+    plt.savefig(filename, dpi = 300, transparent = False)
     print("Figure saved in the current working directory directory as: "+filename)
 
 
@@ -288,7 +305,7 @@ if __name__ == "__main__":
         print(f"failed species: {failed}")
 
     # compute the TE abundance around all transcripts
-    if True:
+    if False:
         all_species = list(repeats_out.keys())
         # failed = ['A_verrucosus', 'C_chinensis', 'D_ponderosae', 'I_luminosus', 'R_ferrugineus', 'T_molitor', 'Z_morio']
         failed = []
@@ -343,15 +360,40 @@ if __name__ == "__main__":
         "Z_morio" : f"{work_out_dir}Z_morio_cumulative_repeats_after_sig_transcripts.txt",
     }
     
-    if False:
+    all_before_transcript = {
+        "A_obtectus" : f"{work_out_dir}A_obtectus_cumulative_repeats_before_all_transcripts.txt",
+        "B_siliquastri" : f"{work_out_dir}B_siliquastri_cumulative_repeats_before_all_transcripts.txt"
+    }
+    all_after_transcript = {
+        "A_obtectus" : f"{work_out_dir}A_obtectus_cumulative_repeats_after_all_transcripts.txt",
+        "B_siliquastri" : f"{work_out_dir}B_siliquastri_cumulative_repeats_after_all_transcripts.txt"
+    }
+
+    if True:
         all_species = list(repeats_out.keys())
-        for species in all_species:
-            print(f"plot {species}")
-            # get total number of transcripts that are part of significantly rapidly evolving orthogroups in this species
-            sig_orthoDB_list, all_orthogroups_list = OGs.get_sig_orthogroups(sig_orthoDB)
-            orthoDB_orthogroups = OGs.parse_orthogroups_dict(orthogroups_orthoDB, sig_orthoDB_list, species=species)
-            all_transcript_IDs = get_sig_transcripts(orthoDB_orthogroups)
-            num_transcripts = len(all_transcript_IDs)
+        #for species in all_species:
+        species = "B_siliquastri"
+        print(f"plot {species}")
+        # get total number of transcripts that are part of significantly rapidly evolving orthogroups in this species
+        sig_orthoDB_list, all_orthogroups_list = OGs.get_sig_orthogroups(sig_orthoDB)
+        orthoDB_orthogroups = OGs.parse_orthogroups_dict(orthogroups_orthoDB, sig_orthoDB_list, species=species)
+        all_transcript_IDs = get_sig_transcripts(orthoDB_orthogroups)
+        num_sig_transcripts = len(all_transcript_IDs)
+        print(f"\t{num_sig_transcripts} significant transcripts according to reading the CAFE and orthoDB output")
+        all_transcript_IDs = make_cumulative_TE_table(orthogroups_orthoDB, n=10000, species=species, repeats_annot_path=repeats_out_work[species], genome_annot_path=orthoDB_annotations_work[species], sig_orthogroups=sig_orthoDB_list, count_transcripts=True)
+        num_sig_transcripts = len(all_transcript_IDs)
+        print(f"\t{num_sig_transcripts} significant transcrips according to making the table")
+        plot_TE_abundance(sig_before_transcript[species], sig_after_transcript[species], sig_transcripts = num_sig_transcripts, filename=f"cumulative_repeat_presence_around_transcripts_sig_only_{species}.png")
         
-            plot_TE_abundance(before_transcript[species], after_transcript[species], all_transcripts = num_transcripts, filename=f"cumulative_repeat_presence_around_transcripts_{species}.png")
-            # plot the TE abundance around significant transcripts
+        orthoDB_orthogroups = OGs.parse_orthogroups_dict(orthogroups_orthoDB, all_orthogroups_list, species=species)
+        all_transcript_IDs = get_sig_transcripts(orthoDB_orthogroups)
+        num_all_transcripts = len(all_transcript_IDs)
+        print(f"\t{num_all_transcripts} significant transcripts according to reading the CAFE and orthoDB output")
+        all_transcript_IDs = make_cumulative_TE_table(orthogroups_orthoDB, n=10000, species=species, repeats_annot_path=repeats_out_work[species], genome_annot_path=orthoDB_annotations_work[species], count_transcripts=True)
+        num_all_transcripts = len(all_transcript_IDs)
+        print(f"\t{num_all_transcripts} significant transcrips according to making the table")
+        plot_TE_abundance(sig_before_transcript[species], sig_after_transcript[species], sig_transcripts = num_sig_transcripts, all_before_filepath=all_before_transcript[species], all_after_filepath=all_after_transcript[species], all_transcripts=num_all_transcripts, filename=f"cumulative_repeat_presence_around_transcripts_sig_and_all_{species}.png")
+
+
+
+
