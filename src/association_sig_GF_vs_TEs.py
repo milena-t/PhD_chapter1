@@ -118,18 +118,18 @@ def plot_TE_abundance(before_filepath:str, after_filepath:str, sig_transcripts:i
     """
     
     before_dict = gff.read_dict_from_file(before_filepath)
-    before_dict = { key : [int(v) for v in value] for key, value in before_dict.items()}
+    before_dict = { key : [int(v)/sig_transcripts*100 for v in value] for key, value in before_dict.items()}
     after_dict = gff.read_dict_from_file(after_filepath)
-    after_dict = { key : [int(v) for v in value] for key, value in after_dict.items()}
+    after_dict = { key : [int(v)/sig_transcripts*100 for v in value] for key, value in after_dict.items()}
 
     all_before_dict = {}
     all_after_dict = {}
     if all_before_filepath !="" and all_after_filepath !="" :
         
         all_before_dict = gff.read_dict_from_file(all_before_filepath)
-        all_before_dict = { key : [int(v) for v in value] for key, value in all_before_dict.items()}
+        all_before_dict = { key : [int(v)/all_transcripts*100 for v in value] for key, value in all_before_dict.items()}
         all_after_dict = gff.read_dict_from_file(all_after_filepath)
-        all_after_dict = { key : [int(v) for v in value] for key, value in all_after_dict.items()}
+        all_after_dict = { key : [int(v)/all_transcripts*100 for v in value] for key, value in all_after_dict.items()}
         
     colors = {
         'Unknown' : "#C1C1C1" , # light grey
@@ -164,15 +164,29 @@ def plot_TE_abundance(before_filepath:str, after_filepath:str, sig_transcripts:i
     max_percentage = 0
     for rep_class in rep_classes:
 
-        ax.plot(x_before, [i/sig_transcripts*100 for i in before_dict[rep_class]], label = rep_class, color = colors[rep_class])
-        ax.plot(x_after, [i/sig_transcripts*100 for i in after_dict[rep_class]], color = colors[rep_class])
+        max_before = max(before_dict[rep_class])
+        max_after = max(after_dict[rep_class])
+        if max_before>max_percentage:
+            max_percentage=max_before
+        if max_after>max_percentage:
+            max_percentage=max_after
+
+        ax.plot(x_before, before_dict[rep_class], label = rep_class, color = colors[rep_class])
+        ax.plot(x_after, after_dict[rep_class], color = colors[rep_class])
         
         if all_before_dict !={} and all_after_dict !={} and all_transcripts!=0:
-            ## TODO set up max percentage
-            ax.plot(x_before, [i/all_transcripts*100 for i in all_before_dict[rep_class]], color = colors[rep_class], linestyle = (0, (1, 10)))                    
-            ax.plot(x_after, [i/all_transcripts*100 for i in all_after_dict[rep_class]], color = colors[rep_class], linestyle = (0, (1, 10)))                
+            max_before = max(all_before_dict[rep_class])
+            max_after = max(all_after_dict[rep_class])
+            if max_before>max_percentage:
+                max_percentage=max_before
+            if max_after>max_percentage:
+                max_percentage=max_after
+
+            ax.plot(x_before, all_before_dict[rep_class], color = colors[rep_class], linestyle = (0, (1, 10)))                    
+            ax.plot(x_after, all_after_dict[rep_class], color = colors[rep_class], linestyle = (0, (1, 10)))                
     
-    if max_percentage == 0:
+    max_percentage=int(max_percentage*1.4)
+    if max_percentage == 0 or max_percentage>100:
         max_percentage= 100
 
     plt.vlines(x= 0, ymin=0, ymax=max_percentage, colors="#000000", linestyles="dashed", label="transcript border")
@@ -189,7 +203,7 @@ def plot_TE_abundance(before_filepath:str, after_filepath:str, sig_transcripts:i
     plt.ylabel(f"percent of transcripts in which this base is a repeat", fontsize = fs)
 
     plt.tight_layout()
-    plt.savefig(filename, dpi = 300, transparent = False)
+    plt.savefig(filename, dpi = 300, transparent = True)
     print("Figure saved in the current working directory directory as: "+filename)
 
 
@@ -362,37 +376,63 @@ if __name__ == "__main__":
     
     all_before_transcript = {
         "A_obtectus" : f"{work_out_dir}A_obtectus_cumulative_repeats_before_all_transcripts.txt",
-        "B_siliquastri" : f"{work_out_dir}B_siliquastri_cumulative_repeats_before_all_transcripts.txt"
+        "A_verrucosus" : f"{work_out_dir}A_verrucosus_cumulative_repeats_before_all_transcripts.txt",
+        "B_siliquastri" : f"{work_out_dir}B_siliquastri_cumulative_repeats_before_all_transcripts.txt",
+        "C_analis" : f"{work_out_dir}C_analis_cumulative_repeats_before_all_transcripts.txt",
+        "C_chinensis" : f"{work_out_dir}C_chinensis_cumulative_repeats_before_all_transcripts.txt",
+        "C_maculatus" : f"{work_out_dir}C_maculatus_cumulative_repeats_before_all_transcripts.txt",
+        "C_septempunctata" : f"{work_out_dir}C_septempunctata_cumulative_repeats_before_all_transcripts.txt",
+        "D_melanogaster" : f"{work_out_dir}D_melanogaster_cumulative_repeats_before_all_transcripts.txt",
+        "D_ponderosae" : f"{work_out_dir}D_ponderosae_cumulative_repeats_before_all_transcripts.txt",
+        "I_luminosus" : f"{work_out_dir}I_luminosus_cumulative_repeats_before_all_transcripts.txt",
+        "P_pyralis" : f"{work_out_dir}P_pyralis_cumulative_repeats_before_all_transcripts.txt",
+        "R_ferrugineus" : f"{work_out_dir}R_ferrugineus_cumulative_repeats_before_all_transcripts.txt",
+        "T_castaneum" : f"{work_out_dir}T_castaneum_cumulative_repeats_before_all_transcripts.txt",
+        "T_molitor" : f"{work_out_dir}T_molitor_cumulative_repeats_before_all_transcripts.txt",
+        "Z_morio" : f"{work_out_dir}Z_morio_cumulative_repeats_before_all_transcripts.txt",
     }
     all_after_transcript = {
         "A_obtectus" : f"{work_out_dir}A_obtectus_cumulative_repeats_after_all_transcripts.txt",
-        "B_siliquastri" : f"{work_out_dir}B_siliquastri_cumulative_repeats_after_all_transcripts.txt"
+        "A_verrucosus" :f"{work_out_dir}A_verrucosus_cumulative_repeats_after_all_transcripts.txt",
+        "B_siliquastri" :f"{work_out_dir}B_siliquastri_cumulative_repeats_after_all_transcripts.txt",
+        "C_analis" :f"{work_out_dir}C_analis_cumulative_repeats_after_all_transcripts.txt",
+        "C_chinensis" :f"{work_out_dir}C_chinensis_cumulative_repeats_after_all_transcripts.txt",
+        "C_maculatus" :f"{work_out_dir}C_maculatus_cumulative_repeats_after_all_transcripts.txt",
+        "C_septempunctata" :f"{work_out_dir}C_septempunctata_cumulative_repeats_after_all_transcripts.txt",
+        "D_melanogaster" :f"{work_out_dir}D_melanogaster_cumulative_repeats_after_all_transcripts.txt",
+        "D_ponderosae" :f"{work_out_dir}D_ponderosae_cumulative_repeats_after_all_transcripts.txt",
+        "I_luminosus" :f"{work_out_dir}I_luminosus_cumulative_repeats_after_all_transcripts.txt",
+        "P_pyralis" :f"{work_out_dir}P_pyralis_cumulative_repeats_after_all_transcripts.txt",
+        "R_ferrugineus" :f"{work_out_dir}R_ferrugineus_cumulative_repeats_after_all_transcripts.txt",
+        "T_castaneum" :f"{work_out_dir}T_castaneum_cumulative_repeats_after_all_transcripts.txt",
+        "T_molitor" :f"{work_out_dir}T_molitor_cumulative_repeats_after_all_transcripts.txt",
+        "Z_morio" :f"{work_out_dir}Z_morio_cumulative_repeats_after_all_transcripts.txt",
     }
 
     if True:
         all_species = list(repeats_out.keys())
-        #for species in all_species:
-        species = "B_siliquastri"
-        print(f"plot {species}")
-        # get total number of transcripts that are part of significantly rapidly evolving orthogroups in this species
-        sig_orthoDB_list, all_orthogroups_list = OGs.get_sig_orthogroups(sig_orthoDB)
-        orthoDB_orthogroups = OGs.parse_orthogroups_dict(orthogroups_orthoDB, sig_orthoDB_list, species=species)
-        all_transcript_IDs = get_sig_transcripts(orthoDB_orthogroups)
-        num_sig_transcripts = len(all_transcript_IDs)
-        print(f"\t{num_sig_transcripts} significant transcripts according to reading the CAFE and orthoDB output")
-        all_transcript_IDs = make_cumulative_TE_table(orthogroups_orthoDB, n=10000, species=species, repeats_annot_path=repeats_out_work[species], genome_annot_path=orthoDB_annotations_work[species], sig_orthogroups=sig_orthoDB_list, count_transcripts=True)
-        num_sig_transcripts = len(all_transcript_IDs)
-        print(f"\t{num_sig_transcripts} significant transcrips according to making the table")
-        plot_TE_abundance(sig_before_transcript[species], sig_after_transcript[species], sig_transcripts = num_sig_transcripts, filename=f"cumulative_repeat_presence_around_transcripts_sig_only_{species}.png")
-        
-        orthoDB_orthogroups = OGs.parse_orthogroups_dict(orthogroups_orthoDB, all_orthogroups_list, species=species)
-        all_transcript_IDs = get_sig_transcripts(orthoDB_orthogroups)
-        num_all_transcripts = len(all_transcript_IDs)
-        print(f"\t{num_all_transcripts} significant transcripts according to reading the CAFE and orthoDB output")
-        all_transcript_IDs = make_cumulative_TE_table(orthogroups_orthoDB, n=10000, species=species, repeats_annot_path=repeats_out_work[species], genome_annot_path=orthoDB_annotations_work[species], count_transcripts=True)
-        num_all_transcripts = len(all_transcript_IDs)
-        print(f"\t{num_all_transcripts} significant transcrips according to making the table")
-        plot_TE_abundance(sig_before_transcript[species], sig_after_transcript[species], sig_transcripts = num_sig_transcripts, all_before_filepath=all_before_transcript[species], all_after_filepath=all_after_transcript[species], all_transcripts=num_all_transcripts, filename=f"cumulative_repeat_presence_around_transcripts_sig_and_all_{species}.png")
+        for species in all_species:
+            # species = "B_siliquastri"
+            print(f"plot {species}")
+            # get total number of transcripts that are part of significantly rapidly evolving orthogroups in this species
+            sig_orthoDB_list, all_orthogroups_list = OGs.get_sig_orthogroups(sig_orthoDB)
+            orthoDB_orthogroups = OGs.parse_orthogroups_dict(orthogroups_orthoDB, sig_orthoDB_list, species=species)
+            all_transcript_IDs = get_sig_transcripts(orthoDB_orthogroups)
+            num_sig_transcripts = len(all_transcript_IDs)
+            print(f"\t{num_sig_transcripts} significant transcripts according to reading the CAFE and orthoDB output")
+            all_transcript_IDs = make_cumulative_TE_table(orthogroups_orthoDB, n=10000, species=species, repeats_annot_path=repeats_out_work[species], genome_annot_path=orthoDB_annotations_work[species], sig_orthogroups=sig_orthoDB_list, count_transcripts=True)
+            num_sig_transcripts = len(all_transcript_IDs)
+            print(f"\t{num_sig_transcripts} significant transcrips according to making the table")
+            plot_TE_abundance(sig_before_transcript[species], sig_after_transcript[species], sig_transcripts = num_sig_transcripts, filename=f"cumulative_repeat_presence_around_transcripts_sig_only_{species}.png")
+
+            orthoDB_orthogroups = OGs.parse_orthogroups_dict(orthogroups_orthoDB, all_orthogroups_list, species=species)
+            all_transcript_IDs = get_sig_transcripts(orthoDB_orthogroups)
+            num_all_transcripts = len(all_transcript_IDs)
+            print(f"\t{num_all_transcripts} significant transcripts according to reading the CAFE and orthoDB output")
+            all_transcript_IDs = make_cumulative_TE_table(orthogroups_orthoDB, n=10000, species=species, repeats_annot_path=repeats_out_work[species], genome_annot_path=orthoDB_annotations_work[species], count_transcripts=True)
+            num_all_transcripts = len(all_transcript_IDs)
+            print(f"\t{num_all_transcripts} significant transcrips according to making the table")
+            plot_TE_abundance(sig_before_transcript[species], sig_after_transcript[species], sig_transcripts = num_sig_transcripts, all_before_filepath=all_before_transcript[species], all_after_filepath=all_after_transcript[species], all_transcripts=num_all_transcripts, filename=f"cumulative_repeat_presence_around_transcripts_sig_and_all_{species}.png")
 
 
 
