@@ -6,8 +6,40 @@
 
 
 import parse_gff as gff
+import numpy as np
 
+
+
+def get_orthogroup_sizes(orthogroup_dict, q = 0):
+    """
+    returns a dict of all orthogroups sizes.
+    if a percentile p is specified other than 0, it returns only orthogroups whose size is > than the pth percentile of the size distribution
+    """
+    
+    OG_sizes_dict = {}
+    sizes = []
+    for OG_id, species_dict in orthogroup_dict.items():
+        size = 0
+        for transcripts_list in species_dict.values():
+            size += len(transcripts_list)
         
+        OG_sizes_dict[OG_id] = size
+        sizes.append(size)
+    
+    if q == 0:
+        return OG_sizes_dict
+    else:
+        OG_sizes_filtered = {}
+        sizes = np.array(sizes)
+        percentile_size = np.percentile(sizes, q = q)
+        for OG_id, size in OG_sizes_dict.items():
+            if size > percentile_size:
+                OG_sizes_filtered[OG_id] = size
+
+        return OG_sizes_filtered
+
+
+
 
 def get_sig_orthogroups(filepath, p_sig = 0.05):
     """ 
