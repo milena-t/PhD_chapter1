@@ -5,12 +5,9 @@
 #  - Are they intron-less?
 
 
-
 import parse_gff as gff
-import pandas as pd
 
-
-
+        
 
 def get_sig_orthogroups(filepath, p_sig = 0.05):
     """ 
@@ -29,12 +26,12 @@ def get_sig_orthogroups(filepath, p_sig = 0.05):
     return(sig_list, all_list)
 
 
-def parse_orthogroups_dict(filepath, sig_list:list[str] = []):
+def parse_orthogroups_dict(filepath, sig_list:list[str] = [], species = ""):
     """
     Get a dictionary of all the orthogroups like below. if a list of significant orthogroups from CAFE is included then only parse those ones.
     
     { 
-    orthogroup1_node : 
+    orthogroup1_ID : 
         { species : [ transcript1 , transcript2 , ...],
           species : [ transcript1 , transcript2 , ...],
           ...
@@ -42,7 +39,7 @@ def parse_orthogroups_dict(filepath, sig_list:list[str] = []):
       ...
     }
 
-    I add a count index to the orthogroup name because some orthogroup names are duplicate???
+    if a species name is specified it will only read the orthogroups of one species, resulting in just { orthogroup_ID : [ transcript1, ...]}
     """
     out_dict = {}
     # og_df = pd.read_csv(filepath, sep="\t")
@@ -55,34 +52,62 @@ def parse_orthogroups_dict(filepath, sig_list:list[str] = []):
     with open(filepath, "r") as N0_infile:
         N0_infile = N0_infile.readlines()
         headers = N0_infile[0].strip().split("\t")
+        headers_clean = [gff.split_at_second_occurrence(header) for header in headers]
+        if len(species)>0 and (species not in headers_clean or species not in headers):
+            try:
+                species = [head for head in headers_clean if species in head][0]
+
+            except:
+                raise RuntimeError(f"""the species name {species} is not represented in the headers,
+please pick one of the header names instead: \n\t{headers} \nor:\n\t{headers_clean}""")
+
         for i, orthogroup_line in enumerate(N0_infile[1:]):
             orthogroup_line = orthogroup_line.strip().split("\t")
-            orthogroup = orthogroup_line[1]
-            og_number = int(orthogroup[3:])
+            orthogroup = orthogroup_line[0] # column 0 for the hierarchical one, otherwise 1 for the old one (which is deprecated because of duplicates)
             
-            ## count duplicate orthogroup IDs
-            if og_number - old_og_number != 1:
-                duplicates_count += 1
-            old_og_number = og_number
+            try:
+                og_number = int(orthogroup[3:])
+
+                ## count duplicate orthogroup IDs, They are all immediately after each other so no need to save all numbers in a list
+                if og_number - old_og_number != 1:
+                    duplicates_count += 1
+                old_og_number = og_number
+                orthogroup = f"{orthogroup}_{i}" # add index to orthogroup ID
+            except:
+                pass
 
             if len(sig_list)>0 and orthogroup not in sig_list:
                 continue # skip this orthogroup
             
-            orthogroup = f"{orthogroup}_{i}" # add index to orthogroup ID
-            out_dict[orthogroup] = {}
-            for column in range(3, len(orthogroup_line)):
-                species = gff.split_at_second_occurrence(headers[column])
+            if species == "":
+                out_dict[orthogroup] = {}
+                for column in range(3, len(orthogroup_line)):
+                    species_col = gff.split_at_second_occurrence(headers[column])
+                    try:
+                        if len(orthogroup_line[column].split(", "))>0:
+                            # the transcripts contain a "species_name_" prefix, remove that here
+                            out_dict[orthogroup][species_col] = [transcript.replace(f"{species_col}_", "") for transcript in orthogroup_line[column].split(", ")]
+                        else:
+                            out_dict[orthogroup][species_col] = []
+                    except:
+                        out_dict[orthogroup][species_col] = []
+
+            else: ### TODO fix this, the thing where it only reads one species
                 try:
-                    if len(orthogroup_line[column].split(", "))>0:
-                        # the transcripts contain a "species_name_" prefix, remove that here
-                        out_dict[orthogroup][species] = [transcript.replace(f"{species}_", "") for transcript in orthogroup_line[column].split(", ")]
-                    else:
-                        out_dict[orthogroup][species] = []
+                    column = headers.index(species)
                 except:
-                    out_dict[orthogroup][species] = []
-            # print(f"{i} --> {orthogroup}")
-            # break
-    print(duplicates_count)
+                    column = headers_clean.index(species)
+                try:
+                    OG_species = orthogroup_line[column].split(", ")
+                except:
+                    OG_species = ['']
+                    # raise RuntimeError(f"no column {column} found  in {orthogroup_line}")
+
+                if len(OG_species)>0 and OG_species != ['']:
+                    # the transcripts contain a "species_name_" prefix, remove that here
+                    out_dict[orthogroup] = [transcript.replace(f"{species}_", "") for transcript in OG_species]
+
+    # print(f"{duplicates_count} orthogroups with duplicate names" )
     return(out_dict)
 
             
@@ -141,4 +166,3 @@ if __name__ == "__main__":
     # print(orthoDB_orthogroups_sig_only)
     print(f"{len(sig_orthoDB_list)} significant orthogroups in CAFE output")
     print(f"{len(orthoDB_orthogroups)} orthogroups in total, {len(orthoDB_orthogroups_sig_only)} left after filtering for only CAFE-significant ones")
-    print(list(orthoDB_orthogroups_sig_only.keys()))
