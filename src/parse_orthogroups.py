@@ -11,7 +11,7 @@ import parse_gff as gff
 
 def get_sig_orthogroups(filepath, p_sig = 0.05):
     """ 
-    get a list of significant orthogroup IDs
+    get a list of significant orthogroup IDs from CAFE output
     """
     sig_list = []
     all_list = []
