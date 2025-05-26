@@ -3,9 +3,9 @@ Look at all the transcripts in each orthogroup and their position
 Are they on the same or different contig? how close/distant are they?
 """
 import parse_gff as gff
-import parse_repeats as repeats
 import parse_orthogroups as OGs
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 def filepaths_native():
@@ -99,10 +99,11 @@ def filepaths_orthoDB():
     return orthoDB_annotations, orthogroups_orthoDB, sig_orthoDB, orthoDB_proteinseqs
 
 
-def get_flybase_IDs(orthogroup_dict, drosophila_gff_path, outfile_name:str = "native_sig_OGs_flybase_IDs.tsv"):
+def get_flybase_IDs(orthogroup_dict, drosophila_gff_path, outfile_name:str = "native_sig_OGs_flybase_IDs.tsv", OGs_list = []):
     """
     get all the flybase IDs from the native drosophila annotation.
     This only works with the native annotations! the orthoDB annotations don't have functional annotations to extract flybase ID from
+    If you only want to include a specific set of orthogroups then include the list in OGs_list (maybe only the largest or something)
     """
 
     drosophila_attributes_dict = gff.parse_gff3_for_attributes(drosophila_gff_path)
@@ -116,7 +117,10 @@ def get_flybase_IDs(orthogroup_dict, drosophila_gff_path, outfile_name:str = "na
             # for weird parsing stuff i did like a year ago the transcript IDs in the native drosophila annotation have leading "__" that should be removed
             # also remove the tailing "_1" 
             transcripts_list = [transcript.replace("__", "")[:-2] for transcript in transcripts_list]
-
+            
+            if OGs_list != [] and OG_id not in OGs_list:
+                continue
+            
             for transcript in transcripts_list:
                 try:
                     attributes = drosophila_attributes_dict[transcript]
@@ -147,6 +151,14 @@ if __name__ == "__main__":
     native_annotations,orthogroups_native,sig_native,native_proteinseqs = filepaths_native()
 
     native_sig_list, native_all_list =OGs.get_sig_orthogroups(sig_native)
+    
     print(f"{len(native_sig_list)} significant orthogroups : {native_sig_list[0:10]}...")
     native_sig_OGs_dict = OGs.parse_orthogroups_dict(orthogroups_native, sig_list = native_sig_list, species="D_melanogaster")
-    get_flybase_IDs(native_sig_OGs_dict, native_annotations["D_melanogaster"])
+    
+    print(f"{len(native_sig_OGs_dict)} orthogroups in sig dict")
+    native_sig_all_species = OGs.parse_orthogroups_dict(orthogroups_native, sig_list = native_sig_list)
+    
+    native_large_OGs = OGs.get_orthogroup_sizes(native_sig_all_species, q=95)
+    large_OG_IDs = list(native_large_OGs.keys())
+    
+    get_flybase_IDs(native_sig_OGs_dict, native_annotations["D_melanogaster"], OGs_list=large_OG_IDs)
