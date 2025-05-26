@@ -92,7 +92,7 @@ please pick one of the header names instead: \n\t{headers} \nor:\n\t{headers_cle
                     except:
                         out_dict[orthogroup][species_col] = []
 
-            else: ### TODO fix this, the thing where it only reads one species
+            else: 
                 try:
                     column = headers.index(species)
                 except:
@@ -106,6 +106,7 @@ please pick one of the header names instead: \n\t{headers} \nor:\n\t{headers_cle
                 if len(OG_species)>0 and OG_species != ['']:
                     # the transcripts contain a "species_name_" prefix, remove that here
                     out_dict[orthogroup] = [transcript.replace(f"{species}_", "") for transcript in OG_species]
+            
 
     # print(f"{duplicates_count} orthogroups with duplicate names" )
     return(out_dict)
