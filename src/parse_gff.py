@@ -154,16 +154,16 @@ string_to_category = { # define aliases when some strings should map to the same
     "exon": FeatureCategory.Exon,
     "transcript": FeatureCategory.Transcript,
     "primary_transcript": FeatureCategory.Transcript,
-    "intron": FeatureCategory.Intron,
-    "start_codon": FeatureCategory.Start_codon,
-    "stop_codon": FeatureCategory.Stop_codon,
-    "three_prime_UTR": FeatureCategory.TP_UTR,
-    "five_prime_UTR": FeatureCategory.FP_UTR,
     "mRNA": FeatureCategory.Transcript, # I will also use mRNA as "transcript" because even though braker calls transcripts "transcript", 
                                         # other annotation pipelines often say "mRNA" instead when they mean the same thing. 
                                         # Correctly identifying the transcirpt-section of a feature is important for working with e.g. orthofinder output
                                         # which works with transcript IDs only, so if I want to also get transcript stats for native and breaker annotations, 
                                         # I need to group it with the "transcript" feature category instead of the "RNA" feature category.
+    "intron": FeatureCategory.Intron,
+    "start_codon": FeatureCategory.Start_codon,
+    "stop_codon": FeatureCategory.Stop_codon,
+    "three_prime_UTR": FeatureCategory.TP_UTR,
+    "five_prime_UTR": FeatureCategory.FP_UTR,
     "RNA": FeatureCategory.RNA,
     "antisense_RNA": FeatureCategory.RNA,
     "miRNA": FeatureCategory.RNA,
