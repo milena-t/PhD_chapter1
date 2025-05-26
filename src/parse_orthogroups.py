@@ -96,17 +96,6 @@ please pick one of the header names instead: \n\t{headers} \nor:\n\t{headers_cle
         for i, orthogroup_line in enumerate(N0_infile[1:]):
             orthogroup_line = orthogroup_line.strip().split("\t")
             orthogroup = orthogroup_line[0] # column 0 for the hierarchical one, otherwise 1 for the old one (which is deprecated because of duplicates)
-            
-            try:
-                og_number = int(orthogroup[3:])
-
-                ## count duplicate orthogroup IDs, They are all immediately after each other so no need to save all numbers in a list
-                if og_number - old_og_number != 1:
-                    duplicates_count += 1
-                old_og_number = og_number
-                orthogroup = f"{orthogroup}_{i}" # add index to orthogroup ID
-            except:
-                pass
 
             if len(sig_list)>0 and orthogroup not in sig_list:
                 continue # skip this orthogroup
