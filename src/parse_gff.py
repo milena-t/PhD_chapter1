@@ -440,7 +440,7 @@ def parse_gff3_for_attributes(filepath, feature_of_interest = FeatureCategory.Tr
             separator = "="
         
 
-        for line in tqdm(linelist):    
+        for line in linelist:    
             # Skip empty lines or lines starting with a comment character
             line = line.strip()
             if not line or line.startswith('#'):
