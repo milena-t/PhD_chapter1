@@ -423,6 +423,58 @@ def parse_gff3_by_contig(filepath:str, verbose = True, featurecategory = Feature
     return genome_annotation
 
 
+def parse_gff3_for_attributes(filepath, feature_of_interest = FeatureCategory.Transcript):
+    """
+    Parse gff_file to only include ID and attribute information, of only one type of feature (since i usually only need transcripts for this)
+    """
+
+    genome_annotation:dict = {}
+
+    with open(filepath, "r") as file:
+        linelist = file.readlines()
+        
+        # determine separator for attributes line
+        tail_line = linelist[-10].split("\t")[-1].split(";")[0]
+        separator = " "
+        if "=" in tail_line:
+            separator = "="
+        
+
+        for line in tqdm(linelist):    
+            # Skip empty lines or lines starting with a comment character
+            line = line.strip()
+            if not line or line.startswith('#'):
+                continue
+            
+            contig,source,category_,start,stop,score,strandedness,frame,attributes_=[c for c in line.split("\t") if len(c)>0]
+            category = categorize_string(category_)
+
+            if category != feature_of_interest:
+                continue
+
+            # parse all attributes
+            attributes={}
+            for attr in attributes_.strip().split(";"):
+                attr = attr.strip()
+                try:
+                    key,value=attr.split(separator)[-2:]
+                except:
+                    continue
+
+                if "," in attr:
+                    attributes[key]=value
+                else:
+                    attributes[key]=value
+            
+            ## check that ID and Parent are detected correctly
+            if "ID" not in attributes:
+                    raise RuntimeError(f"no id property found for gene in line: {line}")
+        
+            feature_id = attributes["ID"]
+            genome_annotation[feature_id] = attributes
+    
+    return genome_annotation
+
 
 # if __name__ == "__main__":
 #     print(Feature("1", "contig1", FeatureCategory.Gene, 1, 100, "+", ".", parent_id=None))
