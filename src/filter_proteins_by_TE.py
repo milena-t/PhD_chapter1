@@ -275,7 +275,7 @@ def plot_TE_histogram(TE_categories_unfiltered_dict, TE_categories_filtered_dict
         if len(TE_ids_list) > 30:
             fsm = fs_modified-29
             if verbose:
-                print(f"long reduced fontsize in {species}")
+                print(f"long reduced fontsize in {species_name}")
         elif len(TE_ids_list) > 29:
             fsm = fs_modified-26
         elif len(TE_ids_list) > 25:

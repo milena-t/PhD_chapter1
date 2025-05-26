@@ -5,7 +5,7 @@ Are they on the same or different contig? how close/distant are they?
 import parse_gff as gff
 import parse_orthogroups as OGs
 import matplotlib.pyplot as plt
-import numpy as np
+from Bio import SeqIO
 
 
 def filepaths_native():
@@ -142,23 +142,63 @@ def get_flybase_IDs(orthogroup_dict, drosophila_gff_path, outfile_name:str = "na
     return not_found_sig_IDs
         
 
+def make_proteinfasta_from_orthogroup(orthogroups_dict, proteinfasta_reference, orthogroups_to_include:list=[], outfile_name = "Dmel_transcripts_from_sig_OGs.fasta", species = "D_melanogaster"):
+    """
+    make a proteinfasta for transcripts from significant orthogroups. 
+    orthogroups dict assumes a dict already resolved by species (probably drosophila)
+    """
+
+    proteinfasta = {record.id : record for record in SeqIO.parse(proteinfasta_reference,"fasta")}
+    filtered_fasta = []
+
+    for OG_id, transcripts in orthogroups_dict.items():
+        if orthogroups_to_include != [] and OG_id not in orthogroups_to_include:
+            continue
+        for transcript in transcripts:
+            transcript = f"{species}_{transcript}"
+            try: 
+                record = proteinfasta[transcript]
+            except:
+                raise RuntimeError(f"{transcript} not found in reference proteinfasta file {proteinfasta_reference}")
+            
+            record.id = f"{record.id}_{OG_id}"
+            filtered_fasta.append(record)
+
+    SeqIO.write(filtered_fasta, outfile_name, "fasta")
+    print(f"proteinfasta written to {outfile_name}")
+    return filtered_fasta
+
 
 
 
 if __name__ == "__main__":
-    
+
     orthoDB_annotations, orthogroups_orthoDB, sig_orthoDB, orthoDB_proteinseqs = filepaths_orthoDB()
     native_annotations,orthogroups_native,sig_native,native_proteinseqs = filepaths_native()
+    
+    ## Get stuff from native with functional annotations
+    if False:
 
-    native_sig_list, native_all_list =OGs.get_sig_orthogroups(sig_native)
-    
-    print(f"{len(native_sig_list)} significant orthogroups : {native_sig_list[0:10]}...")
-    native_sig_OGs_dict = OGs.parse_orthogroups_dict(orthogroups_native, sig_list = native_sig_list, species="D_melanogaster")
-    
-    print(f"{len(native_sig_OGs_dict)} orthogroups in sig dict")
-    native_sig_all_species = OGs.parse_orthogroups_dict(orthogroups_native, sig_list = native_sig_list)
-    
-    native_large_OGs = OGs.get_orthogroup_sizes(native_sig_all_species, q=95)
-    large_OG_IDs = list(native_large_OGs.keys())
-    
-    get_flybase_IDs(native_sig_OGs_dict, native_annotations["D_melanogaster"], OGs_list=large_OG_IDs)
+        native_sig_list, native_all_list =OGs.get_sig_orthogroups(sig_native)
+        print(f"{len(native_sig_list)} significant orthogroups : {native_sig_list[0:10]}...")
+        native_sig_OGs_dict = OGs.parse_orthogroups_dict(orthogroups_native, sig_list = native_sig_list, species="D_melanogaster")
+        print(f"{len(native_sig_OGs_dict)} orthogroups in sig dict")
+
+        native_sig_all_species = OGs.parse_orthogroups_dict(orthogroups_native, sig_list = native_sig_list)
+        native_large_OGs = OGs.get_orthogroup_sizes(native_sig_all_species, q=95)
+        large_OG_IDs = list(native_large_OGs.keys())
+
+        get_flybase_IDs(native_sig_OGs_dict, native_annotations["D_melanogaster"], OGs_list=large_OG_IDs)
+
+    # get proteinfasta for orthoDB annotations
+    if True:
+        orthoDB_sig_list, orthoDB_all_list =OGs.get_sig_orthogroups(sig_orthoDB)
+        print(f"{len(orthoDB_sig_list)} significant orthogroups : {orthoDB_sig_list[0:10]}...")
+        orthoDB_sig_OGs_dict = OGs.parse_orthogroups_dict(orthogroups_orthoDB, sig_list = orthoDB_sig_list, species="D_melanogaster")
+        print(f"{len(orthoDB_sig_OGs_dict)} orthogroups in sig dict")
+
+        orthoDB_sig_all_species = OGs.parse_orthogroups_dict(orthogroups_orthoDB, sig_list = orthoDB_sig_list)
+        orthoDB_large_OGs = OGs.get_orthogroup_sizes(orthoDB_sig_all_species, q=95)
+        large_OG_IDs = list(orthoDB_large_OGs.keys())
+        
+        make_proteinfasta_from_orthogroup(orthoDB_sig_OGs_dict, orthoDB_proteinseqs["D_melanogaster"], orthogroups_to_include=large_OG_IDs)
