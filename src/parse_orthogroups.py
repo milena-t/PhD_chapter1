@@ -118,15 +118,14 @@ please pick one of the header names instead: \n\t{headers} \nor:\n\t{headers_cle
                     column = headers.index(species)
                 except:
                     column = headers_clean.index(species)
+
                 try:
-                    OG_species = orthogroup_line[column].split(", ")
+                    transcripts_list = orthogroup_line[column].split(", ")
+                    OG_species = [transcript.replace(f"{species}_", "") for transcript in transcripts_list]
                 except:
                     OG_species = ['']
-                    # raise RuntimeError(f"no column {column} found  in {orthogroup_line}")
-
-                if len(OG_species)>0 and OG_species != ['']:
-                    # the transcripts contain a "species_name_" prefix, remove that here
-                    out_dict[orthogroup] = [transcript.replace(f"{species}_", "") for transcript in OG_species]
+                    
+                out_dict[orthogroup] = OG_species
             
 
     # print(f"{duplicates_count} orthogroups with duplicate names" )
