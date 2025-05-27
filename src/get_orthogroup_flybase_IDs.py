@@ -147,6 +147,7 @@ def make_proteinfasta_from_orthogroup(orthogroups_dict, proteinfasta_reference, 
     make a proteinfasta for transcripts from significant orthogroups. 
     orthogroups dict assumes a dict already resolved by species (probably drosophila)
     """
+    dmel_unfiltered_annot = "/Users/miltr339/work/native_annotations/"
 
     proteinfasta = {record.id : record for record in SeqIO.parse(proteinfasta_reference,"fasta")}
     filtered_fasta = []
@@ -155,10 +156,13 @@ def make_proteinfasta_from_orthogroup(orthogroups_dict, proteinfasta_reference, 
         if orthogroups_to_include != [] and OG_id not in orthogroups_to_include:
             continue
         for transcript in transcripts:
+            if not transcript:
+                continue
             transcript = f"{species}_{transcript}"
             try: 
                 record = proteinfasta[transcript]
             except:
+                continue ## TODO it seems like some of the transcripts in here should have been removed by TE_filtering?
                 raise RuntimeError(f"{transcript} not found in reference proteinfasta file {proteinfasta_reference}")
             
             record.id = f"{record.id}_{OG_id}"
@@ -240,10 +244,10 @@ if __name__ == "__main__":
             print(f"{len(orthoDB_sig_OGs_dict)} orthogroups in sig dict")
 
         orthoDB_sig_all_species = OGs.parse_orthogroups_dict(orthogroups_orthoDB, sig_list = orthoDB_sig_list)
-        orthoDB_large_OGs = OGs.get_orthogroup_sizes(orthoDB_sig_all_species, q=95)
+        orthoDB_large_OGs = OGs.get_orthogroup_sizes(orthoDB_sig_all_species, q=0)
         large_OG_IDs = list(orthoDB_large_OGs.keys())
         
-        # make_proteinfasta_from_orthogroup(orthoDB_sig_OGs_dict, orthoDB_proteinseqs["D_melanogaster"], orthogroups_to_include=large_OG_IDs)
+        make_proteinfasta_from_orthogroup(orthoDB_sig_OGs_dict, orthoDB_proteinseqs["D_melanogaster"], orthogroups_to_include=large_OG_IDs)
 
         # blast the orthoDB proteins against the native ones
         """
@@ -252,13 +256,13 @@ if __name__ == "__main__":
         makeblastdb -in D_melanogaster.faa -dbtype prot     # native annotation for reference db
         blastp -query PhD_chapter1/Dmel_transcripts_from_sig_OGs.fasta -db /Users/miltr339/work/native_proteinseqs/D_melanogaster.faa -out Dmel_oDB_vs_nat.out -outfmt 6 -num_threads 3 -evalue 1e-10
         """
+        if False:
+            blast_outfile = "/Users/miltr339/work/PhD_code/Dmel_oDB_vs_nat.out"
+            blast_out_dict = parse_blast_outfile(blast_outfile)
 
-        blast_outfile = "/Users/miltr339/work/PhD_code/Dmel_oDB_vs_nat.out"
-        blast_out_dict = parse_blast_outfile(blast_outfile)
-        
-        num_transcripts = 0
-        for og, tr_list in blast_out_dict.items():
-            num_transcripts += len(tr_list)
+            num_transcripts = 0
+            for og, tr_list in blast_out_dict.items():
+                num_transcripts += len(tr_list)
 
-        not_found_transcripts = get_flybase_IDs(blast_out_dict, native_annotations["D_melanogaster"], outfile_name = "orthoDB_sig_OGs_flybase_IDs.tsv")
-        print(f"{len(not_found_transcripts)} (of {num_transcripts}) transcripts from orthoDB not found in annotation: {not_found_transcripts}")
+            not_found_transcripts = get_flybase_IDs(blast_out_dict, native_annotations["D_melanogaster"], outfile_name = "orthoDB_sig_OGs_flybase_IDs.tsv")
+            print(f"{len(not_found_transcripts)} (of {num_transcripts}) transcripts from orthoDB not found in annotation: {not_found_transcripts}")
