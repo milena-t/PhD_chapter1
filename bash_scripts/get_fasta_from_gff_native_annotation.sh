@@ -20,6 +20,7 @@ ANNOTS=/proj/naiss2023-6-65/Milena/gene_family_analysis/native_annotations_gff/*
 
 for ANNOT in $ANNOTS
 do 
+    echo " ---> "
     # OUT_BN=$(basename "$ANNOT")
     # ANNOT_TRANSCRIPTS="${OUT_BN%.*}_transcripts.fna"
     # ANNOT_PROTEINS="${OUT_BN%.*}_proteins.fna"
