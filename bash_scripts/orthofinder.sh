@@ -3,8 +3,8 @@
 #SBATCH -p core
 #SBATCH -n 20
 #SBATCH -t 2:00:00
-#SBATCH -J orthofinder_orthoDB_filtered
-#SBATCH -o orthofinder_orthoDB_filtered.log
+#SBATCH -J orthofinder_TE_filtered
+#SBATCH -o orthofinder_TE_filtered.log
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user milena.trabert@ebc.uu.se
 
