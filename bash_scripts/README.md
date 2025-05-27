@@ -9,7 +9,8 @@ Runs braker from a singularity image (convert from the docker container that the
 After braker returns a gtf file, this file will be filtered to remove overlapping genes and only keep the longest isoform of every gene. A new gff file is created.
 
 ### `get_fasta_from_gff.sh`
-After the gff is filtered, extract a fasta file of all annotated genes, one proteinfasta (.faa) and one nucleotidefasta (.fna)
+After the gff is filtered, extract a fasta file of all annotated genes, one proteinfasta (.faa) and one nucleotidefasta (.fna).
+There is also a version that specifically does this for the native annotations, since the folder structure here is a little weird and they still need to access the assembly in the uniform annotation by name correctly.
 
 ### `annotation_statistics.sh`
 Use the AGAT package to extract some basic annotation statistics.
