@@ -14,31 +14,35 @@
 
 module load bioinfo-tools gffread/0.12.7 samtools/1.20 emboss/6.6.0
 
-ANNOT_DIRS=/proj/naiss2023-6-65/Milena/annotation_pipeline/only_orthodb_annotation
+ANNOTS=/proj/naiss2023-6-65/Milena/gene_family_analysis/native_annotations_gff/*isoform_filtered.gff
 
-for ANNOT_DIR in $(echo $ANNOT_DIRS/*) # add string to specify species (or species subsets) around wildcard
+for ANNOT in $ANNOTS
 do 
-    FILTERED_GTF="${ANNOT_GTF%.*}_isoform_filtered.gff" # originally gtf but keep_longest_isoform.pl automatically returns gff version 3 
-    ANNOT_TRANSCRIPTS=isoform_filtered_transcripts.fna
-    ANNOT_PROTEINS=isoform_filtered_proteins.faa
+    ANNOT_TRANSCRIPTS="${ANNOT%.*}_transcripts.fna"
+    ANNOT_PROTEINS="${ANNOT%.*}_proteins.fna"
     ASSEMBLY=assembly_genomic.fna.masked
+
+    # parse species name to access assembly 
+    # from path/acanthoscelides_obtectus_isoform_filtered.gff to A_obtectus
+    SPECIES_NAME=$(basename "$ANNOT") ; SPECIES_NAME="${SPECIES_NAME%_isoform_filtered.gff}" ; SPECIES_NAME="${SPECIES_NAME%_transcript*}" ; SPECIES_NAME="${SPECIES_NAME%%_*}_${SPECIES_NAME#*_}" ; SPECIES_NAME="${SPECIES_NAME:0:1}_${SPECIES_NAME#*_}" ; SPECIES_NAME="$(tr '[:lower:]' '[:upper:]' <<< "${SPECIES_NAME:0:1}")_${SPECIES_NAME#*_}" 
+    ASSEMBLY="/proj/naiss2023-6-65/Milena/annotation_pipeline/only_orthodb_annotation/${SPECIES_NAME}/${ASSEMBLY}"
 
     # braker doesn't like spaces in the contig names so it replaces them with underscores. 
     # The below command makes them match the first column in the gtf file again.
     # run only once
-    # sed -i 's/ /_/g' $ASSEMBLY 
+    # sed -i 's/ /_/g' $ANNOT 
 
     # for the callosobruchuses there is an additional replacement necessary
     # In analis and chinensis, the fasta headers look like this: >31|quiver but the annotation looks for this 31_quiver
     # maculatus has a longer header but also some "|" that are replaced by braker in the annotation 
     # also run only once
-    #sed -i 's/|/_/g' $ASSEMBLY
+    # sed -i 's/|/_/g' $ASSEMBLY
+
+    # replace the contig names in chinensis and analis
+    sed -i 's/|q/_q/g' $ANNOT
 
     echo $(pwd)
     echo $ASSEMBLY
-
-    SPECIES_NAME=$(basename "$ANNOT_DIR")
-    echo $SPECIES_NAME
 
     # index assemblies (greatly decreases computing time, and won't work for the more fragmented callosobruchus assemblies otherwise)
     samtools faidx $ASSEMBLY
