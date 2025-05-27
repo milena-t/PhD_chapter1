@@ -245,8 +245,10 @@ if __name__ == "__main__":
         orthoDB_sig_all_species = OGs.parse_orthogroups_dict(orthogroups_orthoDB, sig_list = orthoDB_sig_list)
         orthoDB_large_OGs = OGs.get_orthogroup_sizes(orthoDB_sig_all_species, q=0)
         large_OG_IDs = list(orthoDB_large_OGs.keys())
+        print(len(orthoDB_sig_all_species))
+        print(len(large_OG_IDs))
         
-        # make_proteinfasta_from_orthogroup(orthoDB_sig_OGs_dict, orthoDB_proteinseqs["D_melanogaster"], orthogroups_to_include=large_OG_IDs)
+        #make_proteinfasta_from_orthogroup(orthoDB_sig_OGs_dict, orthoDB_proteinseqs["D_melanogaster"], orthogroups_to_include=large_OG_IDs)
 
         # blast the orthoDB proteins against the native ones
         """
