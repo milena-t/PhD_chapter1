@@ -2,7 +2,7 @@
 #SBATCH -A uppmax2025-2-148
 #SBATCH -p core
 #SBATCH -n 1
-#SBATCH -t 20:00
+#SBATCH -t 5:00
 #SBATCH -J make_filtered_transcripts
 #SBATCH -o make_filtered_transcripts.log
 #SBATCH --mail-type=ALL
@@ -14,7 +14,9 @@
 
 module load bioinfo-tools gffread/0.12.7 samtools/1.20 emboss/6.6.0
 
-ANNOTS=/proj/naiss2023-6-65/Milena/gene_family_analysis/native_annotations_gff/*isoform_filtered.gff
+# ANNOTS=/proj/naiss2023-6-65/Milena/gene_family_analysis/native_annotations_gff/*isoform_filtered.gff
+# only do cmac superscaffolded:
+ANNOTS=/proj/naiss2023-6-65/Milena/gene_family_analysis/native_annotations_gff/*transcript_only_isoform_filtered.gff
 
 for ANNOT in $ANNOTS
 do 
@@ -60,6 +62,7 @@ do
 
     ls -lh $ANNOT_TRANSCRIPTS
     echo "###########################################"
+    echo "  "
 
 done
 
