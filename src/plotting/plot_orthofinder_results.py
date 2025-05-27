@@ -25,8 +25,8 @@ The plot filenames are hardcoded into the end of the script!
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter,description=program_description)
 
     # Add the arguments
-    parser.add_argument('--orthogroups1', type=str, required=True, help='Filepath to the first set of hierarchical orthogroups')
-    parser.add_argument('--orthogroups2', type=str, help="Filepath to the second set of hierarchical orthogroups")
+    parser.add_argument('--orthogroups1', type=str, required=True, help='Filepath to the first set of hierarchical orthogroups (default native)')
+    parser.add_argument('--orthogroups2', type=str, help="Filepath to the second set of hierarchical orthogroups (default uniform)")
     parser.add_argument('--orthogroups3', type=str, help="Filepath to the third set of hierarchical orthogroups")
 
     parser.add_argument('--common_tree', type=str, required=True, help='path to a newick tree containing all species (from an orthofinder run) to determine the plot order of species in the X axis')
@@ -53,27 +53,18 @@ The plot filenames are hardcoded into the end of the script!
     if not args.name_og1:
         args.name_og1 = "native" 
     if not args.name_og2:
-        args.name_og2 = "orthoDB" 
+        args.name_og2 = "uniform" 
     if not args.name_og3:
         args.name_og3 = "proteinseqs"
 
     if not args.color_og1:
         args.color_og1 = "#B82845" # cardinal
     if not args.color_og2:
-        args.color_og2 = "#4D7298" # UCLA blue
+        args.color_og2 = "#ED7D3A" # Pumbkin
     if not args.color_og3:
-        args.color_og3 = "#ED7D3A" # Pumbkin. Old default: "#413C58" # english violet
+        args.color_og3 = "#4D7298" # UCLA blue
 
     return args
-
-
-
-############################################
-#### process the output of orthofinder #####
-############################################
-
-
-#### process the Orthogroups.txt output that orthofinder generates into numbers of gene families
 
 
 
@@ -320,58 +311,30 @@ if __name__ == '__main__':
 
     args=parse_args()
 
-    genome_sizes_dict = {"D_melanogaster" : 180,
-                        "I_luminosus" : 842,
-                        "P_pyralis" : 471,
-                        "C_septempunctata" : 399,
-                        "A_verrucosus" : 250,
-                        "T_castaneum" : 204,
-                        "T_molitor" : 258,
-                        "Z_morio" : 461,
-                        "R_ferrugineus" : 589,
-                        "D_ponderosae" : 223,
-                        "A_obtectus" : 949,
-                        "B_siliquastri" : 375,
-                        "C_chinensis" : 701,
-                        "C_analis" : 971,
-                        "C_maculatus" : 1202 
-                        }
-
-
     species_names = gff.make_species_order_from_tree(args.common_tree)
     # print(species_names)
 
-
     print(f"\n --> entered a file, use hierarchical orthogroups.\n")
     get_species_counts(args.orthogroups1, species_names, hierarchical=True)
-    # first orthogroups set
+
     print(f"\n {args.name_og1} orthogroups set:")
     first_numbers = get_hierarchical_numbers_dicts(species_names, files_dir= args.annotations_og1, orthogroups_file=args.orthogroups1, verbose = True)
-    # native tree:
-    # (D_melanogaster:0.331686,((P_pyralis:0.206536,I_luminosus:0.190788)0.833694:0.0924935,(C_septempunctata:0.280821,(((D_ponderosae:0.261936,R_ferrugineus:0.196725)0.801546:0.0855842,(A_obtectus:0.0824289,(B_siliquastri:0.0691699,(C_chinensis:0.0758605,C_maculatus:0.078485)0.554869:0.039176)0.363833:0.0292653)0.833076:0.156195)0.372488:0.0366516,(A_verrucosus:0.162389,(T_castaneum:0.0990607,(T_molitor:0.0922383,Z_morio:0.121058)0.253478:0.0259247)0.332612:0.0389913)0.759815:0.0928272)0.186399:0.0231684)0.309737:0.0466942)1:0.331686);
     
     if args.orthogroups2 and len(args.orthogroups2)>0:
         get_species_counts(args.orthogroups2, species_names, hierarchical=True)
         print(f"\n {args.name_og2} annotation orthogroups set")
         second_numbers = get_hierarchical_numbers_dicts(species_names, files_dir= args.annotations_og2, orthogroups_file=args.orthogroups2, verbose = True)
-        # orthoDB tree
-        # (D_melanogaster:0.348432,(((((B_siliquastri:0.0627412,(C_chinensis:0.0554959,C_maculatus:0.0607227)0.647242:0.0354391)0.45952:0.0373316,A_obtectus:0.10178)0.852536:0.169791,(R_ferrugineus:0.19925,D_ponderosae:0.230231)0.794484:0.0879981)0.367215:0.036785,(C_septempunctata:0.296374,(A_verrucosus:0.144991,((Z_morio:0.124737,T_molitor:0.0890143)0.238657:0.0226841,T_castaneum:0.100365)0.305383:0.0426554)0.751112:0.0958722)0.171263:0.0251832)0.294484:0.0484742,(P_pyralis:0.210399,I_luminosus:0.194079)0.806495:0.0973794)1:0.348432);
-        # differently ordered but same topology as the native tree!
     else:
         second_numbers = {}
+
     if args.orthogroups3 and len(args.orthogroups3)>0:
         get_species_counts(args.orthogroups3, species_names, hierarchical=True)
         print(f"\n {args.name_og3} annotation orthogroups set")
         third_numbers = get_hierarchical_numbers_dicts(species_names, files_dir= args.annotations_og3, orthogroups_file=args.orthogroups3, verbose = True)
     else:
         third_numbers = {}
+    
     print(f"\n\n ... plotting ...")
+
     plot_general_annotation_comparisons(native = first_numbers, orthoDB = second_numbers, proteinseqs = third_numbers, legend_title = "", speciesnames = species_names, filename = "plot_orthofinder_comparison.png")
     plot_general_annotation_comparisons(native = first_numbers, orthoDB = second_numbers, proteinseqs = third_numbers, legend_title = "", speciesnames = species_names, filename = "plot_orthofinder_comparison_with_genome_sizes.png", genome_size = genome_sizes_dict)
-
-
-
-
-
-    
-    # plot_general_annotation_comparisons(native = first_numbers, legend_title = "", speciesnames = species_names, filename = "plot_only_native_annotation.png", genome_size = genome_sizes_dict)
