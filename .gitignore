@@ -3,6 +3,8 @@
 *.fasta
 *.fa
 *.fna
+*.log
+
 
 ### everything below here is the standard python gitignore
 
