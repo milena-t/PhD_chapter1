@@ -49,6 +49,9 @@ do
     # replace the contig names in chinensis and analis
     # sed -i 's/|q/_q/g' $ANNOT
 
+    # remove tailing _1 in contig names in unsuperscaffolded Cmac
+    sed 's/|q/_q/g' $ANNOT > "${ANNOT%.*}_new_contig_name.gff"
+
     echo $(pwd)
     echo $ASSEMBLY
     echo $ANNOT
@@ -56,7 +59,7 @@ do
     # index assemblies (greatly decreases computing time, and won't work for the more fragmented callosobruchus assemblies otherwise)
     samtools faidx $ASSEMBLY
     # extract transcript sequences
-    gffread -M -x $ANNOT_TRANSCRIPTS -g $ASSEMBLY $ANNOT
+    gffread -M -x $ANNOT_TRANSCRIPTS -g $ASSEMBLY "${ANNOT%.*}_new_contig_name.gff"
     # change fasta headers to include species names
     sed -i "s/>/>${SPECIES_NAME}_/g" $ANNOT_TRANSCRIPTS
     # translate transcript sequences
@@ -64,6 +67,7 @@ do
 
 
     ls -lh $ANNOT_TRANSCRIPTS
+    rm "${ANNOT%.*}_new_contig_name.gff"
     echo "###########################################"
     echo "  "
 
