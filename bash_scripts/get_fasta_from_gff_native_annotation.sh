@@ -29,7 +29,7 @@ do
 
     # parse species name to access assembly 
     # from path/acanthoscelides_obtectus_isoform_filtered.gff to A_obtectus
-    SPECIES_NAME=$(basename "$ANNOT") ; SPECIES_NAME="${SPECIES_NAME%_isoform_filtered.gff}" ; SPECIES_NAME="${SPECIES_NAME%_transcript*}" ; SPECIES_NAME="${SPECIES_NAME%%_*}_${SPECIES_NAME#*_}" ; SPECIES_NAME="${SPECIES_NAME:0:1}_${SPECIES_NAME#*_}" ; SPECIES_NAME="$(tr '[:lower:]' '[:upper:]' <<< "${SPECIES_NAME:0:1}")_${SPECIES_NAME#*_}" 
+    SPECIES_NAME=$(basename "$ANNOT") ; SPECIES_NAME="${SPECIES_NAME%_isoform_filtered.gff}" ; SPECIES_NAME="${SPECIES_NAME%_transcript*}" ; SPECIES_NAME="${SPECIES_NAME%.gff*}" ; SPECIES_NAME="${SPECIES_NAME%%_*}_${SPECIES_NAME#*_}" ; SPECIES_NAME="${SPECIES_NAME:0:1}_${SPECIES_NAME#*_}" ; SPECIES_NAME="$(tr '[:lower:]' '[:upper:]' <<< "${SPECIES_NAME:0:1}")_${SPECIES_NAME#*_}" 
     ASSEMBLY="/proj/naiss2023-6-65/Milena/annotation_pipeline/only_orthodb_annotation/${SPECIES_NAME}/${ASSEMBLY}"
 
     ANNOT_TRANSCRIPTS="${SPECIES_NAME}_native_isoform_filtered_transcripts.fna"
