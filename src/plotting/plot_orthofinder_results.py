@@ -1,7 +1,7 @@
 import pandas as pd
 from collections import Counter
 from statistics import mean, stdev
-import src.parse_gff as gff
+import parse_gff as gff
 
 import matplotlib.pyplot as plt
 import os
@@ -30,6 +30,7 @@ The plot filenames are hardcoded into the end of the script!
     parser.add_argument('--orthogroups3', type=str, help="Filepath to the third set of hierarchical orthogroups")
 
     parser.add_argument('--common_tree', type=str, required=True, help='path to a newick tree containing all species (from an orthofinder run) to determine the plot order of species in the X axis')
+    parser.add_argument('--genome_sizes', type=str, help='adds a secondary y-axis and points for the genome size of each species. tsv file with two columns: species name and genome size')
 
     parser.add_argument('--annotations_og1', type=str, help='directory with annotations or proteinfasta files that are the basis for orthogroups set 1. Required for hierarchical orthogroups (file names need to contain species names!)')
     parser.add_argument('--annotations_og2', type=str, help="directory with annotations or proteinfasta files that are the basis for orthogroups set 2. Required for hierarchical orthogroups (file names need to contain species names!)")
@@ -126,6 +127,13 @@ def make_headers_lookup_table(genecount_table, species_names):
             lookup_dict[protein_set_name] = protein_set_name
     return lookup_dict
 
+def read_genome_sizes(gs_filepath):
+    out_dict = {}
+    with open(gs_filepath, "r") as GS_file:
+        for line in GS_file.readlines():
+            species, gs = line.strip().split("\t")
+            out_dict[species] = gs
+    return out_dict
 
 
 
@@ -142,13 +150,17 @@ def get_gene_conuts_from_annot(species_names, files_dir):
     if "fa" in files_list[0].split(".")[-1] or "fna" in files_list[0].split(".")[-1]:
         search_string = ">"
     for species_name in species_names: 
-        filepath = files_dir +"/"+ [file for file in files_list if species_name in file][0]
+        try:    
+            filepath = files_dir +"/"+ [file for file in files_list if species_name in file][0]
+        except:
+            # try with species name not like A_obtectus but just obtectus
+            filepath = files_dir +"/"+ [file for file in files_list if species_name.split("_")[1] in file][0]
 
+        assert len(filepath)>0
         # get count per gene with bash commands 
         # in total: grep "search_string" filepath | wc -l
 
         command = ["grep", search_string, filepath]
-        # print(command)
         grep_out = sp.run(command , stdout = sp.PIPE)
         command2 = ["wc", "-l"]
         num_hits = sp.run(command2 , stdout = sp.PIPE, input=grep_out.stdout).stdout.decode("utf-8")
@@ -314,27 +326,29 @@ if __name__ == '__main__':
     species_names = gff.make_species_order_from_tree(args.common_tree)
     # print(species_names)
 
-    print(f"\n --> entered a file, use hierarchical orthogroups.\n")
-    get_species_counts(args.orthogroups1, species_names, hierarchical=True)
+    get_species_counts(args.orthogroups1, species_names)
 
     print(f"\n {args.name_og1} orthogroups set:")
     first_numbers = get_hierarchical_numbers_dicts(species_names, files_dir= args.annotations_og1, orthogroups_file=args.orthogroups1, verbose = True)
     
     if args.orthogroups2 and len(args.orthogroups2)>0:
-        get_species_counts(args.orthogroups2, species_names, hierarchical=True)
+        get_species_counts(args.orthogroups2, species_names)
         print(f"\n {args.name_og2} annotation orthogroups set")
         second_numbers = get_hierarchical_numbers_dicts(species_names, files_dir= args.annotations_og2, orthogroups_file=args.orthogroups2, verbose = True)
     else:
         second_numbers = {}
 
     if args.orthogroups3 and len(args.orthogroups3)>0:
-        get_species_counts(args.orthogroups3, species_names, hierarchical=True)
+        get_species_counts(args.orthogroups3, species_names)
         print(f"\n {args.name_og3} annotation orthogroups set")
         third_numbers = get_hierarchical_numbers_dicts(species_names, files_dir= args.annotations_og3, orthogroups_file=args.orthogroups3, verbose = True)
     else:
         third_numbers = {}
     
-    print(f"\n\n ... plotting ...")
+    print(f"\n ... plotting ...")
 
-    plot_general_annotation_comparisons(native = first_numbers, orthoDB = second_numbers, proteinseqs = third_numbers, legend_title = "", speciesnames = species_names, filename = "plot_orthofinder_comparison.png")
-    plot_general_annotation_comparisons(native = first_numbers, orthoDB = second_numbers, proteinseqs = third_numbers, legend_title = "", speciesnames = species_names, filename = "plot_orthofinder_comparison_with_genome_sizes.png", genome_size = genome_sizes_dict)
+    if args.genome_sizes:
+        genoms_sizes_dict = read_genome_sizes(args.genome_sizes)
+        plot_general_annotation_comparisons(native = first_numbers, orthoDB = second_numbers, proteinseqs = third_numbers, legend_title = "", speciesnames = species_names, filename = "plot_orthofinder_comparison_with_genome_sizes.png", genome_size = genome_sizes_dict)
+    else:
+        plot_general_annotation_comparisons(native = first_numbers, orthoDB = second_numbers, proteinseqs = third_numbers, legend_title = "", speciesnames = species_names, filename = "plot_orthofinder_comparison.png")
