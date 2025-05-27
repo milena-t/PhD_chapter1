@@ -16,7 +16,8 @@ module load bioinfo-tools gffread/0.12.7 samtools/1.20 emboss/6.6.0
 
 # ANNOTS=/proj/naiss2023-6-65/Milena/gene_family_analysis/native_annotations_gff/*isoform_filtered.gff
 # only do cmac superscaffolded:
-ANNOTS=/proj/naiss2023-6-65/Milena/gene_family_analysis/native_annotations_gff/*transcript_only_isoform_filtered.gff
+# ANNOTS=/proj/naiss2023-6-65/Milena/gene_family_analysis/native_annotations_gff/*transcript_only_isoform_filtered.gff
+ANNOTS=/proj/naiss2023-6-65/Milena/gene_family_analysis/native_annotations_gff/callosobruchus_maculatus.gff.isoform_filt*
 
 for ANNOT in $ANNOTS
 do 
