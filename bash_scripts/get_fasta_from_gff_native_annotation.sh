@@ -46,10 +46,11 @@ do
     # sed -i 's/|/_/g' $ASSEMBLY
 
     # replace the contig names in chinensis and analis
-    sed -i 's/|q/_q/g' $ANNOT
+    # sed -i 's/|q/_q/g' $ANNOT
 
     echo $(pwd)
     echo $ASSEMBLY
+    echo $ANNOT
 
     # index assemblies (greatly decreases computing time, and won't work for the more fragmented callosobruchus assemblies otherwise)
     samtools faidx $ASSEMBLY
