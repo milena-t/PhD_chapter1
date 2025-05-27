@@ -18,8 +18,9 @@ ANNOTS=/proj/naiss2023-6-65/Milena/gene_family_analysis/native_annotations_gff/*
 
 for ANNOT in $ANNOTS
 do 
-    ANNOT_TRANSCRIPTS="${ANNOT%.*}_transcripts.fna"
-    ANNOT_PROTEINS="${ANNOT%.*}_proteins.fna"
+    OUT_BN=$(basename "$ANNOT")
+    ANNOT_TRANSCRIPTS="${OUT_BN%.*}_transcripts.fna"
+    ANNOT_PROTEINS="${OUT_BN%.*}_proteins.fna"
     ASSEMBLY=assembly_genomic.fna.masked
 
     # parse species name to access assembly 
@@ -47,7 +48,7 @@ do
     # index assemblies (greatly decreases computing time, and won't work for the more fragmented callosobruchus assemblies otherwise)
     samtools faidx $ASSEMBLY
     # extract transcript sequences
-    gffread -M -x $ANNOT_TRANSCRIPTS -g $ASSEMBLY $ANNOT_GTF
+    gffread -M -x $ANNOT_TRANSCRIPTS -g $ASSEMBLY $ANNOT
     # change fasta headers to include species names
     sed -i "s/>/>${SPECIES_NAME}_/g" $ANNOT_TRANSCRIPTS
     # translate transcript sequences
