@@ -2,7 +2,7 @@
 #SBATCH -A uppmax2025-2-148
 #SBATCH -p core
 #SBATCH -n 1
-#SBATCH -t 1:00:00
+#SBATCH -t 20:00
 #SBATCH -J make_filtered_transcripts
 #SBATCH -o make_filtered_transcripts.log
 #SBATCH --mail-type=ALL
@@ -18,15 +18,18 @@ ANNOTS=/proj/naiss2023-6-65/Milena/gene_family_analysis/native_annotations_gff/*
 
 for ANNOT in $ANNOTS
 do 
-    OUT_BN=$(basename "$ANNOT")
-    ANNOT_TRANSCRIPTS="${OUT_BN%.*}_transcripts.fna"
-    ANNOT_PROTEINS="${OUT_BN%.*}_proteins.fna"
+    # OUT_BN=$(basename "$ANNOT")
+    # ANNOT_TRANSCRIPTS="${OUT_BN%.*}_transcripts.fna"
+    # ANNOT_PROTEINS="${OUT_BN%.*}_proteins.fna"
     ASSEMBLY=assembly_genomic.fna.masked
 
     # parse species name to access assembly 
     # from path/acanthoscelides_obtectus_isoform_filtered.gff to A_obtectus
     SPECIES_NAME=$(basename "$ANNOT") ; SPECIES_NAME="${SPECIES_NAME%_isoform_filtered.gff}" ; SPECIES_NAME="${SPECIES_NAME%_transcript*}" ; SPECIES_NAME="${SPECIES_NAME%%_*}_${SPECIES_NAME#*_}" ; SPECIES_NAME="${SPECIES_NAME:0:1}_${SPECIES_NAME#*_}" ; SPECIES_NAME="$(tr '[:lower:]' '[:upper:]' <<< "${SPECIES_NAME:0:1}")_${SPECIES_NAME#*_}" 
     ASSEMBLY="/proj/naiss2023-6-65/Milena/annotation_pipeline/only_orthodb_annotation/${SPECIES_NAME}/${ASSEMBLY}"
+
+    ANNOT_TRANSCRIPTS="${SPECIES_NAME}_native_isoform_filtered_transcripts.fna"
+    ANNOT_PROTEINS="${SPECIES_NAME}_native_isoform_filtered_proteins.fna"
 
     # braker doesn't like spaces in the contig names so it replaces them with underscores. 
     # The below command makes them match the first column in the gtf file again.
