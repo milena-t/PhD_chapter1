@@ -147,7 +147,6 @@ def make_proteinfasta_from_orthogroup(orthogroups_dict, proteinfasta_reference, 
     make a proteinfasta for transcripts from significant orthogroups. 
     orthogroups dict assumes a dict already resolved by species (probably drosophila)
     """
-    dmel_unfiltered_annot = "/Users/miltr339/work/native_annotations/"
 
     proteinfasta = {record.id : record for record in SeqIO.parse(proteinfasta_reference,"fasta")}
     filtered_fasta = []
@@ -211,7 +210,7 @@ if __name__ == "__main__":
 
     orthoDB_annotations, orthogroups_orthoDB, sig_orthoDB, orthoDB_proteinseqs = filepaths_orthoDB()
     native_annotations, orthogroups_native, sig_native, native_proteinseqs = filepaths_native()
-    
+    dmel_unfiltered_annot = "/Users/miltr339/work/native_annotations/d_melanogaster_NOT_isoform_filtered.gff"    
 
     ## Get stuff from native with functional annotations
     if False:
@@ -247,7 +246,7 @@ if __name__ == "__main__":
         orthoDB_large_OGs = OGs.get_orthogroup_sizes(orthoDB_sig_all_species, q=0)
         large_OG_IDs = list(orthoDB_large_OGs.keys())
         
-        make_proteinfasta_from_orthogroup(orthoDB_sig_OGs_dict, orthoDB_proteinseqs["D_melanogaster"], orthogroups_to_include=large_OG_IDs)
+        # make_proteinfasta_from_orthogroup(orthoDB_sig_OGs_dict, orthoDB_proteinseqs["D_melanogaster"], orthogroups_to_include=large_OG_IDs)
 
         # blast the orthoDB proteins against the native ones
         """
@@ -256,7 +255,7 @@ if __name__ == "__main__":
         makeblastdb -in D_melanogaster.faa -dbtype prot     # native annotation for reference db
         blastp -query PhD_chapter1/Dmel_transcripts_from_sig_OGs.fasta -db /Users/miltr339/work/native_proteinseqs/D_melanogaster.faa -out Dmel_oDB_vs_nat.out -outfmt 6 -num_threads 3 -evalue 1e-10
         """
-        if False:
+        if True:
             blast_outfile = "/Users/miltr339/work/PhD_code/Dmel_oDB_vs_nat.out"
             blast_out_dict = parse_blast_outfile(blast_outfile)
 
@@ -264,5 +263,5 @@ if __name__ == "__main__":
             for og, tr_list in blast_out_dict.items():
                 num_transcripts += len(tr_list)
 
-            not_found_transcripts = get_flybase_IDs(blast_out_dict, native_annotations["D_melanogaster"], outfile_name = "orthoDB_sig_OGs_flybase_IDs.tsv")
+            not_found_transcripts = get_flybase_IDs(blast_out_dict, dmel_unfiltered_annot, outfile_name = "orthoDB_sig_OGs_flybase_IDs.tsv")
             print(f"{len(not_found_transcripts)} (of {num_transcripts}) transcripts from orthoDB not found in annotation: {not_found_transcripts}")
