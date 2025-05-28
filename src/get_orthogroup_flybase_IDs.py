@@ -114,10 +114,6 @@ def get_flybase_IDs(orthogroup_dict_species, drosophila_gff_path, outfile_name:s
 
     also gives you the option to access the flybase API to get functional information based on the gene ID
 
-    !!! include stuff from Flybase API to include in extra columns as well (if it is pretty simple):
-        * gene name
-        * keyword
-
     TODO check plot for the orthogroup size across species and highlight specific OGs by color accodring to function when Elina identifies interesting ones from Flybase IDs
     """
 
@@ -153,7 +149,7 @@ def get_flybase_IDs(orthogroup_dict_species, drosophila_gff_path, outfile_name:s
                 continue
             
             if orthogroups_dict_all != {}:
-                OG_species = orthogroups_dict_all[OG_id]
+                OG_species = orthogroups_dict_all[OG_id] ### TODO check significant orthogroups list got an error message here with orthogroups_dict_all = OGs.parse_orthogroups_dict(orthogroups_orthoDB, sig_list = orthoDB_sig_list)
                 GF_size = []
                 for species in species_list:
                     try:
@@ -310,17 +306,18 @@ if __name__ == "__main__":
         orthoDB_sig_all_species = OGs.parse_orthogroups_dict(orthogroups_orthoDB, sig_list = orthoDB_sig_list)
         orthoDB_large_OGs = OGs.get_orthogroup_sizes(orthoDB_sig_all_species, q=0)
         large_OG_IDs = list(orthoDB_large_OGs.keys())
-        print(len(orthoDB_sig_all_species))
-        print(len(large_OG_IDs))
+        if len(orthoDB_sig_all_species) != len(large_OG_IDs):
+            print(len(orthoDB_sig_all_species))
+            print(len(large_OG_IDs))
         
-        #make_proteinfasta_from_orthogroup(orthoDB_sig_OGs_dict, orthoDB_proteinseqs["D_melanogaster"], orthogroups_to_include=large_OG_IDs)
+        make_proteinfasta_from_orthogroup(orthoDB_sig_OGs_dict, orthoDB_proteinseqs["D_melanogaster"], orthogroups_to_include=large_OG_IDs)
 
         # blast the orthoDB proteins against the native ones
         """
         BLASTp search of the above created proteins against the native Dmel annotation to get the flybase IDs
        
         makeblastdb -in D_melanogaster.faa -dbtype prot     # native annotation for reference db
-        blastp -query PhD_chapter1/Dmel_transcripts_from_sig_OGs.fasta -db /Users/miltr339/work/native_proteinseqs/D_melanogaster.faa -out Dmel_oDB_vs_nat.out -outfmt 6 -num_threads 3 -evalue 1e-10
+        blastp -query PhD_chapter1/Dmel_transcripts_from_sig_OGs.fasta -db /Users/miltr339/work/native_proteinseqs/D_melanogaster.faa -out /Users/miltr339/work/PhD_code/Dmel_oDB_vs_nat.out -outfmt 6 -num_threads 5 -evalue 1e-10
         """
         if True:
             blast_outfile = "/Users/miltr339/work/PhD_code/Dmel_oDB_vs_nat.out"
@@ -330,5 +327,8 @@ if __name__ == "__main__":
             for og, tr_list in blast_out_dict.items():
                 num_transcripts += len(tr_list)
 
+
+            ## TODO fix this somehow 
+            # orthoDB_sig_all_species = OGs.parse_orthogroups_dict(orthogroups_orthoDB)
             not_found_transcripts = get_flybase_IDs(blast_out_dict, dmel_unfiltered_annot, outfile_name = "orthoDB_sig_OGs_flybase_IDs.tsv", orthogroups_dict_all=orthoDB_sig_all_species, CAFE_results_path=sig_orthoDB)
             print(f"{len(not_found_transcripts)} (of {num_transcripts}) transcripts from orthoDB not found in annotation: {not_found_transcripts}")
