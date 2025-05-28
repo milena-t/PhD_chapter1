@@ -6,12 +6,44 @@
 
 
 import parse_gff as gff
+import numpy as np
 
+
+
+def get_orthogroup_sizes(orthogroup_dict, q = 0):
+    """
+    returns a dict of all orthogroups sizes.
+    if a percentile p is specified other than 0, it returns only orthogroups whose size is > than the pth percentile of the size distribution
+    """
+    
+    OG_sizes_dict = {}
+    sizes = []
+    for OG_id, species_dict in orthogroup_dict.items():
+        size = 0
+        for transcripts_list in species_dict.values():
+            size += len(transcripts_list)
         
+        OG_sizes_dict[OG_id] = size
+        sizes.append(size)
+    
+    if q == 0:
+        return OG_sizes_dict
+    else:
+        OG_sizes_filtered = {}
+        sizes = np.array(sizes)
+        percentile_size = np.percentile(sizes, q = q)
+        for OG_id, size in OG_sizes_dict.items():
+            if size > percentile_size:
+                OG_sizes_filtered[OG_id] = size
+
+        return OG_sizes_filtered
+
+
+
 
 def get_sig_orthogroups(filepath, p_sig = 0.05):
     """ 
-    get a list of significant orthogroup IDs
+    get a list of significant orthogroup IDs from CAFE output
     """
     sig_list = []
     all_list = []
@@ -64,17 +96,6 @@ please pick one of the header names instead: \n\t{headers} \nor:\n\t{headers_cle
         for i, orthogroup_line in enumerate(N0_infile[1:]):
             orthogroup_line = orthogroup_line.strip().split("\t")
             orthogroup = orthogroup_line[0] # column 0 for the hierarchical one, otherwise 1 for the old one (which is deprecated because of duplicates)
-            
-            try:
-                og_number = int(orthogroup[3:])
-
-                ## count duplicate orthogroup IDs, They are all immediately after each other so no need to save all numbers in a list
-                if og_number - old_og_number != 1:
-                    duplicates_count += 1
-                old_og_number = og_number
-                orthogroup = f"{orthogroup}_{i}" # add index to orthogroup ID
-            except:
-                pass
 
             if len(sig_list)>0 and orthogroup not in sig_list:
                 continue # skip this orthogroup
@@ -92,20 +113,20 @@ please pick one of the header names instead: \n\t{headers} \nor:\n\t{headers_cle
                     except:
                         out_dict[orthogroup][species_col] = []
 
-            else: ### TODO fix this, the thing where it only reads one species
+            else: 
                 try:
                     column = headers.index(species)
                 except:
                     column = headers_clean.index(species)
+
                 try:
-                    OG_species = orthogroup_line[column].split(", ")
+                    transcripts_list = orthogroup_line[column].split(", ")
+                    OG_species = [transcript.replace(f"{species}_", "") for transcript in transcripts_list]
                 except:
                     OG_species = ['']
-                    # raise RuntimeError(f"no column {column} found  in {orthogroup_line}")
-
-                if len(OG_species)>0 and OG_species != ['']:
-                    # the transcripts contain a "species_name_" prefix, remove that here
-                    out_dict[orthogroup] = [transcript.replace(f"{species}_", "") for transcript in OG_species]
+                    
+                out_dict[orthogroup] = OG_species
+            
 
     # print(f"{duplicates_count} orthogroups with duplicate names" )
     return(out_dict)

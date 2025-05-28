@@ -1,7 +1,7 @@
 import pandas as pd
 import re
 from collections import Counter
-import src.parse_gff as gff
+import parse_gff as gff
 
 # add a functional description column to the Orthogroups.GeneCount.tsv output to be able to run CAFE
 # also make sure that the species tree names match the columns in the file
@@ -92,7 +92,8 @@ def count_csv_items(cell):
 
 def modify_orthogroups_from_N0(orthogroups_filepath, species_names, outfile_name = "CAFE_input_orthoDB_TE_filtered.tsv"):
     orthogroups_df = pd.read_csv(orthogroups_filepath, sep="\t")
-    outfile_path = "/".join(orthogroups_filepath.split("/")[:-1])+"/"+outfile_name
+    outfile_path = "/".join(orthogroups_filepath.split("/")[:-1])
+    outfile_name = outfile_path+"/"+outfile_name
 
     # remove the unnecessary column
     orthogroups_df.drop('Gene Tree Parent Clade', axis=1, inplace=True)
@@ -124,18 +125,9 @@ if __name__ == '__main__':
     # species_names = make_species_order_from_tree("/Users/miltr339/Box Sync/code/annotation_pipeline/annotation_scripts_ordered/14_species_orthofinder_tree.nw")
     species_names = gff.make_species_order_from_tree("/Users/milena/Box Sync/code/annotation_pipeline/annotation_scripts_ordered/14_species_orthofinder_tree.nw")
 
-    orthoDB_orthogroups = "/Users/miltr339/work/orthofinder/orthoDB_orthogroups/Orthogroups.GeneCount.tsv"
-    orthoDB_uniform_masked_orthogroups = "/Users/milena/work/orthofinder/orthoDB_uniform_masking_orthogroups/N0.tsv"
-    orthoDB_TE_filtered_orthogroups = "/Users/milena/work/orthofinder/orthoDB_TE_filtered_orthogroups/N0.tsv"
-    native_orthogroups = "/Users/milena/work/orthofinder/native_orthogroups/N0.tsv"
+    orthoDB_orthogroups = "/Users/milena/work/chapter1_final_postprocessing/orthofinder_uniform/N0.tsv"
+    native_orthogroups = "/Users/milena/work/chapter1_final_postprocessing/orthofinder_native/N0.tsv"
     
     modify_orthogroups_from_N0(native_orthogroups, species_names=species_names, outfile_name="CAFE_input_native_from_N0.tsv")
-    # modify_orthogroups_from_tsv(orthoDB_orthogroups, "CAFE_input_orthoDB.tsv", species_names)
-    # modify_orthogroups_from_tsv(native_orthogroups, "CAFE_input_native.tsv", species_names)
-
-    orthoDB_filtered_orthogroups = "/Users/milena/work/orthofinder/orthoDB_false_positive_filtered_orthogroups/Orthogroups_split_exon_filtered.txt"
-
-    # parse_table_from_txt(orthoDB_filtered_orthogroups, "CAFE_input_orthoDB_filtered.tsv", species_names)
-    # parse_table_from_txt(orthoDB_filtered_orthogroups, "CAFE_input_orthoDB_filtered.tsv")
-    species_names = gff.make_species_order_from_tree("/Users/milena/work/orthofinder/orthoDB_TE_filtered_orthogroups/SpeciesTree_rooted.txt")
-    modify_orthogroups_from_N0(orthoDB_TE_filtered_orthogroups, species_names=species_names)
+    modify_orthogroups_from_N0(orthoDB_orthogroups, species_names=species_names, outfile_name="CAFE_input_orthoDB_from_N0.tsv")
+    

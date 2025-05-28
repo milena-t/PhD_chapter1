@@ -2,7 +2,7 @@
 #SBATCH -A uppmax2025-2-148
 #SBATCH -p core
 #SBATCH -n 1
-#SBATCH -t 1:00:00
+#SBATCH -t 5:00
 #SBATCH -J make_filtered_transcripts
 #SBATCH -o make_filtered_transcripts.log
 #SBATCH --mail-type=ALL
@@ -14,36 +14,57 @@
 
 module load bioinfo-tools gffread/0.12.7 samtools/1.20 emboss/6.6.0
 
-ANNOT_DIRS=/proj/naiss2023-6-65/Milena/annotation_pipeline/only_orthodb_annotation
+# ANNOTS=/proj/naiss2023-6-65/Milena/gene_family_analysis/native_annotations_gff/*isoform_filtered.gff
+# only do cmac superscaffolded:
+# ANNOTS=/proj/naiss2023-6-65/Milena/gene_family_analysis/native_annotations_gff/*transcript_only_isoform_filtered.gff
+ANNOTS=/proj/naiss2023-6-65/Milena/gene_family_analysis/native_annotations_gff/callosobruchus_maculatus.gff.isoform_filt*
 
-for ANNOT_DIR in $(echo $ANNOT_DIRS/*) # add string to specify species (or species subsets) around wildcard
+for ANNOT in $ANNOTS
 do 
-    FILTERED_GTF="${ANNOT_GTF%.*}_isoform_filtered.gff" # originally gtf but keep_longest_isoform.pl automatically returns gff version 3 
-    ANNOT_TRANSCRIPTS=isoform_filtered_transcripts.fna
-    ANNOT_PROTEINS=isoform_filtered_proteins.faa
+    echo " ---> "
+    # OUT_BN=$(basename "$ANNOT")
+    # ANNOT_TRANSCRIPTS="${OUT_BN%.*}_transcripts.fna"
+    # ANNOT_PROTEINS="${OUT_BN%.*}_proteins.fna"
     ASSEMBLY=assembly_genomic.fna.masked
+
+    # parse species name to access assembly 
+    # from path/acanthoscelides_obtectus_isoform_filtered.gff to A_obtectus
+    SPECIES_NAME=$(basename "$ANNOT") ; SPECIES_NAME="${SPECIES_NAME%_isoform_filtered.gff}" ; SPECIES_NAME="${SPECIES_NAME%_transcript*}" ; SPECIES_NAME="${SPECIES_NAME%.gff*}" ; SPECIES_NAME="${SPECIES_NAME%%_*}_${SPECIES_NAME#*_}" ; SPECIES_NAME="${SPECIES_NAME:0:1}_${SPECIES_NAME#*_}" ; SPECIES_NAME="$(tr '[:lower:]' '[:upper:]' <<< "${SPECIES_NAME:0:1}")_${SPECIES_NAME#*_}" 
+    ASSEMBLY="/proj/naiss2023-6-65/Milena/annotation_pipeline/only_orthodb_annotation/${SPECIES_NAME}/${ASSEMBLY}"
+
+    ANNOT_TRANSCRIPTS="${SPECIES_NAME}_native_isoform_filtered_transcripts.fna"
+    ANNOT_PROTEINS="${SPECIES_NAME}_native_isoform_filtered_proteins.fna"
 
     # braker doesn't like spaces in the contig names so it replaces them with underscores. 
     # The below command makes them match the first column in the gtf file again.
     # run only once
-    # sed -i 's/ /_/g' $ASSEMBLY 
+    # sed -i 's/ /_/g' $ANNOT 
 
     # for the callosobruchuses there is an additional replacement necessary
     # In analis and chinensis, the fasta headers look like this: >31|quiver but the annotation looks for this 31_quiver
     # maculatus has a longer header but also some "|" that are replaced by braker in the annotation 
     # also run only once
-    #sed -i 's/|/_/g' $ASSEMBLY
+    # sed -i 's/|/_/g' $ASSEMBLY
+
+    # replace the contig names in chinensis and analis
+    # sed -i 's/|q/_q/g' $ANNOT
+
+    # remove tailing _1 in contig names in unsuperscaffolded Cmac
+    ANNOT_MOD="${ANNOT%.gff*}_new_contig_name.gff"
+    sed 's/l_1/l/g' $ANNOT > $ANNOT_MOD
+
 
     echo $(pwd)
     echo $ASSEMBLY
-
-    SPECIES_NAME=$(basename "$ANNOT_DIR")
-    echo $SPECIES_NAME
+    echo $ANNOT_MOD
+    head $ANNOT_MOD
+    echo "  "
+    echo $ANNOT
 
     # index assemblies (greatly decreases computing time, and won't work for the more fragmented callosobruchus assemblies otherwise)
     samtools faidx $ASSEMBLY
     # extract transcript sequences
-    gffread -M -x $ANNOT_TRANSCRIPTS -g $ASSEMBLY $ANNOT_GTF
+    gffread -M -x $ANNOT_TRANSCRIPTS -g $ASSEMBLY $ANNOT_MOD
     # change fasta headers to include species names
     sed -i "s/>/>${SPECIES_NAME}_/g" $ANNOT_TRANSCRIPTS
     # translate transcript sequences
@@ -51,7 +72,9 @@ do
 
 
     ls -lh $ANNOT_TRANSCRIPTS
+    rm $ANNOT_MOD
     echo "###########################################"
+    echo "  "
 
 done
 

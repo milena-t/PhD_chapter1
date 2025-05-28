@@ -1,5 +1,11 @@
 *.png
 *.txt
+*.fasta
+*.fa
+*.fna
+*.faa
+*.log
+
 
 ### everything below here is the standard python gitignore
 
