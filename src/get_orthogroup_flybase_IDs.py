@@ -105,7 +105,16 @@ def get_flybase_IDs(orthogroup_dict, drosophila_gff_path, outfile_name:str = "na
     This only works with the native annotations! the orthoDB annotations don't have functional annotations to extract flybase ID from
     If you only want to include a specific set of orthogroups then include the list in OGs_list (maybe only the largest or something)
     
-    !!! TODO separate flybase IDs by comma into separate columns, only include the gene ID
+    !!! TODO separate flybase IDs by comma into separate columns, only include the flybase gene ID (last one; FBgn)
+    !!! also include column for:
+        * CAFE p-value 
+        * GF size
+    !!! also include "delta" value of difference in members in largest vs. smallest species (to show variability)
+    !!! include stuff from Flybase API to include in extra columns as well (if it is pretty simple):
+        * gene name
+        * keyword
+
+    TODO check plot for the orthogroup size across species and highlight specific OGs by color accodring to function when Elina identifies interesting ones from Flybase IDs
     """
 
     drosophila_attributes_dict = gff.parse_gff3_for_attributes(drosophila_gff_path)
