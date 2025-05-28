@@ -104,6 +104,8 @@ def get_flybase_IDs(orthogroup_dict, drosophila_gff_path, outfile_name:str = "na
     get all the flybase IDs from the orthogroups_dictfrom the native drosophila annotation.
     This only works with the native annotations! the orthoDB annotations don't have functional annotations to extract flybase ID from
     If you only want to include a specific set of orthogroups then include the list in OGs_list (maybe only the largest or something)
+    
+    !!! TODO separate flybase IDs by comma into separate columns, only include the gene ID
     """
 
     drosophila_attributes_dict = gff.parse_gff3_for_attributes(drosophila_gff_path)
