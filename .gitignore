@@ -3,6 +3,7 @@
 *.fasta
 *.fa
 *.fna
+*.faa
 *.log
 
 
