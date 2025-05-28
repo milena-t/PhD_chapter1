@@ -137,7 +137,7 @@ def get_flybase_IDs(orthogroup_dict_species, drosophila_gff_path, outfile_name:s
 
     outfile_name = f"/Users/miltr339/work/PhD_code/PhD_chapter1/data/{outfile_name}"
     with open(outfile_name, "w") as outfile:
-        if orthogroups_dict_all !={}:
+        if orthogroups_dict_all =={}:
             outfile.write("Orthogroup_ID\ttranscript_ID_native\tFlybase\tCAFE_p-value\n")
         else:
             species_header = "\t".join([f"{species}_num_GF_members" for species in species_list])
@@ -153,12 +153,12 @@ def get_flybase_IDs(orthogroup_dict_species, drosophila_gff_path, outfile_name:s
             
             if orthogroups_dict_all != {}:
                 OG_species = orthogroups_dict_all[OG_id]
-                try:
-                    GF_size = [len(OG_species[species]) for species in species_list]
-                except:
-                    for species, transcripts in OG_species.items():
-                        print(f"{species} :  {len(transcripts)}")
-                    raise RuntimeError(f"{species_list} does not match the OG_species list")
+                GF_size = []
+                for species in species_list:
+                    try:
+                        GF_size.append(len(OG_species[species]))
+                    except:
+                        GF_size.append(0)
                 
                 delta_GF = max(GF_size)-min(GF_size)
                 GF_size = [str(size) for size in GF_size]
