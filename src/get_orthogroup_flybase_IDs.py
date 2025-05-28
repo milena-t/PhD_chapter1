@@ -46,9 +46,11 @@ def filepaths_native():
         "Z_morio" : f"{native_proteinseqs_dir}Z_morio.faa",
     }
 
-    orthogroups_native = "/Users/miltr339/work/orthofinder/native_orthogroups/N0.tsv"
+    # orthogroups_native = "/Users/miltr339/work/orthofinder/native_orthogroups/N0.tsv"
     # orthogroups_native = "/Users/milena/work/orthofinder/native_orthogroups/N0.tsv"
-    sig_native = "/Users/miltr339/Box Sync/code/CAFE/native_from_N0_Base_family_results.txt"
+    # sig_native = "/Users/miltr339/Box Sync/code/CAFE/native_from_N0_Base_family_results.txt"
+    orthogroups_native = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_native/N0.tsv"
+    sig_native = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_native_Base_Family_results.txt"
 
     return native_annotations,orthogroups_native,sig_native,native_proteinseqs
 
@@ -91,23 +93,25 @@ def filepaths_orthoDB():
         "Z_morio" : f"{orthoDB_proteinseqs_dir}Z_morio_filtered_proteinfasta_TE_filtered.fa",
     }
 
-    orthogroups_orthoDB = "/Users/miltr339/work/orthofinder/orthoDB_uniform_masking_orthogroups/N0.tsv"
+    # orthogroups_orthoDB = "/Users/miltr339/work/orthofinder/orthoDB_uniform_masking_orthogroups/N0.tsv"
     # orthogroups_orthoDB = "/Users/milena/work/orthofinder/orthoDB_uniform_masking_orthogroups/N0.tsv"
+    # sig_orthoDB = "/Users/miltr339/Box Sync/code/CAFE/orthoDB_TE_filtered_Base_family_results.txt"
     
-    sig_orthoDB = "/Users/miltr339/Box Sync/code/CAFE/orthoDB_TE_filtered_Base_family_results.txt"
+    orthogroups_orthoDB = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_uniform/N0.tsv"
+    sig_orthoDB = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_uniform_Base_Family_results.txt"
 
     return orthoDB_annotations, orthogroups_orthoDB, sig_orthoDB, orthoDB_proteinseqs
 
 
-def get_flybase_IDs(orthogroup_dict, drosophila_gff_path, outfile_name:str = "native_sig_OGs_flybase_IDs.tsv", OGs_list = []):
+def get_flybase_IDs(orthogroup_dict_species, drosophila_gff_path, outfile_name:str = "native_sig_OGs_flybase_IDs.tsv", OGs_list = [], orthogroups_dict_all = {}, CAFE_results_path = ""):
     """
-    get all the flybase IDs from the orthogroups_dictfrom the native drosophila annotation.
-    This only works with the native annotations! the orthoDB annotations don't have functional annotations to extract flybase ID from
-    If you only want to include a specific set of orthogroups then include the list in OGs_list (maybe only the largest or something)
+    get all the flybase IDs from the orthogroups_dict from the native drosophila annotation. 
+    orthogroups_dict_species = OGs.parse_orthogroups_dict(..., species = species) so that there is no nested dict, but it's only transcript IDs from one species in a list
+    orthogroups_dict_all = OGs.parse_orthogroups_dict(..., species = "") so that there is a nested dict with all species and their separated transcripts. is only used for OG and GF sizes
+
     
     !!! TODO separate flybase IDs by comma into separate columns, only include the flybase gene ID (last one; FBgn)
     !!! also include column for:
-        * CAFE p-value 
         * GF size
     !!! also include "delta" value of difference in members in largest vs. smallest species (to show variability)
     !!! include stuff from Flybase API to include in extra columns as well (if it is pretty simple):
@@ -121,16 +125,44 @@ def get_flybase_IDs(orthogroup_dict, drosophila_gff_path, outfile_name:str = "na
     not_found_sig_IDs = []
     # print(f"{len(drosophila_attributes_dict)} transcripts in drosophila")
 
-    with open(outfile_name, "w") as outfile:
-        outfile.write("Orthogroup_ID\ttranscript_ID_native\tFlybase\n")
+    CAFE_results = {}
+    if CAFE_results_path != "":
+        CAFE_results = OGs.parse_CAFE_output(CAFE_results_path)
 
-        for OG_id, transcripts_list in orthogroup_dict.items():
+    if orthogroups_dict_all != {}:
+        OGs_all_list = list(orthogroups_dict_all.keys())
+        OG_test = OGs_all_list[0]
+        species_list = list(orthogroups_dict_all[OG_test].keys())
+
+
+    outfile_name = f"/Users/miltr339/work/PhD_code/PhD_chapter1/data/{outfile_name}"
+    with open(outfile_name, "w") as outfile:
+        if orthogroups_dict_all !={}:
+            outfile.write("Orthogroup_ID\ttranscript_ID_native\tFlybase\tCAFE_p-value\n")
+        else:
+            species_header = "\t".join([f"{species}_num_GF_members" for species in species_list])
+            outfile.write(f"Orthogroup_ID\ttranscript_ID_native\tFlybase\tCAFE_p-value\t{species_header}\tmax_delta_GF\n")
+
+        for OG_id, transcripts_list in orthogroup_dict_species.items():
             # for weird parsing stuff i did like a year ago the transcript IDs in the native drosophila annotation have leading "__" that should be removed
             # also remove the tailing "_1" 
             transcripts_list = [transcript.replace("__", "")[:-2] for transcript in transcripts_list]
             
             if OGs_list != [] and OG_id not in OGs_list:
                 continue
+            
+            if orthogroups_dict_all != {}:
+                OG_species = orthogroups_dict_all[OG_id]
+                try:
+                    GF_size = [len(OG_species[species]) for species in species_list]
+                except:
+                    for species, transcripts in OG_species.items():
+                        print(f"{species} :  {len(transcripts)}")
+                    raise RuntimeError(f"{species_list} does not match the OG_species list")
+                
+                delta_GF = max(GF_size)-min(GF_size)
+                GF_size = [str(size) for size in GF_size]
+                GF_size = "\t".join(GF_size) + f"\t{delta_GF}"
             
             for transcript in transcripts_list:
                 try:
@@ -141,14 +173,23 @@ def get_flybase_IDs(orthogroup_dict, drosophila_gff_path, outfile_name:str = "na
                     not_found_sig_IDs.append(transcript)
                 
                 try:
-                    flybase = attributes["Dbxref"]
+                    flybase = attributes["Dbxref"].split(":FBgn")[-1]
+                    flybase = f"FBgn{flybase}"
                 except:
                     flybase = "None"
 
-                outfile_string = f"{OG_id}\t{transcript}\t{flybase}\n"
-                outfile.write(outfile_string)
+                try:
+                    cafe_p = CAFE_results[OG_id]
+                except:
+                    cafe_p = "None"
+
+                if orthogroups_dict_all =={}:
+                    outfile_string = f"{OG_id}\t{transcript}\t{flybase}\t{cafe_p}\n"
+                else:
+                    outfile_string = f"{OG_id}\t{transcript}\t{flybase}\t{cafe_p}\t{GF_size}\n"
+                outfile.write(f"{outfile_string}")
     
-    print(f"flybase IDs written to {outfile_name} in current working directory.")
+    print(f"flybase IDs written to {outfile_name} in the data directory.")
     
     return not_found_sig_IDs
         
@@ -172,7 +213,7 @@ def make_proteinfasta_from_orthogroup(orthogroups_dict, proteinfasta_reference, 
             try: 
                 record = proteinfasta[transcript]
             except:
-                continue ## TODO it seems like some of the transcripts in here should have been removed by TE_filtering?
+                # continue ## TODO it seems like some of the transcripts in here should have been removed by TE_filtering?
                 raise RuntimeError(f"{transcript} not found in reference proteinfasta file {proteinfasta_reference}")
             
             record.id = f"{record.id}_{OG_id}"
@@ -224,28 +265,29 @@ if __name__ == "__main__":
     dmel_unfiltered_annot = "/Users/miltr339/work/native_annotations/d_melanogaster_NOT_isoform_filtered.gff"    
 
     ## Get stuff from native with functional annotations
-    if False:
+    if True:
         print(f"\n\tnative")
         native_sig_list, native_all_list =OGs.get_sig_orthogroups(sig_native)
         native_sig_OGs_dict = OGs.parse_orthogroups_dict(orthogroups_native, sig_list = native_sig_list, species="D_melanogaster")
+        native_sig_OGs_dict_all_species = OGs.parse_orthogroups_dict(orthogroups_native, sig_list = native_sig_list)
         if len(native_sig_list) != len(native_sig_OGs_dict):
             print(f"{len(native_sig_list)} significant orthogroups : {native_sig_list[0:5]}...")
             print(f"{len(native_sig_OGs_dict)} orthogroups in sig dict")
 
         native_sig_all_species = OGs.parse_orthogroups_dict(orthogroups_native, sig_list = native_sig_list)
-        native_large_OGs = OGs.get_orthogroup_sizes(native_sig_all_species, q=95)
+        native_large_OGs = OGs.get_orthogroup_sizes(native_sig_all_species, q=0)
         large_OG_IDs = list(native_large_OGs.keys())
 
         num_transcripts = 0
         for og, tr_list in native_sig_OGs_dict.items():
             num_transcripts += len(tr_list)
 
-        not_found_transcripts = get_flybase_IDs(native_sig_OGs_dict, native_annotations["D_melanogaster"], OGs_list=large_OG_IDs)
+        not_found_transcripts = get_flybase_IDs(native_sig_OGs_dict, native_annotations["D_melanogaster"], OGs_list=large_OG_IDs, orthogroups_dict_all = native_sig_OGs_dict_all_species, CAFE_results_path = sig_native)
         print(f"{len(not_found_transcripts)} (of {num_transcripts}) transcripts from orthoDB not found in annotation: {not_found_transcripts}")
 
 
     # get stuff for orthoDB annotations
-    if True:
+    if False:
         print(f"\n\torthoDB")
         orthoDB_sig_list, orthoDB_all_list =OGs.get_sig_orthogroups(sig_orthoDB)
         orthoDB_sig_OGs_dict = OGs.parse_orthogroups_dict(orthogroups_orthoDB, sig_list = orthoDB_sig_list, species="D_melanogaster")

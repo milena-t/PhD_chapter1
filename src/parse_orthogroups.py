@@ -39,6 +39,17 @@ def get_orthogroup_sizes(orthogroup_dict, q = 0):
         return OG_sizes_filtered
 
 
+def parse_CAFE_output(filepath):
+    """
+    parse the CAFE family_results.tsv output to a dictionary with OG_id:str keys and p-value:float values
+    """
+    out_dict = {}
+    with open(filepath, "r") as file:
+        next(file) # skip first line with file headers
+        for line in file.readlines():
+            line = line.strip().split("\t")
+            out_dict[line[0]] = float(line[1])
+    return out_dict
 
 
 def get_sig_orthogroups(filepath, p_sig = 0.05):
