@@ -6,6 +6,7 @@ duplicated through different mechanisms
 
 import parse_gff as gff
 import parse_orthogroups as OGs
+from statistics import mean
 
 
 def filepaths_native():
@@ -103,6 +104,92 @@ def filepaths_orthoDB():
     return orthoDB_annotations, orthogroups_orthoDB, sig_orthoDB, orthoDB_proteinseqs
 
 
+def analyze_transcript_positions(transcripts_list:list, annotation_dict:dict):
+    """
+    The transcript_list contains transcript IDs of all members of a gene family in one species,
+    the annotation_dict is the parsed annotation of that species.
+
+    This function then analyzes the transcript positions:
+        * How many orthogroups are confined to one contig vs. distributed over multiple contigs? 
+          (keep in mind assembly contiguity! sometimes contig == chromosome, and sometimes not)
+        * The mean distance of transcripts in an orthogroup if they are confined to the same transcript
+          (the distances are calculated middle-to-middle. Since the transcripts are different lengths, I
+          calculate mean transcript length and subtract that from the mean distance to get an estimation 
+          of mean inter-transcript distance)
+    """
+    same_contig = True
+    middle_positions = [] # middle positions of each transcript.
+    transcript_lengths = [] # transcript lengths of all transcripts in the orthogroup
+    
+    if len(transcripts_list) <= 1:
+        mean_distance = 0
+        return same_contig, mean_distance
+
+    try:
+        first_contig = annotation_dict[transcripts_list[0]].contig
+    except:
+        ## if the _1 suffix from the orthofinder transcripts makes problems remove it here
+        transcripts_list = [transcript[:-2] for transcript in transcripts_list]
+        first_contig = annotation_dict[transcripts_list[0]].contig
+
+    for transcript in transcripts_list:
+        transcript = annotation_dict[transcript]
+        
+        if first_contig != transcript.contig:
+            same_contig = False
+            mean_distance = 0
+            return same_contig, mean_distance
+
+        tr_start = transcript.start
+        if transcript.end < transcript.start:
+            tr_start = transcript.end
+        
+        transcript_length = abs(transcript.start - transcript.end)
+        transcript_lengths.append(transcript_length)
+        half_length = transcript_length*0.5
+        middle_positions.append(tr_start+half_length)
+
+    mean_middle_distance = int(mean(middle_positions))
+    mean_length = int(mean(transcript_lengths))
+    mean_distance = mean_middle_distance - mean_length
+
+    if mean_distance<0:
+        raise ValueError(f"the mean distance of transcripts is {mean_distance}, which cannot be < 0")
+
+    return same_contig, mean_distance
+
+
+
+def analyze_orthogroup_position_species(OGs_dict, species_annotation):
+    """
+    Calculate species-wide orthogroups statistics:
+        * percent of orthogroups where not all gene family members are on the same contig
+        * dict:
+            {
+                orthogroup_ID : [ num_members, mean_distance ] , 
+                orthogroup_ID : [ num_members, mean_distance ] , 
+                ...
+            }
+    """
+    all_OGs = 0
+    same_contig_OGs = 0
+    out_dict = {}
+    
+    for orthogroup, transcripts_list in OGs_dict.items():
+        same_contig, mean_distance = analyze_transcript_positions(transcripts_list, species_annotation)
+        all_OGs += 1
+        if same_contig:
+            same_contig_OGs += 1
+        if len(transcripts_list)>1 and same_contig:
+                out_dict[orthogroup] = [len(transcripts_list), mean_distance]
+    
+    same_contig_proportion = float(same_contig_OGs) / float(all_OGs)
+
+    return same_contig_proportion, out_dict
+
+
+
+def 
 
 
 
@@ -111,4 +198,20 @@ if __name__ == "__main__":
     
     orthoDB_annotations, orthogroups_orthoDB, sig_orthoDB, orthoDB_proteinseqs = filepaths_orthoDB()
     native_annotations, orthogroups_native, sig_native, native_proteinseqs = filepaths_native()
-    dmel_unfiltered_annot = "/Users/miltr339/work/native_annotations/d_melanogaster_NOT_isoform_filtered.gff"    
+    
+    
+    species = "B_siliquastri"
+    
+    sig_list, all_list = OGs.get_sig_orthogroups(sig_orthoDB)
+    species_OGs_dict = OGs.parse_orthogroups_dict(orthogroups_orthoDB, sig_list=sig_list, species=species)
+    # for orthogroup, transcripts in species_OGs_dict.items():
+    #     print(f"{orthogroup} : {transcripts}")
+
+    species_annotation = gff.parse_gff3_general(orthoDB_annotations[species], verbose=False, keep_feature_category=gff.FeatureCategory.Transcript)
+
+    same_contig_proportion, out_dict = analyze_orthogroup_position_species(species_OGs_dict, species_annotation)
+
+    print(f"{same_contig_proportion:.2} % of gene families have all members on the same contig")
+    for OG_id, out_values in out_dict.items():
+        print(f"{OG_id} :  num. members {out_values[0]}, mean distance = {out_values[1]}")
+    
