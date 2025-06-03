@@ -132,8 +132,8 @@ def get_flybase_IDs(orthogroup_dict_species, drosophila_gff_path, outfile_name:s
         for OG_id in OGs_all_list:
             species_list.extend(list(orthogroups_dict_all[OG_id].keys()))
         species_list = list(set(species_list))
-        print(species_list)
-        assert "T_molitor" in species_list
+        print(f"Species included in the input file: {species_list}")
+        # assert "T_molitor" in species_list
 
     flybase_url = "https://api.flybase.org/api/v1.0/gene/summaries/auto/" ## add gene ID afterwards
 
@@ -160,9 +160,9 @@ def get_flybase_IDs(orthogroup_dict_species, drosophila_gff_path, outfile_name:s
                     try:
                         GF_size.append(len(OG_species[species]))
                     except:
-                        GF_size.append(0)
+                        GF_size.append(int(0))
                 
-                delta_GF = max(GF_size)-min(GF_size)
+                delta_GF = int(max(GF_size)) - int(min(GF_size))
                 GF_size = [str(size) for size in GF_size]
                 GF_size = "\t".join(GF_size) + f"\t{delta_GF}"
             
@@ -301,7 +301,7 @@ if __name__ == "__main__":
 
 
     # get stuff for orthoDB annotations
-    if False:
+    if True:
         print(f"\n\torthoDB")
         orthoDB_sig_list, orthoDB_all_list =OGs.get_sig_orthogroups(sig_orthoDB)
         orthoDB_sig_OGs_dict = OGs.parse_orthogroups_dict(orthogroups_orthoDB, sig_list = orthoDB_sig_list, species="D_melanogaster")
