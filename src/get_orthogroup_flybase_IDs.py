@@ -105,7 +105,7 @@ def filepaths_orthoDB():
     return orthoDB_annotations, orthogroups_orthoDB, sig_orthoDB, orthoDB_proteinseqs
 
 
-def get_flybase_IDs(orthogroup_dict_species, drosophila_gff_path, outfile_name:str = "native_sig_OGs_flybase_IDs.tsv", OGs_list = [], orthogroups_dict_all = {}, CAFE_results_path = "", get_gene_functions_from_API = True):
+def get_flybase_IDs(orthogroup_dict_species, drosophila_gff_path, outfile_name:str = "native_sig_OGs_flybase_IDs.tsv", OGs_list = [], orthogroups_dict_all = {}, CAFE_results_path = "", get_gene_functions_from_API = True, david_gene_groups = {}):
     """
     get all the flybase IDs from the orthogroups_dict from the native drosophila annotation. 
     orthogroups_dict_species = OGs.parse_orthogroups_dict(..., species = species) so that there is no nested dict, but it's only transcript IDs from one species in a list
@@ -113,12 +113,12 @@ def get_flybase_IDs(orthogroup_dict_species, drosophila_gff_path, outfile_name:s
     CAFE_results_path:str for the CAFE results includes the cafe p-value
 
     also gives you the option to access the flybase API to get functional information based on the gene ID
-
-    TODO check plot for the orthogroup size across species and highlight specific OGs by color accodring to function when Elina identifies interesting ones from Flybase IDs
+    if you did a DAVID analysis of the flybase IDs, you can run this function again with a dict with the gene groups generated with parse_david_gene_groups_file()
     """
 
     drosophila_attributes_dict = gff.parse_gff3_for_attributes(drosophila_gff_path)
     not_found_sig_IDs = []
+    unassigned_FB_IDs = [] # count IDs not in DAVID analysis if that is included
     # print(f"{len(drosophila_attributes_dict)} transcripts in drosophila")
 
     CAFE_results = {}
@@ -139,11 +139,15 @@ def get_flybase_IDs(orthogroup_dict_species, drosophila_gff_path, outfile_name:s
 
     outfile_name = f"/Users/miltr339/work/PhD_code/PhD_chapter1/data/{outfile_name}"
     with open(outfile_name, "w") as outfile:
-        if orthogroups_dict_all =={}:
+        if orthogroups_dict_all =={} and david_gene_groups == {}:
             outfile.write("Orthogroup_ID\ttranscript_ID_native\tFlybase\tFlybase_summary\tCAFE_p-value\n")
-        else:
+        elif orthogroups_dict_all !={} and david_gene_groups == {}:
             species_header = "\t".join([f"{species}_num_GF_members" for species in species_list])
             outfile.write(f"Orthogroup_ID\ttranscript_ID_native\tFlybase\tFlybase_summary\tCAFE_p-value\t{species_header}\tmax_delta_GF\n")
+        elif orthogroups_dict_all !={} and david_gene_groups != {}:
+            species_header = "\t".join([f"{species}_num_GF_members" for species in species_list])
+            outfile.write(f"Orthogroup_ID\ttranscript_ID_native\tFlybase\tFlybase_summary\tCAFE_p-value\t{species_header}\tmax_delta_GF\tGene_Group\tGene_Name\n")
+
 
         for OG_id, transcripts_list in tqdm(orthogroup_dict_species.items()):
             # for weird parsing stuff i did like a year ago the transcript IDs in the native drosophila annotation have leading "__" that should be removed
@@ -154,7 +158,7 @@ def get_flybase_IDs(orthogroup_dict_species, drosophila_gff_path, outfile_name:s
                 continue
             
             if orthogroups_dict_all != {}:
-                OG_species = orthogroups_dict_all[OG_id] ### TODO check significant orthogroups list got an error message here with orthogroups_dict_all = OGs.parse_orthogroups_dict(orthogroups_orthoDB, sig_list = orthoDB_sig_list)
+                OG_species = orthogroups_dict_all[OG_id]
                 GF_size = []
                 for species in species_list:
                     try:
@@ -197,12 +201,27 @@ def get_flybase_IDs(orthogroup_dict_species, drosophila_gff_path, outfile_name:s
                 except:
                     cafe_p = "None"
 
-                if orthogroups_dict_all =={}:
+                if orthogroups_dict_all =={} and david_gene_groups =={}:
                     outfile_string = f"{OG_id}\t{transcript}\t{flybase}\t{flybase_summary}\t{cafe_p}\n"
-                else:
+                elif orthogroups_dict_all !={} and david_gene_groups =={}:
                     outfile_string = f"{OG_id}\t{transcript}\t{flybase}\t{flybase_summary}\t{cafe_p}\t{GF_size}\n"
+                elif orthogroups_dict_all !={} and david_gene_groups !={}:
+                    try:
+                        gene_group, gene_name = david_gene_groups[flybase]
+                    except:
+                        gene_group = "None"
+                        gene_name = "None"
+                        unassigned_FB_IDs.append(flybase)
+                        # try to parse the gene name from the flybase API summary
+                        if "The gene" in flybase_summary[0:10]:
+                            gene_name =flybase_summary.split("The gene ")[-1]
+                            gene_name = gene_name.split(" is referred to")[0]
+                            gene_name = f"{gene_name} (from API summary)"
+
+                    outfile_string = f"{OG_id}\t{transcript}\t{flybase}\t{flybase_summary}\t{cafe_p}\t{GF_size}\t{gene_group}\t{gene_name}\n"
                 outfile.write(f"{outfile_string}")
-    
+    if len(unassigned_FB_IDs):
+        print(f"{len(unassigned_FB_IDs)} Flybase Gene IDs in the orthogroups were not found in David")
     print(f"flybase IDs written to {outfile_name} in the data directory.")
     
     return not_found_sig_IDs
@@ -269,6 +288,38 @@ def parse_blast_outfile(blast_filepath, min_seq_ident = 90):
     return(out_dict)
 
 
+def parse_david_gene_groups_file(david_gene_groups_filepath:str):
+    """
+    parse the gene groups output from DAVID functional analysis to sort the flybase IDs into functional gene groups
+    out_dict = {
+        flybase_ID : [ Gene_group ,  Gene_name ],
+        flybase_ID : [ Gene_group ,  Gene_name ],
+        ...
+    }
+    """
+    out_dict = {}
+    count_gene_groups = 0
+    with open(david_gene_groups_filepath, "r") as gene_groups_file:
+        current_gene_group = ""
+        for line_string in gene_groups_file.readlines():
+            line_string = line_string.strip()
+            if not line_string:
+                continue
+            line = line_string.split("\t")
+            if "Gene Group" in line[0]:
+                current_gene_group = line[0]
+                count_gene_groups += 1
+            elif "FLYBASE_GENE_ID" in line[0]:
+                continue
+            elif "FBgn" in line[0]:
+                out_dict[line[0]] = [current_gene_group, line[1]]
+            else:
+                raise RuntimeError(f"Line: '{line_string}' could not be parsed")
+    print(f"{count_gene_groups} Gene Groups in file.")
+    return out_dict
+
+
+
 
 
 
@@ -277,9 +328,11 @@ if __name__ == "__main__":
     orthoDB_annotations, orthogroups_orthoDB, sig_orthoDB, orthoDB_proteinseqs = filepaths_orthoDB()
     native_annotations, orthogroups_native, sig_native, native_proteinseqs = filepaths_native()
     dmel_unfiltered_annot = "/Users/miltr339/work/native_annotations/d_melanogaster_NOT_isoform_filtered.gff"    
+    david_gene_groups_path = "/Users/miltr339/Box Sync/thesis writing/Milena chapter1/Sig OG Flybase IDs/DAVID-FunctionalClustering_FBgenes.txt"
+
 
     ## Get stuff from native with functional annotations
-    if True:
+    if False:
         print(f"\n\tnative")
         native_sig_list, native_all_list =OGs.get_sig_orthogroups(sig_native)
         native_sig_OGs_dict = OGs.parse_orthogroups_dict(orthogroups_native, sig_list = native_sig_list, species="D_melanogaster")
@@ -301,7 +354,7 @@ if __name__ == "__main__":
 
 
     # get stuff for orthoDB annotations
-    if True:
+    if False:
         print(f"\n\torthoDB")
         orthoDB_sig_list, orthoDB_all_list =OGs.get_sig_orthogroups(sig_orthoDB)
         orthoDB_sig_OGs_dict = OGs.parse_orthogroups_dict(orthogroups_orthoDB, sig_list = orthoDB_sig_list, species="D_melanogaster")
@@ -333,9 +386,12 @@ if __name__ == "__main__":
             for og, tr_list in blast_out_dict.items():
                 num_transcripts += len(tr_list)
 
+            david_gene_groups_dict = parse_david_gene_groups_file(david_gene_groups_path)
 
             ## TODO fix this somehow 
             # orthoDB_sig_all_species = OGs.parse_orthogroups_dict(orthogroups_orthoDB)
-            not_found_transcripts = get_flybase_IDs(blast_out_dict, dmel_unfiltered_annot, outfile_name = "orthoDB_sig_OGs_flybase_IDs.tsv", orthogroups_dict_all=orthoDB_sig_all_species, CAFE_results_path=sig_orthoDB)
+            not_found_transcripts = get_flybase_IDs(blast_out_dict, dmel_unfiltered_annot, outfile_name = "orthoDB_sig_OGs_flybase_IDs.tsv", orthogroups_dict_all=orthoDB_sig_all_species, CAFE_results_path=sig_orthoDB, david_gene_groups = david_gene_groups_dict)
             if len(not_found_transcripts)>0:
                 print(f"{len(not_found_transcripts)} (of {num_transcripts}) transcripts from orthoDB not found in annotation: {not_found_transcripts}")
+
+
