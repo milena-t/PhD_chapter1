@@ -127,8 +127,13 @@ def get_flybase_IDs(orthogroup_dict_species, drosophila_gff_path, outfile_name:s
 
     if orthogroups_dict_all != {}:
         OGs_all_list = list(orthogroups_dict_all.keys())
-        OG_test = OGs_all_list[0]
-        species_list = list(orthogroups_dict_all[OG_test].keys())
+        # get complete species list:
+        species_list = []
+        for OG_id in OGs_all_list:
+            species_list.extend(list(orthogroups_dict_all[OG_id].keys()))
+        species_list = list(set(species_list))
+        print(species_list)
+        assert "T_molitor" in species_list
 
     flybase_url = "https://api.flybase.org/api/v1.0/gene/summaries/auto/" ## add gene ID afterwards
 
@@ -291,7 +296,8 @@ if __name__ == "__main__":
             num_transcripts += len(tr_list)
 
         not_found_transcripts = get_flybase_IDs(native_sig_OGs_dict, native_annotations["D_melanogaster"], OGs_list=large_OG_IDs, orthogroups_dict_all = native_sig_all_species, CAFE_results_path = sig_native)
-        print(f"{len(not_found_transcripts)} (of {num_transcripts}) transcripts from orthoDB not found in annotation: {not_found_transcripts}")
+        if len(not_found_transcripts)>0:
+            print(f"{len(not_found_transcripts)} (of {num_transcripts}) transcripts from orthoDB not found in annotation: {not_found_transcripts}")
 
 
     # get stuff for orthoDB annotations
@@ -331,4 +337,5 @@ if __name__ == "__main__":
             ## TODO fix this somehow 
             # orthoDB_sig_all_species = OGs.parse_orthogroups_dict(orthogroups_orthoDB)
             not_found_transcripts = get_flybase_IDs(blast_out_dict, dmel_unfiltered_annot, outfile_name = "orthoDB_sig_OGs_flybase_IDs.tsv", orthogroups_dict_all=orthoDB_sig_all_species, CAFE_results_path=sig_orthoDB)
-            print(f"{len(not_found_transcripts)} (of {num_transcripts}) transcripts from orthoDB not found in annotation: {not_found_transcripts}")
+            if len(not_found_transcripts)>0:
+                print(f"{len(not_found_transcripts)} (of {num_transcripts}) transcripts from orthoDB not found in annotation: {not_found_transcripts}")
