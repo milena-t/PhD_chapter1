@@ -6,7 +6,8 @@ import matplotlib.patches as mpatches
 from statistics import mean
 import numpy as np
 import pandas as pd
-import src.parse_gff as gff
+import parse_gff as gff
+import parse_orthogroups as OGs
 
 
 def read_orthogroups_input(filepath):
@@ -36,22 +37,6 @@ def read_orthogroups_input(filepath):
     return(output)
 
 
-def get_sig_orthogroups(filepath, p_sig = 0.05):
-    """ 
-    get a list of significant orthogroup IDs
-    """
-    sig_list = []
-    cafe_list = []
-    with open(filepath, "r") as file:
-        next(file) # skip first line
-        for line in file:
-            orthogroup, p_value, sig_bool = line.strip().split("\t")
-            if float(p_value)<p_sig:
-                sig_list.append(orthogroup)
-            cafe_list.append(orthogroup)
-
-    return(sig_list, cafe_list)
-
 
 def get_means(orthogroups_dict, sig_list, all_cafe_list, species_names = []):
     """
@@ -59,21 +44,34 @@ def get_means(orthogroups_dict, sig_list, all_cafe_list, species_names = []):
     """
 
     if len(species_names)==0:
-        OGs = list(orthogroups_dict.keys())
-        species_names = list(orthogroups_dict[OGs[0]].keys())
+        # OGs = list(orthogroups_dict.keys())
+        # species_names = list(orthogroups_dict[OGs[0]].keys())
+        OGs_all_list = list(orthogroups_dict.keys())
+        # get complete species list:
+        species_names = []
+        for OG_id in OGs_all_list:
+            species_names.extend(list(orthogroups_dict[OG_id].keys()))
+        species_names = list(set(species_names))
 
     all_unsig = {species : [] for species in species_names}
     all_sig = {species : [] for species in species_names}
 
     for orthogroup in sig_list:
         for species in species_names:
-            all_sig[species].append(orthogroups_dict[orthogroup][species])
+            try:
+                all_sig[species].append(orthogroups_dict[orthogroup][species])
+            except:
+                all_sig[species].append(0)
+                # raise RuntimeError(f"{species} does not exist in {orthogroups_dict[orthogroup]}")
     
     for orthogroup in all_cafe_list:
         if orthogroup in sig_list:
             continue
         for species in species_names:
-            all_unsig[species].append(orthogroups_dict[orthogroup][species])       
+            try:
+                all_unsig[species].append(orthogroups_dict[orthogroup][species])       
+            except:
+                all_unsig[species].append(0)
     
     ### print mean line for significant and non-significant orthogroups
     # not very aussagekräftig, unfortunately
@@ -206,8 +204,8 @@ def plot_means(native, orthoDB, whole_genome_stats, species_names, x_category = 
     if len(x_category) == 0:
         ax.plot(species_names, native_sigfnicant, color = colors["native"], label = "significant (native)")
         ax.plot(species_names, native_unsigfnicant, color = colors["native"], label = "unsignificant (native)", linestyle = ":")
-        ax.plot(species_names, orthoDB_sigfnicant, color = colors["orthoDB"], label = "significant (orthoDB)")
-        ax.plot(species_names, orthoDB_unsigfnicant, color = colors["orthoDB"], label = "unsignificant (orthoDB)", linestyle = ":")
+        ax.plot(species_names, orthoDB_sigfnicant, color = colors["orthoDB"], label = "significant (uniform)")
+        ax.plot(species_names, orthoDB_unsigfnicant, color = colors["orthoDB"], label = "unsignificant (uniform)", linestyle = ":")
         plt.xticks(labels=[species.replace("_", ". ") for species in species_names], ticks=species_names, rotation = 90, fontsize = fs)
         ax.grid(True)
         ax.yaxis.grid(False)
@@ -221,8 +219,8 @@ def plot_means(native, orthoDB, whole_genome_stats, species_names, x_category = 
             raise RuntimeError(f"{x_category} is an invalid category for x axis.")
         ax.scatter(x_values, native_sigfnicant, color = colors["native"], label = "significant (native)")
         ax.scatter(x_values, native_unsigfnicant, color = colors["native"], label = "unsignificant (native)", marker = "o", facecolors = "none")
-        ax.scatter(x_values, orthoDB_sigfnicant, color = colors["orthoDB"], label = "significant (orthoDB)")
-        ax.scatter(x_values, orthoDB_unsigfnicant, color = colors["orthoDB"], label = "unsignificant (orthoDB)", marker = "o", facecolors = "none")
+        ax.scatter(x_values, orthoDB_sigfnicant, color = colors["orthoDB"], label = "significant (uniform)")
+        ax.scatter(x_values, orthoDB_unsigfnicant, color = colors["orthoDB"], label = "unsignificant (uniform)", marker = "o", facecolors = "none")
         # make regression lines
 
         m_nat, b_nat = np.polyfit(x_values, native_sigfnicant, 1)
@@ -230,7 +228,7 @@ def plot_means(native, orthoDB, whole_genome_stats, species_names, x_category = 
         # print(f"native incline: {m_nat}")
         # print(f"orthoDB incline: {m_odb}")
         ax.plot(x_values, [m_nat*x_value+b_nat for x_value in x_values], color = colors["native"], linewidth = 1 , label = f"reg. line (native) incline: {m_nat:.3f}")
-        ax.plot(x_values, [m_odb*x_value+b_odb for x_value in x_values], color = colors["orthoDB"], linewidth = 1 , label = f"reg. line (orthoDB) incline: {m_odb:.3f}")
+        ax.plot(x_values, [m_odb*x_value+b_odb for x_value in x_values], color = colors["orthoDB"], linewidth = 1 , label = f"reg. line (uniform) incline: {m_odb:.3f}")
 
         x_header = x_category.replace("_", " ")
         if "repeat" in x_category:
@@ -267,13 +265,13 @@ def plot_means(native, orthoDB, whole_genome_stats, species_names, x_category = 
 
 if __name__ == "__main__":
 
-    tree = "/Users/miltr339/Box Sync/code/annotation_pipeline/annotation_scripts_ordered/14_species_orthofinder_tree.nw"
+    tree = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_only_species_names.nw"
     species_names = gff.make_species_order_from_tree(tree)
 
-    orthogroups_native = "/Users/miltr339/Box Sync/code/CAFE/CAFE_input_native_from_N0.tsv"
-    orthogroups_orthoDB = "/Users/miltr339/Box Sync/code/CAFE/CAFE_input_orthoDB_TE_filtered.tsv"
-    sig_native = "/Users/miltr339/Box Sync/code/CAFE/native_from_N0_Base_family_results.txt"
-    sig_orthoDB = "/Users/miltr339/Box Sync/code/CAFE/orthoDB_TE_filtered_Base_family_results.txt"
+    orthogroups_native_filepath = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_native/N0.tsv"
+    orthogroups_orthoDB_filepath = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_uniform/N0.tsv"
+    sig_native = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_native_Base_Family_results.txt"
+    sig_orthoDB = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_uniform_Base_Family_results.txt"
 
     genome_sizes_dict = {"D_melanogaster" : 180,
                     "I_luminosus" : 842,
@@ -295,14 +293,18 @@ if __name__ == "__main__":
     whole_genome_stats_filepath = "/Users/miltr339/Box Sync/code/annotation_pipeline/repeatmasking_eval/eval_stats_3_annots_with_genome_size.csv"
     whole_genome_stats = read_whole_genome_stats(whole_genome_stats_filepath)
 
-    native_dict = read_orthogroups_input(orthogroups_native)
-    native_sig_list, native_cafe_list = get_sig_orthogroups(sig_native)
+    # native_dict = read_orthogroups_input(orthogroups_native_filepath)
+    native_dict_lists = OGs.parse_orthogroups_dict(orthogroups_native_filepath)
+    native_dict = OGs.get_GF_sizes(native_dict_lists)
+    native_sig_list, native_cafe_list = OGs.get_sig_orthogroups(sig_native)
     print(f"{len(native_cafe_list)} of {len(native_dict)} native orthogroups considered in CAFE, of which {len(native_sig_list)} are significantly changing")
     all_unsig_native, all_sig_native = get_means(native_dict, native_sig_list, native_cafe_list, species_names)
     # plot_gene_counts(native_dict, native_sig_list, native_cafe_list, species_names, annotation = "native", filename = "native_significant_orthogroups_from_CAFE.png")
 
-    orthoDB_dict = read_orthogroups_input(orthogroups_orthoDB)
-    orthoDB_sig_list, orthoDB_cafe_list = get_sig_orthogroups(sig_orthoDB)
+    # orthoDB_dict = read_orthogroups_input(orthogroups_orthoDB_filepath)
+    orthoDB_dict_lists = OGs.parse_orthogroups_dict(orthogroups_orthoDB_filepath)
+    orthoDB_dict = OGs.get_GF_sizes(orthoDB_dict_lists)
+    orthoDB_sig_list, orthoDB_cafe_list = OGs.get_sig_orthogroups(sig_orthoDB)
     print(f"{len(orthoDB_cafe_list)} of {len(orthoDB_dict)} orthoDB orthogroups considered in CAFE, of which {len(orthoDB_sig_list)} are significantly changing")
     all_unsig_orthoDB, all_sig_orthoDB = get_means(orthoDB_dict, orthoDB_sig_list, orthoDB_cafe_list, species_names)
     # plot_gene_counts(orthoDB_dict, orthoDB_sig_list, orthoDB_cafe_list, species_names, annotation = "orthoDB", filename = "orthoDB_significant_orthogroups_from_CAFE.png")
@@ -317,5 +319,6 @@ if __name__ == "__main__":
     }
 
     # plot_means(native_means, orthoDB_means, whole_genome_stats, species_names)
-    plot_means(native_means, orthoDB_means, whole_genome_stats, species_names, x_category="genome_size", filename="mean_orthogroups_from_CAFE_vs_genome_size.png")
-    plot_means(native_means, orthoDB_means, whole_genome_stats, species_names, x_category="repeat_percentage", filename="mean_orthogroups_from_CAFE_vs_repeats.png")
+    out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/"
+    plot_means(native_means, orthoDB_means, whole_genome_stats, species_names, x_category="genome_size", filename=f"{out_dir}mean_orthogroups_from_CAFE_vs_genome_size.png")
+    plot_means(native_means, orthoDB_means, whole_genome_stats, species_names, x_category="repeat_percentage", filename=f"{out_dir}mean_orthogroups_from_CAFE_vs_repeats.png")

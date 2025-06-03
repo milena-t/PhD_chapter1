@@ -97,6 +97,8 @@ def parse_orthogroups_dict(filepath, sig_list:list[str] = [], species = ""):
         N0_infile = N0_infile.readlines()
         headers = N0_infile[0].strip().split("\t")
         headers_clean = [gff.split_at_second_occurrence(header) for header in headers]
+
+        # if a weird species name is entered
         if len(species)>0 and (species not in headers_clean or species not in headers):
             try:
                 species = [head for head in headers_clean if species in head][0]
@@ -142,6 +144,31 @@ please pick one of the header names instead: \n\t{headers} \nor:\n\t{headers_cle
 
     # print(f"{duplicates_count} orthogroups with duplicate names" )
     return(out_dict)
+
+
+def get_GF_sizes(orthogroups_dict):
+    """
+    modify the dictionary from the parse_orthogroups function
+    
+    {
+        orthogroup : {
+            species1 : num,
+            species2 : num,
+            ...
+        }
+        orthogroup2 : {
+            species1 : num,
+            species2 : num,
+            ...
+        }
+    }
+    """
+    orthogroups_modified = {}
+    for orthogroup_id , species_dict in orthogroups_dict.items():
+        species_dict_nums = { species : len(transcripts_list) for species, transcripts_list in species_dict.items() if transcripts_list!=['']}
+        orthogroups_modified[orthogroup_id] = species_dict_nums
+
+    return orthogroups_modified
 
             
 def get_mean_GF_size(orthogroups_dict:dict, species:str):
