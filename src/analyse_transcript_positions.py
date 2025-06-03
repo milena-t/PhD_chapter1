@@ -240,6 +240,7 @@ def plot_transcript_distance(same_contig_proportion, GF_positions_dict, species)
     ax.set_xlabel(xlab, fontsize = fs)
 
     ax.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x < 0 else f'{x / 1e6:.0f} Mb'))
+    ax.xaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x < 0 else f"{int(x)}"))
     ax.tick_params(axis ='y', labelsize = fs)  
     ax.tick_params(axis ='x', labelsize = fs)  
     plt.tight_layout()
@@ -271,15 +272,28 @@ def plot_all_OGs_transcript_distances(same_contig_proportion_all_species, GF_pos
         row = idx // cols
         col = idx % cols
         species_name = species.replace("_", ". ")
-        print(f"\tin position {row+1},{col+1}: \t{species_name}")
 
         # Plot histogram on the corresponding subplot axis
         axes[row, col].scatter(nun_members_vec, mean_distance_vec, color = "#8E8E8E")
         axes[row, col].set_title(f'{species_name} ({percent}% of orthogroups)')
         axes[row, col].set_xlabel('')
         axes[row, col].set_ylabel('')
-        axes[row, col].yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x < 0 else f'{x / 1e6:.0f} Mb'))
+        
+        y_lim = max(mean_distance_vec)
+        y_scale = ""
+        if y_lim>10e6:
+            y_scale= "1.0Mb"
+            y_function_formatter = lambda x, pos: '' if x < 0 else f'{x / 1e6:.0f} Mb'
+        elif y_lim>1e6:
+            y_scale= "0.1Mb"
+            y_function_formatter = lambda x, pos: '' if x < 0 else f'{x / 1e6:.1f} Mb'
+        else:
+            y_scale= "1.0kb"
+            y_function_formatter = lambda x, pos: '' if x < 0 else f'{x / 1e3:.0f} kb'
+
+        axes[row, col].yaxis.set_major_formatter(FuncFormatter(y_function_formatter))
         axes[row, col].xaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x < 0 else f"{int(x)}"))
+        print(f"\tin position {row+1},{col+1}: {species_name}, \t --> y scale: {y_scale}")
 
             # Set a single x-axis label for all subplots
     x_label = f"number of gene family members"
