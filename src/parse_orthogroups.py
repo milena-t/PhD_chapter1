@@ -7,13 +7,14 @@
 
 import parse_gff as gff
 import numpy as np
+from statistics import mean
 
 
 
 def get_orthogroup_sizes(orthogroup_dict, q = 0):
     """
     returns a dict of all orthogroups sizes.
-    if a percentile p is specified other than 0, it returns only orthogroups whose size is > than the pth percentile of the size distribution
+    if a percentile q is specified other than 0, it returns only orthogroups whose size is > than the pth percentile of the size distribution
     """
     
     OG_sizes_dict = {}
@@ -143,6 +144,52 @@ please pick one of the header names instead: \n\t{headers} \nor:\n\t{headers_cle
     return(out_dict)
 
             
+def get_mean_GF_size(orthogroups_dict:dict, species:str):
+    GF_sizes = []
+    for gene_families in orthogroups_dict.values():
+        try:
+            num_families = len(gene_families[species])
+        except:
+            num_families = 0
+        GF_sizes.append(num_families)
+    
+    return mean(GF_sizes)
+
+
+
+def get_OG_sizes_by_species(orthoDB_orthogroups:dict, orthoDB_sig_dict:dict, native_orthogroups:dict, native_sig_dict:dict, outfile_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/mean_orthogroup_sizes.csv"):
+    """
+    Make table for the R statistical analysis, with mean orthogroup size and mean CAFE sig. orthogroup size 
+    """
+
+    assert type(orthoDB_orthogroups) == dict
+    assert type(native_orthogroups) == dict
+    header = f"species, uniform_all_mean_size, uniform_sig_mean_size, native_all_mean_size, native_sig_mean_size\n"
+
+    # get complete species list:
+    OGs_all_list = list(orthoDB_orthogroups.keys())
+    species_list = []
+    for OG_id in OGs_all_list:
+        species_list.extend(list(orthoDB_orthogroups[OG_id].keys()))
+    species_list = list(set(species_list))
+
+
+    with open(outfile_path,"w") as outfile:
+        outfile.write(header)
+        for species in species_list:
+            orthoDB_all_mean = get_mean_GF_size(orthoDB_orthogroups, species)
+            orthoDB_sig_mean = get_mean_GF_size(orthoDB_sig_dict, species)
+            native_all_mean = get_mean_GF_size(native_orthogroups, species)
+            native_sig_mean = get_mean_GF_size(native_sig_dict, species)
+
+            outfile_line = f"{species}, {orthoDB_all_mean}, {orthoDB_sig_mean}, {native_all_mean}, {native_sig_mean}\n"
+            outfile.write(outfile_line)
+    
+    print(f"outfile written to: {outfile_path}")
+    
+    
+
+
 
 
 
@@ -186,15 +233,23 @@ if __name__ == "__main__":
         "Z_morio" : f"{orthoDB_annot_dir}Z_morio_orthoDB_filtered.gff",
     }
 
-    orthogroups_native = "/Users/milena/work/orthofinder/native_orthogroups/N0.tsv"
-    orthogroups_orthoDB = "/Users/milena/work/orthofinder/orthoDB_uniform_masking_orthogroups/N0.tsv"
-    sig_native = "/Users/milena/Box Sync/code/CAFE/native_from_N0_Base_family_results.txt"
-    sig_orthoDB = "/Users/milena/Box Sync/code/CAFE/orthoDB_TE_filtered_Base_family_results.txt"
+    orthogroups_native_filepath = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_native/N0.tsv"
+    orthogroups_orthoDB_filepath = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_uniform/N0.tsv"
+    sig_native = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_native_Base_Family_results.txt"
+    sig_orthoDB = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_uniform_Base_Family_results.txt"
 
     print("orthoDB : ")
     sig_orthoDB_list, all_orthogroups_list = get_sig_orthogroups(sig_orthoDB)
-    orthoDB_orthogroups_sig_only = parse_orthogroups_dict(orthogroups_orthoDB, sig_orthoDB_list)
-    orthoDB_orthogroups = parse_orthogroups_dict(orthogroups_orthoDB)
-    # print(orthoDB_orthogroups_sig_only)
+    orthoDB_orthogroups = parse_orthogroups_dict(orthogroups_orthoDB_filepath)
     print(f"{len(sig_orthoDB_list)} significant orthogroups in CAFE output")
-    print(f"{len(orthoDB_orthogroups)} orthogroups in total, {len(orthoDB_orthogroups_sig_only)} left after filtering for only CAFE-significant ones")
+    orthoDB_orthogroups_sig_only = parse_orthogroups_dict(orthogroups_orthoDB_filepath, sig_orthoDB_list)
+    # print(f"{len(orthoDB_orthogroups)} orthogroups in total, {len(orthoDB_orthogroups_sig_only)} left after filtering for only CAFE-significant ones")
+
+    print("\nnative :")
+    sig_native_list, all_orthogroups_list = get_sig_orthogroups(sig_native)
+    native_orthogroups = parse_orthogroups_dict(orthogroups_native_filepath)
+    native_orthogroups_sig_only = parse_orthogroups_dict(orthogroups_native_filepath, sig_native_list)
+
+    print("\ncompute_sizes")
+    print(type(orthoDB_orthogroups))
+    get_OG_sizes_by_species(orthoDB_orthogroups, orthoDB_orthogroups_sig_only, native_orthogroups, native_orthogroups_sig_only)
