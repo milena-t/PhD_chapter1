@@ -48,9 +48,21 @@ W_DIR=$(pwd)
 # python3 /proj/naiss2023-6-65/Milena/quast.py -o chinensis_quast -t 10 /proj/naiss2023-6-65/Milena/coleoptera_sequences/c_chinensis/chinensis_from_uppmax.fasta
 # echo "chinensis quast done"
 
-CMAC_superscaffolded=/proj/naiss2023-6-65/Milena/annotation_pipeline/only_orthodb_annotation/C_maculatus_superscaffolded/assembly_genomic.fna.masked
-OUT_DIR_CMAC=/proj/naiss2023-6-65/Milena/data_processing/assembly_evaluation_scripts_and_results/CMAC_superscaffolded
-python3 /proj/naiss2023-6-65/Milena/quast.py -o $OUT_DIR_CMAC -t 10 $CMAC_superscaffolded
+ASSEMBLY=/proj/naiss2023-6-65/Milena/annotation_pipeline/only_orthodb_annotation/B_siliquastri/assembly_genomic.fna.masked
+OUT_DIR=/proj/naiss2023-6-65/Milena/data_processing/assembly_evaluation_scripts_and_results/B_siliquastri
+python3 /proj/naiss2023-6-65/Milena/quast.py -o $OUT_DIR -t 10 $ASSEMBLY
+
+ASSEMBLY=/proj/naiss2023-6-65/Milena/annotation_pipeline/only_orthodb_annotation/C_septempunctata/assembly_genomic.fna.masked
+OUT_DIR=/proj/naiss2023-6-65/Milena/data_processing/assembly_evaluation_scripts_and_results/C_septempunctata
+python3 /proj/naiss2023-6-65/Milena/quast.py -o $OUT_DIR -t 10 $ASSEMBLY
+
+ASSEMBLY=/proj/naiss2023-6-65/Milena/annotation_pipeline/only_orthodb_annotation/D_melanogaster/assembly_genomic.fna.masked
+OUT_DIR=/proj/naiss2023-6-65/Milena/data_processing/assembly_evaluation_scripts_and_results/D_melanogaster
+python3 /proj/naiss2023-6-65/Milena/quast.py -o $OUT_DIR -t 10 $ASSEMBLY
+
+ASSEMBLY=/proj/naiss2023-6-65/Milena/annotation_pipeline/only_orthodb_annotation/T_castaneum/assembly_genomic.fna.masked
+OUT_DIR=/proj/naiss2023-6-65/Milena/data_processing/assembly_evaluation_scripts_and_results/T_castaneum
+python3 /proj/naiss2023-6-65/Milena/quast.py -o $OUT_DIR -t 10 $ASSEMBLY
 
 # python3 /proj/naiss2023-6-65/Milena/quast.py -o maculatus_from_ENA_quast -t 4 /proj/naiss2023-6-65/Milena/coleoptera_sequences/c_maculatus/Cmac_from_ENA_GCA_951848785.1.fasta.masked
 # python3 /proj/naiss2023-6-65/Milena/quast.py -o maculatus_from_uppmax_quast -t 4 /proj/naiss2023-6-65/Milena/coleoptera_sequences/c_maculatus/C_mac_Ys_hifiasm.fasta

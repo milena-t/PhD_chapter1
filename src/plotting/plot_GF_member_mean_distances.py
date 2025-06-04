@@ -333,31 +333,24 @@ if __name__ == "__main__":
         "T_molitor" : 6,
         "Z_morio" : 4
     }
-    N50_values = {
-        "analis_from_uppmax" : 240251,
-        "chinensis_from_uppmax" : 800721,
-        "GCA_000355655.1_DendPond_male_1.0_genomic" : 628732,
-        "GCA_000390285.2_Agla_2.0_genomic" : 678234,
-        "GCA_000500325.2_Ldec_2.0_genomic" : 139401,
-        "GCA_000648695.2_Otau_2.0_genomic" : 337157,
-        "GCA_000699045.2_Apla_2.0_genomic" : 1113421,
-        "GCA_001412225.1_Nicve_v1.0_genomic" : 122407,
-        "GCA_002938485.2_Soryzae_2.0_genomic" : 2860826,
-        "GCA_003013835.2_Dvir_v2.0_genomic" : 489108,
-        "GCA_004193795.1_BDFB_1.0_genomic" : 6513,
-        "GCA_008802855.1_Ppyr1.3_genomic" : 47017841,
-        "GCA_011009095.1_Ilumi1.2_genomic" : 95792,
-        "GCA_014462685.1_ASM1446268v1_genomic" : 471583,
-        "GCA_015345945.1_Tmad_KSU_1.1_genomic" : 15175020,
-        "GCA_020466585.2_Dpon_F_20191213v2_genomic" : 16553750,
-        "GCA_020466635.2_Dpon_M_20191212v2_genomic" : 16386110,
-        "GCA_027724725.1_ASM2772472v1_genomic" : 48007226,
-        "GCA_027725215.1_ASM2772521v1_genomic" : 20827499,
-        "GCA_029955315.1_icCylForm1.1_genomic" : 36172098,
-        "GCA_963669975.1_AobtHiC_assembly_genomic" : 108704056,
-        "Cmac_from_ENA_GCA_951848785.1" : 9445077,
-        "hifi_asm_2021_Y_s" : 6827509,
+    N50_values = { ## TODO add missing species
+        "A_obtectus" : 108704056,
+        "A_verrucosus" : 6513,
+        "B_siliquastri" : 00, ##!
+        "C_analis" : 240251,
+        "C_chinensis" : 800721,
+        "C_maculatus" : 101463975,
+        "C_septempunctata" : 00, ##!
+        "D_melanogaster" : 00, ##!
+        "D_ponderosae" : 16386110,
+        "I_luminosus" : 95792,
+        "P_pyralis" : 47017841,
+        "R_ferrugineus" : 471583,
+        "T_castaneum" : 00, ##!
+        "T_molitor" : 20827499,
+        "Z_morio" : 48007226
     }
+    
     # species = "B_siliquastri"
     same_contig_proportions:dict = {}
     gene_family_values:dict = {}
