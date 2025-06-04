@@ -4,3 +4,10 @@ for all orthogroups of choice:
 plot the slope of all of those together, and highlight OGs with high slopes
 """
 
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+from statistics import mean
+import numpy as np
+import pandas as pd
+import parse_gff as gff
+import parse_orthogroups as OGs
