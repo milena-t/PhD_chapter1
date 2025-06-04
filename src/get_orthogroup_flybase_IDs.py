@@ -4,7 +4,6 @@ Are they on the same or different contig? how close/distant are they?
 """
 import parse_gff as gff
 import parse_orthogroups as OGs
-import matplotlib.pyplot as plt
 from Bio import SeqIO
 import requests as req
 from tqdm import tqdm
@@ -137,6 +136,7 @@ def get_flybase_IDs(orthogroup_dict_species, drosophila_gff_path, outfile_name:s
 
     flybase_url = "https://api.flybase.org/api/v1.0/gene/summaries/auto/" ## add gene ID afterwards
 
+    # write headers according to input files
     outfile_name = f"/Users/miltr339/work/PhD_code/PhD_chapter1/data/{outfile_name}"
     with open(outfile_name, "w") as outfile:
         if orthogroups_dict_all =={} and david_gene_groups == {}:
@@ -187,6 +187,7 @@ def get_flybase_IDs(orthogroup_dict_species, drosophila_gff_path, outfile_name:s
                     if response.status_code == 200:
                         api_data = response.json()
                         flybase_summary = api_data["resultset"]["result"][0]["summary"]
+                        flybase_summary = flybase_summary.strip() # sometimes they end with a tab to fuck with me
                         # print(flybase_summary)
                     else:
                         # print(f"{flybase_url}{flybase}")
@@ -194,7 +195,6 @@ def get_flybase_IDs(orthogroup_dict_species, drosophila_gff_path, outfile_name:s
                         # raise RuntimeError(f"flybase didn't work for {OG_id}, {flybase}")
                 else:
                     flybase_summary = "None"
-
 
                 try:
                     cafe_p = CAFE_results[OG_id]
@@ -208,6 +208,7 @@ def get_flybase_IDs(orthogroup_dict_species, drosophila_gff_path, outfile_name:s
                 elif orthogroups_dict_all !={} and david_gene_groups !={}:
                     try:
                         gene_group, gene_name = david_gene_groups[flybase]
+                        gene_group = ",".join(gene_group)
                     except:
                         gene_group = "None"
                         gene_name = "None"
@@ -292,8 +293,8 @@ def parse_david_gene_groups_file(david_gene_groups_filepath:str):
     """
     parse the gene groups output from DAVID functional analysis to sort the flybase IDs into functional gene groups
     out_dict = {
-        flybase_ID : [ Gene_group ,  Gene_name ],
-        flybase_ID : [ Gene_group ,  Gene_name ],
+        flybase_ID : [ [Gene_group_1] ,  Gene_name ],
+        flybase_ID : [ [Gene_group_1, Gene_group_2] ,  Gene_name ],
         ...
     }
     """
@@ -312,7 +313,12 @@ def parse_david_gene_groups_file(david_gene_groups_filepath:str):
             elif "FLYBASE_GENE_ID" in line[0]:
                 continue
             elif "FBgn" in line[0]:
-                out_dict[line[0]] = [current_gene_group, line[1]]
+                flybase_ID = line[0]
+                if flybase_ID not in out_dict:
+                    out_dict[flybase_ID] = [[current_gene_group], line[1]]
+                else:
+                    out_dict[flybase_ID][0].append(current_gene_group)
+
             else:
                 raise RuntimeError(f"Line: '{line_string}' could not be parsed")
     print(f"{count_gene_groups} Gene Groups in file.")
@@ -354,7 +360,7 @@ if __name__ == "__main__":
 
 
     # get stuff for orthoDB annotations
-    if False:
+    if True:
         print(f"\n\torthoDB")
         orthoDB_sig_list, orthoDB_all_list =OGs.get_sig_orthogroups(sig_orthoDB)
         orthoDB_sig_OGs_dict = OGs.parse_orthogroups_dict(orthogroups_orthoDB, sig_list = orthoDB_sig_list, species="D_melanogaster")

@@ -249,7 +249,7 @@ def plot_transcript_distance(same_contig_proportion, GF_positions_dict, species)
     print(f"plot saved in current working directory as {filename}")
 
 
-def plot_all_OGs_transcript_distances(same_contig_proportion_all_species, GF_positions_dict_all_species, columns = 3, filename = "mean_transcript_distance_in_gene_families.png"):
+def plot_all_OGs_transcript_distances(same_contig_proportion_all_species, GF_positions_dict_all_species, columns = 3, filename = "mean_transcript_distance_in_gene_families.png", L50_values = {}):
     species_list = list(same_contig_proportions.keys())
     cols = columns
     rows = int(len(species_list)/cols)  +1
@@ -275,7 +275,10 @@ def plot_all_OGs_transcript_distances(same_contig_proportion_all_species, GF_pos
 
         # Plot histogram on the corresponding subplot axis
         axes[row, col].scatter(nun_members_vec, mean_distance_vec, color = "#8E8E8E")
-        axes[row, col].set_title(f'{species_name} ({percent}% of orthogroups)')
+        try:
+            axes[row, col].set_title(f'{species_name} \n({percent}% of orthogroups, L50: {L50_values[species]})')
+        except:
+            axes[row, col].set_title(f'{species_name} ({percent}% of orthogroups)')
         axes[row, col].set_xlabel('')
         axes[row, col].set_ylabel('')
         
@@ -312,7 +315,24 @@ if __name__ == "__main__":
     orthoDB_annotations, orthogroups_orthoDB, sig_orthoDB, orthoDB_proteinseqs = filepaths_orthoDB()
     native_annotations, orthogroups_native, sig_native, native_proteinseqs = filepaths_native()
     
-    
+    # from quast results for all assemblies
+    L50_values = {
+        "A_obtectus" : 5,
+        "A_verrucosus" : 8944,
+        "B_siliquastri" : 5,
+        "C_analis" : 1051,
+        "C_chinensis" : 231,
+        "C_maculatus" : 6, # the non-superscaffolded value is 38,
+        "C_septempunctata" : 4,
+        "D_melanogaster" : 3,
+        "D_ponderosae" : 87,
+        "I_luminosus" : 1966,
+        "P_pyralis" : 5,
+        "R_ferrugineus" : 268,
+        "T_castaneum" : 5,
+        "T_molitor" : 6,
+        "Z_morio" : 4
+    }
     # species = "B_siliquastri"
     same_contig_proportions:dict = {}
     gene_family_values:dict = {}
@@ -339,4 +359,4 @@ if __name__ == "__main__":
         #     print(f"{OG_id} :  num. members {out_values[0]}, mean distance = {out_values[1]}")
         
         # plot_transcript_distance(same_contig_proportion, out_dict, species)
-    plot_all_OGs_transcript_distances(same_contig_proportion_all_species=same_contig_proportions, GF_positions_dict_all_species=gene_family_values)
+    plot_all_OGs_transcript_distances(same_contig_proportion_all_species=same_contig_proportions, GF_positions_dict_all_species=gene_family_values, filename="/Users/miltr339/work/PhD_code/PhD_chapter1/data/mean_transcript_distance_in_gene_families.png", L50_values = L50_values)

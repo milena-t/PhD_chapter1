@@ -360,7 +360,25 @@ if __name__ == "__main__":
                         "C_analis" : 69.29,
                         "C_maculatus" : 73.49
                         }
-
+        
+        # from quast results for all assemblies
+        L50_values = {
+                        "A_obtectus" : 5,
+                        "A_verrucosus" : 8944,
+                        "B_siliquastri" : 5,
+                        "C_analis" : 1051,
+                        "C_chinensis" : 231,
+                        "C_maculatus" : 6, # the non-superscaffolded value is 38,
+                        "C_septempunctata" : 4,
+                        "D_melanogaster" : 3,
+                        "D_ponderosae" : 87,
+                        "I_luminosus" : 1966,
+                        "P_pyralis" : 5,
+                        "R_ferrugineus" : 268,
+                        "T_castaneum" : 5,
+                        "T_molitor" : 6,
+                        "Z_morio" : 4
+        }
 
         Kaufman_cmac_annotation_comparison = {
             'genes' : {'A_obtectus' : 34704, 'c_maculatus_all_proteinrefs' : 51238, 'C_maculatus__' : 35865, 'c_maculatus_only_orthoDB' : 42465, 'c_maculatus_RNA_combined' : 23428, 'c_maculatus_RNA_simple' : 23226, 'T_castaneum' : 12170},

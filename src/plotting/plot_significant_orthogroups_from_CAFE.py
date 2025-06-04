@@ -1,6 +1,5 @@
 # plot the orthogroup size per species for all orthogroups, and highlight the significant ones
 
-import re
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from statistics import mean
