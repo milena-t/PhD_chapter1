@@ -1,7 +1,7 @@
 #!/bin/bash -l
-#SBATCH -A naiss2024-5-135
+#SBATCH -A uppmax2025-2-148
 #SBATCH -p core
-#SBATCH -n 4
+#SBATCH -n 10
 #SBATCH -t 10:00
 #SBATCH -J quast
 #SBATCH -o quast.log
@@ -47,6 +47,10 @@ W_DIR=$(pwd)
 # echo "chinensis quast"
 # python3 /proj/naiss2023-6-65/Milena/quast.py -o chinensis_quast -t 10 /proj/naiss2023-6-65/Milena/coleoptera_sequences/c_chinensis/chinensis_from_uppmax.fasta
 # echo "chinensis quast done"
+
+CMAC_superscaffolded=/proj/naiss2023-6-65/Milena/annotation_pipeline/only_orthodb_annotation/C_maculatus_superscaffolded/assembly_genomic.fna.masked
+OUT_DIR_CMAC=/proj/naiss2023-6-65/Milena/data_processing/assembly_evaluation_scripts_and_results/CMAC_superscaffolded
+python3 /proj/naiss2023-6-65/Milena/quast.py -o $OUT_DIR_CMAC -t 10 $CMAC_superscaffolded
 
 # python3 /proj/naiss2023-6-65/Milena/quast.py -o maculatus_from_ENA_quast -t 4 /proj/naiss2023-6-65/Milena/coleoptera_sequences/c_maculatus/Cmac_from_ENA_GCA_951848785.1.fasta.masked
 # python3 /proj/naiss2023-6-65/Milena/quast.py -o maculatus_from_uppmax_quast -t 4 /proj/naiss2023-6-65/Milena/coleoptera_sequences/c_maculatus/C_mac_Ys_hifiasm.fasta
