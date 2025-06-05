@@ -283,9 +283,9 @@ def plot_all_OGs_transcript_distances(same_contig_proportion_all_species, GF_pos
                 N50_value = f'{N50_value / 1e6:.1f} Mb'
             else:
                 N50_value = f'{N50_value / 1e3:.0f} kb'
-            axes[row, col].set_title(f'{species_name} ({percent}% of orthogroups) \nL50: {L50_values[species]}, N50: ca. {N50_value}')
+            axes[row, col].set_title(f'{species_name} ({percent}% of gene families) \nL50: {L50_values[species]}, N50: ca. {N50_value}')
         except:
-            axes[row, col].set_title(f'{species_name} ({percent}% of orthogroups)')
+            axes[row, col].set_title(f'{species_name} ({percent}% of gene families)')
         axes[row, col].set_xlabel('')
         axes[row, col].set_ylabel('')
         
@@ -302,7 +302,8 @@ def plot_all_OGs_transcript_distances(same_contig_proportion_all_species, GF_pos
             y_function_formatter = lambda x, pos: '' if x < 0 else f'{x / 1e3:.0f} kb'
 
         axes[row, col].yaxis.set_major_formatter(FuncFormatter(y_function_formatter))
-        axes[row, col].xaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x < 0 else f"{int(x)}"))
+        # make integers and skip ticks that are in between integers
+        axes[row, col].xaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if str(x).split(".")[-1][0]!= "0" else f"{int(x)}"))
         print(f"\tin position {row+1},{col+1} ;  y scale: {y_scale}  --> {species_name}")
     
     # make last plot empty
