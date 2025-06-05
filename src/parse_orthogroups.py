@@ -13,7 +13,7 @@ from statistics import mean
 
 def get_orthogroup_sizes(orthogroup_dict, q = 0):
     """
-    returns a dict of all orthogroups sizes.
+    returns a dict of all orthogroups sizes. Do NOT confuse it with gene family sizes! (get_GF_sizes function instead)
     if a percentile q is specified other than 0, it returns only orthogroups whose size is > than the pth percentile of the size distribution
     """
     
@@ -96,6 +96,7 @@ def parse_orthogroups_dict(filepath, sig_list:list[str] = [], species = ""):
     with open(filepath, "r") as N0_infile:
         N0_infile = N0_infile.readlines()
         headers = N0_infile[0].strip().split("\t")
+        headers =headers[3:] # remove non-species headers for the orthogroup identifiers
         headers_clean = [gff.split_at_second_occurrence(header) for header in headers]
 
         # if a weird species name is entered
@@ -109,6 +110,11 @@ please pick one of the header names instead: \n\t{headers} \nor:\n\t{headers_cle
 
         for i, orthogroup_line in enumerate(N0_infile[1:]):
             orthogroup_line = orthogroup_line.strip().split("\t")
+            if len(orthogroup_line[3:])< len(headers): # the orthogroups line cuts off after the last species with members
+                len_diff = len(headers)-len(orthogroup_line[3:])
+                for i in range(len_diff):
+                    orthogroup_line.append('')
+                
             orthogroup = orthogroup_line[0] # column 0 for the hierarchical one, otherwise 1 for the old one (which is deprecated because of duplicates)
 
             if len(sig_list)>0 and orthogroup not in sig_list:
@@ -116,7 +122,8 @@ please pick one of the header names instead: \n\t{headers} \nor:\n\t{headers_cle
             
             if species == "":
                 out_dict[orthogroup] = {}
-                for column in range(3, len(orthogroup_line)):
+                orthogroup_line=orthogroup_line[3:]
+                for column in range(len(orthogroup_line)):
                     species_col = gff.split_at_second_occurrence(headers[column])
                     try:
                         if len(orthogroup_line[column].split(", "))>0:
