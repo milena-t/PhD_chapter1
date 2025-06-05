@@ -404,7 +404,7 @@ if __name__ == "__main__":
     
     ### plot protein length histograms
     ## filepaths
-    if True:
+    if False:
         native_dir = "/Users/miltr339/work/native_proteinseqs"
         native_files = {
             "A_obtectus" : f"{native_dir}/A_obtectus.faa",

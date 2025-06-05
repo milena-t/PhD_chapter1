@@ -120,32 +120,33 @@ def plot_gene_counts(orthogroups_dict, sig_list, all_cafe_list, species_names, a
     all_sig = {species : [] for species in species_names}
 
     for orthogroup in sig_list:
-        gene_family_members = [orthogroups_dict[orthogroup][species] for species in species_names]
+        gene_family_members = []
         for species in species_names:
-            all_unsig[species].append(orthogroups_dict[orthogroup][species])
+            try:
+                gene_family_members.append(orthogroups_dict[orthogroup][species])
+            except:
+                # raise RuntimeError(f"{orthogroup} had a key error for {species}: orthogroups dict --> \n{orthogroups_dict[orthogroup]}")
+                gene_family_members.append(0)
+            
         if max(gene_family_members) > ymax:
             ymax = max(gene_family_members)
+
         ax.plot(species_names, gene_family_members, color = colors[annotation], alpha = 0.4, linewidth = 0.8)
     
     for orthogroup in all_cafe_list:
+        gene_family_members = []
         if orthogroup in sig_list:
             continue
         for species in species_names:
-            all_sig[species].append(orthogroups_dict[orthogroup][species])
-        gene_family_members = [orthogroups_dict[orthogroup][species] for species in species_names]
+            try:
+                gene_family_members.append(orthogroups_dict[orthogroup][species])
+            except:
+                gene_family_members.append(0)
+
         if max(gene_family_members) > ymax:
             ymax = max(gene_family_members)
+        
         ax.plot(species_names, gene_family_members, color = colors["background"], alpha = 0.25, linewidth = 0.8)
-    
-    ### print mean line for significant and non-significant orthogroups
-    # not very aussagekräftig, unfortunately
-
-    # all_unsig_list = [mean(all_unsig[species]) for species in species_names]
-    # print(all_unsig_list)
-    # ax.plot(species_names, all_unsig_list, color = colors["background"])
-    # all_sig_list = [mean(all_sig[species]) for species in species_names]
-    # print(all_sig_list)
-    # ax.plot(species_names, all_sig_list, color = colors[annotation])
 
     ax.set_ylabel(ylab, fontsize = fs)
     plt.xticks(labels=[species.replace("_", ". ") for species in species_names], ticks=species_names, rotation = 90, fontsize = fs)
@@ -157,7 +158,7 @@ def plot_gene_counts(orthogroups_dict, sig_list, all_cafe_list, species_names, a
     handles.append(mpatches.Patch(color=colors["background"]))
     labels.append("non-significant")
 
-    ax.legend(handles, labels, fontsize = fs, loc='upper right', title_fontsize = fs)
+    ax.legend(handles, labels, fontsize = fs, loc='upper left', title_fontsize = fs)
 
     #ax.legend(fontsize = fs)
     # set grid only for X axis ticks 
@@ -272,6 +273,8 @@ if __name__ == "__main__":
     sig_native = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_native_Base_Family_results.txt"
     sig_orthoDB = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_uniform_Base_Family_results.txt"
 
+    out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/"
+
     genome_sizes_dict = {"D_melanogaster" : 180,
                     "I_luminosus" : 842,
                     "P_pyralis" : 471,
@@ -292,21 +295,23 @@ if __name__ == "__main__":
     whole_genome_stats_filepath = "/Users/miltr339/Box Sync/code/annotation_pipeline/repeatmasking_eval/eval_stats_3_annots_with_genome_size.csv"
     whole_genome_stats = read_whole_genome_stats(whole_genome_stats_filepath)
 
+    print(f"\n\tnative")
     # native_dict = read_orthogroups_input(orthogroups_native_filepath)
     native_dict_lists = OGs.parse_orthogroups_dict(orthogroups_native_filepath)
     native_dict = OGs.get_GF_sizes(native_dict_lists)
     native_sig_list, native_cafe_list = OGs.get_sig_orthogroups(sig_native)
     print(f"{len(native_cafe_list)} of {len(native_dict)} native orthogroups considered in CAFE, of which {len(native_sig_list)} are significantly changing")
     all_unsig_native, all_sig_native = get_means(native_dict, native_sig_list, native_cafe_list, species_names)
-    # plot_gene_counts(native_dict, native_sig_list, native_cafe_list, species_names, annotation = "native", filename = "native_significant_orthogroups_from_CAFE.png")
+    plot_gene_counts(native_dict, native_sig_list, native_cafe_list, species_names, annotation = "native", filename = f"{out_dir}native_significant_orthogroups_from_CAFE.png")
 
+    print(f"\n\torthoDB")
     # orthoDB_dict = read_orthogroups_input(orthogroups_orthoDB_filepath)
     orthoDB_dict_lists = OGs.parse_orthogroups_dict(orthogroups_orthoDB_filepath)
     orthoDB_dict = OGs.get_GF_sizes(orthoDB_dict_lists)
     orthoDB_sig_list, orthoDB_cafe_list = OGs.get_sig_orthogroups(sig_orthoDB)
     print(f"{len(orthoDB_cafe_list)} of {len(orthoDB_dict)} orthoDB orthogroups considered in CAFE, of which {len(orthoDB_sig_list)} are significantly changing")
     all_unsig_orthoDB, all_sig_orthoDB = get_means(orthoDB_dict, orthoDB_sig_list, orthoDB_cafe_list, species_names)
-    # plot_gene_counts(orthoDB_dict, orthoDB_sig_list, orthoDB_cafe_list, species_names, annotation = "orthoDB", filename = "orthoDB_significant_orthogroups_from_CAFE.png")
+    plot_gene_counts(orthoDB_dict, orthoDB_sig_list, orthoDB_cafe_list, species_names, annotation = "orthoDB", filename = f"{out_dir}orthoDB_significant_orthogroups_from_CAFE.png")
 
     native_means = {
         "unsignificant" : all_unsig_native,
@@ -319,5 +324,5 @@ if __name__ == "__main__":
 
     # plot_means(native_means, orthoDB_means, whole_genome_stats, species_names)
     out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/"
-    plot_means(native_means, orthoDB_means, whole_genome_stats, species_names, x_category="genome_size", filename=f"{out_dir}mean_orthogroups_from_CAFE_vs_genome_size.png")
-    plot_means(native_means, orthoDB_means, whole_genome_stats, species_names, x_category="repeat_percentage", filename=f"{out_dir}mean_orthogroups_from_CAFE_vs_repeats.png")
+    # plot_means(native_means, orthoDB_means, whole_genome_stats, species_names, x_category="genome_size", filename=f"{out_dir}mean_orthogroups_from_CAFE_vs_genome_size.png")
+    # plot_means(native_means, orthoDB_means, whole_genome_stats, species_names, x_category="repeat_percentage", filename=f"{out_dir}mean_orthogroups_from_CAFE_vs_repeats.png")
