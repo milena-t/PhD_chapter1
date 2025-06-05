@@ -295,7 +295,7 @@ def plot_all_species_protein_length_distribution(native_files:dict, orthoDB_file
         row = idx_max // cols
         col = idx_max % cols
         axes[row, col].axis('off')
-        axes[row, col].set_title(f'{species_name}')
+        axes[row, col].set_title(f'')
         handles = []
         labels = [] 
         handles.append(mpatches.Patch(color=colors["native"]))
@@ -318,7 +318,7 @@ def plot_all_species_protein_length_distribution(native_files:dict, orthoDB_file
 if __name__ == "__main__":
 
     ## plot basic gene counts
-    if True:
+    if False:
 
         try:
             tree = "/Users/miltr339/Box Sync/code/annotation_pipeline/annotation_scripts_ordered/14_species_orthofinder_tree.nw"
@@ -404,7 +404,7 @@ if __name__ == "__main__":
     
     ### plot protein length histograms
     ## filepaths
-    if False:
+    if True:
         native_dir = "/Users/miltr339/work/native_proteinseqs"
         native_files = {
             "A_obtectus" : f"{native_dir}/A_obtectus.faa",
@@ -446,4 +446,4 @@ if __name__ == "__main__":
     # for species in native_files.keys():
     #     plot_histogram_protein_lengths(native_files[species], orthoDB_files[species], species_name=species, filename = f"protein_lengths_histogram_{species}.png")
     
-    # plot_all_species_protein_length_distribution(native_files, orthoDB_files)
+    plot_all_species_protein_length_distribution(native_files, orthoDB_files)

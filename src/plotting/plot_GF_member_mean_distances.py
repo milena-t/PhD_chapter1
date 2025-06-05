@@ -140,7 +140,6 @@ def analyze_transcript_positions(transcripts_list:list, annotation_dict:dict):
             mean_distance = transcripts_list[0]
             return same_contig, mean_distance
 
-
     for transcript in transcripts_list:
         try:
             transcript = annotation_dict[transcript]
@@ -150,7 +149,6 @@ def analyze_transcript_positions(transcripts_list:list, annotation_dict:dict):
             mean_distance = transcript
             return same_contig, mean_distance
 
-        
         if first_contig != transcript.contig:
             same_contig = False
             mean_distance = 0
@@ -193,6 +191,9 @@ def analyze_orthogroup_position_species(OGs_dict, species_annotation):
     orthogroups_with_not_found_transcripts = 0
     
     for orthogroup, transcripts_list in OGs_dict.items():
+        # if len(transcripts_list)>2:
+        #     print(transcripts_list)
+        #     raise RuntimeError("testing")
         same_contig, mean_distance = analyze_transcript_positions(transcripts_list, species_annotation)
         all_OGs += 1
         if same_contig:
@@ -266,7 +267,6 @@ def plot_all_OGs_transcript_distances(same_contig_proportion_all_species, GF_pos
         for values in GF_positions_dict.values():
             nun_members_vec.append(values[0])
             mean_distance_vec.append(values[1])
-
         
         # Calculate row and column indices for the current subplot
         row = idx // cols
@@ -276,7 +276,14 @@ def plot_all_OGs_transcript_distances(same_contig_proportion_all_species, GF_pos
         # Plot histogram on the corresponding subplot axis
         axes[row, col].scatter(nun_members_vec, mean_distance_vec, color = "#8E8E8E")
         try:
-            axes[row, col].set_title(f'{species_name} ({percent}% of orthogroups) \nL50: {L50_values[species]}, N50: {N50_values[species]}')
+            N50_value = N50_values[species]
+            if N50_value>10e6:
+                N50_value = f'{N50_value / 1e6:.0f} Mb'
+            elif N50_value>1e6:
+                N50_value = f'{N50_value / 1e6:.1f} Mb'
+            else:
+                N50_value = f'{N50_value / 1e3:.0f} kb'
+            axes[row, col].set_title(f'{species_name} ({percent}% of orthogroups) \nL50: {L50_values[species]}, N50: ca. {N50_value}')
         except:
             axes[row, col].set_title(f'{species_name} ({percent}% of orthogroups)')
         axes[row, col].set_xlabel('')
@@ -296,7 +303,15 @@ def plot_all_OGs_transcript_distances(same_contig_proportion_all_species, GF_pos
 
         axes[row, col].yaxis.set_major_formatter(FuncFormatter(y_function_formatter))
         axes[row, col].xaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x < 0 else f"{int(x)}"))
-        print(f"\tin position {row+1},{col+1}: {species_name}, \t --> y scale: {y_scale}")
+        print(f"\tin position {row+1},{col+1} ;  y scale: {y_scale}  --> {species_name}")
+    
+    # make last plot empty
+    idx_max = len(species_list)
+    row = idx_max // cols
+    col = idx_max % cols
+    axes[row, col].axis('off')
+    axes[row, col].set_title(f'')
+
 
             # Set a single x-axis label for all subplots
     x_label = f"number of gene family members"
@@ -333,7 +348,7 @@ if __name__ == "__main__":
         "T_molitor" : 6,
         "Z_morio" : 4
     }
-    N50_values = { ## TODO add missing species
+    N50_values = {
         "A_obtectus" : 108704056,
         "A_verrucosus" : 6513,
         "B_siliquastri" : 39857073, ##!
@@ -377,4 +392,6 @@ if __name__ == "__main__":
         #     print(f"{OG_id} :  num. members {out_values[0]}, mean distance = {out_values[1]}")
         
         # plot_transcript_distance(same_contig_proportion, out_dict, species)
+
+    ##TODO !!!! lots of orthogroups now have "orthogroups have transcripts that were not found in the annotation, or 100%"
     plot_all_OGs_transcript_distances(same_contig_proportion_all_species=same_contig_proportions, GF_positions_dict_all_species=gene_family_values, filename="/Users/miltr339/work/PhD_code/PhD_chapter1/data/mean_transcript_distance_in_gene_families.png", L50_values = L50_values, N50_values = N50_values)

@@ -116,13 +116,13 @@ please pick one of the header names instead: \n\t{headers} \nor:\n\t{headers_cle
                     orthogroup_line.append('')
                 
             orthogroup = orthogroup_line[0] # column 0 for the hierarchical one, otherwise 1 for the old one (which is deprecated because of duplicates)
+            orthogroup_line=orthogroup_line[3:]
 
             if len(sig_list)>0 and orthogroup not in sig_list:
                 continue # skip this orthogroup
             
             if species == "":
                 out_dict[orthogroup] = {}
-                orthogroup_line=orthogroup_line[3:]
                 for column in range(len(orthogroup_line)):
                     species_col = gff.split_at_second_occurrence(headers[column])
                     try:
