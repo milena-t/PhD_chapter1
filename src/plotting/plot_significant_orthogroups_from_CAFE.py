@@ -258,7 +258,7 @@ def plot_means(native, orthoDB, whole_genome_stats, species_names, x_category = 
 
     plt.tight_layout()
 
-    plt.savefig(filename, dpi = 300, transparent = False)
+    plt.savefig(filename, dpi = 300, transparent = True)
     print("Figure saved in the current working directory directory as: "+filename)
 
 
@@ -324,5 +324,5 @@ if __name__ == "__main__":
 
     # plot_means(native_means, orthoDB_means, whole_genome_stats, species_names)
     out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/"
-    # plot_means(native_means, orthoDB_means, whole_genome_stats, species_names, x_category="genome_size", filename=f"{out_dir}mean_orthogroups_from_CAFE_vs_genome_size.png")
-    # plot_means(native_means, orthoDB_means, whole_genome_stats, species_names, x_category="repeat_percentage", filename=f"{out_dir}mean_orthogroups_from_CAFE_vs_repeats.png")
+    plot_means(native_means, orthoDB_means, whole_genome_stats, species_names, x_category="genome_size", filename=f"{out_dir}mean_orthogroups_from_CAFE_vs_genome_size.png")
+    plot_means(native_means, orthoDB_means, whole_genome_stats, species_names, x_category="repeat_percentage", filename=f"{out_dir}mean_orthogroups_from_CAFE_vs_repeats.png")
