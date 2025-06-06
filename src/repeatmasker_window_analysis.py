@@ -780,7 +780,7 @@ def plot_repeat_abundance(species_abundances, species_categories, gff_filepath, 
 
     plt.tight_layout()
 
-    plt.savefig(filename, dpi = 300, transparent = False)
+    plt.savefig(filename, dpi = 300, transparent = True)
     print("\tFigure saved in the current working directory directory as: "+filename)
 
     # plt.show()
