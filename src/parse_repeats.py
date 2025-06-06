@@ -15,18 +15,18 @@ import parse_gff as gff
 @dataclass
 class Repeat:
     start:int
-    stop:int
+    end:int
     contig:str
     feature_id:str
     repeat_category:str
 
     @property
     def length(self):
-        return int(self.stop)-int(self.start) +1 # same reason as in Feature class
+        return int(self.end)-int(self.start) +1 # same reason as in Feature class
     
     @property
     def get_category(self):
-        return [self.repeat_category, self.start, self.stop]
+        return [self.repeat_category, self.start, self.end]
     
     # get number of how many instances of each feature category are pesent in a gene
     @property
@@ -37,7 +37,7 @@ class Repeat:
         return feature_stats
     
     def __str__(self):
-        return(f"""repeat category: {self.repeat_category}") on contig: {self.contig} ;  from {str(self.start)} to {str(self.stop)}""")
+        return(f"""repeat category: {self.repeat_category}") on contig: {self.contig} ;  from {str(self.start)} to {str(self.end)}""")
         
 
 
@@ -145,14 +145,14 @@ def parse_repeats_repeatmasker_outfile(filepath_out, verbose = True, filter_over
 
         # parse gff file
         # more info on file format and columns here: https://www.ensembl.org/info/website/upload/gff.html?redirect=no
-        contig,start_original,stop_original,repeat_category,id=line
+        contig,start_original,end_original,repeat_category,id=line
         
         # if repeat direction is inverse, flip it
-        if int(stop_original)<int(start_original):
-            start = int(stop_original)
-            stop = int(start_original)
+        if int(end_original)<int(start_original):
+            start = int(end_original)
+            end = int(start_original)
         else:
-            stop = int(stop_original)
+            end = int(end_original)
             start = int(start_original)
         
         # if there's an overlap
@@ -161,7 +161,7 @@ def parse_repeats_repeatmasker_outfile(filepath_out, verbose = True, filter_over
             if filter_overlap:
                 bp_overlap = bp_overlap + int(prev_end)-int(start)
                 start = int(prev_end)
-        prev_end = stop
+        prev_end = end
 
         id = str(id)
 
@@ -176,7 +176,7 @@ def parse_repeats_repeatmasker_outfile(filepath_out, verbose = True, filter_over
         if len(id)==0:
             raise RuntimeError(f"no id property found for repeat in line: {line}")
         
-        newrepeat=Repeat(start,stop,contig,feature_id=id, repeat_category=repeat_category)
+        newrepeat=Repeat(start,end,contig,feature_id=id, repeat_category=repeat_category)
         gfffile[contig].append(newrepeat)
 
     if verbose:
