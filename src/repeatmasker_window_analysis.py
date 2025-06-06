@@ -219,7 +219,7 @@ def get_repeat_abundance(repeats_list:list, window_interval:list[int], filter_ov
             covered_bp = 0
 
             # is the repeat in the window?
-            if repeat.stop < window_start :
+            if repeat.end < window_start :
                 # repeat is before the window interval continue to the next one
                 continue
             elif repeat.start > window_stop:
@@ -228,38 +228,38 @@ def get_repeat_abundance(repeats_list:list, window_interval:list[int], filter_ov
                 break
             
             # repeat is completely inside the window
-            if repeat.start > window_start and repeat.stop < window_stop:
+            if repeat.start > window_start and repeat.end < window_stop:
             
                 # if the repeat does not overlap with the previous one
                 if filter_overlap_previous__ and repeat.start > prev_end:
-                    covered_bp = repeat.stop - repeat.start
-                    prev_end = repeat.stop
+                    covered_bp = repeat.end - repeat.start
+                    prev_end = repeat.end
                 # if the repeat is completely inside the previous one (the current repeat always starts after the previous one so no need to test that)
-                elif filter_overlap_previous__ and repeat.stop < prev_end:
-                    overlap_filtered_bp += repeat.stop - repeat.start
+                elif filter_overlap_previous__ and repeat.end < prev_end:
+                    overlap_filtered_bp += repeat.end - repeat.start
                 # if the repeat ends after the previous one but the start is still in the previous repeat
                 elif filter_overlap_previous__ and repeat.start < prev_end:
-                    covered_bp = repeat.stop - prev_end
-                    prev_end = repeat.stop
+                    covered_bp = repeat.end - prev_end
+                    prev_end = repeat.end
                     overlap_filtered_bp += prev_end - repeat.start
 
                 elif filter_overlap_previous__ == False:
-                    covered_bp = repeat.stop - repeat.start
+                    covered_bp = repeat.end - repeat.start
 
                 no_placement = False
                 no_placed +=1
-            elif repeat.start < window_start and repeat.stop > window_start:
+            elif repeat.start < window_start and repeat.end > window_start:
                 # repeat overlaps with the start of the interval
-                covered_bp = repeat.stop - window_start
+                covered_bp = repeat.end - window_start
                 # if more than half of the gene is inside the window
-                if covered_bp > 0.5*(repeat.stop-repeat.start):
+                if covered_bp > 0.5*(repeat.end-repeat.start):
                     no_placement = False
                     no_placed +=1
-            elif repeat.start > window_start and repeat.stop > window_stop:
+            elif repeat.start > window_start and repeat.end > window_stop:
                 # repeat overlaps with the stop of an interval
                 covered_bp = window_stop - repeat.start
                 # if more than half of the repeat is inside the window
-                if covered_bp > 0.5*(repeat.stop-repeat.start):
+                if covered_bp > 0.5*(repeat.end-repeat.start):
                     no_placement = False
                     no_placed +=1
 
@@ -289,7 +289,7 @@ def get_repeat_abundance(repeats_list:list, window_interval:list[int], filter_ov
             # if not gene_number:
             repeat_abundances[repeat_cat_name] += covered_bp
             if covered_bp<0:
-                print(f" \t\t !!!! covered_bp = {covered_bp} < 0 -> repeat from {repeat.start} to {repeat.stop}")
+                print(f" \t\t !!!! covered_bp = {covered_bp} < 0 -> repeat from {repeat.start} to {repeat.end}")
 
         if gene_number and not gene_density:
             repeat_abundances[repeat_cat_name] = no_placed
