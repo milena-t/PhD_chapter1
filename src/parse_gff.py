@@ -408,7 +408,7 @@ def parse_gff3_by_contig(filepath:str, verbose = True, featurecategory = Feature
                         raise RuntimeError(f"no id property found for gene in line: {line}")
 
                 ## add Feature to the output dict
-                new_feature=Feature(feature_id=attributes["ID"],contig = contig,category=category,start=start,end=stop,strandedness=strandedness, frame=frame)
+                new_feature=Feature(feature_id=attributes["ID"],contig = contig,category=category,start=int(start),end=int(stop),strandedness=strandedness, frame=frame)
                 if new_feature.contig not in genome_annotation:
                     genome_annotation[new_feature.contig]=[new_feature]
                 else:
@@ -478,6 +478,6 @@ def parse_gff3_for_attributes(filepath, feature_of_interest = FeatureCategory.Tr
 
 
 # if __name__ == "__main__":
-#     print(Feature("1", "contig1", FeatureCategory.Gene, 1, 100, "+", ".", parent_id=None))
+#     print("1", "contig1", FeatureCategory.Gene, 1, 100, "+", ".", parent_id=None))
 #     obtectus_test_native = "/Users/milena/work/native_annot_gff/acanthoscelides_obtectus.gff.isoform_filtered"
 #     parse_gff3_general(obtectus_test_native)
