@@ -2,6 +2,7 @@ import pandas as pd
 from collections import Counter
 from statistics import mean, stdev
 import parse_gff as gff
+import plot_basics as my_plotting
 
 import matplotlib.pyplot as plt
 import os
@@ -44,6 +45,8 @@ The plot filenames are hardcoded into the end of the script!
     parser.add_argument('--color_og2', type=str, help="line color for orthogroups set 2")
     parser.add_argument('--color_og3', type=str, help="line color for orthogroups set 3")
 
+    parser.add_argument('--out_dir', type=str, help="output directory where the plots will be saved")
+
 
     # Parse the arguments
     args = parser.parse_args()
@@ -64,6 +67,9 @@ The plot filenames are hardcoded into the end of the script!
         args.color_og2 = "#ED7D3A" # Pumbkin
     if not args.color_og3:
         args.color_og3 = "#4D7298" # UCLA blue
+    
+    if not args.out_dir:
+        args.out_dir = "."
 
     return args
 
@@ -214,19 +220,26 @@ def get_hierarchical_numbers_dicts(species_names, files_dir, orthogroups_file, v
 
 # plot function with lots of stuff to include optionally. The order of the species in the x-axis is determined by the "speciesnames" variable
 
-def plot_general_annotation_comparisons(native = {}, orthoDB = {}, proteinseqs = {},legend_title = "", speciesnames = [], filename = "", genome_size=[], gs_measurement = []):
+def plot_general_annotation_comparisons(native = {}, orthoDB = {}, proteinseqs = {},legend_title = "", species_tree = "", filename = "", genome_size=[], gs_measurement = []):
 
     fs = 13 # set font size
     # plot each column in the dataframe as a line in the same plot thorugh a for-loop
-    fig = plt.figure(figsize=(10,9))
-    
-    ax = fig.add_subplot(1, 1, 1)
+
+    # speciesnames = gff.make_species_order_from_tree(species_tree)
+    fig, (ax_data, ax_tree) = plt.subplots(2, 1, figsize=(10, 15), gridspec_kw={'height_ratios': [2, 3]}, constrained_layout=True)
+    species_names_unsorted = my_plotting.plot_tree_manually(species_tree, ax_tree)
+    # get species order from plotted tree
+    species_coords_sorted = sorted(list(species_names_unsorted.keys()))
+    speciesnames = [species_names_unsorted[species_coord] for species_coord in species_coords_sorted]
+    # fig = plt.figure(figsize=(10,9))
+    # ax = fig.add_subplot(1, 1, 1)
     
     ylab="Number of genes and orthogroups"
     # get a list of lists with [native, orthoDB] number of gene families per species
 
     legend_labels = []
     ncol_legend = 0
+
 
     if len(orthoDB)>0:
         legend_labels = list(orthoDB.keys())
@@ -237,15 +250,15 @@ def plot_general_annotation_comparisons(native = {}, orthoDB = {}, proteinseqs =
             values = orthoDB[category]
             values = [values[species] for species in speciesnames]
             if category == legend_labels[0]: # genes
-                ax.plot(speciesnames, values, linestyle=':', label = category+f" ({args.name_og2})", color = col)
+                ax_data.plot(speciesnames, values, linestyle=':', label = category+f" ({args.name_og2})", color = col)
             elif category == legend_labels[1]: # gene_families
-                ax.plot(speciesnames, values, label = category+f" ({args.name_og2})", color = col)
+                ax_data.plot(speciesnames, values, label = category+f" ({args.name_og2})", color = col)
             elif category == legend_labels[2]: # unassigned
-                ax.plot(speciesnames, values, linestyle = (0,(5,10)), label = category+f" ({args.name_og2})", color = col)
+                ax_data.plot(speciesnames, values, linestyle = (0,(5,10)), label = category+f" ({args.name_og2})", color = col)
             plt.yticks(fontsize = fs)
             # add space to see complete species names in the xticks
             plt.subplots_adjust(bottom=0.3)
-        ax.set_ylabel(ylab, fontsize = fs)
+        ax_data.set_ylabel(ylab, fontsize = fs)
     
     if len(proteinseqs)>0:
         legend_labels = list(proteinseqs.keys())
@@ -256,15 +269,15 @@ def plot_general_annotation_comparisons(native = {}, orthoDB = {}, proteinseqs =
             values = proteinseqs[category]
             values = [values[species] for species in speciesnames]
             if category == legend_labels[0]: # genes
-                ax.plot(speciesnames, values, linestyle=':', label = category+f" ({args.name_og3})", color = col)
+                ax_data.plot(speciesnames, values, linestyle=':', label = category+f" ({args.name_og3})", color = col)
             elif category == legend_labels[1]: # gene_families
-                ax.plot(speciesnames, values, label = category+f" ({args.name_og3})", color = col)
+                ax_data.plot(speciesnames, values, label = category+f" ({args.name_og3})", color = col)
             elif category == legend_labels[2]: # unassigned
-                ax.plot(speciesnames, values, linestyle = (0,(5,10)), label = category+f" ({args.name_og3})", color = col)
+                ax_data.plot(speciesnames, values, linestyle = (0,(5,10)), label = category+f" ({args.name_og3})", color = col)
             plt.yticks(fontsize = fs)
             # add space to see complete species names in the xticks
             plt.subplots_adjust(bottom=0.3)
-        ax.set_ylabel(ylab, fontsize = fs)
+        ax_data.set_ylabel(ylab, fontsize = fs)
 
     if len(native)>0:
         legend_labels = list(native.keys())
@@ -276,23 +289,24 @@ def plot_general_annotation_comparisons(native = {}, orthoDB = {}, proteinseqs =
             annotation_method = f" ({args.name_og1})"
             # annotation_method = " (Kaufmann2023)"
             if category == legend_labels[0]: # genes
-                ax.plot(speciesnames, values, linestyle=':', label = category+annotation_method, color = col)
+                ax_data.plot(speciesnames, values, linestyle=':', label = category+annotation_method, color = col)
             elif category == legend_labels[1]: # gene_families
-                ax.plot(speciesnames, values, label = category+annotation_method, color = col)
+                ax_data.plot(speciesnames, values, label = category+annotation_method, color = col)
             elif category == legend_labels[2]: # unassigned
-                ax.plot(speciesnames, values, linestyle = (0,(5,10)), label = category+annotation_method, color = col)
+                ax_data.plot(speciesnames, values, linestyle = (0,(5,10)), label = category+annotation_method, color = col)
             plt.yticks(fontsize = fs)
             # add space to see complete species names in the xticks
             plt.subplots_adjust(bottom=0.3)
 
-        ax.set_ylabel(ylab, fontsize = fs)
-        plt.xticks(labels=[species.replace("_", ". ") for species in speciesnames], ticks=speciesnames, rotation = 90, fontsize = fs)
+        ax_data.set_ylabel(ylab, fontsize = fs)
+        # plt.xticks(labels=[species.replace("_", ". ") for species in speciesnames], ticks=speciesnames, rotation = 90, fontsize = fs)
+        ax_data.set_xticklabels([species.replace("_", ". ") for species in species_names], rotation=90, fontsize=fs)
 
     if len(genome_size)>0 and len(native)>1:
         genome_size = [genome_size[species] for species in species_names]
         col_emp = "mediumseagreen"
         col_ass = "darkcyan"
-        ax2 = ax.twinx() 
+        ax2 = ax_data.twinx() 
         # ax2.spines['right'].set_visible(False)
         if len(gs_measurement)>0:
             col_genome_size =[col_emp if col == 1 else col_ass for col in gs_measurement] # TODO this doesn't work yet
@@ -304,13 +318,14 @@ def plot_general_annotation_comparisons(native = {}, orthoDB = {}, proteinseqs =
 
     # include legend (reversed order)
     # handles, labels = ax.get_legend_handles_labels()
-    ax.legend(title=legend_title, loc='upper center', bbox_to_anchor=(0.5, 1.2), ncol = ncol_legend)
+    ax_data.legend(title=legend_title, loc='upper center', bbox_to_anchor=(0.5, 1.2), ncol = ncol_legend)
     # set grid only for X axis ticks 
-    ax.grid(True)
-    ax.yaxis.grid(False)
+    ax_data.grid(True)
+    ax_data.yaxis.grid(False)
 
     # save plot
     #ax.set_ylabel(y_label, fontsize = fs)
+    #  plt.tight_layout()# replaced by constrained_layout=True in the beginning
     plt.savefig(filename, dpi = 300, transparent = True)
     print("Figure saved in the current working directory directory as: "+filename)
     # plt.show()
@@ -348,7 +363,7 @@ if __name__ == '__main__':
     print(f"\n ... plotting ...")
 
     if args.genome_sizes:
-        genoms_sizes_dict = read_genome_sizes(args.genome_sizes)
-        plot_general_annotation_comparisons(native = first_numbers, orthoDB = second_numbers, proteinseqs = third_numbers, legend_title = "", speciesnames = species_names, filename = "plot_orthofinder_comparison_with_genome_sizes.png", genome_size = genome_sizes_dict)
+        genome_sizes_dict = read_genome_sizes(args.genome_sizes)
+        plot_general_annotation_comparisons(native = first_numbers, orthoDB = second_numbers, proteinseqs = third_numbers, legend_title = "", species_tree=args.common_tree, filename = f"{args.out_dir}/plot_orthofinder_comparison_with_genome_sizes.png", genome_size = genome_sizes_dict)
     else:
-        plot_general_annotation_comparisons(native = first_numbers, orthoDB = second_numbers, proteinseqs = third_numbers, legend_title = "", speciesnames = species_names, filename = "plot_orthofinder_comparison.png")
+        plot_general_annotation_comparisons(native = first_numbers, orthoDB = second_numbers, proteinseqs = third_numbers, legend_title = "", species_tree=args.common_tree, filename = f"{args.out_dir}/plot_orthofinder_comparison.png")
