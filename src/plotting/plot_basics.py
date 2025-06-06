@@ -19,7 +19,7 @@ def get_gene_conuts_from_annot(species_names, files_dir):
     gene_nums_dict = {}
     gene_nums_dict_from_annot = {}
     search_string = "gene\t"
-    if "fa" in files_list[0].split(".")[-1] or "fna" in files_list[0].split(".")[-1]:
+    if "fa" in files_list[0].split(".")[-1] or "fna" in files_list[0].split(".")[-1] or "faa" in files_list[0].split(".")[-1]:
         search_string = ">"
     for species_name in species_names: 
         filepath = files_dir +"/"+ [file for file in files_list if species_name in file][0]
@@ -387,23 +387,26 @@ if __name__ == "__main__":
         Kaufmann_labels = {'C_maculatus__' : "RNA same population", 'c_maculatus_only_orthoDB' : "no RNA", 'c_maculatus_RNA_combined' : "DE RNA different population", 'c_maculatus_RNA_simple' : "RNA different population"}
         # plot_Kaufmann_annotation_comparison(Kaufman_cmac_annotation_comparison, Kaufmann_labels, filename = "Kaufmann_annotation_comparison.png")
 
-
+    if True:
         ## plot just the gene numbers from the two (three) annotation methods
         orthoDB_annot = "/Users/miltr339/work/orthoDB_annotations/"
         orthoDB_TE_filtered = "/Users/miltr339/work/orthoDB_proteinseqs_TE_filtered/" # "/proj/naiss2023-6-65/Milena/gene_family_analysis/orthofinder_only_orthoDB_annotations/protein_sequences_TE_filtered/"
-        native_annot = "/Users/miltr339/work/native_annotations/all_native_annot/"
+        # native_annot = "/Users/miltr339/work/native_annotations/all_native_annot/"
+        native_annot = "/Users/miltr339/work/native_proteinseqs/"
+        data = "/Users/miltr339/work/PhD_code/PhD_chapter1/data"
         try:
             tree = "/Users/milena/Box Sync/code/annotation_pipeline/annotation_scripts_ordered/14_species_orthofinder_tree.nw"
             plot_gene_counts(native_annot_dir=native_annot, species_tree=tree, orthoDB_filtered_annot_dir=orthoDB_TE_filtered, filename="only_genome_size_14_species.png")
         except:
-            tree = "/Users/miltr339/Box Sync/code/annotation_pipeline/annotation_scripts_ordered/14_species_orthofinder_tree.nw"
-            plot_gene_counts(native_annot_dir=native_annot, species_tree=tree, orthoDB_filtered_annot_dir=orthoDB_TE_filtered, filename="only_number_of_genes_with_tree.png")
+            # tree = "/Users/miltr339/Box Sync/code/annotation_pipeline/annotation_scripts_ordered/14_species_orthofinder_tree.nw"
+            tree = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_only_species_names.nw"
+            plot_gene_counts(native_annot_dir=native_annot, species_tree=tree, orthoDB_filtered_annot_dir=orthoDB_TE_filtered, filename=f"{data}/only_number_of_genes_with_tree.png")
         # plot_gene_counts(native_annot_dir=native_annot, orthoDB_annot_dir=orthoDB_annot, species_names=species_names, orthoDB_filtered_annot_dir=orthoDB_TE_filtered, filename="only_genome_size_14_species_with_TE_filtering.png")
 
     
     ### plot protein length histograms
     ## filepaths
-    if True:
+    if False:
         native_dir = "/Users/miltr339/work/native_proteinseqs"
         native_files = {
             "A_obtectus" : f"{native_dir}/A_obtectus.faa",
@@ -441,8 +444,8 @@ if __name__ == "__main__":
             "Z_morio" : f"{orthoDB_dir}/Z_morio_filtered_proteinfasta_TE_filtered.fa",
         }
 
-    # get individual plots for all species
-    # for species in native_files.keys():
-    #     plot_histogram_protein_lengths(native_files[species], orthoDB_files[species], species_name=species, filename = f"protein_lengths_histogram_{species}.png")
-    
-    plot_all_species_protein_length_distribution(native_files, orthoDB_files)
+        # get individual plots for all species
+        # for species in native_files.keys():
+        #     plot_histogram_protein_lengths(native_files[species], orthoDB_files[species], species_name=species, filename = f"protein_lengths_histogram_{species}.png")
+        
+        plot_all_species_protein_length_distribution(native_files, orthoDB_files)
