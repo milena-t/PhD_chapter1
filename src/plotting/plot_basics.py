@@ -82,7 +82,7 @@ def plot_tree_manually(species_tree, ax_tree = None, add_leaf_label=False):
     """
     plot a phylogenetic tree (newick format in a file in species_tree)
     manually so that the leaves point upwards. 
-    ax_tree is the plot axis defined in fig, ax_tree = plt.subplots()
+    ax_tree is the plot axis defined in fig, (ax_data, ax_tree) = plt.subplots()
     """
     tree = Phylo.read(species_tree, "newick")
     tree.ladderize()
@@ -163,7 +163,6 @@ def plot_gene_counts(native_annot_dir, species_tree, orthoDB_annot_dir="", ortho
         ymax = max(native_gene_list+orthoDB_gene_list+orthoDB_filtered_gene_list)*1.1
 
     ax_data.set_ylabel(ylab, fontsize = fs)
-    # plt.xticks(ticks=range(len(species_names)), labels=[species.replace("_", ". ") for species in species_names], rotation = 90, fontsize = fs)
     ax_data.set_xticklabels([species.replace("_", ". ") for species in species_names], rotation=90, fontsize=fs)
     
     legend = ax_data.legend(fontsize = fs)
