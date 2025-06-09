@@ -5,6 +5,8 @@
 *.faa
 *.log
 
+*transfer_files.sh
+
 
 ### everything below here is the standard python gitignore
 
