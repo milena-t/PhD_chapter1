@@ -15,14 +15,19 @@ from Bio import SeqIO, Phylo
 
 
 def get_gene_conuts_from_annot(species_names, files_dir):
+    print(species_names)
     files_list = os.listdir(files_dir)
+    blastDB_extensions = ["pdb","phr","pin","pjs","pot","psq","ptf","pto"]
     gene_nums_dict = {}
     gene_nums_dict_from_annot = {}
     search_string = "gene\t"
     if "fa" in files_list[0].split(".")[-1] or "fna" in files_list[0].split(".")[-1] or "faa" in files_list[0].split(".")[-1]:
         search_string = ">"
     for species_name in species_names: 
-        filepath = files_dir +"/"+ [file for file in files_list if species_name in file][0]
+        filepath = files_dir + [file for file in files_list if species_name in file][0]
+        file_end = filepath.split(".")[-1]
+        if file_end in blastDB_extensions:
+            filepath = filepath.replace(f".{file_end}", "")
 
         # get count per gene with bash commands 
         # in total: grep "search_string" filepath | wc -l
@@ -32,8 +37,11 @@ def get_gene_conuts_from_annot(species_names, files_dir):
         grep_out = sp.run(command , stdout = sp.PIPE)
         command2 = ["wc", "-l"]
         num_hits = sp.run(command2 , stdout = sp.PIPE, input=grep_out.stdout).stdout.decode("utf-8")
-
-        gene_nums_dict[species_name] = int(num_hits.strip())
+        num_proteins = int(num_hits.strip())
+        print(f"{species_name} ({num_proteins}) -->  {filepath}")
+        if num_proteins == 0:
+            raise ValueError(f"zero proteins found in {filepath}")
+        gene_nums_dict[species_name] = num_proteins
 
         ### if you want to compare the counting with grep to parse_gff:
         # if search_string == "gene\t":
