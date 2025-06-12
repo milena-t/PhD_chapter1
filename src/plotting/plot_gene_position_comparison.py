@@ -444,6 +444,10 @@ if __name__ == "__main__":
     # rsync -azP "milenatr@rackham.uppmax.uu.se:/proj/naiss2023-6-65/Milena/annotation_pipeline/annotation_evaluation/gene_position_comparison_native_vs_orhtoDB/*txt" .
     # rsync -azP "milenatr@rackham.uppmax.uu.se:/proj/naiss2023-6-65/Milena/annotation_pipeline/annotation_evaluation/gene_position_comparison_native_vs_orhtoDB/exon_overlaps/*txt" .
 
+    ### There is also pybedtools, which might be useful for less computationally intensive situations: https://daler.github.io/pybedtools/3-brief-examples.html#example-1-save-a-bed-file-of-intersections-with-track-line
+    
+
+
     overlap_transcript_path = "/Users/miltr339/work/gene_position_comparison_native_vs_orhtoDB/"
     if True:
         overlap_files_transcript = {
