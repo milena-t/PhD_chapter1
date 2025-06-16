@@ -1,12 +1,13 @@
 # plot the results from compare_gene_positions.sh
 
 from dataclasses import dataclass
-
+import numpy as np
 
 # import src.parse_gff as gff
 import parse_gff as gff
 
 import matplotlib.pyplot as plt
+from matplotlib.ticker import FuncFormatter
 from plot_basics import plot_tree_manually
 
 # to correctly compute the overlap, first correct the contig names of the orthoDB annotation to match the native annotations with correct_native_contig_names_for_bedtools_intersect.py
@@ -434,9 +435,101 @@ def plot_all_species_values(all_values_native_dict, all_values_orthoDB_dict, spe
     print(f"plot saved in current working directory as: {filename}")
     # plt.show()
 
-    # native
-    #
 
+def plot_all_species_values_barplot(all_values_native_dict, all_values_orthoDB_dict, species_names_list = [], filename = "", feature_name = "exons"):
+    """
+    Plot all of the values, species names specify the order in the x axis.
+    This is a stacked barplot, showing the proportion each category takes up in the transcripts.
+    species_names_list can be a list of species names that determines the order, but if it is a string to a newick file, 
+    the species file will be read in the function and the list will be generated automatically
+    """
+
+    if species_names_list == []:
+        species_names_list = list(all_values_orthoDB_dict.keys())
+    elif len(species_names_list) > 0 and type(species_names_list) == str:
+        # if the species name is actually a string then assume it's a filepath to a newick tree
+        # don't give an axis to plot and it will just return a species tree order
+        species_names_dict = plot_tree_manually(species_names_list)
+        species_names_list=[]
+        for i in range(len(species_names_dict)):
+            species_names_list.append(species_names_dict[i])
+        print(f"species names order from tree: {species_names_list}")
+
+    fs = 60 # set font size
+    aspect_ratio = 30 / 10
+    height_pixels = 2000  # Height in pixels
+    width_pixels = int(height_pixels * aspect_ratio)  # Width in pixels
+    fig = plt.figure(figsize=(width_pixels / 100, height_pixels / 100), dpi=100)
+    ax = fig.add_subplot(111)
+
+    width = 0.35 # width of each bar as a proportion of the width of one species tick space
+    x_subtr = width/2 + width/15 # position the bars correctly within their species ticks
+    
+    ylab=f"annotated {feature_name} in each species"
+    # get a list of lists with [native, orthoDB] number of gene families per species
+
+    categories = [
+        "1to1_overlap",
+        "multi_overlap",
+        "no_overlap",
+    ]
+
+    colors_orthoDB = {
+        "1to1_overlap" : "#F2933A" , # this is the same shade as uniform masking yellow in all the other plots
+        "multi_overlap" : "#F4B352",
+        "no_overlap" : "#F8CF8B",
+        "Missing" : "#828282"
+    }
+
+    colors_native = {
+        "1to1_overlap" : "#863c3d" , # this is the same shade as native red in all the other plots
+        "multi_overlap" : "#cd5b5b",
+        "no_overlap" : "#ff7277",
+        "Missing" : "#828282"
+    }
+
+    # the values are in dictionaries that can be accessed like:  values[species][category]
+
+    values_native={}
+    values_orthoDB={}
+    for category in categories:
+        values_native[category] = [all_values_native_dict[species][category] for species in species_names_list]
+        values_orthoDB[category] = [all_values_orthoDB_dict[species][category] for species in species_names_list]
+
+    x = np.arange(len(species_names_list))
+
+    bottom = np.zeros(len(species_names_list))
+    for transcript_category, transcript_numbers in values_native.items():
+        p = ax.bar(x - x_subtr, transcript_numbers, width, label=f"{transcript_category} (native)", color= colors_native[transcript_category], bottom=bottom)
+        bottom += transcript_numbers
+    bottom = np.zeros(len(species_names_list))
+    for transcript_category, transcript_numbers in values_orthoDB.items():
+        p = ax.bar(x + x_subtr, transcript_numbers, width, label=f"{transcript_category} (uniform)", color= colors_orthoDB[transcript_category], bottom=bottom)
+        bottom += transcript_numbers
+
+    ax.set_ylim(0, 1.4)
+    ax.set_xlim(-0.5, len(species_names_list)+0.5)
+    xtick_labels = [species.replace("_", ". ") for species in species_names_list]
+    # print(f"x ticks:{x}\nx-tick labels: {xtick_labels}")
+    ax.set_xticks(x)
+    ax.set_xticklabels(xtick_labels, rotation=90, fontsize=fs)
+    ax.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 1 else f'{int(x*100)}%'))
+    ax.tick_params(axis='y', labelsize=fs)
+    # plt.tight_layout()
+    ax.set_ylabel(ylab, fontsize = fs)
+
+    handles, labels = ax.get_legend_handles_labels()
+    labels = [label.replace("_", " ") for label in labels]
+    new_order = [2,1,0,5,4,3] 
+    handles = [handles[idx] for idx in new_order]
+    labels = [labels[idx] for idx in new_order]
+    ax.legend(handles, labels, fontsize = fs, ncol=2, loc='upper center')
+
+    if len(filename) == 0:
+        filename = "annotaion_overlaps.png"
+    plt.savefig(filename, dpi = 300, transparent = True, bbox_inches='tight')
+    print(f"plot saved in current working directory as: {filename}")
+    # plt.show()
 
 
 if __name__ == "__main__":
@@ -446,7 +539,7 @@ if __name__ == "__main__":
 
     ### There is also pybedtools, which might be useful for less computationally intensive situations: https://daler.github.io/pybedtools/3-brief-examples.html#example-1-save-a-bed-file-of-intersections-with-track-line
     
-
+    data_path="/Users/miltr339/work/PhD_code/PhD_chapter1/data/"
 
     overlap_transcript_path = "/Users/miltr339/work/gene_position_comparison_native_vs_orhtoDB/"
     if True:
@@ -623,10 +716,10 @@ if __name__ == "__main__":
         # print(f"native: \n\t{all_species_values_native}")
         # print(f"orthoDB: \n\t{all_species_values_orthoDB}")
         
-        tree_filepath = "/Users/miltr339/Box Sync/code/annotation_pipeline/annotation_scripts_ordered/14_species_orthofinder_tree.nw"
+        tree_filepath = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_only_species_names.nw"
         species_order = gff.make_species_order_from_tree(tree_filepath)
 
-        plot_all_species_values(all_values_native_dict=all_species_values_native, all_values_orthoDB_dict=all_species_values_orthoDB, species_names_list=species_order, filename = "annotaion_overlaps_transcript_level.png")
+        plot_all_species_values_barplot(all_values_native_dict=all_species_values_native, all_values_orthoDB_dict=all_species_values_orthoDB, species_names_list=species_order, filename = f"{data_path}annotaion_overlaps_transcript_level.png", feature_name="transcripts")
 
 
         ## --> exon features
@@ -670,7 +763,8 @@ if __name__ == "__main__":
         # print(f"native: \n\t{all_species_values_native}")
         # print(f"orthoDB: \n\t{all_species_values_orthoDB}")
         
-        tree_filepath = "/Users/miltr339/Box Sync/code/annotation_pipeline/annotation_scripts_ordered/14_species_orthofinder_tree.nw"
+        tree_filepath = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_only_species_names.nw"
         species_order = gff.make_species_order_from_tree(tree_filepath)
 
-        plot_all_species_values(all_values_native_dict=all_species_values_native, all_values_orthoDB_dict=all_species_values_orthoDB, species_names_list=species_order, filename = "annotaion_overlaps_exon_level.png")
+        #plot_all_species_values(all_values_native_dict=all_species_values_native, all_values_orthoDB_dict=all_species_values_orthoDB, species_names_list=species_order, filename = "annotaion_overlaps_exon_level.png")
+        plot_all_species_values_barplot(all_values_native_dict=all_species_values_native, all_values_orthoDB_dict=all_species_values_orthoDB, species_names_list=tree_filepath, filename = f"{data_path}annotaion_overlaps_exon_level.png")
