@@ -173,17 +173,18 @@ def plot_gene_counts(native_annot_dir, species_tree, orthoDB_annot_dir="", ortho
     ax_data.set_ylabel(ylab, fontsize = fs)
     ax_data.set_xticklabels([species.replace("_", ". ") for species in species_names], rotation=90, fontsize=fs)
     
-    legend = ax_data.legend(fontsize = fs)
+    legend = ax_data.legend(fontsize = fs*0.8)
 
     # set grid only for X axis ticks 
     ax_data.grid(True)
     ax_data.yaxis.grid(False)
     
     ax_data.set_ylim(5e3,ymax)
+    ax_data.tick_params(axis='y', labelsize=fs)
 
     plt.tight_layout()
 
-    plt.savefig(filename, dpi = 300, transparent = True)
+    plt.savefig(filename, dpi = 300, transparent = True)# , bbox_inches='tight')
     print("Figure saved in the current working directory directory as: "+filename)
 
 
@@ -272,7 +273,7 @@ def plot_all_species_protein_length_distribution(native_files:dict, orthoDB_file
     cols = columns
     rows = int(len(native_files)/cols)  +1
     fig, axes = plt.subplots(rows, cols, figsize=(12, 15))
-    fs = 15
+    fs = 20
 
     colors = {
         "orthoDB" : "#F2933A",
@@ -292,9 +293,11 @@ def plot_all_species_protein_length_distribution(native_files:dict, orthoDB_file
 
         # Plot histogram on the corresponding subplot axis
         axes[row, col].hist([native_lengths, orthoDB_lengths], bins=no_bins, histtype="bar", color = [colors["native"], colors["orthoDB"]])
-        axes[row, col].set_title(f'{species_name}')
+        axes[row, col].set_title(f'{species_name}', fontsize = fs)
         axes[row, col].set_xlabel('')
         axes[row, col].set_ylabel('')
+        axes[row, col].tick_params(axis='x', labelsize=fs*0.8)
+        axes[row, col].tick_params(axis='y', labelsize=fs*0.8)
     
     # add legend to last plot square
     if legend_in_last == True:
@@ -313,7 +316,7 @@ def plot_all_species_protein_length_distribution(native_files:dict, orthoDB_file
     
     # Set a single x-axis label for all subplots
     x_label = f"protein length (Aminoacids, up to {max_length})"
-    fig.text(0.5, 0.04, x_label, ha='center', va='center', fontsize=12)
+    fig.text(0.5, 0.04, x_label, ha='center', va='center', fontsize=fs)
     # Adjust layout to prevent overlap
     plt.tight_layout(rect=[0, 0.05, 1, 1])
 
@@ -415,6 +418,7 @@ if __name__ == "__main__":
     ### plot protein length histograms
     ## filepaths
     if False:
+        data = "/Users/miltr339/work/PhD_code/PhD_chapter1/data"
         native_dir = "/Users/miltr339/work/native_proteinseqs"
         native_files = {
             "A_obtectus" : f"{native_dir}/A_obtectus.faa",
@@ -456,4 +460,4 @@ if __name__ == "__main__":
         # for species in native_files.keys():
         #     plot_histogram_protein_lengths(native_files[species], orthoDB_files[species], species_name=species, filename = f"protein_lengths_histogram_{species}.png")
         
-        plot_all_species_protein_length_distribution(native_files, orthoDB_files)
+        plot_all_species_protein_length_distribution(native_files, orthoDB_files, filename=f"{data}/protein_lengths_histogram.png")

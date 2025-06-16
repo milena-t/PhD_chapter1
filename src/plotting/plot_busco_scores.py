@@ -110,11 +110,11 @@ def plot_busco_stats(native_busco, orthoDB_busco = {}, species_names = [], outfi
 
 
     legend_columns = 2
-    fs = 30 # fontsize is scaled with the dpi somehow which i have to do extra because i change the aspect ratio manually below
+    fs = 50 # fontsize is scaled with the dpi somehow which i have to do extra because i change the aspect ratio manually below
 
     # set figure aspect ratio
     if long_figure:
-        aspect_ratio = 27 / 12
+        aspect_ratio = 30 / 12
     else:
         aspect_ratio = 17 / 12
 
@@ -179,14 +179,15 @@ def plot_busco_stats(native_busco, orthoDB_busco = {}, species_names = [], outfi
     ax.set_yticklabels([int(tick) for tick in ax.get_yticks() if tick <101], fontsize=fs)
 
     handles, labels = ax.get_legend_handles_labels()
-    ax.legend(handles, labels, fontsize=fs, ncol=legend_columns, loc='upper center')
+    ax.legend(handles, labels, fontsize=fs*0.8, ncol=legend_columns, loc='upper center')
     # add space at the top of the plot for the legend
     ymax = 100*1.2
     ax.set_ylim(0, int(ymax))
+    ax.set_xlim(-0.5, len(xtick_labels)-0.5)
 
-    plt.tight_layout()
+    # plt.tight_layout()
 
-    plt.savefig(outfile_name, dpi = 300, transparent = True)
+    plt.savefig(outfile_name, dpi = 300, transparent = True, bbox_inches='tight')
     print("Figure saved in the current working directory directory as: "+outfile_name)
     
 
@@ -234,5 +235,6 @@ if __name__ == '__main__':
     # print(native_busco_stats_dict["A_obtectus"])
 
     # plot_busco_stats(native_busco_stats_dict, orthoDB_busco_stats_dict, species_names)
-    plot_busco_stats(native_busco_stats_dict, orthoDB_busco = orthoDB_busco_stats_dict, species_names = species_names, outfile_name="busco_stats_uniform_repeatmasking.png")
+    data = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/"
+    plot_busco_stats(native_busco_stats_dict, orthoDB_busco = orthoDB_busco_stats_dict, species_names = species_names, outfile_name=f"{data}busco_stats_uniform_repeatmasking.png")
     # plot_busco_stats(native_busco_stats_dict, species_names = species_names, outfile_name="busco_stats_test.png")
