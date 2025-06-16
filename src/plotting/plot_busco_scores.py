@@ -75,7 +75,7 @@ def read_busco_summary(busco_batch_summary_path, species_list, name_association 
 def plot_busco_stats(native_busco, orthoDB_busco = {}, species_names = [], outfile_name = ""):
     print(f" plotting for these {len(species_names)} species: \n{species_names}")
 
-    colors_orthoDB = { ### TODO change to orange colors!! 
+    colors_orthoDB = {
         "Complete" : "#D36D0D",
         "Single" : "#F2933A" , # this is the same shade as uniform masking yellow in all the other plots
         "Duplicated" : "#F4B352",
