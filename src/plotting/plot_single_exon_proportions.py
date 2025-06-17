@@ -273,7 +273,7 @@ def plot_single_exon_no_species_specific_three_annot(native_numbers, orthodb_num
     # figure proportions according to the data included (longer or shorter)
 
     # fontsize scales with the dpi somehow which i have to do extra because i change the aspect ratio manually below
-    fs = 30 # 37 originally
+    fs = 35 # 37 originally
     
     if len(orthodb_numbers) == 0 and len(orthoDB_unmasked_numbers) == 0:
         width = 0.35 # (this is a fraction of the standardized 1 unit of space between axis ticks)
@@ -409,6 +409,7 @@ def plot_single_exon_no_species_specific_three_annot(native_numbers, orthodb_num
 
     # add space at the top of the plot for the legend
     ax.set_ylim(0, int(ymax))
+    ax.set_xlim(-0.5, len(xtick_labels)-0.5)
 
     plt.tight_layout()
 
@@ -584,5 +585,5 @@ if __name__ == '__main__':
         print()
         
 
-        ## TODO doesn't quite work for the native numbers yet
-        plot_single_exon_no_species_specific_three_annot(native_numbers, orthodb_numbers = orthodb_numbers, orthoDB_unmasked_numbers = orthodb_unmasked_numbers, species_names = species_names, filename = "single_exon_Genes_14_species_3_annotations.png", L50_values = L50_values)
+        data = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/"
+        plot_single_exon_no_species_specific_three_annot(native_numbers, orthodb_numbers = orthodb_numbers, orthoDB_unmasked_numbers = orthodb_unmasked_numbers, species_names = species_names, filename = f"{data}single_exon_Genes_14_species_3_annotations.png", L50_values = L50_values)

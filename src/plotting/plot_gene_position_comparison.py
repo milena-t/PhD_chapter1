@@ -507,8 +507,8 @@ def plot_all_species_values_barplot(all_values_native_dict, all_values_orthoDB_d
         p = ax.bar(x + x_subtr, transcript_numbers, width, label=f"{transcript_category} (uniform)", color= colors_orthoDB[transcript_category], bottom=bottom)
         bottom += transcript_numbers
 
-    ax.set_ylim(0, 1.4)
-    ax.set_xlim(-0.5, len(species_names_list)+0.5)
+    ax.set_ylim(0, 1.45)
+    ax.set_xlim(-0.5, len(species_names_list)-0.5)
     xtick_labels = [species.replace("_", ". ") for species in species_names_list]
     # print(f"x ticks:{x}\nx-tick labels: {xtick_labels}")
     ax.set_xticks(x)

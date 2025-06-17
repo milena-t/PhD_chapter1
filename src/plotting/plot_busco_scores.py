@@ -4,6 +4,7 @@ import re
 import parse_gff as gff
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib.ticker import FuncFormatter
 import numpy as np
 
 def make_species_order_from_tree(newick_tree_path):
@@ -176,7 +177,9 @@ def plot_busco_stats(native_busco, orthoDB_busco = {}, species_names = [], outfi
     ax.set_xlabel('', fontsize=fs+4)
     xtick_labels = [species.replace("_", ". ") for species in species_names]
     ax.set_xticklabels(xtick_labels, rotation=90, fontsize=fs)
-    ax.set_yticklabels([int(tick) for tick in ax.get_yticks() if tick <101], fontsize=fs)
+    ax.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 100 else f'{int(x)}%'))
+    ax.tick_params(axis='y', labelsize=fs)
+    # ax.set_yticklabels([int(tick) for tick in ax.get_yticks() if tick <101], fontsize=fs)
 
     handles, labels = ax.get_legend_handles_labels()
     ax.legend(handles, labels, fontsize=fs*0.8, ncol=legend_columns, loc='upper center')
