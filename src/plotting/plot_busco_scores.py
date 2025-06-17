@@ -121,7 +121,7 @@ def plot_busco_stats(native_busco, orthoDB_busco = {}, species_names = [], outfi
 
     height_pixels = 2000  # Height in pixels
     width_pixels = int(height_pixels * aspect_ratio)  # Width in pixels
-    fig = plt.figure(figsize=(width_pixels / 100, height_pixels / 100), dpi=100)
+    fig = plt.figure(figsize=(width_pixels / 100, height_pixels / 100), dpi=100, frameon = False)
     ax = fig.add_subplot(111)
 
     native_numbers = {

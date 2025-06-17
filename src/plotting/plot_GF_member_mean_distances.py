@@ -254,8 +254,8 @@ def plot_all_OGs_transcript_distances(same_contig_proportion_all_species, GF_pos
     species_list = list(same_contig_proportions.keys())
     cols = columns
     rows = int(len(species_list)/cols)  +1
-    fig, axes = plt.subplots(rows, cols, figsize=(12, 15))
-    fs = 15
+    fig, axes = plt.subplots(rows, cols, figsize=(12, 17))
+    fs = 18
 
     for idx, species in enumerate(species_list):
         same_contig_proportion = same_contig_proportion_all_species[species]
@@ -283,7 +283,7 @@ def plot_all_OGs_transcript_distances(same_contig_proportion_all_species, GF_pos
                 N50_value = f'{N50_value / 1e6:.1f} Mb'
             else:
                 N50_value = f'{N50_value / 1e3:.0f} kb'
-            axes[row, col].set_title(f'{species_name} ({percent}% of gene families) \nL50: {L50_values[species]}, N50: ca. {N50_value}', fontsize = fs)
+            axes[row, col].set_title(f'{species_name} \n({percent}% of gene families) \nL50: {L50_values[species]}, N50: {N50_value}', fontsize = fs)
         except:
             axes[row, col].set_title(f'{species_name} ({percent}% of gene families)', fontsize = fs)
         axes[row, col].set_xlabel('')
