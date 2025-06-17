@@ -7,6 +7,7 @@ import plot_basics as my_plotting
 import matplotlib.pyplot as plt
 import os
 import subprocess as sp
+from matplotlib.ticker import FuncFormatter
 
 ####!!
 # on uppmax load biopython/1.80-py3.10.8 to use argparse!
@@ -46,6 +47,7 @@ The plot filenames are hardcoded into the end of the script!
     parser.add_argument('--color_og3', type=str, help="line color for orthogroups set 3")
 
     parser.add_argument('--out_dir', type=str, help="output directory where the plots will be saved")
+    parser.add_argument('--tree', action="store_true", help="include the phylogenetic tree in the plot")
 
 
     # Parse the arguments
@@ -70,6 +72,8 @@ The plot filenames are hardcoded into the end of the script!
     
     if not args.out_dir:
         args.out_dir = "."
+    if not args.tree:
+        args.tree = False
 
     return args
 
@@ -220,14 +224,19 @@ def get_hierarchical_numbers_dicts(species_names, files_dir, orthogroups_file, v
 
 # plot function with lots of stuff to include optionally. The order of the species in the x-axis is determined by the "speciesnames" variable
 
-def plot_general_annotation_comparisons(native = {}, orthoDB = {}, proteinseqs = {},legend_title = "", species_tree = "", filename = "", genome_size=[], gs_measurement = []):
+def plot_general_annotation_comparisons(native = {}, orthoDB = {}, proteinseqs = {},legend_title = "", species_tree = "", filename = "", genome_size=[], gs_measurement = [], tree = True):
 
-    fs = 13 # set font size
     # plot each column in the dataframe as a line in the same plot thorugh a for-loop
 
     # speciesnames = gff.make_species_order_from_tree(species_tree)
-    fig, (ax_data, ax_tree) = plt.subplots(2, 1, figsize=(10, 15), gridspec_kw={'height_ratios': [2, 3]}, constrained_layout=True)
-    species_names_unsorted = my_plotting.plot_tree_manually(species_tree, ax_tree)
+    if tree:
+        fs = 17 # set font size
+        fig, (ax_data, ax_tree) = plt.subplots(2, 1, figsize=(10, 15), gridspec_kw={'height_ratios': [1, 3]}, constrained_layout=True)
+        species_names_unsorted = my_plotting.plot_tree_manually(species_tree, ax_tree)
+    else:
+        fs = 21
+        fig, ax_data = plt.subplots(1, 1, figsize=(17, 10))
+        species_names_unsorted = my_plotting.plot_tree_manually(species_tree)
     # get species order from plotted tree
     species_coords_sorted = sorted(list(species_names_unsorted.keys()))
     speciesnames = [species_names_unsorted[species_coord] for species_coord in species_coords_sorted]
@@ -318,17 +327,27 @@ def plot_general_annotation_comparisons(native = {}, orthoDB = {}, proteinseqs =
 
     # include legend (reversed order)
     # handles, labels = ax.get_legend_handles_labels()
-    ax_data.legend(title=legend_title, loc='upper center', bbox_to_anchor=(0.5, 1.2), ncol = ncol_legend)
+    ax_data.legend(title=legend_title, loc='upper center', bbox_to_anchor=(0.5, 1.2), ncol = ncol_legend, fontsize = fs)
+    ax_data.tick_params(axis='y', labelsize=fs)
     # set grid only for X axis ticks 
     ax_data.grid(True)
     ax_data.yaxis.grid(False)
+    ax_data.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x < 0 else f'{x / 1e3:.0f}k'))
 
     # save plot
     #ax.set_ylabel(y_label, fontsize = fs)
     #  plt.tight_layout()# replaced by constrained_layout=True in the beginning
-    plt.savefig(filename, dpi = 300, transparent = True)
+    if tree:
+        filename , suffix = filename.split(".")
+        filename = f"{filename}_with_tree.{suffix}"
+        plt.savefig(filename, dpi = 300, transparent = True)
+    else:
+        plt.savefig(filename, dpi = 300, transparent = True, bbox_inches='tight')
+    
     print("Figure saved in the current working directory directory as: "+filename)
     # plt.show()
+
+
 
 
 
@@ -364,6 +383,8 @@ if __name__ == '__main__':
 
     if args.genome_sizes:
         genome_sizes_dict = read_genome_sizes(args.genome_sizes)
-        plot_general_annotation_comparisons(native = first_numbers, orthoDB = second_numbers, proteinseqs = third_numbers, legend_title = "", species_tree=args.common_tree, filename = f"{args.out_dir}/plot_orthofinder_comparison_with_genome_sizes.png", genome_size = genome_sizes_dict)
+        plot_general_annotation_comparisons(native = first_numbers, orthoDB = second_numbers, proteinseqs = third_numbers, legend_title = "", species_tree=args.common_tree, filename = f"{args.out_dir}/plot_orthofinder_comparison_with_genome_sizes.png", genome_size = genome_sizes_dict, tree = args.tree)
     else:
-        plot_general_annotation_comparisons(native = first_numbers, orthoDB = second_numbers, proteinseqs = third_numbers, legend_title = "", species_tree=args.common_tree, filename = f"{args.out_dir}/plot_orthofinder_comparison.png")
+        plot_general_annotation_comparisons(native = first_numbers, orthoDB = second_numbers, proteinseqs = third_numbers, legend_title = "", species_tree=args.common_tree, filename = f"{args.out_dir}/plot_orthofinder_comparison.png", tree = args.tree)
+    
+    # python3 /Users/miltr339/work/PhD_code/PhD_chapter1/src/plotting/plot_orthofinder_results.py --orthogroups1 /Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_native/N0.tsv --orthogroups2 /Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_uniform/N0.tsv --common_tree /Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_only_species_names.nw --annotations_og1 /Users/miltr339/work/native_annotations/all_native_annot --annotations_og2 /Users/miltr339/work/orthoDB_annotations --out_dir /Users/miltr339/work/PhD_code/PhD_chapter1/data
