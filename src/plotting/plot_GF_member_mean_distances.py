@@ -283,9 +283,9 @@ def plot_all_OGs_transcript_distances(same_contig_proportion_all_species, GF_pos
                 N50_value = f'{N50_value / 1e6:.1f} Mb'
             else:
                 N50_value = f'{N50_value / 1e3:.0f} kb'
-            axes[row, col].set_title(f'{species_name} ({percent}% of gene families) \nL50: {L50_values[species]}, N50: ca. {N50_value}')
+            axes[row, col].set_title(f'{species_name} ({percent}% of gene families) \nL50: {L50_values[species]}, N50: ca. {N50_value}', fontsize = fs)
         except:
-            axes[row, col].set_title(f'{species_name} ({percent}% of gene families)')
+            axes[row, col].set_title(f'{species_name} ({percent}% of gene families)', fontsize = fs)
         axes[row, col].set_xlabel('')
         axes[row, col].set_ylabel('')
         
@@ -293,17 +293,19 @@ def plot_all_OGs_transcript_distances(same_contig_proportion_all_species, GF_pos
         y_scale = ""
         if y_lim>10e6:
             y_scale= "1.0Mb"
-            y_function_formatter = lambda x, pos: '' if x < 0 else f'{x / 1e6:.0f} Mb'
+            y_function_formatter = lambda x, pos: '' if x <= 0 else f'{x / 1e6:.0f} Mb'
         elif y_lim>1e6:
             y_scale= "0.1Mb"
-            y_function_formatter = lambda x, pos: '' if x < 0 else f'{x / 1e6:.1f} Mb'
+            y_function_formatter = lambda x, pos: '' if x <= 0 else f'{x / 1e6:.1f} Mb'
         else:
             y_scale= "1.0kb"
-            y_function_formatter = lambda x, pos: '' if x < 0 else f'{x / 1e3:.0f} kb'
+            y_function_formatter = lambda x, pos: '' if x <= 0 else f'{x / 1e3:.0f} kb'
 
         axes[row, col].yaxis.set_major_formatter(FuncFormatter(y_function_formatter))
         # make integers and skip ticks that are in between integers
         axes[row, col].xaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if str(x).split(".")[-1][0]!= "0" else f"{int(x)}"))
+        axes[row, col].tick_params(axis='y', labelsize=fs)
+        axes[row, col].tick_params(axis='x', labelsize=fs)
         print(f"\tin position {row+1},{col+1} ;  y scale: {y_scale}  --> {species_name}")
     
     # make last plot empty

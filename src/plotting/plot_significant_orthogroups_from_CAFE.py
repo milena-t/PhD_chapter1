@@ -97,7 +97,7 @@ def read_whole_genome_stats(filepath):
 def plot_gene_counts(orthogroups_dict, sig_list, all_cafe_list, species_names, annotation = "native", filename = "significant_orthogroups_from_CAFE.png"):
     fs = 30 # set font size
     # plot each column in the dataframe as a line in the same plot thorugh a for-loop
-    fig = plt.figure(figsize=(17,12))
+    fig = plt.figure(figsize=(17,11))
     
     ax = fig.add_subplot(1, 1, 1)
     
@@ -131,7 +131,7 @@ def plot_gene_counts(orthogroups_dict, sig_list, all_cafe_list, species_names, a
         if max(gene_family_members) > ymax:
             ymax = max(gene_family_members)
 
-        ax.plot(species_names, gene_family_members, color = colors[annotation], alpha = 0.4, linewidth = 1.3)
+        ax.plot(species_names, gene_family_members, color = colors[annotation], alpha = 0.4, linewidth = 2)
     
     for orthogroup in all_cafe_list:
         gene_family_members = []
@@ -158,7 +158,7 @@ def plot_gene_counts(orthogroups_dict, sig_list, all_cafe_list, species_names, a
     handles.append(mpatches.Patch(color=colors["background"]))
     labels.append("non-significant")
 
-    ax.legend(handles, labels, fontsize = fs, loc='upper left', title_fontsize = fs)
+    ax.legend(handles, labels, fontsize = fs, loc='upper center', title_fontsize = fs)
 
     #ax.legend(fontsize = fs)
     # set grid only for X axis ticks 

@@ -234,7 +234,7 @@ def plot_general_annotation_comparisons(native = {}, orthoDB = {}, proteinseqs =
         fig, (ax_data, ax_tree) = plt.subplots(2, 1, figsize=(10, 15), gridspec_kw={'height_ratios': [1, 3]}, constrained_layout=True)
         species_names_unsorted = my_plotting.plot_tree_manually(species_tree, ax_tree)
     else:
-        fs = 30
+        fs = 25
         fig, ax_data = plt.subplots(1, 1, figsize=(17, 12))
         species_names_unsorted = my_plotting.plot_tree_manually(species_tree)
     # get species order from plotted tree
