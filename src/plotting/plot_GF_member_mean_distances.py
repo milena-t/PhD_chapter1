@@ -257,6 +257,11 @@ def plot_all_OGs_transcript_distances(same_contig_proportion_all_species, GF_pos
     fig, axes = plt.subplots(rows, cols, figsize=(12, 17))
     fs = 18
 
+    colors = {
+        "significant": "#F2933A", # orange
+        "not_sig" : "#838383" # grey
+    }
+
     for idx, species in enumerate(species_list):
         same_contig_proportion = same_contig_proportion_all_species[species]
         percent = int(same_contig_proportion*100)
@@ -264,7 +269,11 @@ def plot_all_OGs_transcript_distances(same_contig_proportion_all_species, GF_pos
 
         nun_members_vec = []
         mean_distance_vec = []
-        for values in GF_positions_dict.values():
+        colors_vec=[]
+
+
+        for orthogroup, values in GF_positions_dict.items():
+            colors_vec.append(colors["not_sig"])
             nun_members_vec.append(values[0])
             mean_distance_vec.append(values[1])
         
@@ -274,7 +283,7 @@ def plot_all_OGs_transcript_distances(same_contig_proportion_all_species, GF_pos
         species_name = species.replace("_", ". ")
 
         # Plot histogram on the corresponding subplot axis
-        axes[row, col].scatter(nun_members_vec, mean_distance_vec, color = "#8E8E8E")
+        axes[row, col].scatter(nun_members_vec, mean_distance_vec, color = colors["significant"])#, color = "#8E8E8E")
         try:
             N50_value = N50_values[species]
             if N50_value>10e6:
@@ -283,7 +292,7 @@ def plot_all_OGs_transcript_distances(same_contig_proportion_all_species, GF_pos
                 N50_value = f'{N50_value / 1e6:.1f} Mb'
             else:
                 N50_value = f'{N50_value / 1e3:.0f} kb'
-            axes[row, col].set_title(f'{species_name} \n({percent}% of gene families) \nL50: {L50_values[species]}, N50: {N50_value}', fontsize = fs)
+            axes[row, col].set_title(f'{species_name} \n{percent}% of gene families \nL50: {L50_values[species]}, N50: {N50_value}', fontsize = fs)
         except:
             axes[row, col].set_title(f'{species_name} ({percent}% of gene families)', fontsize = fs)
         axes[row, col].set_xlabel('')
@@ -318,11 +327,11 @@ def plot_all_OGs_transcript_distances(same_contig_proportion_all_species, GF_pos
 
             # Set a single x-axis label for all subplots
     x_label = f"number of gene family members"
-    fig.text(0.5, 0.04, x_label, ha='center', va='center', fontsize=fs)
+    fig.text(0.5, 0.02, x_label, ha='center', va='center', fontsize=fs)
     # Adjust layout to prevent overlap
-    plt.tight_layout(rect=[0, 0.05, 1, 1])
+    plt.tight_layout(rect=[0, 0.02, 1, 1])
 
-    plt.savefig(filename, dpi = 300, transparent = True)
+    plt.savefig(filename, dpi = 300, transparent = True)#, bbox_inches='tight')
     print(f"plot saved in current working directory as: {filename}")
 
 
