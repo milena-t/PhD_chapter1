@@ -149,7 +149,7 @@ def plot_wg_repeat_stats(repeat_stats_dict:dict[dict[str,float]], filename = "wh
 
 
     x_contig_labels = [species.replace("_", ". ") for species in x_contig_labels]
-    plt.xticks(ticks=x_contig_coords, labels=x_contig_labels, rotation=-90, fontsize = fs)
+    plt.xticks(ticks=x_contig_coords, labels=x_contig_labels, rotation=90, fontsize = fs)
     ax.tick_params(axis='y', labelsize=fs)
     ax.tick_params(axis='x', labelsize=fs) 
     ax.set_ylim(0, 90)
