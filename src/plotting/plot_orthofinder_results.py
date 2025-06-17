@@ -234,8 +234,8 @@ def plot_general_annotation_comparisons(native = {}, orthoDB = {}, proteinseqs =
         fig, (ax_data, ax_tree) = plt.subplots(2, 1, figsize=(10, 15), gridspec_kw={'height_ratios': [1, 3]}, constrained_layout=True)
         species_names_unsorted = my_plotting.plot_tree_manually(species_tree, ax_tree)
     else:
-        fs = 21
-        fig, ax_data = plt.subplots(1, 1, figsize=(17, 10))
+        fs = 30
+        fig, ax_data = plt.subplots(1, 1, figsize=(17, 12))
         species_names_unsorted = my_plotting.plot_tree_manually(species_tree)
     # get species order from plotted tree
     species_coords_sorted = sorted(list(species_names_unsorted.keys()))
@@ -248,7 +248,7 @@ def plot_general_annotation_comparisons(native = {}, orthoDB = {}, proteinseqs =
 
     legend_labels = []
     ncol_legend = 0
-
+    lw =  3 #linewidth
 
     if len(orthoDB)>0:
         legend_labels = list(orthoDB.keys())
@@ -259,11 +259,11 @@ def plot_general_annotation_comparisons(native = {}, orthoDB = {}, proteinseqs =
             values = orthoDB[category]
             values = [values[species] for species in speciesnames]
             if category == legend_labels[0]: # genes
-                ax_data.plot(speciesnames, values, linestyle=':', label = category+f" ({args.name_og2})", color = col)
+                ax_data.plot(speciesnames, values, linestyle=':', label = category+f" ({args.name_og2})", color = col, linewidth = lw)
             elif category == legend_labels[1]: # gene_families
-                ax_data.plot(speciesnames, values, label = category+f" ({args.name_og2})", color = col)
+                ax_data.plot(speciesnames, values, label = category+f" ({args.name_og2})", color = col, linewidth = lw)
             elif category == legend_labels[2]: # unassigned
-                ax_data.plot(speciesnames, values, linestyle = (0,(5,10)), label = category+f" ({args.name_og2})", color = col)
+                ax_data.plot(speciesnames, values, linestyle = (0,(5,10)), label = category+f" ({args.name_og2})", color = col, linewidth = lw)
             plt.yticks(fontsize = fs)
             # add space to see complete species names in the xticks
             plt.subplots_adjust(bottom=0.3)
@@ -278,11 +278,11 @@ def plot_general_annotation_comparisons(native = {}, orthoDB = {}, proteinseqs =
             values = proteinseqs[category]
             values = [values[species] for species in speciesnames]
             if category == legend_labels[0]: # genes
-                ax_data.plot(speciesnames, values, linestyle=':', label = category+f" ({args.name_og3})", color = col)
+                ax_data.plot(speciesnames, values, linestyle=':', label = category+f" ({args.name_og3})", color = col, linewidth = lw)
             elif category == legend_labels[1]: # gene_families
-                ax_data.plot(speciesnames, values, label = category+f" ({args.name_og3})", color = col)
+                ax_data.plot(speciesnames, values, label = category+f" ({args.name_og3})", color = col, linewidth = lw)
             elif category == legend_labels[2]: # unassigned
-                ax_data.plot(speciesnames, values, linestyle = (0,(5,10)), label = category+f" ({args.name_og3})", color = col)
+                ax_data.plot(speciesnames, values, linestyle = (0,(5,10)), label = category+f" ({args.name_og3})", color = col, linewidth = lw)
             plt.yticks(fontsize = fs)
             # add space to see complete species names in the xticks
             plt.subplots_adjust(bottom=0.3)
@@ -298,11 +298,11 @@ def plot_general_annotation_comparisons(native = {}, orthoDB = {}, proteinseqs =
             annotation_method = f" ({args.name_og1})"
             # annotation_method = " (Kaufmann2023)"
             if category == legend_labels[0]: # genes
-                ax_data.plot(speciesnames, values, linestyle=':', label = category+annotation_method, color = col)
+                ax_data.plot(speciesnames, values, linestyle=':', label = category+annotation_method, color = col, linewidth = lw)
             elif category == legend_labels[1]: # gene_families
-                ax_data.plot(speciesnames, values, label = category+annotation_method, color = col)
+                ax_data.plot(speciesnames, values, label = category+annotation_method, color = col, linewidth = lw)
             elif category == legend_labels[2]: # unassigned
-                ax_data.plot(speciesnames, values, linestyle = (0,(5,10)), label = category+annotation_method, color = col)
+                ax_data.plot(speciesnames, values, linestyle = (0,(5,10)), label = category+annotation_method, color = col, linewidth = lw)
             plt.yticks(fontsize = fs)
             # add space to see complete species names in the xticks
             plt.subplots_adjust(bottom=0.3)
@@ -327,7 +327,7 @@ def plot_general_annotation_comparisons(native = {}, orthoDB = {}, proteinseqs =
 
     # include legend (reversed order)
     # handles, labels = ax.get_legend_handles_labels()
-    ax_data.legend(title=legend_title, loc='upper center', bbox_to_anchor=(0.5, 1.2), ncol = ncol_legend, fontsize = fs)
+    ax_data.legend(title=legend_title, loc='upper center', bbox_to_anchor=(0.5, 1.2), ncol = ncol_legend, fontsize = fs*0.8)
     ax_data.tick_params(axis='y', labelsize=fs)
     # set grid only for X axis ticks 
     ax_data.grid(True)
