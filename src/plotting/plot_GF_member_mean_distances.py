@@ -316,7 +316,7 @@ def plot_all_OGs_transcript_distances(same_contig_proportion_all_species, GF_pos
 
             # Set a single x-axis label for all subplots
     x_label = f"number of gene family members"
-    fig.text(0.5, 0.04, x_label, ha='center', va='center', fontsize=12)
+    fig.text(0.5, 0.04, x_label, ha='center', va='center', fontsize=fs)
     # Adjust layout to prevent overlap
     plt.tight_layout(rect=[0, 0.05, 1, 1])
 
@@ -394,5 +394,4 @@ if __name__ == "__main__":
         
         # plot_transcript_distance(same_contig_proportion, out_dict, species)
 
-    ##TODO !!!! lots of orthogroups now have "orthogroups have transcripts that were not found in the annotation, or 100%"
     plot_all_OGs_transcript_distances(same_contig_proportion_all_species=same_contig_proportions, GF_positions_dict_all_species=gene_family_values, filename="/Users/miltr339/work/PhD_code/PhD_chapter1/data/mean_transcript_distance_in_gene_families.png", L50_values = L50_values, N50_values = N50_values)
