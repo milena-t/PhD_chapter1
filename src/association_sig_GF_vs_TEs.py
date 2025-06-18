@@ -23,6 +23,9 @@ def get_all_repeat_categories(repeats_dict):
 
 
 def get_sig_transcripts(orthoDB_orthogroups):
+    """
+    get a list of all transcripts in the orthoDB dictionary (presumeably significant transcripts)
+    """
     all_transcript_IDs = []
     for transcripts_list in orthoDB_orthogroups.values():
         for transcript_id in transcripts_list:
@@ -62,11 +65,10 @@ def make_cumulative_TE_table(orthogroups_path:str, n:int, species:str, repeats_a
     This function only analyzes one species at a time!
     make a table for the surrounding n bases upstream and downstream of each gene where each base is a row 
     and each column is the sum of how often this base is annotated as the TE-category across all transcripts
-    optionally: provide a sig_transcripts list to not include all transcripts that are in orthogroups_path
-    if count_transcripts it only returns a list that includes all the transcripts that were included in the computtion
 
-    It also filters the significant orthogroups to only include those that are in the upper GF_size_filter_threshold 'th 
-    percentile of GF sizes of this species
+    optionally: provide a sig_orthogroups list to not include all transcripts that are in orthogroups_path
+    
+    if count_transcripts=True it only returns a list that includes all the transcripts that were included in the computtion
     """
     orthoDB_orthogroups = OGs.parse_orthogroups_dict(orthogroups_path, sig_orthogroups, species=species)
     all_transcript_IDs = get_sig_transcripts(orthoDB_orthogroups)
@@ -77,7 +79,7 @@ def make_cumulative_TE_table(orthogroups_path:str, n:int, species:str, repeats_a
     repeats_categories.sort()
     print(repeats_categories)
 
-    before_transcript = { cat : [0]*n for cat in repeats_categories} ## dict with lists for each category from 0 to n, each sub-list covering all the categories at base n
+    before_transcript = { cat : [0]*n for cat in repeats_categories} ## dict with lists for each category from 0 to n, each sub-list covering the category at base n
     after_transcript = { cat : [0]*n for cat in repeats_categories} 
     """
     number of transcript where the base i positions before transcript start is covered by each TE category. 
@@ -447,32 +449,39 @@ if __name__ == "__main__":
             OG_id_list = filter_sig_OGs_by_size(orthoDB_orthogroups, species, q=90)
 
     if True:
+        repeats_plots = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/repeats_plots/"
         all_species = list(repeats_out.keys())
         for species in all_species:
             # species = "B_siliquastri"
             print(f"plot {species}")
             # get total number of transcripts that are part of significantly rapidly evolving orthogroups in this species
             sig_orthoDB_list, all_orthogroups_list = OGs.get_sig_orthogroups(sig_orthoDB)
+            size_percentile_threshold = 90
 
             orthoDB_orthogroups = OGs.parse_orthogroups_dict(orthogroups_orthoDB, sig_orthoDB_list, species=species)
+            sig_OGs_size_filtered = filter_sig_OGs_by_size(orthoDB_orthogroups=orthoDB_orthogroups, species=species, q=size_percentile_threshold)
+            
             all_transcript_IDs = get_sig_transcripts(orthoDB_orthogroups)
             num_sig_transcripts = len(all_transcript_IDs)
             print(f"\t{num_sig_transcripts} significant transcripts according to reading the CAFE and orthoDB output")
-            all_transcript_IDs = make_cumulative_TE_table(orthogroups_orthoDB, n=10000, species=species, repeats_annot_path=repeats_out_work[species], genome_annot_path=orthoDB_annotations_work[species], sig_orthogroups=sig_orthoDB_list, count_transcripts=True)
+            # write table to output file
+            all_transcript_IDs = make_cumulative_TE_table(orthogroups_orthoDB, n=10000, species=species, repeats_annot_path=repeats_out_work[species], genome_annot_path=orthoDB_annotations_work[species], sig_orthogroups=sig_OGs_size_filtered, count_transcripts=True)
             num_sig_transcripts = len(all_transcript_IDs)
             print(f"\t{num_sig_transcripts} significant transcrips according to making the table")
-            plot_TE_abundance(sig_before_transcript[species], sig_after_transcript[species], sig_transcripts = num_sig_transcripts, filename=f"cumulative_repeat_presence_around_transcripts_sig_only_{species}.png")
+
+            plot_TE_abundance(sig_before_transcript[species], sig_after_transcript[species], sig_transcripts = num_sig_transcripts, filename=f"{repeats_plots}cumulative_repeat_presence_around_transcripts_sig_only_{species}_{size_percentile_threshold}th_percentile_GF_size.png")
 
             orthoDB_orthogroups = OGs.parse_orthogroups_dict(orthogroups_orthoDB, all_orthogroups_list, species=species)
-            sig_OGs_size_filtered = filter_sig_OGs_by_size(orthoDB_orthogroups=orthoDB_orthogroups, species=species, q=90)
             all_transcript_IDs = get_sig_transcripts(orthoDB_orthogroups)
             num_all_transcripts = len(all_transcript_IDs)
             print(f"\t{num_all_transcripts} significant transcripts according to reading the CAFE and orthoDB output")
+            # write table to output file
             all_transcript_IDs = make_cumulative_TE_table(orthogroups_orthoDB, n=10000, species=species, repeats_annot_path=repeats_out_work[species], genome_annot_path=orthoDB_annotations_work[species], count_transcripts=True)
             num_all_transcripts = len(all_transcript_IDs)
             print(f"\t{num_all_transcripts} significant transcrips according to making the table")
-            plot_TE_abundance(sig_before_transcript[species], sig_after_transcript[species], sig_transcripts = num_sig_transcripts, all_before_filepath=all_before_transcript[species], all_after_filepath=all_after_transcript[species], all_transcripts=num_all_transcripts, filename=f"cumulative_repeat_presence_around_transcripts_sig_and_all_{species}.png")
 
+            plot_TE_abundance(sig_before_transcript[species], sig_after_transcript[species], sig_transcripts = num_sig_transcripts, all_before_filepath=all_before_transcript[species], all_after_filepath=all_after_transcript[species], all_transcripts=num_all_transcripts, filename=f"{repeats_plots}cumulative_repeat_presence_around_transcripts_sig_and_all_{species}_{size_percentile_threshold}th_percentile_GF_size.png")
+            break
 
 
 
