@@ -31,6 +31,32 @@ def get_sig_transcripts(orthoDB_orthogroups):
     return all_transcript_IDs
 
 
+def filter_sig_OGs_by_size(orthoDB_orthogroups:dict, species:str, q:int, verbose=False):
+    """
+    return a list of orthogroup IDs, where the GF size in the species is above the q'th percentile
+    """
+    GF_sizes_species = {}
+    sizes = []
+    for OG_id, transcripts_list in orthoDB_orthogroups.items():
+        GF_sizes_species[OG_id] = len(transcripts_list)
+        sizes.append(len(transcripts_list))
+
+    ## calculate size threshold
+    OGs_filtered = []
+    sizes = np.array(sizes)
+    percentile_size = np.percentile(sizes, q = q)
+    if verbose:
+        print(f" ---> {species}: \n\tmax gene family: {max(sizes)} \n\tmin gene family: {min(sizes)}\n--> {q}th percentile : {percentile_size}")
+
+    for OG_id, size in GF_sizes_species.items():
+        if size > percentile_size:
+            OGs_filtered.append(OG_id)
+    if verbose:
+        print(f"before filtering: {len(orthoDB_orthogroups)} --> after filtering: {len(OGs_filtered)}")
+
+    return OGs_filtered
+
+
 def make_cumulative_TE_table(orthogroups_path:str, n:int, species:str, repeats_annot_path:str, genome_annot_path:str, sig_orthogroups = [], count_transcripts = False):
     """
     This function only analyzes one species at a time!
@@ -38,6 +64,9 @@ def make_cumulative_TE_table(orthogroups_path:str, n:int, species:str, repeats_a
     and each column is the sum of how often this base is annotated as the TE-category across all transcripts
     optionally: provide a sig_transcripts list to not include all transcripts that are in orthogroups_path
     if count_transcripts it only returns a list that includes all the transcripts that were included in the computtion
+
+    It also filters the significant orthogroups to only include those that are in the upper GF_size_filter_threshold 'th 
+    percentile of GF sizes of this species
     """
     orthoDB_orthogroups = OGs.parse_orthogroups_dict(orthogroups_path, sig_orthogroups, species=species)
     all_transcript_IDs = get_sig_transcripts(orthoDB_orthogroups)
@@ -409,6 +438,14 @@ if __name__ == "__main__":
         "Z_morio" :f"{work_out_dir}Z_morio_cumulative_repeats_after_all_transcripts.txt",
     }
 
+    ## test the function about the GF size filtering
+    if False:
+        all_species = list(repeats_out.keys())
+        for species in all_species:
+            sig_orthoDB_list, all_orthogroups_list = OGs.get_sig_orthogroups(sig_orthoDB)
+            orthoDB_orthogroups = OGs.parse_orthogroups_dict(orthogroups_orthoDB, sig_orthoDB_list, species=species)
+            OG_id_list = filter_sig_OGs_by_size(orthoDB_orthogroups, species, q=90)
+
     if True:
         all_species = list(repeats_out.keys())
         for species in all_species:
@@ -416,6 +453,7 @@ if __name__ == "__main__":
             print(f"plot {species}")
             # get total number of transcripts that are part of significantly rapidly evolving orthogroups in this species
             sig_orthoDB_list, all_orthogroups_list = OGs.get_sig_orthogroups(sig_orthoDB)
+
             orthoDB_orthogroups = OGs.parse_orthogroups_dict(orthogroups_orthoDB, sig_orthoDB_list, species=species)
             all_transcript_IDs = get_sig_transcripts(orthoDB_orthogroups)
             num_sig_transcripts = len(all_transcript_IDs)
@@ -426,6 +464,7 @@ if __name__ == "__main__":
             plot_TE_abundance(sig_before_transcript[species], sig_after_transcript[species], sig_transcripts = num_sig_transcripts, filename=f"cumulative_repeat_presence_around_transcripts_sig_only_{species}.png")
 
             orthoDB_orthogroups = OGs.parse_orthogroups_dict(orthogroups_orthoDB, all_orthogroups_list, species=species)
+            sig_OGs_size_filtered = filter_sig_OGs_by_size(orthoDB_orthogroups=orthoDB_orthogroups, species=species, q=90)
             all_transcript_IDs = get_sig_transcripts(orthoDB_orthogroups)
             num_all_transcripts = len(all_transcript_IDs)
             print(f"\t{num_all_transcripts} significant transcripts according to reading the CAFE and orthoDB output")
