@@ -80,8 +80,8 @@ def plot_wg_repeat_stats(repeat_stats_dict:dict[dict[str,float]], filename = "wh
         fig, (ax, ax_tree) = plt.subplots(2, 1,figsize=(10,15), gridspec_kw={'height_ratios': [2, 3]}, constrained_layout=True)
         species_names_unsorted = my_plotting.plot_tree_manually(tree_filepath, ax_tree)
     else:
-        fs = 23
-        aspect_ratio = 30 / 16
+        fs = 32
+        aspect_ratio = 26 / 16
         height_pixels = 1200  # Height in pixels
         width_pixels = int(height_pixels * aspect_ratio)  # Width in pixels
         fig, ax = plt.subplots(figsize=(width_pixels / 100, height_pixels / 100), dpi=100)
@@ -152,12 +152,14 @@ def plot_wg_repeat_stats(repeat_stats_dict:dict[dict[str,float]], filename = "wh
                 curr_base += percentage
 
     x_contig_labels = [species.replace("_", ". ") for species in x_contig_labels]
-    ax.set_xticklabels(x_contig_labels, rotation=90, fontsize=fs)
+    # ax.set_xticklabels(x_contig_labels, rotation=90, fontsize=fs)
+    ax.set_xticks(x_contig_coords, x_contig_labels, rotation=90, fontsize=fs)
     ax.tick_params(axis='y', labelsize=fs)
     ax.tick_params(axis='x', labelsize=fs) 
-    ax.set_ylim(0, 90)
+    ax.set_ylim(0, 95)
+    ax.set_xlim(-0.5, len(x_contig_coords)-0.5)
     ax.set_ylabel("repeat content", fontsize=fs+4, rotation = 90, labelpad = 30)
-    ax.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 80 else f'{int(x)}%'))
+    ax.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 80 and x<1 else f'{int(x)}%'))
 
     # make legend patches and labels
     handles = []
@@ -167,11 +169,11 @@ def plot_wg_repeat_stats(repeat_stats_dict:dict[dict[str,float]], filename = "wh
         handles.append(mpatches.Patch(color=colors[category]))
         labels.append(category)
 
-    ax.legend(handles, labels, fontsize = fs, loc='upper center', ncol=4)
+    ax.legend(handles, labels, fontsize = fs*0.8, loc='upper center', ncol=4)
     
     plt.tight_layout()
 
-    plt.savefig(filename, dpi = 300, transparent = False, bbox_inches='tight')
+    plt.savefig(filename, dpi = 300, transparent = True, bbox_inches='tight')
     print(f"plot saved in current working directory as: {filename}")
 
 
@@ -184,9 +186,11 @@ if __name__ == "__main__":
     repeat_contents_stats = {}
     
     for species, tbl_path in tbl_files.items():
+        print(f" --> {species}")
         repeat_contents_stats[species] = get_wg_repeats_stats_dict(tbl_path)
+        print(repeat_contents_stats[species])
     
-    # plot_wg_repeat_stats(repeat_contents_stats, filename = f"{data}whole_genome_repeat_contents.png", tree_filepath = tree_filepath, plot_tree=False)
+    plot_wg_repeat_stats(repeat_contents_stats, filename = f"{data}whole_genome_repeat_contents.png", tree_filepath = tree_filepath, plot_tree=False)
 
     ## TODO fix proportions for tree plotting
-    plot_wg_repeat_stats(repeat_contents_stats, filename = f"{data}whole_genome_repeat_contents_with_tree.png", tree_filepath = tree_filepath, plot_tree=True)
+    # plot_wg_repeat_stats(repeat_contents_stats, filename = f"{data}whole_genome_repeat_contents_with_tree.png", tree_filepath = tree_filepath, plot_tree=True)

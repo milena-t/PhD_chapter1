@@ -131,7 +131,8 @@ def get_single_exon_proportion(OGs_dict, annot_dict, species):
 
 
 def plot_percentages(perc_sig_dict, perc_all_dict, tree_path, filename = "single_exon_percentages.png"):
-    fs = 13 # set font size
+    fs = 18 # set font size
+    lw =  3 #linewidth
     # plot each column in the dataframe as a line in the same plot thorugh a for-loop
 
     # speciesnames = gff.make_species_order_from_tree(species_tree)
@@ -141,19 +142,20 @@ def plot_percentages(perc_sig_dict, perc_all_dict, tree_path, filename = "single
     species_coords_sorted = sorted(list(species_names_unsorted.keys()))
     speciesnames = [species_names_unsorted[species_coord] for species_coord in species_coords_sorted]
     
-    ylab="percentage of single-exon genes"
+    ylab="single-exon transcripts"
 
     perc_all_vec = [perc_all_dict[species] for species in speciesnames]
     perc_sig_vec = [perc_sig_dict[species] for species in speciesnames]
-    ax_data.plot(speciesnames, perc_sig_vec, label = f"significant transcripts", color = "#ED7D3A")
-    ax_data.plot(speciesnames, perc_all_vec, linestyle=':', label = f"all CAFE transcripts", color = "#ED7D3A")
+    ax_data.plot(speciesnames, perc_sig_vec, label = f"significant transcripts", color = "#ED7D3A", linewidth=lw)
+    ax_data.plot(speciesnames, perc_all_vec, linestyle=':', label = f"all CAFE transcripts", color = "#ED7D3A", linewidth=lw)
 
-    ax_data.legend(loc='upper center')
+    ax_data.legend(loc='upper center', fontsize = fs*0.8)
     # set grid only for X axis ticks 
     ax_data.grid(True)
     ax_data.yaxis.grid(False)
     ax_data.set_ylabel(ylab, fontsize = fs)
     ax_data.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x < 0 else f'{int(x)} %'))
+    ax_data.tick_params(axis='y', labelsize=fs)
     ax_data.set_xticklabels([species.replace("_", ". ") for species in speciesnames], rotation=90, fontsize=fs)
 
     plt.savefig(filename, dpi = 300, transparent = True)
@@ -200,5 +202,5 @@ if __name__ == "__main__":
         print(f"{species} single exon proportions: sig. transcripts and all transcripts -->\t {sig_percent:.2f}% // {all_percent:.2f}%")
 
     data_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data"
-    plot_percentages(perc_sig_dict= sig_single_exon_percent, perc_all_dict= all_single_exon_percent, tree_path= tree, filename=f"{data_dir}/orthoDB_single_exon_percentages")
+    plot_percentages(perc_sig_dict= sig_single_exon_percent, perc_all_dict= all_single_exon_percent, tree_path= tree, filename=f"{data_dir}/orthoDB_single_exon_percentages.png")
 
