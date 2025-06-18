@@ -308,7 +308,6 @@ def plot_general_annotation_comparisons(native = {}, orthoDB = {}, proteinseqs =
             plt.subplots_adjust(bottom=0.3)
 
         ax_data.set_ylabel(ylab, fontsize = fs)
-        # plt.xticks(labels=[species.replace("_", ". ") for species in speciesnames], ticks=speciesnames, rotation = 90, fontsize = fs)
         ax_data.set_xticklabels([species.replace("_", ". ") for species in species_names], rotation=90, fontsize=fs)
 
     if len(genome_size)>0 and len(native)>1:
