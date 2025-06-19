@@ -239,8 +239,8 @@ def plot_TE_abundance(before_filepath:str, after_filepath:str, sig_transcripts:i
 
 
 
-if __name__ == "__main__":
-    
+def filepaths():
+
     repeats_dir = "/Users/milena/work/repeatmasking/repeat_gffs/"
     repeats_out = {
         "A_obtectus" : f"{repeats_dir}A_obtectus_assembly_genomic.fna.out",
@@ -324,51 +324,11 @@ if __name__ == "__main__":
     sig_native = "/Users/miltr339/Box Sync/code/CAFE/native_from_N0_Base_family_results.txt"
     sig_orthoDB = "/Users/miltr339/Box Sync/code/CAFE/orthoDB_TE_filtered_Base_family_results.txt"
 
-
-    # species = "A_obtectus"
-    # species = "B_siliquastri"
-
-    ### TODO figure out what is wrong with C. maculatus??
-        # 115 transcripts in sig. transcripts not found in annotation and were skipped (in C. maculatus this might be due to the liftover?)
-
-    # compute the TE abundance around significant transcripts
-    if False:
-        all_species = list(repeats_out.keys())
-        # failed = ['A_verrucosus', 'C_chinensis', 'D_ponderosae', 'I_luminosus', 'R_ferrugineus', 'T_molitor', 'Z_morio']
-        failed = []
-        for species in all_species:
-            print(f"orthoDB {species}: ")
-            ## uv run python3 for quicker runtimes
-            sig_orthoDB_list, all_orthogroups_list = OGs.get_sig_orthogroups(sig_orthoDB)
-            try:
-                # before_transcript, after_transcript = make_cumulative_TE_table(orthogroups_orthoDB, n=50, species=species, repeats_annot_path=repeats_out[species], genome_annot_path=orthoDB_annotations[species], sig_orthogroups=sig_orthoDB_list)
-                before_transcript, after_transcript = make_cumulative_TE_table(orthogroups_orthoDB, n=10000, species=species, repeats_annot_path=repeats_out_work[species], genome_annot_path=orthoDB_annotations_work[species], sig_orthogroups=sig_orthoDB_list)
-                gff.write_dict_to_file(before_transcript, f"{species}_cumulative_repeats_before_sig_transcripts.txt")
-                gff.write_dict_to_file(after_transcript, f"{species}_cumulative_repeats_after_sig_transcripts.txt")
-            except: 
-                failed.append(species)
-        print(f"failed species: {failed}")
-
-    # compute the TE abundance around all transcripts
-    if False:
-        all_species = list(repeats_out.keys())
-        # failed = ['A_verrucosus', 'C_chinensis', 'D_ponderosae', 'I_luminosus', 'R_ferrugineus', 'T_molitor', 'Z_morio']
-        failed = []
-        for species in all_species:
-            print(f"orthoDB {species}: ")
-            ## uv run python3 for quicker runtimes
-            sig_orthoDB_list, all_orthogroups_list = OGs.get_sig_orthogroups(sig_orthoDB)
-            try:
-                # before_transcript, after_transcript = make_cumulative_TE_table(orthogroups_orthoDB, n=50, species=species, repeats_annot_path=repeats_out[species], genome_annot_path=orthoDB_annotations[species], sig_orthogroups=sig_orthoDB_list)
-                before_transcript, after_transcript = make_cumulative_TE_table(orthogroups_orthoDB, n=10000, species=species, repeats_annot_path=repeats_out_work[species], genome_annot_path=orthoDB_annotations_work[species])
-                gff.write_dict_to_file(before_transcript, f"{species}_cumulative_repeats_before_all_transcripts.txt")
-                gff.write_dict_to_file(after_transcript, f"{species}_cumulative_repeats_after_all_transcripts.txt")
-            except: 
-                failed.append(species)
-        print(f"failed species: {failed}")
+    return repeats_out, repeats_out_work, orthoDB_annotations, orthoDB_annotations_work, orthogroups_native, orthogroups_orthoDB, sig_native, sig_orthoDB
 
 
 
+def tables_filepaths():
     work_out_dir = "/Users/miltr339/work/PhD_code/"
     sig_before_transcript = {
         "A_obtectus" : f"{work_out_dir}A_obtectus_cumulative_repeats_before_sig_transcripts.txt",
@@ -440,6 +400,25 @@ if __name__ == "__main__":
         "Z_morio" :f"{work_out_dir}Z_morio_cumulative_repeats_after_all_transcripts.txt",
     }
 
+    return sig_before_transcript, sig_after_transcript, all_before_transcript, all_after_transcript
+
+
+
+if __name__ == "__main__":
+
+    # read infile paths 
+    repeats_out, repeats_out_work, orthoDB_annotations, orthoDB_annotations_work, orthogroups_native, orthogroups_orthoDB, sig_native, sig_orthoDB = filepaths()
+
+    ##########################################################
+    ######### make TE abundance tables for plotting ##########
+    ##########################################################
+    
+    ## Tables are written to csv files since computing them takes a bit
+    repeats_tables = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/repeats_tables/"
+    ## uv run python3 for quicker runtimes
+
+    
+
     ## test the function about the GF size filtering
     if False:
         all_species = list(repeats_out.keys())
@@ -448,7 +427,65 @@ if __name__ == "__main__":
             orthoDB_orthogroups = OGs.parse_orthogroups_dict(orthogroups_orthoDB, sig_orthoDB_list, species=species)
             OG_id_list = filter_sig_OGs_by_size(orthoDB_orthogroups, species, q=90)
 
+            print(f"{species}: \n\tunfiltered list:{sig_orthoDB_list[0:6]} ({len(sig_orthoDB_list)})\n\tfiltered list: {OG_id_list[0:6]} ({len(OG_id_list)})")
+
+    
+    ########
+    ## tables for significant transcripts
+    ## TODO figure out what is going on with the significant orthogroups??
+    ########
+    size_percentile_threshold = 90
+    
     if True:
+        all_species = list(repeats_out.keys())
+        # failed = ['A_verrucosus', 'C_chinensis', 'D_ponderosae', 'I_luminosus', 'R_ferrugineus', 'T_molitor', 'Z_morio']
+        failed = []
+        for species in all_species:
+            print(f"orthoDB {species}: ")
+            
+            sig_orthoDB_list, all_orthogroups_list = OGs.get_sig_orthogroups(sig_orthoDB)
+            orthoDB_orthogroups = OGs.parse_orthogroups_dict(orthogroups_orthoDB, sig_orthoDB_list, species=species)
+            sig_OGs_size_filtered = filter_sig_OGs_by_size(orthoDB_orthogroups=orthoDB_orthogroups, species=species, q=size_percentile_threshold)
+            try:
+                # before_transcript, after_transcript = make_cumulative_TE_table(orthogroups_orthoDB, n=50, species=species, repeats_annot_path=repeats_out[species], genome_annot_path=orthoDB_annotations[species], sig_orthogroups=sig_orthoDB_list)
+                before_transcript, after_transcript = make_cumulative_TE_table(orthogroups_orthoDB, n=10000, species=species, repeats_annot_path=repeats_out_work[species], genome_annot_path=orthoDB_annotations_work[species], sig_orthogroups=sig_orthoDB_list)
+                gff.write_dict_to_file(before_transcript, f"{repeats_tables}{species}_cumulative_repeats_before_sig_transcripts_{size_percentile_threshold}th_GF_size_percentile.txt")
+                gff.write_dict_to_file(after_transcript, f"{repeats_tables}{species}_cumulative_repeats_after_sig_transcripts_{size_percentile_threshold}th_GF_size_percentile.txt")
+            except: 
+                failed.append(species)
+        print(f"failed species: {failed}")
+
+
+    #########
+    ## tables for all CAFE transcripts
+    #########
+
+    if False:
+        all_species = list(repeats_out.keys())
+        # failed = ['A_verrucosus', 'C_chinensis', 'D_ponderosae', 'I_luminosus', 'R_ferrugineus', 'T_molitor', 'Z_morio']
+        failed = []
+        for species in all_species:
+            print(f"orthoDB {species}: ")
+            ## uv run python3 for quicker runtimes
+            sig_orthoDB_list, all_orthogroups_list = OGs.get_sig_orthogroups(sig_orthoDB)
+            try:
+                # before_transcript, after_transcript = make_cumulative_TE_table(orthogroups_orthoDB, n=50, species=species, repeats_annot_path=repeats_out[species], genome_annot_path=orthoDB_annotations[species], sig_orthogroups=sig_orthoDB_list)
+                before_transcript, after_transcript = make_cumulative_TE_table(orthogroups_orthoDB, n=10000, species=species, repeats_annot_path=repeats_out_work[species], genome_annot_path=orthoDB_annotations_work[species])
+                gff.write_dict_to_file(before_transcript, f"{species}_cumulative_repeats_before_all_transcripts.txt")
+                gff.write_dict_to_file(after_transcript, f"{species}_cumulative_repeats_after_all_transcripts.txt")
+            except: 
+                failed.append(species)
+        print(f"failed species: {failed}")
+
+
+
+    ######################################################
+    ############ plot above computed tables ##############
+    ######################################################
+
+    sig_before_transcript, sig_after_transcript, all_before_transcript, all_after_transcript = tables_filepaths()
+
+    if False:
         repeats_plots = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/repeats_plots/"
         all_species = list(repeats_out.keys())
         for species in all_species:
@@ -456,7 +493,6 @@ if __name__ == "__main__":
             print(f"plot {species}")
             # get total number of transcripts that are part of significantly rapidly evolving orthogroups in this species
             sig_orthoDB_list, all_orthogroups_list = OGs.get_sig_orthogroups(sig_orthoDB)
-            size_percentile_threshold = 90
 
             orthoDB_orthogroups = OGs.parse_orthogroups_dict(orthogroups_orthoDB, sig_orthoDB_list, species=species)
             sig_OGs_size_filtered = filter_sig_OGs_by_size(orthoDB_orthogroups=orthoDB_orthogroups, species=species, q=size_percentile_threshold)
