@@ -72,12 +72,14 @@ def make_cumulative_TE_table(orthogroups_path:str, n:int, species:str, repeats_a
     """
     orthoDB_orthogroups = OGs.parse_orthogroups_dict(orthogroups_path, sig_orthogroups, species=species)
     all_transcript_IDs = get_sig_transcripts(orthoDB_orthogroups)
+    print(f"{species} --> {len(orthoDB_orthogroups)} orthogroups with {len(all_transcript_IDs)} transcripts")
 
+    print(f"\t*  parse gene-annotation and repeat-annotation infiles...")
     genes_dict = gff.parse_gff3_general(genome_annot_path, verbose=False, keep_feature_category=gff.FeatureCategory.Transcript)
     repeats_dict = repeats.parse_repeats_repeatmasker_outfile(repeats_annot_path, verbose=False)
     repeats_categories = get_all_repeat_categories(repeats_dict=repeats_dict)
     repeats_categories.sort()
-    print(repeats_categories)
+    print(f"\t*  all repeat categories: {repeats_categories}")
 
     before_transcript = { cat : [0]*n for cat in repeats_categories} ## dict with lists for each category from 0 to n, each sub-list covering the category at base n
     after_transcript = { cat : [0]*n for cat in repeats_categories} 
@@ -102,27 +104,33 @@ def make_cumulative_TE_table(orthogroups_path:str, n:int, species:str, repeats_a
                 all_transcripts_list.append(transcript_id)
                 continue
         except:
-            # raise RuntimeError(f"{transcript_id} can not be found in {genome_annot_path}")
+            raise RuntimeError(f"{transcript_id} can not be found in {genome_annot_path}")
             missing_in_annot_transcripts.append(transcript_id)
             continue
         # start and end of the interval surrounding this transcript
         int_start = transcript.start - n
         int_stop = transcript.end + n
-
-        # start filling first half before the coding region
+        if int_start>int_stop:
+            print(f"\t\t -  {transcript_id} is in inverse direction! interval from {int_start} to {int_stop}")
+        
+        ################
+        ### start filling first half before the coding region
         try:
+            # collect all repeats that are in the pre-transcript interval
+            # this fails if there's no repeats on the transcript.contig, which can happen in very fragmented assemblies
             repeat_before_transcript = [repeat for repeat in repeats_dict[transcript.contig] if (repeat.stop < transcript.start and repeat.stop > int_start) or (repeat.start >int_start and repeat.start<transcript.start) or (repeat.start < int_start and repeat.stop >int_stop)]
         except:
             contigs_with_no_repeats.append(transcript.contig)
             continue
-        #num_repeats = 0
+
         for index, base in enumerate(range(int_start, transcript.start)):
             for repeat in repeat_before_transcript:
                 if base >= repeat.start and base <= repeat.stop:
                     # print(f"{repeat.start} < {base} [{index}] < {repeat.stop}, {repeat}")
                     before_transcript[repeat.repeat_category][index] += 1
         
-        # fill out the second half after the coding region
+        ################
+        ### fill out the second half after the coding region
         repeat_after_transcript = [repeat for repeat in repeats_dict[transcript.contig] if (repeat.start < int_stop and repeat.start>transcript.end) or (repeat.stop > transcript.end and repeat.stop<int_stop) or (repeat.start < transcript.end and repeat.stop > int_stop)]
         for index, base in enumerate(range(transcript.end, int_stop)):
             for repeat in repeat_after_transcript:
@@ -145,7 +153,7 @@ def make_cumulative_TE_table(orthogroups_path:str, n:int, species:str, repeats_a
 def plot_TE_abundance(before_filepath:str, after_filepath:str, sig_transcripts:int, all_before_filepath:str = "", all_after_filepath:str = "", all_transcripts:int = 0, filename = "cumulative_repeat_presence_around_transcripts.png"):
     """
     plot the cumulative repeat presence per base before and after a transcript (before and after infile paths)
-    infiles generated from make_cumulative_TE_table
+    infiles generated from make_cumulative_TE_table and saved to text file
     """
     
     before_dict = gff.read_dict_from_file(before_filepath)
@@ -447,12 +455,13 @@ if __name__ == "__main__":
             orthoDB_orthogroups = OGs.parse_orthogroups_dict(orthogroups_orthoDB, sig_orthoDB_list, species=species)
             sig_OGs_size_filtered = filter_sig_OGs_by_size(orthoDB_orthogroups=orthoDB_orthogroups, species=species, q=size_percentile_threshold)
             try:
-                # before_transcript, after_transcript = make_cumulative_TE_table(orthogroups_orthoDB, n=50, species=species, repeats_annot_path=repeats_out[species], genome_annot_path=orthoDB_annotations[species], sig_orthogroups=sig_orthoDB_list)
-                before_transcript, after_transcript = make_cumulative_TE_table(orthogroups_orthoDB, n=10000, species=species, repeats_annot_path=repeats_out_work[species], genome_annot_path=orthoDB_annotations_work[species], sig_orthogroups=sig_orthoDB_list)
+                
+                before_transcript, after_transcript = make_cumulative_TE_table(orthogroups_orthoDB, n=10000, species=species, repeats_annot_path=repeats_out_work[species], genome_annot_path=orthoDB_annotations_work[species], sig_orthogroups=sig_OGs_size_filtered)
                 gff.write_dict_to_file(before_transcript, f"{repeats_tables}{species}_cumulative_repeats_before_sig_transcripts_{size_percentile_threshold}th_GF_size_percentile.txt")
                 gff.write_dict_to_file(after_transcript, f"{repeats_tables}{species}_cumulative_repeats_after_sig_transcripts_{size_percentile_threshold}th_GF_size_percentile.txt")
             except: 
                 failed.append(species)
+            break
         print(f"failed species: {failed}")
 
 
