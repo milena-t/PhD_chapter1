@@ -9,6 +9,7 @@ import parse_gff as gff
 import parse_repeats as repeats
 import parse_orthogroups as OGs
 import matplotlib.pyplot as plt
+from matplotlib.ticker import FuncFormatter
 from math import ceil
 
 from tqdm import tqdm
@@ -74,9 +75,11 @@ def make_cumulative_TE_table(orthogroups_path:str, n:int, species:str, repeats_a
     all_transcript_IDs = get_sig_transcripts(orthoDB_orthogroups)
     print(f"{species} --> {len(orthoDB_orthogroups)} orthogroups with {len(all_transcript_IDs)} transcripts")
 
-    print(f"\t*  parse gene-annotation and repeat-annotation infiles...")
+    print(f"\t*  parse gene-annotation {genome_annot_path}")
     genes_dict = gff.parse_gff3_general(genome_annot_path, verbose=False, keep_feature_category=gff.FeatureCategory.Transcript)
+    print(f"\t*  parse repeat-annotation {repeats_annot_path}")
     repeats_dict = repeats.parse_repeats_repeatmasker_outfile(repeats_annot_path, verbose=False)
+
     repeats_categories = get_all_repeat_categories(repeats_dict=repeats_dict)
     repeats_categories.sort()
     print(f"\t*  all repeat categories: {repeats_categories}")
@@ -97,6 +100,7 @@ def make_cumulative_TE_table(orthogroups_path:str, n:int, species:str, repeats_a
     contigs_with_no_repeats = [] 
 
     all_transcripts_list = []
+    print(f"\t*  calculate transcript surroundings")
     for transcript_id in tqdm(all_transcript_IDs):
         try:
             transcript = genes_dict[transcript_id]
@@ -104,41 +108,51 @@ def make_cumulative_TE_table(orthogroups_path:str, n:int, species:str, repeats_a
                 all_transcripts_list.append(transcript_id)
                 continue
         except:
-            raise RuntimeError(f"{transcript_id} can not be found in {genome_annot_path}")
+            # raise RuntimeError(f"{transcript_id} can not be found in {genome_annot_path}")
             missing_in_annot_transcripts.append(transcript_id)
             continue
         # start and end of the interval surrounding this transcript
         int_start = transcript.start - n
         int_stop = transcript.end + n
-        if int_start>int_stop:
-            print(f"\t\t -  {transcript_id} is in inverse direction! interval from {int_start} to {int_stop}")
+        
+        # print(f"\t\t -  {transcript_id} interval from {int_start} to {int_stop}")
         
         ################
         ### start filling first half before the coding region
-        try:
+        
             # collect all repeats that are in the pre-transcript interval
             # this fails if there's no repeats on the transcript.contig, which can happen in very fragmented assemblies
-            repeat_before_transcript = [repeat for repeat in repeats_dict[transcript.contig] if (repeat.stop < transcript.start and repeat.stop > int_start) or (repeat.start >int_start and repeat.start<transcript.start) or (repeat.start < int_start and repeat.stop >int_stop)]
+        try:
+            repeat_before_transcript = []
+            for repeat in repeats_dict[transcript.contig]:
+                rep_stop_in_interval = repeat.end < transcript.start and repeat.end > int_start
+                rep_start_in_interval = repeat.start < transcript.start and repeat.start > int_start
+                rep_longer_than_interval = repeat.start < int_start and repeat.end >int_stop
+
+                if rep_stop_in_interval or rep_start_in_interval or rep_longer_than_interval:
+                    repeat_before_transcript.append(repeat)
         except:
             contigs_with_no_repeats.append(transcript.contig)
+            # print(f"{transcript.contig} has no repeats on it in {repeats_annot_path}")
             continue
-
+        
+        # iterate through every base in the interval
         for index, base in enumerate(range(int_start, transcript.start)):
             for repeat in repeat_before_transcript:
-                if base >= repeat.start and base <= repeat.stop:
-                    # print(f"{repeat.start} < {base} [{index}] < {repeat.stop}, {repeat}")
+                if base >= repeat.start and base <= repeat.end:
+                    # print(f"{repeat.start} < {base} [{index}] < {repeat.end}, {repeat}")
                     before_transcript[repeat.repeat_category][index] += 1
         
         ################
-        ### fill out the second half after the coding region
-        repeat_after_transcript = [repeat for repeat in repeats_dict[transcript.contig] if (repeat.start < int_stop and repeat.start>transcript.end) or (repeat.stop > transcript.end and repeat.stop<int_stop) or (repeat.start < transcript.end and repeat.stop > int_stop)]
+        ### fill out the second half after the coding region, same as above but post-transcript interval
+        repeat_after_transcript = [repeat for repeat in repeats_dict[transcript.contig] if (repeat.start < int_stop and repeat.start>transcript.end) or (repeat.end > transcript.end and repeat.end<int_stop) or (repeat.start < transcript.end and repeat.end > int_stop)]
         for index, base in enumerate(range(transcript.end, int_stop)):
             for repeat in repeat_after_transcript:
-                if base >= repeat.start and base <= repeat.stop:
+                if base >= repeat.start and base <= repeat.end:
                     after_transcript[repeat.repeat_category][index] += 1
     
     if len(missing_in_annot_transcripts)>0:
-        print(f"{len(missing_in_annot_transcripts)} transcripts in sig. transcripts not found in annotation and were skipped (in C. maculatus this might be due to the liftover?)")
+        print(f"{len(missing_in_annot_transcripts)} transcripts (of {len(all_transcript_IDs)} total) not found in annotation and were skipped (in C. maculatus this might be due to the liftover?)")
     if len(contigs_with_no_repeats)>0:
         print(f"{len(contigs_with_no_repeats)} contigs with significant genes but no repeats on them")
     
@@ -239,10 +253,12 @@ def plot_TE_abundance(before_filepath:str, after_filepath:str, sig_transcripts:i
     species = species.replace("_", ". ")
     plt.title(f"{species} transcript surroundings {num_bp} bp up and downstream", fontsize = fs*1.5)
     plt.xlabel(f"basepairs upstream and downstream from transcript", fontsize = fs)
+
     plt.ylabel(f"percent of transcripts in which this base is a repeat", fontsize = fs)
+    ax.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 99 and x<1 else f'{int(x)}%'))
 
     plt.tight_layout()
-    plt.savefig(filename, dpi = 300, transparent = True)
+    plt.savefig(filename, dpi = 300, transparent = False)
     print("Figure saved in the current working directory directory as: "+filename)
 
 
@@ -408,8 +424,43 @@ def tables_filepaths():
         "Z_morio" :f"{work_out_dir}Z_morio_cumulative_repeats_after_all_transcripts.txt",
     }
 
-    return sig_before_transcript, sig_after_transcript, all_before_transcript, all_after_transcript
+    repeats_tables ="/Users/miltr339/work/PhD_code/PhD_chapter1/data/repeats_tables/"
+    threshold_before_transcript = {
+        'A_obtectus' : f'{repeats_tables}A_obtectus_cumulative_repeats_before_sig_transcripts_90th_GF_size_percentile.txt',
+        'A_verrucosus' : f'{repeats_tables}A_verrucosus_cumulative_repeats_before_sig_transcripts_90th_GF_size_percentile.txt',
+        'B_siliquastri' : f'{repeats_tables}B_siliquastri_cumulative_repeats_before_sig_transcripts_90th_GF_size_percentile.txt',
+        'C_analis' : f'{repeats_tables}C_analis_cumulative_repeats_before_sig_transcripts_90th_GF_size_percentile.txt',
+        'C_chinensis' : f'{repeats_tables}C_chinensis_cumulative_repeats_before_sig_transcripts_90th_GF_size_percentile.txt',
+        'C_maculatus' : f'{repeats_tables}C_maculatus_cumulative_repeats_before_sig_transcripts_90th_GF_size_percentile.txt',
+        'C_septempunctata' : f'{repeats_tables}C_septempunctata_cumulative_repeats_before_sig_transcripts_90th_GF_size_percentile.txt',
+        'D_melanogaster' : f'{repeats_tables}D_melanogaster_cumulative_repeats_before_sig_transcripts_90th_GF_size_percentile.txt',
+        'D_ponderosae' : f'{repeats_tables}D_ponderosae_cumulative_repeats_before_sig_transcripts_90th_GF_size_percentile.txt',
+        'I_luminosus' : f'{repeats_tables}I_luminosus_cumulative_repeats_before_sig_transcripts_90th_GF_size_percentile.txt',
+        'P_pyralis' : f'{repeats_tables}P_pyralis_cumulative_repeats_before_sig_transcripts_90th_GF_size_percentile.txt',
+        'R_ferrugineus' : f'{repeats_tables}R_ferrugineus_cumulative_repeats_before_sig_transcripts_90th_GF_size_percentile.txt',
+        'T_castaneum' : f'{repeats_tables}T_castaneum_cumulative_repeats_before_sig_transcripts_90th_GF_size_percentile.txt',
+        'T_molitor' : f'{repeats_tables}T_molitor_cumulative_repeats_before_sig_transcripts_90th_GF_size_percentile.txt',
+        'Z_morio' : f'{repeats_tables}Z_morio_cumulative_repeats_before_sig_transcripts_90th_GF_size_percentile.txt',
+    }
+    threshold_after_transcript = {
+        'A_obtectus' : f'{repeats_tables}A_obtectus_cumulative_repeats_after_sig_transcripts_90th_GF_size_percentile.txt',
+        'A_verrucosus' : f'{repeats_tables}A_verrucosus_cumulative_repeats_after_sig_transcripts_90th_GF_size_percentile.txt',
+        'B_siliquastri' : f'{repeats_tables}B_siliquastri_cumulative_repeats_after_sig_transcripts_90th_GF_size_percentile.txt',
+        'C_analis' : f'{repeats_tables}C_analis_cumulative_repeats_after_sig_transcripts_90th_GF_size_percentile.txt',
+        'C_chinensis' : f'{repeats_tables}C_chinensis_cumulative_repeats_after_sig_transcripts_90th_GF_size_percentile.txt',
+        'C_maculatus' : f'{repeats_tables}C_maculatus_cumulative_repeats_after_sig_transcripts_90th_GF_size_percentile.txt',
+        'C_septempunctata' : f'{repeats_tables}C_septempunctata_cumulative_repeats_after_sig_transcripts_90th_GF_size_percentile.txt',
+        'D_melanogaster' : f'{repeats_tables}D_melanogaster_cumulative_repeats_after_sig_transcripts_90th_GF_size_percentile.txt',
+        'D_ponderosae' : f'{repeats_tables}D_ponderosae_cumulative_repeats_after_sig_transcripts_90th_GF_size_percentile.txt',
+        'I_luminosus' : f'{repeats_tables}I_luminosus_cumulative_repeats_after_sig_transcripts_90th_GF_size_percentile.txt',
+        'P_pyralis' : f'{repeats_tables}P_pyralis_cumulative_repeats_after_sig_transcripts_90th_GF_size_percentile.txt',
+        'R_ferrugineus' : f'{repeats_tables}R_ferrugineus_cumulative_repeats_after_sig_transcripts_90th_GF_size_percentile.txt',
+        'T_castaneum' : f'{repeats_tables}T_castaneum_cumulative_repeats_after_sig_transcripts_90th_GF_size_percentile.txt',
+        'T_molitor' : f'{repeats_tables}T_molitor_cumulative_repeats_after_sig_transcripts_90th_GF_size_percentile.txt',
+        'Z_morio' : f'{repeats_tables}Z_morio_cumulative_repeats_after_sig_transcripts_90th_GF_size_percentile.txt',
+    }
 
+    return sig_before_transcript, sig_after_transcript, all_before_transcript, all_after_transcript, threshold_before_transcript, threshold_after_transcript
 
 
 if __name__ == "__main__":
@@ -444,24 +495,24 @@ if __name__ == "__main__":
     ########
     size_percentile_threshold = 90
     
-    if True:
+    if False:
         all_species = list(repeats_out.keys())
         # failed = ['A_verrucosus', 'C_chinensis', 'D_ponderosae', 'I_luminosus', 'R_ferrugineus', 'T_molitor', 'Z_morio']
         failed = []
+        all_species = ['C_maculatus']
         for species in all_species:
             print(f"orthoDB {species}: ")
             
             sig_orthoDB_list, all_orthogroups_list = OGs.get_sig_orthogroups(sig_orthoDB)
             orthoDB_orthogroups = OGs.parse_orthogroups_dict(orthogroups_orthoDB, sig_orthoDB_list, species=species)
             sig_OGs_size_filtered = filter_sig_OGs_by_size(orthoDB_orthogroups=orthoDB_orthogroups, species=species, q=size_percentile_threshold)
-            try:
-                
+            if True:
+            #try:
                 before_transcript, after_transcript = make_cumulative_TE_table(orthogroups_orthoDB, n=10000, species=species, repeats_annot_path=repeats_out_work[species], genome_annot_path=orthoDB_annotations_work[species], sig_orthogroups=sig_OGs_size_filtered)
                 gff.write_dict_to_file(before_transcript, f"{repeats_tables}{species}_cumulative_repeats_before_sig_transcripts_{size_percentile_threshold}th_GF_size_percentile.txt")
                 gff.write_dict_to_file(after_transcript, f"{repeats_tables}{species}_cumulative_repeats_after_sig_transcripts_{size_percentile_threshold}th_GF_size_percentile.txt")
-            except: 
-                failed.append(species)
-            break
+            # except: 
+            #     failed.append(species)
         print(f"failed species: {failed}")
 
 
@@ -492,14 +543,14 @@ if __name__ == "__main__":
     ############ plot above computed tables ##############
     ######################################################
 
-    sig_before_transcript, sig_after_transcript, all_before_transcript, all_after_transcript = tables_filepaths()
+    sig_before_transcript, sig_after_transcript, all_before_transcript, all_after_transcript, threshold_before_transcript, threshold_after_transcript = tables_filepaths()
 
-    if False:
+    if True:
         repeats_plots = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/repeats_plots/"
         all_species = list(repeats_out.keys())
         for species in all_species:
             # species = "B_siliquastri"
-            print(f"plot {species}")
+            print(f"\n\n ------------------------------------------------------------- \nplot {species}")
             # get total number of transcripts that are part of significantly rapidly evolving orthogroups in this species
             sig_orthoDB_list, all_orthogroups_list = OGs.get_sig_orthogroups(sig_orthoDB)
 
@@ -509,23 +560,23 @@ if __name__ == "__main__":
             all_transcript_IDs = get_sig_transcripts(orthoDB_orthogroups)
             num_sig_transcripts = len(all_transcript_IDs)
             print(f"\t{num_sig_transcripts} significant transcripts according to reading the CAFE and orthoDB output")
-            # write table to output file
+            
             all_transcript_IDs = make_cumulative_TE_table(orthogroups_orthoDB, n=10000, species=species, repeats_annot_path=repeats_out_work[species], genome_annot_path=orthoDB_annotations_work[species], sig_orthogroups=sig_OGs_size_filtered, count_transcripts=True)
             num_sig_transcripts = len(all_transcript_IDs)
-            print(f"\t{num_sig_transcripts} significant transcrips according to making the table")
+            print(f"\t{num_sig_transcripts} significant transcrips according to making the table\n\n")
 
-            plot_TE_abundance(sig_before_transcript[species], sig_after_transcript[species], sig_transcripts = num_sig_transcripts, filename=f"{repeats_plots}cumulative_repeat_presence_around_transcripts_sig_only_{species}_{size_percentile_threshold}th_percentile_GF_size.png")
+            # plot_TE_abundance(threshold_before_transcript[species], threshold_after_transcript[species], sig_transcripts = num_sig_transcripts, filename=f"{repeats_plots}cumulative_repeat_presence_around_transcripts_sig_only_{species}_{size_percentile_threshold}th_percentile_GF_size.png")
 
             orthoDB_orthogroups = OGs.parse_orthogroups_dict(orthogroups_orthoDB, all_orthogroups_list, species=species)
             all_transcript_IDs = get_sig_transcripts(orthoDB_orthogroups)
             num_all_transcripts = len(all_transcript_IDs)
-            print(f"\t{num_all_transcripts} significant transcripts according to reading the CAFE and orthoDB output")
+            print(f"\t{num_all_transcripts} CAFE transcripts according to reading the CAFE and orthoDB output")
             # write table to output file
             all_transcript_IDs = make_cumulative_TE_table(orthogroups_orthoDB, n=10000, species=species, repeats_annot_path=repeats_out_work[species], genome_annot_path=orthoDB_annotations_work[species], count_transcripts=True)
             num_all_transcripts = len(all_transcript_IDs)
-            print(f"\t{num_all_transcripts} significant transcrips according to making the table")
+            print(f"\t{num_all_transcripts} CAFE transcrips according to making the table")
 
-            plot_TE_abundance(sig_before_transcript[species], sig_after_transcript[species], sig_transcripts = num_sig_transcripts, all_before_filepath=all_before_transcript[species], all_after_filepath=all_after_transcript[species], all_transcripts=num_all_transcripts, filename=f"{repeats_plots}cumulative_repeat_presence_around_transcripts_sig_and_all_{species}_{size_percentile_threshold}th_percentile_GF_size.png")
+            plot_TE_abundance(threshold_before_transcript[species], threshold_after_transcript[species], sig_transcripts = num_sig_transcripts, all_before_filepath=all_before_transcript[species], all_after_filepath=all_after_transcript[species], all_transcripts=num_all_transcripts, filename=f"{repeats_plots}cumulative_repeat_presence_around_transcripts_sig_and_all_{species}_{size_percentile_threshold}th_percentile_GF_size.png")
             break
 
 
