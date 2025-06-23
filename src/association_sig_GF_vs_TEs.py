@@ -11,6 +11,7 @@ import parse_orthogroups as OGs
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
 import matplotlib.patches as mpatches
+from matplotlib.lines import Line2D
 from math import ceil
 
 from tqdm import tqdm
@@ -259,12 +260,15 @@ def plot_TE_abundance(before_filepath:str, after_filepath:str, sig_transcripts:i
         plt.legend(loc = "upper right", fontsize = fs)
         plt.title(f"{species} transcript surroundings {num_bp} bp up and downstream \n({num_sig_transcripts} significant transcripts of {all_transcripts} in CAFE analysis)", fontsize = fs*1.25)
     else:
-        handles = []
-        labels = [] 
-        handles.append(mpatches.Patch(fill=False))
-        labels.append(f"dotted line: all CAFE transcripts ({all_transcripts})")
-        handles.append(mpatches.Patch(fill=False))
-        labels.append(f"bold line: significant transcripts ({num_sig_transcripts})")
+        
+        solid = Line2D([0], [0], color='black', linestyle='-', linewidth=2)
+        dotted = Line2D([0], [0], color='black', linestyle=':', linewidth=2)
+        handles = [solid, dotted]
+        labels = []
+        # handles.append(mpatches.Patch(fill=False, linestyle=None))
+        # handles.append(mpatches.Patch(fill=False, linestyle=None))
+        labels.append(f"significant transcripts ({num_sig_transcripts})")
+        labels.append(f"all CAFE transcripts ({all_transcripts})")
         plt.legend(handles, labels, loc = "upper center", fontsize = fs)
         plt.title(f"{species} transcript surroundings {num_bp} bp up and downstream", fontsize = fs*1.25)
     
