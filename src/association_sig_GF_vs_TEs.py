@@ -251,6 +251,9 @@ def plot_TE_abundance(before_filepath:str, after_filepath:str, sig_transcripts:i
     plt.xticks(range(-num_bp, num_bp+1, int(num_bp/5)), fontsize = fs)
     plt.yticks(range(0, max_percentage+1, 10), fontsize = fs)
 
+    species = gff.split_at_second_occurrence(before_filepath.split("/")[-1])
+    species = species.replace("_", ". ")
+
     if legend:
         ax.set_xlim([-num_bp, num_bp*1.35])
         plt.legend(loc = "upper right", fontsize = fs)
@@ -264,9 +267,6 @@ def plot_TE_abundance(before_filepath:str, after_filepath:str, sig_transcripts:i
         labels.append(f"bold line: significant transcripts ({num_sig_transcripts})")
         plt.legend(handles, labels, loc = "upper center", fontsize = fs)
         plt.title(f"{species} transcript surroundings {num_bp} bp up and downstream", fontsize = fs*1.25)
-
-    species = gff.split_at_second_occurrence(before_filepath.split("/")[-1])
-    species = species.replace("_", ". ")
     
     plt.xlabel(f"basepairs upstream and downstream from transcript", fontsize = fs)
 
@@ -596,7 +596,7 @@ if __name__ == "__main__":
                 failed_species.append(species)
 
             plot_TE_abundance(threshold_before_transcript[species], threshold_after_transcript[species], sig_transcripts = num_sig_transcripts, all_before_filepath=all_before_transcript[species], all_after_filepath=all_after_transcript[species], all_transcripts=num_all_transcripts, filename=f"{repeats_plots}cumulative_repeat_presence_around_transcripts_sig_and_all_{species}_{size_percentile_threshold}th_percentile_GF_size.png", legend=False)
-            break
+            # break
         print(f"\n-----------------------------------------------------\nspecies where the transcript numbers don't match: {failed_species}")
 
 
