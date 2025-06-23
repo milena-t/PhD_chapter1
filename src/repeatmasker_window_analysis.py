@@ -747,7 +747,18 @@ def plot_repeat_abundance(species_abundances, species_categories, gff_filepath, 
     ax.set_ylabel(y_label, fontsize=fs)
     ax.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 100 and x<5 else f'{int(x)}%'))
     species_name_nice = species_name.replace("_", ". ")
-    ax.set_title(f'Repeat abundance in {species_name_nice}, (window length {int(window_length)} bp, {incl_perc:.2f}% of assembly shown)', fontsize=fs)
+
+    if window_length>1e6:
+        rounded = int(window_length / 1e6)
+        window_length_ =f'{rounded} Mb'
+    elif window_length>1e5:
+        rounded = int(window_length / 1e5) * 0.1
+        window_length_ =f'{rounded:.1} Mb'
+    else:
+        rounded = int(window_length / 1e3)
+        window_length_ =f'{rounded} kb'
+    
+    ax.set_title(f'Repeat abundance in {species_name_nice}, (window length {window_length_}, {incl_perc:.2f}% of assembly shown)', fontsize=fs)
 
     if include_genes_line and include_genes_line2:
         # make legends for repeat lines (hard coded labes in plot command above!)
