@@ -748,10 +748,10 @@ def plot_repeat_abundance(species_abundances, species_categories, gff_filepath, 
     ax.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 100 and x<5 else f'{int(x)}%'))
     species_name_nice = species_name.replace("_", ". ")
 
-    if window_length>1e6:
+    if window_length>=1e6:
         rounded = int(window_length / 1e6)
         window_length_ =f'{rounded} Mb'
-    elif window_length>1e5:
+    elif window_length>=1e5:
         rounded = int(window_length / 1e5) * 0.1
         window_length_ =f'{rounded:.1} Mb'
     else:
@@ -764,7 +764,7 @@ def plot_repeat_abundance(species_abundances, species_categories, gff_filepath, 
         # make legends for repeat lines (hard coded labes in plot command above!)
         # repeat_lines = [gene_nos_plot, gene_nos_plot2]
         repeat_lines = ax3.get_lines()
-        legend_lines = plt.legend(repeat_lines, ["native", "orthoDB"], loc = "upper left", fontsize = fs*0.75, title = "annotation", title_fontsize = fs*0.85)
+        legend_lines = plt.legend(repeat_lines, ["native", "uniform"], loc = "upper left", fontsize = fs*0.75, title = "annotation", title_fontsize = fs*0.85)
         plt.gca().add_artist(legend_lines)
     elif include_genes_line and not include_genes_line2:
         repeat_lines = ax3.get_lines()
