@@ -491,7 +491,6 @@ if __name__ == "__main__":
     
     ########
     ## tables for significant transcripts
-    ## TODO figure out what is going on with the significant orthogroups??
     ########
     size_percentile_threshold = 90
     
@@ -519,7 +518,6 @@ if __name__ == "__main__":
     #########
     ## tables for all CAFE transcripts
     #########
-
     if False:
         all_species = list(repeats_out.keys())
         # failed = ['A_verrucosus', 'C_chinensis', 'D_ponderosae', 'I_luminosus', 'R_ferrugineus', 'T_molitor', 'Z_morio']
