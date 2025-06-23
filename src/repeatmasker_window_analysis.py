@@ -457,7 +457,7 @@ def get_assembly_repeat_abundances(out_filepath:str, window_length:int, filter_o
     return repeat_abundances, all_categories
 
 
-def plot_repeat_abundance(species_abundances, species_categories, gff_filepath, window_length, gene_numbers = {}, gene_numbers2 = {}, species_name = "", y_label = "repeat abundance in percent", filename = ""):
+def plot_repeat_abundance(species_abundances, species_categories, gff_filepath, window_length, gene_numbers = {}, gene_numbers2 = {}, species_name = "", y_label = "repeat abundance", filename = ""):
 
     print("\n* start plotting...")
     
@@ -472,7 +472,7 @@ def plot_repeat_abundance(species_abundances, species_categories, gff_filepath, 
 
     # Width of the bars
     # width = 0.35
-    fs = 18 # fontsize is scaled with the dpi somehow which i have to do extra because i change the aspect ratio manually below
+    fs = 25 # fontsize is scaled with the dpi somehow which i have to do extra because i change the aspect ratio manually below
 
     # set figure aspect ratio
     aspect_ratio = 20 / 12
@@ -731,7 +731,7 @@ def plot_repeat_abundance(species_abundances, species_categories, gff_filepath, 
     rot = 90
     if len(x_contig_labels[0])<2:
         rot = 0
-    ax2.set_xticklabels(x_contig_labels, rotation=rot)
+    ax2.set_xticklabels(x_contig_labels, rotation=rot, fontsize=fs*0.7)
 
     # Adjust the position of the secondary x-axis
     ax2.spines['bottom'].set_position(('outward', 40))    
@@ -744,19 +744,20 @@ def plot_repeat_abundance(species_abundances, species_categories, gff_filepath, 
     ax2.tick_params(axis='x', labelsize=fs*0.8, rotation = rot)
     
     # ax.set_xlabel('Species', fontsize=fs+4)
-    ax.set_ylabel(y_label, fontsize=fs+4)
+    ax.set_ylabel(y_label, fontsize=fs)
+    ax.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 100 and x<5 else f'{int(x)}%'))
     species_name_nice = species_name.replace("_", ". ")
-    ax.set_title(f'Repeat abundance in {species_name_nice}, (window length {int(window_length)} bp, {incl_perc:.2f}% of assembly shown)', fontsize=fs+4)
+    ax.set_title(f'Repeat abundance in {species_name_nice}, (window length {int(window_length)} bp, {incl_perc:.2f}% of assembly shown)', fontsize=fs)
 
     if include_genes_line and include_genes_line2:
         # make legends for repeat lines (hard coded labes in plot command above!)
         # repeat_lines = [gene_nos_plot, gene_nos_plot2]
         repeat_lines = ax3.get_lines()
-        legend_lines = plt.legend(repeat_lines, ["native", "orthoDB"], loc = "upper left", fontsize = fs, title = "annotation", title_fontsize = fs)
+        legend_lines = plt.legend(repeat_lines, ["native", "orthoDB"], loc = "upper left", fontsize = fs*0.75, title = "annotation", title_fontsize = fs*0.85)
         plt.gca().add_artist(legend_lines)
     elif include_genes_line and not include_genes_line2:
         repeat_lines = ax3.get_lines()
-        legend_lines = plt.legend(repeat_lines, ["native"], loc = "upper left", fontsize = fs, title = "annotation", title_fontsize = fs)
+        legend_lines = plt.legend(repeat_lines, ["native"], loc = "upper left", fontsize = fs*0.75, title = "annotation", title_fontsize = fs*0.85)
         # legend_lines = plt.legend(repeat_lines, ["orthoDB"], loc = "upper left", fontsize = fs, title = "annotation", title_fontsize = fs)
         plt.gca().add_artist(legend_lines)
 
@@ -767,7 +768,7 @@ def plot_repeat_abundance(species_abundances, species_categories, gff_filepath, 
         handles.append(mpatches.Patch(color=colors[category]))
         labels.append(category)
 
-    ax.legend(handles, labels, fontsize = fs, loc='lower left', title = "repeat categories", title_fontsize = fs)
+    ax.legend(handles, labels, fontsize = fs*0.75, loc='lower left', title = "repeat categories", title_fontsize = fs*0.85)
 
     # make space for legend on the left
     x_limits = plt.xlim()
