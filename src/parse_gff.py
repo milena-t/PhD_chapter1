@@ -23,10 +23,19 @@ def split_at_second_occurrence(s, char = "_"):
 def write_dict_to_file(dict, filename):
     with open(filename, "w") as outfile:
         for key, value_list in dict.items():
-            try:
-                value_str = ','.join(value_list)
-            except:
-                value_str = ','.join([str(element) for element in value_list])
+            if type(value_list) == list:
+                try:
+                    value_str = ','.join(value_list)
+                except:
+                    try:
+                        value_str = ','.join([str(element) for element in value_list])
+                    except:
+                        raise RuntimeError(f"{key} : {value_list} entry could not be parsed")
+            else:
+                try:
+                    value_str = str(value_list)
+                except:
+                    raise RuntimeError(f"{key} : {value_list} entry could not be parsed")
             outfile.write(f"{key}:{value_str}\n")
         print("file saved in current working directory as: "+filename)
     
