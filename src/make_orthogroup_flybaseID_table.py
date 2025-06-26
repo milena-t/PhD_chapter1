@@ -113,7 +113,10 @@ def make_table_with_flybase_functions(orthogroup_dict_species, drosophila_gff_pa
     CAFE_results_path:str for the CAFE results includes the cafe p-value
 
     also gives you the option to access the flybase API to get functional information based on the gene ID
+        --> this takes a long time! the function runs very fast otherwise if you don't use the API
+
     if you did a DAVID analysis of the flybase IDs, you can run this function again with a dict with the gene groups generated with parse_david_gene_groups_file()
+    I have added manual functional annotation to the david output that can also be added as a column
     """
 
     drosophila_attributes_dict = gff.parse_gff3_for_attributes(drosophila_gff_path)
@@ -148,14 +151,17 @@ def make_table_with_flybase_functions(orthogroup_dict_species, drosophila_gff_pa
     # write headers according to input files
     outfile_name = f"/Users/miltr339/work/PhD_code/PhD_chapter1/data/{outfile_name}"
     with open(outfile_name, "w") as outfile:
-        if orthogroups_dict_all =={} and david_gene_groups == {}:
+        if orthogroups_dict_all =={} and david_gene_groups == {} and david_functions == {}:
             outfile.write("Orthogroup_ID\ttranscript_ID_native\tFlybase\tFlybase_summary\tCAFE_p-value\n")
-        elif orthogroups_dict_all !={} and david_gene_groups == {}:
+        elif orthogroups_dict_all !={} and david_gene_groups == {} and david_functions == {}:
             species_header = "\t".join([f"{species}" for species in species_list])
             outfile.write(f"Orthogroup_ID\t{species_header}\tmax_delta_GF\ttranscript_ID_native\tFlybase\tFlybase_summary\tCAFE_p-value\n")
-        elif orthogroups_dict_all !={} and david_gene_groups != {}:
+        elif orthogroups_dict_all !={} and david_gene_groups != {} and david_functions == {}:
             species_header = "\t".join([f"{species}" for species in species_list])
             outfile.write(f"Orthogroup_ID\tGene_Group\tGene_Name\t{species_header}\tmax_delta_GF\ttranscript_ID_native\tFlybase\tFlybase_summary\tCAFE_p-value\n")
+        elif orthogroups_dict_all !={} and david_gene_groups != {} and david_functions != {}:
+            species_header = "\t".join([f"{species}" for species in species_list])
+            outfile.write(f"Orthogroup_ID\tGene_Group\tGroup_function\tGene_Name\t{species_header}\tmax_delta_GF\ttranscript_ID_native\tFlybase\tFlybase_summary\tCAFE_p-value\n")
 
 
         for OG_id, transcripts_list in tqdm(orthogroup_dict_species.items()):
@@ -211,9 +217,9 @@ def make_table_with_flybase_functions(orthogroup_dict_species, drosophila_gff_pa
                     cafe_p = "None"
 
                 # Orthogroup_ID transcript_ID_native Flybase Flybase_summary CAFE_p-value max_delta_GF
-                if orthogroups_dict_all =={} and david_gene_groups =={}:
+                if orthogroups_dict_all =={} and david_gene_groups =={} and david_functions == {}:
                     outfile_string = f"{OG_id}\t{transcript}\t{flybase}\t{flybase_summary}\t{cafe_p}\n"
-                elif orthogroups_dict_all !={} and david_gene_groups =={}:
+                elif orthogroups_dict_all !={} and david_gene_groups =={} and david_functions == {}:
                     outfile_string = f"{OG_id}\t{transcript}\t{flybase}\t{flybase_summary}\t{cafe_p}\t{GF_size}\n"
                 elif orthogroups_dict_all !={} and david_gene_groups !={}:
                     try:
@@ -228,8 +234,12 @@ def make_table_with_flybase_functions(orthogroup_dict_species, drosophila_gff_pa
                             gene_name =flybase_summary.split("The gene ")[-1]
                             gene_name = gene_name.split(" is referred to")[0]
                             gene_name = f"{gene_name} (from API summary)"
+                    try:
+                        group_function = david_functions[gene_group]
+                    except:
+                        group_function = "None"
                     # Orthogroup_ID Gene_Group Gene_Name {species_header} transcript_ID_native Flybase Flybase_summary CAFE_p-value max_delta_GF 
-                    outfile_string = f"{OG_id}\t{gene_group}\t{gene_name}\t{GF_size}\t{transcript}\t{flybase}\t{flybase_summary}\t{cafe_p}\n"
+                    outfile_string = f"{OG_id}\t{gene_group}\t{group_function}\t{gene_name}\t{GF_size}\t{transcript}\t{flybase}\t{flybase_summary}\t{cafe_p}\n"
                 outfile.write(f"{outfile_string}")
     if len(unassigned_FB_IDs):
         print(f"{len(unassigned_FB_IDs)} Flybase Gene IDs in the orthogroups were not found in David")
