@@ -186,7 +186,9 @@ if __name__ == "__main__":
     orthoDB_dict = OGs.get_GF_sizes(orthoDB_dict_lists)
 
     # plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=genome_sizes_dict, x_label = "Genome size in Mb", filename = f"{data_dir}sig_OGs_vs_GS_inclines.png")
-    plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=genome_sizes_dict, x_label = "Genome size in Mb", filename = f"{data_dir}sig_OGs_vs_GS_inclines.png", sig_list=orthoDB_sig_list)
+    GS_inclines = plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=genome_sizes_dict, x_label = "Genome size in Mb", filename = f"{data_dir}sig_OGs_vs_GS_inclines.png", sig_list=orthoDB_sig_list)
+    gff.write_dict_to_file(GS_inclines, f"{data_dir}sig_OGs_vs_GS_inclines.tsv")
 
     # plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, x_label = "Repeat content in percent", filename = f"{data_dir}sig_OGs_vs_reps_inclines.png")
-    plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, x_label = "Repeat content in percent", filename = f"{data_dir}sig_OGs_vs_reps_inclines.png", sig_list=orthoDB_sig_list)
+    TE_inclines = plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, x_label = "Repeat content in percent", filename = f"{data_dir}sig_OGs_vs_reps_inclines.png", sig_list=orthoDB_sig_list)
+    gff.write_dict_to_file(TE_inclines, f"{data_dir}sig_OGs_vs_reps_inclines.tsv")
