@@ -222,9 +222,10 @@ def make_table_with_flybase_functions(orthogroup_dict_species, drosophila_gff_pa
                 elif orthogroups_dict_all !={} and david_gene_groups =={} and david_functions == {}:
                     outfile_string = f"{OG_id}\t{transcript}\t{flybase}\t{flybase_summary}\t{cafe_p}\t{GF_size}\n"
                 elif orthogroups_dict_all !={} and david_gene_groups !={}:
+                    gene_groups_list = []
                     try:
-                        gene_group, gene_name = david_gene_groups[flybase]
-                        gene_group = ",".join(gene_group)
+                        gene_groups_list, gene_name = david_gene_groups[flybase]
+                        gene_group = ",".join(gene_groups_list)
                     except:
                         gene_group = "None"
                         gene_name = "None"
@@ -234,9 +235,12 @@ def make_table_with_flybase_functions(orthogroup_dict_species, drosophila_gff_pa
                             gene_name =flybase_summary.split("The gene ")[-1]
                             gene_name = gene_name.split(" is referred to")[0]
                             gene_name = f"{gene_name} (from API summary)"
-                    try:
-                        group_function = david_functions[gene_group]
-                    except:
+                    if len(gene_groups_list)>0:
+                        try:
+                            group_function = ",".join([david_functions[gene_group] for gene_group in gene_groups_list])
+                        except:
+                            group_function = "None"
+                    else:
                         group_function = "None"
                     # Orthogroup_ID Gene_Group Gene_Name {species_header} transcript_ID_native Flybase Flybase_summary CAFE_p-value max_delta_GF 
                     outfile_string = f"{OG_id}\t{gene_group}\t{group_function}\t{gene_name}\t{GF_size}\t{transcript}\t{flybase}\t{flybase_summary}\t{cafe_p}\n"
@@ -372,13 +376,17 @@ def parse_david_group_functions(david_gene_groups_filepath:str):
     return out_dict
             
 
-def filter_flybase_table_to_single_OG(flybase_table_path:str):
+def filter_flybase_table_to_single_OG(flybase_table_path:str, min_delta_GF=0):
     """
     The table contains all drosophila member or every orthogroup, but that is often redundant
     This function filters the table to contain only one drosophila representative of every OG
     """
     infile_basename = flybase_table_path.split(".tsv")[0]
-    outfile_name = f"{infile_basename}_only_one_OG_member.tsv"
+    if min_delta_GF==0:
+        outfile_name = f"{infile_basename}_only_one_OG_member.tsv"
+    else:
+        outfile_name = f"{infile_basename}_only_one_OG_member_min_delta_GF_{min_delta_GF}.tsv"
+
     count_filtered = 0
     with open(flybase_table_path, "r") as flybase_table, open(outfile_name, "w") as outfile:
         lines = flybase_table.readlines()
@@ -388,7 +396,8 @@ def filter_flybase_table_to_single_OG(flybase_table_path:str):
         for line in lines[1:]:
             line_list = line.split("\t")
             orthogroup = line_list[0]
-            if orthogroup != current_OG:
+            deltaGF = int(line_list[18])
+            if orthogroup != current_OG and deltaGF>min_delta_GF:
                 outfile.write(line)
                 current_OG = orthogroup
             else:
@@ -431,7 +440,7 @@ if __name__ == "__main__":
 
 
     # get stuff for orthoDB annotations
-    if False:
+    if True:
         print(f"\n\torthoDB")
         orthoDB_sig_list, orthoDB_all_list =OGs.get_sig_orthogroups(sig_orthoDB)
         orthoDB_sig_OGs_dict = OGs.parse_orthogroups_dict(orthogroups_orthoDB, sig_list = orthoDB_sig_list, species="D_melanogaster")
@@ -482,3 +491,4 @@ if __name__ == "__main__":
                 print(f"{len(not_found_transcripts)} (of {num_transcripts}) transcripts from orthoDB not found in annotation: {not_found_transcripts}")
 
     filter_flybase_table_to_single_OG(flybase_table_path = flybase_table_path)
+    filter_flybase_table_to_single_OG(flybase_table_path = flybase_table_path, min_delta_GF=10)
