@@ -325,8 +325,32 @@ def parse_david_gene_groups_file(david_gene_groups_filepath:str):
     return out_dict
 
 
-
-
+def parse_david_group_functions(david_gene_groups_filepath:str):
+    """
+    I manually functionally annotated the gene groups file and here i will parse those into a dict
+    { gene group : functional annotation }
+    """
+    out_dict = {}
+    count_gene_groups = 0
+    with open(david_gene_groups_filepath, "r") as gene_groups_file:
+        for line_string in gene_groups_file.readlines():
+            line_string = line_string.strip()
+            if not line_string:
+                continue
+            line = line_string.split("\t")
+            if "Gene Group" not in line[0]:
+                continue
+            current_gene_group = line[0]
+            count_gene_groups += 1
+            if "Function: " in line[-1]:
+                try:
+                    function_String, function_annot = line[-1].split("Function: ")
+                except:
+                    raise RuntimeError(f"{line[-1]} not correctly parsed by function")
+                
+                out_dict[current_gene_group] = function_annot
+    return out_dict
+            
 
 
 if __name__ == "__main__":
@@ -335,7 +359,11 @@ if __name__ == "__main__":
     native_annotations, orthogroups_native, sig_native, native_proteinseqs = filepaths_native()
     dmel_unfiltered_annot = "/Users/miltr339/work/native_annotations/d_melanogaster_NOT_isoform_filtered.gff"    
     david_gene_groups_path = "/Users/miltr339/Box Sync/thesis writing/Milena chapter1/Sig OG Flybase IDs/DAVID-FunctionalClustering_FBgenes.txt"
+    david_gene_groups_path_home = "/Users/milena/Box Sync/thesis writing/Milena chapter1/Sig OG Flybase IDs/DAVID-FunctionalClustering_FBgenes.txt"
 
+    gene_groups_dict = parse_david_group_functions(david_gene_groups_path_home)
+    for key, value in gene_groups_dict.items():
+        print(f"{key} \t--> {value}")
 
     ## Get stuff from native with functional annotations
     if False:
@@ -360,7 +388,7 @@ if __name__ == "__main__":
 
 
     # get stuff for orthoDB annotations
-    if True:
+    if False:
         print(f"\n\torthoDB")
         orthoDB_sig_list, orthoDB_all_list =OGs.get_sig_orthogroups(sig_orthoDB)
         orthoDB_sig_OGs_dict = OGs.parse_orthogroups_dict(orthogroups_orthoDB, sig_list = orthoDB_sig_list, species="D_melanogaster")
