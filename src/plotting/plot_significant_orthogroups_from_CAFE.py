@@ -176,13 +176,13 @@ def plot_gene_counts(orthogroups_dict, sig_list, all_cafe_list, species_names, a
 
 
 
-def plot_means(native, orthoDB, whole_genome_stats, species_names, x_category = "", filename = "mean_orthogroups_from_CAFE.png", return_table = True):
-    fs = 15 # set font size
+def plot_means(orthoDB, whole_genome_stats, species_names, x_category = "", filename = "mean_orthogroups_from_CAFE.png", return_table = True):
+    fs = 22 # set font size
     # plot each column in the dataframe as a line in the same plot thorugh a for-loop
     fig = plt.figure(figsize=(10,8))
     ax = fig.add_subplot(1, 1, 1)
     
-    ylab="mean number of orthogroup members"
+    ylab="mean number of gene family members"
     # get a list of lists with [native, orthoDB] number of gene families per species
 
     legend_labels = []
@@ -196,17 +196,13 @@ def plot_means(native, orthoDB, whole_genome_stats, species_names, x_category = 
         "background" : "#838383" # grey
     }
 
-    native_unsigfnicant = [native["unsignificant"][species] for species in species_names]
-    native_sigfnicant = [native["significant"][species] for species in species_names]    
     orthoDB_unsigfnicant = [orthoDB["unsignificant"][species] for species in species_names]
     orthoDB_sigfnicant = [orthoDB["significant"][species] for species in species_names]
 
     
     if len(x_category) == 0:
-        ax.plot(species_names, native_sigfnicant, color = colors["native"], label = "significant (native)")
-        ax.plot(species_names, native_unsigfnicant, color = colors["native"], label = "unsignificant (native)", linestyle = ":")
-        ax.plot(species_names, orthoDB_sigfnicant, color = colors["orthoDB"], label = "significant (uniform)")
-        ax.plot(species_names, orthoDB_unsigfnicant, color = colors["orthoDB"], label = "unsignificant (uniform)", linestyle = ":")
+        ax.plot(species_names, orthoDB_sigfnicant, color = colors["orthoDB"], label = "significant")
+        ax.plot(species_names, orthoDB_unsigfnicant, color = colors["orthoDB"], label = "unsignificant", linestyle = ":")
         plt.xticks(labels=[species.replace("_", ". ") for species in species_names], ticks=species_names, rotation = 90, fontsize = fs)
         ax.grid(True)
         ax.yaxis.grid(False)
@@ -218,18 +214,14 @@ def plot_means(native, orthoDB, whole_genome_stats, species_names, x_category = 
             for key, value in whole_genome_stats[species_names[0]]:
                 print(key,value)
             raise RuntimeError(f"{x_category} is an invalid category for x axis.")
-        ax.scatter(x_values, native_sigfnicant, color = colors["native"], label = "significant (native)")
-        ax.scatter(x_values, native_unsigfnicant, color = colors["native"], label = "unsignificant (native)", marker = "o", facecolors = "none")
-        ax.scatter(x_values, orthoDB_sigfnicant, color = colors["orthoDB"], label = "significant (uniform)")
-        ax.scatter(x_values, orthoDB_unsigfnicant, color = colors["orthoDB"], label = "unsignificant (uniform)", marker = "o", facecolors = "none")
+        ax.scatter(x_values, orthoDB_sigfnicant, color = colors["orthoDB"], label = "significant", s=75)
+        ax.scatter(x_values, orthoDB_unsigfnicant, color = colors["orthoDB"], label = "unsignificant", marker = "o", facecolors = "none", s=75)
         # make regression lines
 
-        m_nat, b_nat = np.polyfit(x_values, native_sigfnicant, 1)
         m_odb, b_odb = np.polyfit(x_values, orthoDB_sigfnicant, 1)
         # print(f"native incline: {m_nat}")
         # print(f"orthoDB incline: {m_odb}")
-        ax.plot(x_values, [m_nat*x_value+b_nat for x_value in x_values], color = colors["native"], linewidth = 1 , label = f"reg. line (native) incline: {m_nat:.3f}")
-        ax.plot(x_values, [m_odb*x_value+b_odb for x_value in x_values], color = colors["orthoDB"], linewidth = 1 , label = f"reg. line (uniform) incline: {m_odb:.3f}")
+        ax.plot(x_values, [m_odb*x_value+b_odb for x_value in x_values], color = colors["orthoDB"], linewidth = 2 , label = f"reg. line slope: {m_odb:.3f}")
 
         x_header = x_category.replace("_", " ")
         if "repeat" in x_category:
@@ -239,8 +231,6 @@ def plot_means(native, orthoDB, whole_genome_stats, species_names, x_category = 
 
         if return_table:
             table_df = pd.DataFrame({
-                "native_unsigfnicant_mean_OG_size" : native_unsigfnicant,
-                "native_sigfnicant_mean_OG_size" : native_sigfnicant,
                 "orthoDB_unsigfnicant_mean_OG_size" : orthoDB_unsigfnicant,
                 "orthoDB_sigfnicant_mean_OG_size" : orthoDB_sigfnicant,
                 x_category : x_values
@@ -250,16 +240,17 @@ def plot_means(native, orthoDB, whole_genome_stats, species_names, x_category = 
             print(f"saved data as file in: {csv_filename}")
 
     ax.set_ylabel(ylab, fontsize = fs)
+    ax.tick_params(axis='both', which='major', labelsize=fs)
 
     ax.legend(fontsize = fs, loc='upper left', title_fontsize = fs)
 
-    ymax = max([max(native_unsigfnicant), max(native_sigfnicant), max(orthoDB_unsigfnicant), max(orthoDB_sigfnicant)])
-    ymax = ymax*1.25
-    ax.set_ylim(0,ymax)
+    ymax = max([max(orthoDB_unsigfnicant), max(orthoDB_sigfnicant)])
+    ymax = ymax*1.3
+    ax.set_ylim(0.5,ymax)
 
     plt.tight_layout()
 
-    plt.savefig(filename, dpi = 300, transparent = False)
+    plt.savefig(filename, dpi = 300, transparent = True)
     print("Figure saved in the current working directory directory as: "+filename)
 
 
@@ -326,5 +317,5 @@ if __name__ == "__main__":
 
     # plot_means(native_means, orthoDB_means, whole_genome_stats, species_names)
     out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/"
-    # plot_means(native_means, orthoDB_means, whole_genome_stats, species_names, x_category="genome_size", filename=f"{out_dir}mean_orthogroups_from_CAFE_vs_genome_size.png")
-    # plot_means(native_means, orthoDB_means, whole_genome_stats, species_names, x_category="repeat_percentage", filename=f"{out_dir}mean_orthogroups_from_CAFE_vs_repeats.png")
+    plot_means(orthoDB_means, whole_genome_stats, species_names, x_category="genome_size", filename=f"{out_dir}uniform_mean_orthogroups_from_CAFE_vs_genome_size.png")
+    plot_means(orthoDB_means, whole_genome_stats, species_names, x_category="repeat_percentage", filename=f"{out_dir}uniform_mean_orthogroups_from_CAFE_vs_repeats.png")

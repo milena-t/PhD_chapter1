@@ -83,14 +83,18 @@ def plot_slopes(GF_sizes_dict, species_list, exp_dict, x_label, filename = "sig_
     ax.tick_params(axis='both', which='major', labelsize=fs)
 
     orthogroups_list = list(intercepts.keys())
-    inclines_list = [inclines[orthogroup] for orthogroup in orthogroups_list]
-    OG_sizes_list = [OG_sizes[orthogroup] for orthogroup in orthogroups_list]
+    if sig_list == []:
+        inclines_list = [inclines[orthogroup] for orthogroup in orthogroups_list]
+        OG_sizes_list = [OG_sizes[orthogroup] for orthogroup in orthogroups_list]
+    else:
+        inclines_list = [inclines[orthogroup] for orthogroup in sig_list]
+        OG_sizes_list = [OG_sizes[orthogroup] for orthogroup in sig_list]
     if sig_list == []:
         colors_list = [colors[color_category] if incline > percentile_upper or incline < percentile_lower else colors["background"] for incline in inclines_list]
     else:
-        colors_list = [colors[color_category] if orthogroup in sig_list else colors["background"] for orthogroup in orthogroups_list]
+        colors_list = colors[color_category]
 
-    ax.scatter(OG_sizes_list, inclines_list, color = colors_list)
+    ax.scatter(OG_sizes_list, inclines_list, color = colors_list, s=75)
 
     if sig_list==[]:
         x_text_coord = max(OG_sizes_list)
@@ -103,7 +107,7 @@ def plot_slopes(GF_sizes_dict, species_list, exp_dict, x_label, filename = "sig_
     if sig_list==[]:
         ylab = f"regression slopes of individual orthogroups \n(color by {100-percentile}th and {percentile}th percentile, {significant_lines} of \n{len(inclines)} orthogroups outside percentile bounds)"
     else:
-        ylab = f"regression slopes of individual orthogroups \n(color by CAFE significance, {significant_lines} of {len(inclines)} orthogroups)"
+        ylab = f"regression slopes of individual orthogroups \n({significant_lines} of {len(inclines)} orthogroups are significant)"
     ax.set_ylabel(ylab, fontsize = fs)
     ax.set_xlabel("orthogroup size", fontsize = fs)
     title_ = x_label.split(" in")[0]
@@ -181,8 +185,8 @@ if __name__ == "__main__":
     orthoDB_dict_lists = OGs.parse_orthogroups_dict(orthogroups_orthoDB_filepath, orthoDB_cafe_list)
     orthoDB_dict = OGs.get_GF_sizes(orthoDB_dict_lists)
 
-    plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=genome_sizes_dict, x_label = "Genome size in Mb", filename = f"{data_dir}sig_OGs_vs_GS_inclines.png")
+    # plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=genome_sizes_dict, x_label = "Genome size in Mb", filename = f"{data_dir}sig_OGs_vs_GS_inclines.png")
     plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=genome_sizes_dict, x_label = "Genome size in Mb", filename = f"{data_dir}sig_OGs_vs_GS_inclines.png", sig_list=orthoDB_sig_list)
 
-    plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, x_label = "Repeat content in percent", filename = f"{data_dir}sig_OGs_vs_reps_inclines.png")
+    # plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, x_label = "Repeat content in percent", filename = f"{data_dir}sig_OGs_vs_reps_inclines.png")
     plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, x_label = "Repeat content in percent", filename = f"{data_dir}sig_OGs_vs_reps_inclines.png", sig_list=orthoDB_sig_list)
