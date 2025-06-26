@@ -372,6 +372,31 @@ def parse_david_group_functions(david_gene_groups_filepath:str):
     return out_dict
             
 
+def filter_flybase_table_to_single_OG(flybase_table_path:str):
+    """
+    The table contains all drosophila member or every orthogroup, but that is often redundant
+    This function filters the table to contain only one drosophila representative of every OG
+    """
+    infile_basename = flybase_table_path.split(".tsv")[0]
+    outfile_name = f"{infile_basename}_only_one_OG_member.tsv"
+    count_filtered = 0
+    with open(flybase_table_path, "r") as flybase_table, open(outfile_name, "w") as outfile:
+        lines = flybase_table.readlines()
+        all_lines = len(lines)-1 # don't count header
+        outfile.write(lines[0])
+        current_OG = ""
+        for line in lines[1:]:
+            line_list = line.split("\t")
+            orthogroup = line_list[0]
+            if orthogroup != current_OG:
+                outfile.write(line)
+                current_OG = orthogroup
+            else:
+                count_filtered += 1
+                pass
+        print(f"originally, {all_lines} genes in the file, after removing {count_filtered}, {all_lines-count_filtered} remain")
+
+
 
 if __name__ == "__main__":
 
@@ -381,6 +406,8 @@ if __name__ == "__main__":
     david_gene_groups_path = "/Users/miltr339/Box Sync/thesis writing/Milena chapter1/Sig OG Flybase IDs/DAVID-FunctionalClustering_FBgenes.txt"
     david_gene_groups_path_home = "/Users/milena/Box Sync/thesis writing/Milena chapter1/Sig OG Flybase IDs/DAVID-FunctionalClustering_FBgenes.txt"
     tree_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_only_species_names.nw"
+    flybase_table_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthoDB_sig_OGs_flybase_IDs_with_group_function.tsv"
+    
     ## Get stuff from native with functional annotations
     if False:
         print(f"\n\tnative")
@@ -404,7 +431,7 @@ if __name__ == "__main__":
 
 
     # get stuff for orthoDB annotations
-    if True:
+    if False:
         print(f"\n\torthoDB")
         orthoDB_sig_list, orthoDB_all_list =OGs.get_sig_orthogroups(sig_orthoDB)
         orthoDB_sig_OGs_dict = OGs.parse_orthogroups_dict(orthogroups_orthoDB, sig_list = orthoDB_sig_list, species="D_melanogaster")
@@ -441,10 +468,11 @@ if __name__ == "__main__":
 
             ## TODO fix this somehow 
             # orthoDB_sig_all_species = OGs.parse_orthogroups_dict(orthogroups_orthoDB)
-            not_found_transcripts = make_table_with_flybase_functions(blast_out_dict, dmel_unfiltered_annot, outfile_name = "orthoDB_sig_OGs_flybase_IDs_with_group_function.tsv", 
+            not_found_transcripts = make_table_with_flybase_functions(blast_out_dict, dmel_unfiltered_annot, 
+                outfile_name = "orthoDB_sig_OGs_flybase_IDs_with_group_function.tsv", 
                 orthogroups_dict_all = orthoDB_sig_all_species, 
                 CAFE_results_path = sig_orthoDB, 
-                get_gene_functions_from_API=False,
+                get_gene_functions_from_API=True,
                 david_gene_groups = david_gene_groups_dict, 
                 david_functions = david_gene_groups_function, 
                 species_tree = tree_path
@@ -453,4 +481,4 @@ if __name__ == "__main__":
             if len(not_found_transcripts)>0:
                 print(f"{len(not_found_transcripts)} (of {num_transcripts}) transcripts from orthoDB not found in annotation: {not_found_transcripts}")
 
-
+    filter_flybase_table_to_single_OG(flybase_table_path = flybase_table_path)
