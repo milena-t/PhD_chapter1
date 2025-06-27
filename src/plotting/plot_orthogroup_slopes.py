@@ -141,8 +141,8 @@ def plot_slopes(GF_sizes_dict, species_list, exp_dict, x_label, filename = "sig_
         filename = f"{filename}_{percentile}th_percentile_colors.png"
     else:
         filename = f"{filename}_sig_OGs_colors.png"
-        
-    plt.savefig(filename, dpi = 300, transparent = False, bbox_inches='tight')
+
+    plt.savefig(filename, dpi = 300, transparent = True, bbox_inches='tight')
     print("Figure with slopes and OG sizes saved in the current working directory directory as: "+filename)
     
     return inclines
