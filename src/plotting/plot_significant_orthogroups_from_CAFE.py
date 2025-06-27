@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from statistics import mean
 import numpy as np
+import scipy.stats
 import pandas as pd
 import parse_gff as gff
 import parse_orthogroups as OGs
@@ -176,13 +177,16 @@ def plot_gene_counts(orthogroups_dict, sig_list, all_cafe_list, species_names, a
 
 
 
-def plot_means(orthoDB, whole_genome_stats, species_names, x_category = "", filename = "mean_orthogroups_from_CAFE.png", return_table = True):
+def plot_means(orthoDB, whole_genome_stats, species_names, x_category = "", filename = "mean_orthogroups_from_CAFE.png", return_table = True, log10_GF = True):
     fs = 22 # set font size
     # plot each column in the dataframe as a line in the same plot thorugh a for-loop
     fig = plt.figure(figsize=(10,8))
     ax = fig.add_subplot(1, 1, 1)
     
-    ylab="mean number of gene family members"
+    if log10_GF:
+        ylab="log10(mean number of gene family members)"
+    else:
+        ylab="mean number of gene family members"
     # get a list of lists with [native, orthoDB] number of gene families per species
 
     legend_labels = []
@@ -195,10 +199,12 @@ def plot_means(orthoDB, whole_genome_stats, species_names, x_category = "", file
         "orthoDB_unsignificant" : "#F6B679", # light orange
         "background" : "#838383" # grey
     }
-
-    orthoDB_unsigfnicant = [orthoDB["unsignificant"][species] for species in species_names]
-    orthoDB_sigfnicant = [orthoDB["significant"][species] for species in species_names]
-
+    if log10_GF:
+        orthoDB_unsigfnicant = [np.log10(orthoDB["unsignificant"][species]) for species in species_names]
+        orthoDB_sigfnicant = [np.log10(orthoDB["significant"][species]) for species in species_names]
+    else:
+        orthoDB_unsigfnicant = [orthoDB["unsignificant"][species] for species in species_names]
+        orthoDB_sigfnicant = [orthoDB["significant"][species] for species in species_names]
     
     if len(x_category) == 0:
         ax.plot(species_names, orthoDB_sigfnicant, color = colors["orthoDB"], label = "significant")
@@ -218,16 +224,31 @@ def plot_means(orthoDB, whole_genome_stats, species_names, x_category = "", file
         ax.scatter(x_values, orthoDB_unsigfnicant, color = colors["orthoDB"], label = "unsignificant", marker = "o", facecolors = "none", s=75)
         # make regression lines
 
-        m_odb, b_odb = np.polyfit(x_values, orthoDB_sigfnicant, 1)
+        # m_odb, b_odb = np.polyfit(x_values, orthoDB_sigfnicant, 1)
+        # ax.plot(x_values, [m_odb*x_value+b_odb for x_value in x_values], color = colors["orthoDB"], linewidth = 2 , label = f"reg. line slope: {m_odb:.3f}")
+
+        result = scipy.stats.linregress(x_values, orthoDB_sigfnicant)
+        m_odb = result.slope
+        b_odb = result.intercept
+        p_val = result.pvalue
+        ax.plot(x_values, [m_odb*x_value+b_odb for x_value in x_values], color = colors["orthoDB"], linewidth = 2 , label = f"regression p-value: {p_val:.3f}")
         # print(f"native incline: {m_nat}")
         # print(f"orthoDB incline: {m_odb}")
-        ax.plot(x_values, [m_odb*x_value+b_odb for x_value in x_values], color = colors["orthoDB"], linewidth = 2 , label = f"reg. line slope: {m_odb:.3f}")
 
         x_header = x_category.replace("_", " ")
         if "repeat" in x_category:
             ax.set_xlabel(f"{x_header} in the genome", fontsize = fs)
+            if log10_GF:
+                title = f"log10(mean Gene family size) vs. Repeat content"
+            else:
+                title = f"mean Gene family size vs. Repeat content"
         if "size" in x_category:
             ax.set_xlabel(f"{x_header} in Mb", fontsize = fs)
+            if log10_GF:
+                title = f"log10(mean Gene family size) vs. Genome size"
+            else:
+                title = f"mean Gene family size vs. Genome size"
+        plt.title(title, fontsize=fs*1.2)
 
         if return_table:
             table_df = pd.DataFrame({
@@ -245,8 +266,13 @@ def plot_means(orthoDB, whole_genome_stats, species_names, x_category = "", file
     ax.legend(fontsize = fs, loc='upper left', title_fontsize = fs)
 
     ymax = max([max(orthoDB_unsigfnicant), max(orthoDB_sigfnicant)])
-    ymax = ymax*1.3
-    ax.set_ylim(0.5,ymax)
+    ymax = ymax*1.4
+    # ymin = min([min(orthoDB_unsigfnicant), min(orthoDB_sigfnicant)])
+    if log10_GF:
+        ymin = -0.09
+    else:
+        ymin = 0
+    ax.set_ylim(ymin,ymax)
 
     plt.tight_layout()
 
