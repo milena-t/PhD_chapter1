@@ -6,12 +6,13 @@ plot the slope of all of those together, and highlight OGs with high slopes
 
 import matplotlib.pyplot as plt
 import numpy as np
+import scipy.stats
 from tqdm import tqdm
 import parse_gff as gff
 import parse_orthogroups as OGs
 
 
-def plot_slopes(GF_sizes_dict, species_list, exp_dict, x_label, filename = "sig_OGs_inclines.png", color_category = "orthoDB", percentile = 99, sig_list = []):
+def plot_slopes(GF_sizes_dict, species_list, exp_dict, x_label, filename = "sig_OGs_inclines.png", color_category = "orthoDB", percentile = 99, sig_list = [], log10_GF=True, correct_bh = False):
     """
     Plot fitted linear regression for each significant orthogroup.
     exp_dict is the dictionary with the x-axis variables, like genome size or repeat content
@@ -27,25 +28,37 @@ def plot_slopes(GF_sizes_dict, species_list, exp_dict, x_label, filename = "sig_
 
     inclines = {}
     intercepts = {}
+    p_values = {}
+    std_errs = {}
+
     OG_sizes = {}
     
     for orthogroup, GF_sizes in tqdm(GF_sizes_dict.items()):
-        GF_sizes_vec = [GF_sizes[species] if species in GF_sizes else 0 for species in species_list ]
+        ## log10 transform the GF sizes??
+        if log10_GF:
+            GF_sizes_vec = [np.log10(GF_sizes[species]) if species in GF_sizes else 0 for species in species_list ]
+        else:
+            GF_sizes_vec = [GF_sizes[species] if species in GF_sizes else 0 for species in species_list ]
         x_axis_vec = [exp_dict[species] for species in species_list]
 
-        m, b = np.polyfit(x_axis_vec, GF_sizes_vec, 1)
-        inclines[orthogroup] = m
-        intercepts[orthogroup] = b
+        # m, b = np.polyfit(x_axis_vec, GF_sizes_vec, 1)
+        result = scipy.stats.linregress(x_axis_vec, GF_sizes_vec)
+        inclines[orthogroup] = result.slope
+        intercepts[orthogroup] = result.intercept
+        p_values[orthogroup] = result.pvalue
+        std_errs[orthogroup] = result.stderr
         
         OG_size = sum(list(GF_sizes.values()))
         OG_sizes[orthogroup] = OG_size
-        # if OG_size>500:
-        #     print(f" --> {orthogroup} : size {OG_size}, \n GF sizes : {GF_sizes_dict[orthogroup]}")
 
-    inclines_list = list(inclines.values())
-    percentile_upper = np.percentile(inclines_list, q = percentile)
-    percentile_lower = np.percentile(inclines_list, q = 100-percentile)
-    print(f"max incline: {max(inclines_list):.5f},\t\tmin_incline: {min(inclines_list):.5f} \n{percentile}th percentile: {percentile_upper:.5f},\t{100-percentile}th percentile: {percentile_lower:.5f}")
+        if OG_size>200:
+            print(f" --> {orthogroup} : size {OG_size}, p-value {result.pvalue:.2f}, \n\t GF sizes : {GF_sizes_dict[orthogroup]}")
+
+    if sig_list==[]:
+        inclines_list = list(inclines.values())
+        percentile_upper = np.percentile(inclines_list, q = percentile)
+        percentile_lower = np.percentile(inclines_list, q = 100-percentile)
+        print(f"max incline: {max(inclines_list):.5f},\t\tmin_incline: {min(inclines_list):.5f} \n{percentile}th percentile: {percentile_upper:.5f},\t{100-percentile}th percentile: {percentile_lower:.5f}")
 
     fs = 22 # set font size
     
@@ -82,18 +95,23 @@ def plot_slopes(GF_sizes_dict, species_list, exp_dict, x_label, filename = "sig_
     ax = fig.add_subplot(1, 1, 1)
     ax.tick_params(axis='both', which='major', labelsize=fs)
 
-    orthogroups_list = list(intercepts.keys())
     if sig_list == []:
+        orthogroups_list = list(intercepts.keys())
         inclines_list = [inclines[orthogroup] for orthogroup in orthogroups_list]
         OG_sizes_list = [OG_sizes[orthogroup] for orthogroup in orthogroups_list]
+        colors_list = [colors[color_category] if incline > percentile_upper or incline < percentile_lower else colors["background"] for incline in inclines_list]
     else:
         inclines_list = [inclines[orthogroup] for orthogroup in sig_list]
         OG_sizes_list = [OG_sizes[orthogroup] for orthogroup in sig_list]
-    if sig_list == []:
-        colors_list = [colors[color_category] if incline > percentile_upper or incline < percentile_lower else colors["background"] for incline in inclines_list]
-    else:
-        colors_list = colors[color_category]
+        if correct_bh:
+            p_values_list = [p_values[orthogroup] for orthogroup in sig_list]
+            p_values_bh = scipy.stats.false_discovery_control(p_values_list) # default benjamini-hochberg correction
+            colors_list = [colors[color_category] if p_values_bh[i] < 0.05 else colors["background"] for i in range(len(p_values_bh))] 
+        else:
+            colors_list = [colors[color_category] if p_values[orthogroup] < 0.05 else colors["background"] for orthogroup in sig_list] 
 
+    if len(inclines_list) != len(OG_sizes_list):
+        raise RuntimeError(f"slopes list: {len(inclines_list)}\nOG sizes list: {len(OG_sizes_list)}")
     ax.scatter(OG_sizes_list, inclines_list, color = colors_list, s=75)
 
     if sig_list==[]:
@@ -111,7 +129,10 @@ def plot_slopes(GF_sizes_dict, species_list, exp_dict, x_label, filename = "sig_
     ax.set_ylabel(ylab, fontsize = fs)
     ax.set_xlabel("orthogroup size", fontsize = fs)
     title_ = x_label.split(" in")[0]
-    title = f"Gene family size vs. {title_}"
+    if log10_GF:
+        title = f"log10(Gene family size) vs. {title_}"
+    else:
+        title = f"Gene family size vs. {title_}"
     plt.title(title, fontsize=fs*1.2)
 
     filename = filename.split(".png")[0]
@@ -120,7 +141,8 @@ def plot_slopes(GF_sizes_dict, species_list, exp_dict, x_label, filename = "sig_
         filename = f"{filename}_{percentile}th_percentile_colors.png"
     else:
         filename = f"{filename}_sig_OGs_colors.png"
-    plt.savefig(filename, dpi = 300, transparent = True, bbox_inches='tight')
+        
+    plt.savefig(filename, dpi = 300, transparent = False, bbox_inches='tight')
     print("Figure with slopes and OG sizes saved in the current working directory directory as: "+filename)
     
     return inclines
