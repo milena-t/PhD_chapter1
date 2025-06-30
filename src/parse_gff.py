@@ -20,15 +20,22 @@ def split_at_second_occurrence(s, char = "_"):
         species = s[:second_occurrence]
         return species
     
-def write_dict_to_file(dict, filename):
+def write_dict_to_file(dict, filename, header = "", separator = ""):
     with open(filename, "w") as outfile:
+        if header != "":
+            outfile.write(f"{header}\n")
+        if separator == "":
+            separator_ = ","
+        else:
+            separator_ = separator
+
         for key, value_list in dict.items():
             if type(value_list) == list:
                 try:
-                    value_str = ','.join(value_list)
+                    value_str = separator_.join(value_list)
                 except:
                     try:
-                        value_str = ','.join([str(element) for element in value_list])
+                        value_str = separator_.join([str(element) for element in value_list])
                     except:
                         raise RuntimeError(f"{key} : {value_list} entry could not be parsed")
             else:
@@ -36,7 +43,10 @@ def write_dict_to_file(dict, filename):
                     value_str = str(value_list)
                 except:
                     raise RuntimeError(f"{key} : {value_list} entry could not be parsed")
-            outfile.write(f"{key}:{value_str}\n")
+            if separator == "":
+                outfile.write(f"{key}:{value_str}\n")
+            else:
+                outfile.write(f"{key}{separator}{value_str}\n")
         print("file saved in current working directory as: "+filename)
     
 def read_dict_from_file(filepath):
