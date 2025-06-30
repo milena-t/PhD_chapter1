@@ -102,7 +102,7 @@ def plot_gene_counts(orthogroups_dict, sig_list, all_cafe_list, species_names, a
     
     ax = fig.add_subplot(1, 1, 1)
     
-    ylab="number of orthogroup members"
+    ylab="Gene family size"
     # get a list of lists with [native, orthoDB] number of gene families per species
 
     legend_labels = []
@@ -343,5 +343,5 @@ if __name__ == "__main__":
 
     # plot_means(native_means, orthoDB_means, whole_genome_stats, species_names)
     out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/"
-    plot_means(orthoDB_means, whole_genome_stats, species_names, x_category="genome_size", filename=f"{out_dir}uniform_mean_orthogroups_from_CAFE_vs_genome_size.png")
-    plot_means(orthoDB_means, whole_genome_stats, species_names, x_category="repeat_percentage", filename=f"{out_dir}uniform_mean_orthogroups_from_CAFE_vs_repeats.png")
+    # plot_means(orthoDB_means, whole_genome_stats, species_names, x_category="genome_size", filename=f"{out_dir}uniform_mean_orthogroups_from_CAFE_vs_genome_size.png")
+    # plot_means(orthoDB_means, whole_genome_stats, species_names, x_category="repeat_percentage", filename=f"{out_dir}uniform_mean_orthogroups_from_CAFE_vs_repeats.png")

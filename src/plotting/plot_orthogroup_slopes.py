@@ -30,6 +30,7 @@ def plot_slopes(GF_sizes_dict, species_list, exp_dict, x_label, filename = "sig_
     intercepts = {}
     p_values = {}
     std_errs = {}
+    return_dict = {}
 
     OG_sizes = {}
     
@@ -47,6 +48,7 @@ def plot_slopes(GF_sizes_dict, species_list, exp_dict, x_label, filename = "sig_
         intercepts[orthogroup] = result.intercept
         p_values[orthogroup] = result.pvalue
         std_errs[orthogroup] = result.stderr
+        return_dict[orthogroup] = [result.slope, result.pvalue]
         
         OG_size = sum(list(GF_sizes.values()))
         OG_sizes[orthogroup] = OG_size
@@ -145,7 +147,7 @@ def plot_slopes(GF_sizes_dict, species_list, exp_dict, x_label, filename = "sig_
     plt.savefig(filename, dpi = 300, transparent = True, bbox_inches='tight')
     print("Figure with slopes and OG sizes saved in the current working directory directory as: "+filename)
     
-    return inclines
+    return return_dict
 
 
 
@@ -209,8 +211,8 @@ if __name__ == "__main__":
 
     # plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=genome_sizes_dict, x_label = "Genome size in Mb", filename = f"{data_dir}sig_OGs_vs_GS_inclines.png")
     GS_inclines = plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=genome_sizes_dict, x_label = "Genome size in Mb", filename = f"{data_dir}sig_OGs_vs_GS_inclines.png", sig_list=orthoDB_sig_list)
-    gff.write_dict_to_file(GS_inclines, f"{data_dir}sig_OGs_vs_GS_inclines.tsv")
+    gff.write_dict_to_file(GS_inclines, f"{data_dir}sig_OGs_vs_GS_inclines_pvalues.tsv", header=f"OG\tslope\tp-value", separator="\t")
 
     # plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, x_label = "Repeat content in percent", filename = f"{data_dir}sig_OGs_vs_reps_inclines.png")
     TE_inclines = plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, x_label = "Repeat content in percent", filename = f"{data_dir}sig_OGs_vs_reps_inclines.png", sig_list=orthoDB_sig_list)
-    gff.write_dict_to_file(TE_inclines, f"{data_dir}sig_OGs_vs_reps_inclines.tsv")
+    gff.write_dict_to_file(TE_inclines, f"{data_dir}sig_OGs_vs_reps_inclines_pvalues.tsv", header=f"OG\tslope\tp-value", separator="\t")
