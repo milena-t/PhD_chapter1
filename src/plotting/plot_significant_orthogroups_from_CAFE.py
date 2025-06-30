@@ -208,7 +208,7 @@ def plot_means(orthoDB, whole_genome_stats, species_names, x_category = "", file
     
     if len(x_category) == 0:
         ax.plot(species_names, orthoDB_sigfnicant, color = colors["orthoDB"], label = "significant")
-        ax.plot(species_names, orthoDB_unsigfnicant, color = colors["orthoDB"], label = "unsignificant", linestyle = ":")
+        ax.plot(species_names, orthoDB_unsigfnicant, color = colors["orthoDB"], label = "non-significant", linestyle = ":")
         plt.xticks(labels=[species.replace("_", ". ") for species in species_names], ticks=species_names, rotation = 90, fontsize = fs)
         ax.grid(True)
         ax.yaxis.grid(False)
@@ -221,7 +221,7 @@ def plot_means(orthoDB, whole_genome_stats, species_names, x_category = "", file
                 print(key,value)
             raise RuntimeError(f"{x_category} is an invalid category for x axis.")
         ax.scatter(x_values, orthoDB_sigfnicant, color = colors["orthoDB"], label = "significant", s=75)
-        ax.scatter(x_values, orthoDB_unsigfnicant, color = colors["background"], label = "unsignificant", s=75) # , marker = "o", facecolors = "none"
+        ax.scatter(x_values, orthoDB_unsigfnicant, color = colors["background"], label = "non-significant", s=75) # , marker = "o", facecolors = "none"
         # make regression lines
 
         # m_odb, b_odb = np.polyfit(x_values, orthoDB_sigfnicant, 1)
