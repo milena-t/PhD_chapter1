@@ -421,13 +421,50 @@ def read_slopes_table(table_path:str):
     return table_dict
 
 
-def add_cols_to_flybase_table(flybase_table_path:str, slopes_table_path:str, col_name_prefix, insert_after_named_col = ""):
+def add_cols_to_flybase_table(flybase_table_path:str, slopes_table_path:str, col_name_prefix:str, insert_after_named_col = ""):
     """
     Add columns for the slopes and p-values from linear models from the tables generated in PhD_chapter1/src/plotting/plot_orthogroup_slopes.py
     if a named col is added, the new columns will be inserted after it.
     """
     slopes_table_dict = read_slopes_table(slopes_table_path)
+    slopes_headers = []
+    with open(slopes_table_path, "r") as slopes:
+        slopes_lines = slopes.readlines()
+        slopes_headers = slopes_lines[0].strip().split("\t")
+    slopes_headers = [f"{col_name_prefix}_{header}" for header in slopes_headers]
 
+    outfile_name = flybase_table_path[:-4]
+    outfile_name = f"{outfile_name}_lm_{col_name_prefix}.tsv"
+
+    with open(flybase_table_path, "r") as flybase_table, open(outfile_name, "w") as outfile:
+        flybase_lines = flybase_table.readlines()
+        header = flybase_lines[0].strip().split("\t")
+        if not insert_after_named_col in header:
+            print(f"{insert_after_named_col} not in {header} \n --> columns inserted at the end")
+            insert_index = len(header)
+        else:
+            try:
+                insert_index = header.index(insert_after_named_col) # +1
+            except:
+                raise RuntimeError(f"{insert_after_named_col} not found in {header}")
+        header_insert = header[:insert_index] + slopes_headers + header[insert_index:]
+        header = "\t".join(header_insert)
+        header = f"{header}\n"
+        outfile.write(header)
+
+        for flyblase_line in flybase_lines[1:]:
+            
+            flyblase_list = flyblase_line.strip().split("\t")
+            OG_id = flyblase_list[0]
+            slopes = slopes_table_dict[OG_id]
+
+            flybase_insert = flyblase_list[:insert_index] + slopes + flyblase_list[insert_index:]
+            flybase_insert_line = "\t".join(flybase_insert)
+            flybase_insert_line = f"{flybase_insert_line}\n"
+            outfile.write(flybase_insert_line)
+
+    print(f" --> file written to {outfile_name}")
+    return outfile_name
 
 
 if __name__ == "__main__":
@@ -515,6 +552,20 @@ if __name__ == "__main__":
 
             if len(not_found_transcripts)>0:
                 print(f"{len(not_found_transcripts)} (of {num_transcripts}) transcripts from orthoDB not found in annotation: {not_found_transcripts}")
+
+    ### TODO investigate why e.g. N0.HOG0000008 is missing in the output
+    TE_only_outfile = add_cols_to_flybase_table(
+        flybase_table_path = flybase_table_path_one_OG_member, 
+        slopes_table_path = GF_vs_rep_slopes, 
+        col_name_prefix = "repeat_correlation", 
+        insert_after_named_col = "Gene_Name")
+
+    TE_and_GS_outfile = add_cols_to_flybase_table(
+        flybase_table_path = TE_only_outfile, 
+        slopes_table_path = GF_vs_GS_slopes, 
+        col_name_prefix = "GS", 
+        insert_after_named_col = "Gene_Name")
+
 
     # filter_flybase_table_to_single_OG(flybase_table_path = flybase_table_path)
     # filter_flybase_table_to_single_OG(flybase_table_path = flybase_table_path, min_delta_GF=10)
