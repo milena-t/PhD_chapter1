@@ -102,19 +102,39 @@ def plot_slopes(GF_sizes_dict, species_list, exp_dict, x_label, filename = "sig_
         inclines_list = [inclines[orthogroup] for orthogroup in orthogroups_list]
         OG_sizes_list = [OG_sizes[orthogroup] for orthogroup in orthogroups_list]
         colors_list = [colors[color_category] if incline > percentile_upper or incline < percentile_lower else colors["background"] for incline in inclines_list]
+        if len(inclines_list) != len(OG_sizes_list):
+            raise RuntimeError(f"slopes list: {len(inclines_list)}\nOG sizes list: {len(OG_sizes_list)}")
+        ax.scatter(OG_sizes_list, inclines_list, color = colors_list, s=75)
     else:
-        inclines_list = [inclines[orthogroup] for orthogroup in sig_list]
-        OG_sizes_list = [OG_sizes[orthogroup] for orthogroup in sig_list]
-        if correct_bh:
-            p_values_list = [p_values[orthogroup] for orthogroup in sig_list]
-            p_values_bh = scipy.stats.false_discovery_control(p_values_list) # default benjamini-hochberg correction
-            colors_list = [colors[color_category] if p_values_bh[i] < 0.05 else colors["background"] for i in range(len(p_values_bh))] 
-        else:
-            colors_list = [colors[color_category] if p_values[orthogroup] < 0.05 else colors["background"] for orthogroup in sig_list] 
+        # inclines_list = [inclines[orthogroup] for orthogroup in sig_list]
+        inclines_sig_list = []
+        inclines_unsig_list = []
+        # OG_sizes_list = [OG_sizes[orthogroup] for orthogroup in sig_list]
+        OG_sizes_sig_list = []
+        OG_sizes_unsig_list = []
+        for orthogroup in sig_list:
+            p_val = p_values[orthogroup]
+            if p_val<0.05:
+                inclines_sig_list.append(inclines[orthogroup])
+                OG_sizes_sig_list.append(OG_sizes[orthogroup])
+            else:   
+                inclines_unsig_list.append(inclines[orthogroup])
+                OG_sizes_unsig_list.append(OG_sizes[orthogroup])
+        
+        ax.scatter(OG_sizes_sig_list, inclines_sig_list, color = colors[color_category], s=75, label = "p < 0.05")
+        ax.scatter(OG_sizes_unsig_list, inclines_unsig_list, color = colors[f"{color_category}_unsignificant"], s=30, marker = "x", label = "p > 0.05")# with marker="o" use facecolors = "none" to make an un-filled circle
 
-    if len(inclines_list) != len(OG_sizes_list):
-        raise RuntimeError(f"slopes list: {len(inclines_list)}\nOG sizes list: {len(OG_sizes_list)}")
-    ax.scatter(OG_sizes_list, inclines_list, color = colors_list, s=75)
+        # if correct_bh:
+        #     p_values_list = [p_values[orthogroup] for orthogroup in sig_list]
+        #     p_values_bh = scipy.stats.false_discovery_control(p_values_list) # default benjamini-hochberg correction
+        #     colors_list = [colors[color_category] if p_values_bh[i] < 0.05 else colors["background"] for i in range(len(p_values_bh))] 
+        # else:
+        #     colors_list = [colors[color_category] if p_values[orthogroup] < 0.05 else colors["background"] for orthogroup in sig_list] 
+            
+               
+    
+    # ax.scatter(OG_sizes_list, inclines_list, color = colors_list, s=75)
+    
 
     if sig_list==[]:
         x_text_coord = max(OG_sizes_list)
@@ -136,6 +156,7 @@ def plot_slopes(GF_sizes_dict, species_list, exp_dict, x_label, filename = "sig_
     else:
         title = f"Gene family size vs. {title_}"
     plt.title(title, fontsize=fs*1.2)
+    ax.legend(fontsize = fs, loc='lower right', title_fontsize = fs)
 
     filename = filename.split(".png")[0]
     filename = f"{filename}_vs_OG_size"

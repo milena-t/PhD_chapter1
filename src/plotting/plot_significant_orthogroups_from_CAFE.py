@@ -221,7 +221,7 @@ def plot_means(orthoDB, whole_genome_stats, species_names, x_category = "", file
                 print(key,value)
             raise RuntimeError(f"{x_category} is an invalid category for x axis.")
         ax.scatter(x_values, orthoDB_sigfnicant, color = colors["orthoDB"], label = "significant", s=75)
-        ax.scatter(x_values, orthoDB_unsigfnicant, color = colors["orthoDB"], label = "unsignificant", marker = "o", facecolors = "none", s=75)
+        ax.scatter(x_values, orthoDB_unsigfnicant, color = colors["background"], label = "unsignificant", s=75) # , marker = "o", facecolors = "none"
         # make regression lines
 
         # m_odb, b_odb = np.polyfit(x_values, orthoDB_sigfnicant, 1)
@@ -343,5 +343,5 @@ if __name__ == "__main__":
 
     # plot_means(native_means, orthoDB_means, whole_genome_stats, species_names)
     out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/"
-    # plot_means(orthoDB_means, whole_genome_stats, species_names, x_category="genome_size", filename=f"{out_dir}uniform_mean_orthogroups_from_CAFE_vs_genome_size.png")
-    # plot_means(orthoDB_means, whole_genome_stats, species_names, x_category="repeat_percentage", filename=f"{out_dir}uniform_mean_orthogroups_from_CAFE_vs_repeats.png")
+    plot_means(orthoDB_means, whole_genome_stats, species_names, x_category="genome_size", filename=f"{out_dir}uniform_mean_orthogroups_from_CAFE_vs_genome_size.png")
+    plot_means(orthoDB_means, whole_genome_stats, species_names, x_category="repeat_percentage", filename=f"{out_dir}uniform_mean_orthogroups_from_CAFE_vs_repeats.png")
