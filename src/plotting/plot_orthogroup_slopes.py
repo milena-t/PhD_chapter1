@@ -108,10 +108,11 @@ def plot_slopes(GF_sizes_dict, species_list, exp_dict, x_label, filename = "sig_
     else:
         # inclines_list = [inclines[orthogroup] for orthogroup in sig_list]
         inclines_sig_list = []
-        inclines_unsig_list = []
-        # OG_sizes_list = [OG_sizes[orthogroup] for orthogroup in sig_list]
         OG_sizes_sig_list = []
+        # OG_sizes_list = [OG_sizes[orthogroup] for orthogroup in sig_list]
+        inclines_unsig_list = []
         OG_sizes_unsig_list = []
+        
         for orthogroup in sig_list:
             p_val = p_values[orthogroup]
             if p_val<0.05:
