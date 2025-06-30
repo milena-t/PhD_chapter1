@@ -406,6 +406,29 @@ def filter_flybase_table_to_single_OG(flybase_table_path:str, min_delta_GF=0):
         print(f"originally, {all_lines} genes in the file, after removing {count_filtered}, {all_lines-count_filtered} remain")
 
 
+def read_slopes_table(table_path:str):
+    """
+    read table output from plot_slopes() in src/plotting/plot_orthogroup_slopes.py
+    into a dictionary 
+    { orthogroup_ID : [ slope ,  p-value ] }
+    """
+    table_dict = {}
+    with open(table_path, "r") as table_file:
+        table_lines = table_file.readlines()
+        for table_line in table_lines[1:]:
+            table_line = table_line.strip().split("\t")
+            table_dict[table_line[0]] = table_line[1:]
+    return table_dict
+
+
+def add_cols_to_flybase_table(flybase_table_path:str, slopes_table_path:str, col_name_prefix, insert_after_named_col = ""):
+    """
+    Add columns for the slopes and p-values from linear models from the tables generated in PhD_chapter1/src/plotting/plot_orthogroup_slopes.py
+    if a named col is added, the new columns will be inserted after it.
+    """
+    slopes_table_dict = read_slopes_table(slopes_table_path)
+
+
 
 if __name__ == "__main__":
 
@@ -416,7 +439,10 @@ if __name__ == "__main__":
     david_gene_groups_path_home = "/Users/milena/Box Sync/thesis writing/Milena chapter1/Sig OG Flybase IDs/DAVID-FunctionalClustering_FBgenes.txt"
     tree_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_only_species_names.nw"
     flybase_table_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthoDB_sig_OGs_flybase_IDs_with_group_function.tsv"
-    
+    flybase_table_path_one_OG_member = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthoDB_sig_OGs_flybase_IDs_with_group_function_only_one_OG_member.tsv"
+    GF_vs_rep_slopes = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/sig_OGs_vs_reps_inclines_pvalues.tsv"
+    GF_vs_GS_slopes = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/sig_OGs_vs_GS_inclines_pvalues.tsv"
+
     ## Get stuff from native with functional annotations
     if False:
         print(f"\n\tnative")
@@ -490,5 +516,5 @@ if __name__ == "__main__":
             if len(not_found_transcripts)>0:
                 print(f"{len(not_found_transcripts)} (of {num_transcripts}) transcripts from orthoDB not found in annotation: {not_found_transcripts}")
 
-    filter_flybase_table_to_single_OG(flybase_table_path = flybase_table_path)
-    filter_flybase_table_to_single_OG(flybase_table_path = flybase_table_path, min_delta_GF=10)
+    # filter_flybase_table_to_single_OG(flybase_table_path = flybase_table_path)
+    # filter_flybase_table_to_single_OG(flybase_table_path = flybase_table_path, min_delta_GF=10)
