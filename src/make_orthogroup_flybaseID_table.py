@@ -527,7 +527,7 @@ if __name__ == "__main__":
         makeblastdb -in D_melanogaster.faa -dbtype prot     # native annotation for reference db
         blastp -query PhD_chapter1/Dmel_transcripts_from_sig_OGs.fasta -db /Users/miltr339/work/native_proteinseqs/D_melanogaster.faa -out /Users/miltr339/work/PhD_code/Dmel_oDB_vs_nat.out -outfmt 6 -num_threads 5 -evalue 1e-10
         """
-        if True:
+        if False:
             blast_outfile = "/Users/miltr339/work/PhD_code/Dmel_oDB_vs_nat.out"
             blast_out_dict = parse_blast_outfile(blast_outfile)
 
