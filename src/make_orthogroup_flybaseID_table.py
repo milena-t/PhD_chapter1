@@ -200,15 +200,15 @@ def make_table_with_flybase_functions(orthogroup_dict_species, drosophila_gff_pa
                 except:
                     cafe_p = "None"
                 
+                outfile_string = f"{OG_id}\n"
                 if orthogroups_dict_all =={} and david_gene_groups =={} and david_functions == {}:
                     outfile_string = f"{OG_id}\t{transcript}\t{flybase}\t{flybase_summary}\t{cafe_p}\n"
                 elif orthogroups_dict_all !={} and david_gene_groups =={} and david_functions == {}:
                     outfile_string = f"{OG_id}\t{transcript}\t{flybase}\t{flybase_summary}\t{cafe_p}\t{GF_size}\n"
                 elif orthogroups_dict_all !={} and david_gene_groups !={}:
                     outfile_string = f"{OG_id}\t{gene_group}\t{group_function}\t{gene_name}\t{GF_size}\t{transcript}\t{flybase}\t{flybase_summary}\t{cafe_p}\n"
-                
+                    
                 outfile.write(f"{outfile_string}")
-                print(f"{OG_id} --> no transcripts but written to outfile")
 
             else:
                 # for weird parsing stuff i did like a year ago the transcript IDs in the native drosophila annotation have leading "__" that should be removed
@@ -587,7 +587,7 @@ if __name__ == "__main__":
                 outfile_name = "orthoDB_sig_OGs_flybase_IDs_with_group_function.tsv", 
                 orthogroups_dict_all = orthoDB_sig_all_species, 
                 CAFE_results_path = sig_orthoDB, 
-                get_gene_functions_from_API=False,
+                get_gene_functions_from_API=True,
                 david_gene_groups = david_gene_groups_dict, 
                 david_functions = david_gene_groups_function, 
                 species_tree = tree_path
