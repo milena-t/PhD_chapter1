@@ -153,16 +153,16 @@ def make_table_with_flybase_functions(orthogroup_dict_species, drosophila_gff_pa
         
         # write headers according to input files
         if orthogroups_dict_all =={} and david_gene_groups == {} and david_functions == {}:
-            outfile.write("Orthogroup_ID\ttranscript_ID_native\tFlybase\tFlybase_summary\tCAFE_p-value\n")
+            outfile.write("Orthogroup_ID\tCAFE_p-value\ttranscript_ID_native\tFlybase\tFlybase_summary\n")
         elif orthogroups_dict_all !={} and david_gene_groups == {} and david_functions == {}:
             species_header = "\t".join([f"{species}" for species in species_list])
-            outfile.write(f"Orthogroup_ID\t{species_header}\tmax_delta_GF\ttranscript_ID_native\tFlybase\tFlybase_summary\tCAFE_p-value\n")
+            outfile.write(f"Orthogroup_ID\tCAFE_p-value\t{species_header}\tmax_delta_GF\ttranscript_ID_native\tFlybase\tFlybase_summary\n")
         elif orthogroups_dict_all !={} and david_gene_groups != {} and david_functions == {}:
             species_header = "\t".join([f"{species}" for species in species_list])
-            outfile.write(f"Orthogroup_ID\tGene_Group\tGene_Name\t{species_header}\tmax_delta_GF\ttranscript_ID_native\tFlybase\tFlybase_summary\tCAFE_p-value\n")
+            outfile.write(f"Orthogroup_ID\tCAFE_p-value\tGene_Group\tGene_Name\t{species_header}\tmax_delta_GF\ttranscript_ID_native\tFlybase\tFlybase_summary\n")
         elif orthogroups_dict_all !={} and david_gene_groups != {} and david_functions != {}:
             species_header = "\t".join([f"{species}" for species in species_list])
-            outfile.write(f"Orthogroup_ID\tGene_Group\tGroup_function\tGene_Name\t{species_header}\tmax_delta_GF\ttranscript_ID_native\tFlybase\tFlybase_summary\tCAFE_p-value\n")
+            outfile.write(f"Orthogroup_ID\tCAFE_p-value\tGene_Group\tGroup_function\tGene_Name\t{species_header}\tmax_delta_GF\ttranscript_ID_native\tFlybase\tFlybase_summary\n")
 
 
         for OG_id, transcripts_list in tqdm(orthogroup_dict_species.items()):
@@ -202,11 +202,11 @@ def make_table_with_flybase_functions(orthogroup_dict_species, drosophila_gff_pa
                 
                 outfile_string = f"{OG_id}\n"
                 if orthogroups_dict_all =={} and david_gene_groups =={} and david_functions == {}:
-                    outfile_string = f"{OG_id}\t{transcript}\t{flybase}\t{flybase_summary}\t{cafe_p}\n"
+                    outfile_string = f"{OG_id}\t{cafe_p}\t{transcript}\t{flybase}\t{flybase_summary}\n"
                 elif orthogroups_dict_all !={} and david_gene_groups =={} and david_functions == {}:
-                    outfile_string = f"{OG_id}\t{transcript}\t{flybase}\t{flybase_summary}\t{cafe_p}\t{GF_size}\n"
+                    outfile_string = f"{OG_id}\t{cafe_p}\t{transcript}\t{flybase}\t{flybase_summary}\t{cafe_p}\t{GF_size}\n"
                 elif orthogroups_dict_all !={} and david_gene_groups !={}:
-                    outfile_string = f"{OG_id}\t{gene_group}\t{group_function}\t{gene_name}\t{GF_size}\t{transcript}\t{flybase}\t{flybase_summary}\t{cafe_p}\n"
+                    outfile_string = f"{OG_id}\t{cafe_p}\t{gene_group}\t{group_function}\t{gene_name}\t{GF_size}\t{transcript}\t{flybase}\t{flybase_summary}\n"
                     
                 outfile.write(f"{outfile_string}")
 
@@ -248,9 +248,9 @@ def make_table_with_flybase_functions(orthogroup_dict_species, drosophila_gff_pa
 
                     # Orthogroup_ID transcript_ID_native Flybase Flybase_summary CAFE_p-value max_delta_GF
                     if orthogroups_dict_all =={} and david_gene_groups =={} and david_functions == {}:
-                        outfile_string = f"{OG_id}\t{transcript}\t{flybase}\t{flybase_summary}\t{cafe_p}\n"
+                        outfile_string = f"{OG_id}\t{cafe_p}\t{transcript}\t{flybase}\t{flybase_summary}\n"
                     elif orthogroups_dict_all !={} and david_gene_groups =={} and david_functions == {}:
-                        outfile_string = f"{OG_id}\t{transcript}\t{flybase}\t{flybase_summary}\t{cafe_p}\t{GF_size}\n"
+                        outfile_string = f"{OG_id}\t{cafe_p}\t{transcript}\t{flybase}\t{flybase_summary}\t{GF_size}\n"
                     elif orthogroups_dict_all !={} and david_gene_groups !={}:
                         gene_groups_list = []
                         try:
@@ -273,7 +273,7 @@ def make_table_with_flybase_functions(orthogroup_dict_species, drosophila_gff_pa
                         else:
                             group_function = "None"
                         # Orthogroup_ID Gene_Group Gene_Name {species_header} transcript_ID_native Flybase Flybase_summary CAFE_p-value max_delta_GF 
-                        outfile_string = f"{OG_id}\t{gene_group}\t{group_function}\t{gene_name}\t{GF_size}\t{transcript}\t{flybase}\t{flybase_summary}\t{cafe_p}\n"
+                        outfile_string = f"{OG_id}\t{cafe_p}\t{gene_group}\t{group_function}\t{gene_name}\t{GF_size}\t{transcript}\t{flybase}\t{flybase_summary}\n"
                     outfile.write(f"{outfile_string}")
     
     if len(unassigned_FB_IDs):
