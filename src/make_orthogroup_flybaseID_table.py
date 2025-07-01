@@ -447,6 +447,8 @@ def filter_flybase_table_to_single_OG(flybase_table_path:str, min_delta_GF=0):
                 count_filtered += 1
                 pass
         print(f"originally, {all_lines} genes in the file, after removing {count_filtered}, {all_lines-count_filtered} remain")
+    
+    return outfile_name
 
 
 def read_slopes_table(table_path:str):
@@ -473,7 +475,7 @@ def add_cols_to_flybase_table(flybase_table_path:str, slopes_table_path:str, col
     slopes_headers = []
     with open(slopes_table_path, "r") as slopes:
         slopes_lines = slopes.readlines()
-        slopes_headers = slopes_lines[0].strip().split("\t")
+        slopes_headers = slopes_lines[0].strip().split("\t")[1:]
     slopes_headers = [f"{col_name_prefix}_{header}" for header in slopes_headers]
 
     outfile_name = flybase_table_path[:-4]
@@ -519,7 +521,7 @@ if __name__ == "__main__":
     david_gene_groups_path_home = "/Users/milena/Box Sync/thesis writing/Milena chapter1/Sig OG Flybase IDs/DAVID-FunctionalClustering_FBgenes.txt"
     tree_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_only_species_names.nw"
     flybase_table_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthoDB_sig_OGs_flybase_IDs_with_group_function.tsv"
-    flybase_table_path_one_OG_member = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthoDB_sig_OGs_flybase_IDs_with_group_function_only_one_OG_member.tsv"
+    # flybase_table_path_one_OG_member = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthoDB_sig_OGs_flybase_IDs_with_group_function_only_one_OG_member.tsv"
     GF_vs_rep_slopes = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/sig_OGs_vs_reps_inclines_pvalues.tsv"
     GF_vs_GS_slopes = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/sig_OGs_vs_GS_inclines_pvalues.tsv"
 
@@ -570,7 +572,7 @@ if __name__ == "__main__":
         makeblastdb -in D_melanogaster.faa -dbtype prot     # native annotation for reference db
         blastp -query PhD_chapter1/Dmel_transcripts_from_sig_OGs.fasta -db /Users/miltr339/work/native_proteinseqs/D_melanogaster.faa -out /Users/miltr339/work/PhD_code/Dmel_oDB_vs_nat.out -outfmt 6 -num_threads 5 -evalue 1e-10
         """
-        if True:
+        if False:
             blast_outfile = "/Users/miltr339/work/PhD_code/Dmel_oDB_vs_nat.out"
             blast_out_dict = parse_blast_outfile(blast_outfile, query_fasta="PhD_chapter1/Dmel_transcripts_from_sig_OGs.fasta")
 
@@ -596,7 +598,10 @@ if __name__ == "__main__":
             if len(not_found_transcripts)>0:
                 print(f"{len(not_found_transcripts)} (of {num_transcripts}) transcripts from orthoDB not found in annotation: {not_found_transcripts}")
 
-    if False:
+    if True:
+
+        flybase_table_path_one_OG_member = filter_flybase_table_to_single_OG(flybase_table_path)
+
         TE_only_outfile = add_cols_to_flybase_table(
             flybase_table_path = flybase_table_path_one_OG_member, 
             slopes_table_path = GF_vs_rep_slopes, 
@@ -606,7 +611,7 @@ if __name__ == "__main__":
         TE_and_GS_outfile = add_cols_to_flybase_table(
             flybase_table_path = TE_only_outfile, 
             slopes_table_path = GF_vs_GS_slopes, 
-            col_name_prefix = "GS", 
+            col_name_prefix = "GS_correlation", 
             insert_after_named_col = "Gene_Name")
 
 
