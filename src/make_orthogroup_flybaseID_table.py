@@ -148,9 +148,10 @@ def make_table_with_flybase_functions(orthogroup_dict_species, drosophila_gff_pa
 
     flybase_url = "https://api.flybase.org/api/v1.0/gene/summaries/auto/" ## add gene ID afterwards
 
-    # write headers according to input files
     outfile_name = f"/Users/miltr339/work/PhD_code/PhD_chapter1/data/{outfile_name}"
     with open(outfile_name, "w") as outfile:
+        
+        # write headers according to input files
         if orthogroups_dict_all =={} and david_gene_groups == {} and david_functions == {}:
             outfile.write("Orthogroup_ID\ttranscript_ID_native\tFlybase\tFlybase_summary\tCAFE_p-value\n")
         elif orthogroups_dict_all !={} and david_gene_groups == {} and david_functions == {}:
@@ -165,15 +166,14 @@ def make_table_with_flybase_functions(orthogroup_dict_species, drosophila_gff_pa
 
 
         for OG_id, transcripts_list in tqdm(orthogroup_dict_species.items()):
-            print(OG_id)
-            # for weird parsing stuff i did like a year ago the transcript IDs in the native drosophila annotation have leading "__" that should be removed
-            # also remove the tailing "_1" 
-            transcripts_list = [transcript.replace("__", "")[:-2] for transcript in transcripts_list]
-            
+
             if OGs_list != [] and OG_id not in OGs_list:
+                # not significant orthogroups are skipped 
+                print(f"\tskipped {OG_id}")
                 continue
             
             if orthogroups_dict_all != {}:
+                # parse gene family sizes for the output
                 OG_species = orthogroups_dict_all[OG_id]
                 GF_size = []
                 for species in species_list:
@@ -186,66 +186,96 @@ def make_table_with_flybase_functions(orthogroup_dict_species, drosophila_gff_pa
                 GF_size = [str(size) for size in GF_size]
                 GF_size = "\t".join(GF_size) + f"\t{delta_GF}"
             
-            for transcript in transcripts_list:
-                try:
-                    attributes = drosophila_attributes_dict[transcript]
-                except:
-                    raise RuntimeError(f"the transcript ID {transcript} listed in the orthofinder output does not appear in the annotation")
-                    attributes = {}
-                    not_found_sig_IDs.append(transcript)
-                
-                flybase = attributes["Dbxref"].split(":FBgn")[-1]
-                flybase = f"FBgn{flybase}".split(",")[0]
-                if get_gene_functions_from_API:
-
-                    response = req.get(f"{flybase_url}{flybase}")
-
-                    if response.status_code == 200:
-                        api_data = response.json()
-                        flybase_summary = api_data["resultset"]["result"][0]["summary"]
-                        flybase_summary = flybase_summary.strip() # sometimes they end with a tab to fuck with me
-                        # print(flybase_summary)
-                    else:
-                        # print(f"{flybase_url}{flybase}")
-                        flybase_summary = "None"
-                        # raise RuntimeError(f"flybase didn't work for {OG_id}, {flybase}")
-                else:
-                    flybase_summary = "None"
-
+            if len(transcripts_list) == 0:
+                # if the orthoDB drosopila protein didn't have a match in the native annotation 
+                # and therefore has no functional annotation, so set all the stuff manually
+                gene_group = "None"
+                group_function = "None"
+                gene_name = "No_flybase_match"
+                transcript = "No_flybase_transcript_match"
+                flybase = "None"
+                flybase_summary = "None"
                 try:
                     cafe_p = CAFE_results[OG_id]
                 except:
                     cafe_p = "None"
-
-                # Orthogroup_ID transcript_ID_native Flybase Flybase_summary CAFE_p-value max_delta_GF
+                
                 if orthogroups_dict_all =={} and david_gene_groups =={} and david_functions == {}:
                     outfile_string = f"{OG_id}\t{transcript}\t{flybase}\t{flybase_summary}\t{cafe_p}\n"
                 elif orthogroups_dict_all !={} and david_gene_groups =={} and david_functions == {}:
                     outfile_string = f"{OG_id}\t{transcript}\t{flybase}\t{flybase_summary}\t{cafe_p}\t{GF_size}\n"
                 elif orthogroups_dict_all !={} and david_gene_groups !={}:
-                    gene_groups_list = []
-                    try:
-                        gene_groups_list, gene_name = david_gene_groups[flybase]
-                        gene_group = ",".join(gene_groups_list)
-                    except:
-                        gene_group = "None"
-                        gene_name = "None"
-                        unassigned_FB_IDs.append(flybase)
-                        # try to parse the gene name from the flybase API summary
-                        if "The gene" in flybase_summary[0:10]:
-                            gene_name =flybase_summary.split("The gene ")[-1]
-                            gene_name = gene_name.split(" is referred to")[0]
-                            gene_name = f"{gene_name} (from API summary)"
-                    if len(gene_groups_list)>0:
-                        try:
-                            group_function = ",".join([david_functions[gene_group] for gene_group in gene_groups_list])
-                        except:
-                            group_function = "None"
-                    else:
-                        group_function = "None"
-                    # Orthogroup_ID Gene_Group Gene_Name {species_header} transcript_ID_native Flybase Flybase_summary CAFE_p-value max_delta_GF 
                     outfile_string = f"{OG_id}\t{gene_group}\t{group_function}\t{gene_name}\t{GF_size}\t{transcript}\t{flybase}\t{flybase_summary}\t{cafe_p}\n"
+                
                 outfile.write(f"{outfile_string}")
+                print(f"{OG_id} --> no transcripts but written to outfile")
+
+            else:
+                # for weird parsing stuff i did like a year ago the transcript IDs in the native drosophila annotation have leading "__" that should be removed
+                # also remove the tailing "_1" 
+                transcripts_list = [transcript.replace("__", "")[:-2] for transcript in transcripts_list]
+            
+                for transcript in transcripts_list:
+                    try:
+                        attributes = drosophila_attributes_dict[transcript]
+                    except:
+                        raise RuntimeError(f"the transcript ID {transcript} listed in the orthofinder output does not appear in the annotation")
+                        attributes = {}
+                        not_found_sig_IDs.append(transcript)
+                    
+                    flybase = attributes["Dbxref"].split(":FBgn")[-1]
+                    flybase = f"FBgn{flybase}".split(",")[0]
+                    if get_gene_functions_from_API:
+
+                        response = req.get(f"{flybase_url}{flybase}")
+
+                        if response.status_code == 200:
+                            api_data = response.json()
+                            flybase_summary = api_data["resultset"]["result"][0]["summary"]
+                            flybase_summary = flybase_summary.strip() # sometimes they end with a tab to fuck with me
+                            # print(flybase_summary)
+                        else:
+                            # print(f"{flybase_url}{flybase}")
+                            flybase_summary = "None"
+                            # raise RuntimeError(f"flybase didn't work for {OG_id}, {flybase}")
+                    else:
+                        flybase_summary = "None"
+
+                    try:
+                        cafe_p = CAFE_results[OG_id]
+                    except:
+                        cafe_p = "None"
+
+                    # Orthogroup_ID transcript_ID_native Flybase Flybase_summary CAFE_p-value max_delta_GF
+                    if orthogroups_dict_all =={} and david_gene_groups =={} and david_functions == {}:
+                        outfile_string = f"{OG_id}\t{transcript}\t{flybase}\t{flybase_summary}\t{cafe_p}\n"
+                    elif orthogroups_dict_all !={} and david_gene_groups =={} and david_functions == {}:
+                        outfile_string = f"{OG_id}\t{transcript}\t{flybase}\t{flybase_summary}\t{cafe_p}\t{GF_size}\n"
+                    elif orthogroups_dict_all !={} and david_gene_groups !={}:
+                        gene_groups_list = []
+                        try:
+                            gene_groups_list, gene_name = david_gene_groups[flybase]
+                            gene_group = ",".join(gene_groups_list)
+                        except:
+                            gene_group = "None"
+                            gene_name = "None"
+                            unassigned_FB_IDs.append(flybase)
+                            # try to parse the gene name from the flybase API summary
+                            if "The gene" in flybase_summary[0:10]:
+                                gene_name =flybase_summary.split("The gene ")[-1]
+                                gene_name = gene_name.split(" is referred to")[0]
+                                gene_name = f"{gene_name} (from API summary)"
+                        if len(gene_groups_list)>0:
+                            try:
+                                group_function = ",".join([david_functions[gene_group] for gene_group in gene_groups_list])
+                            except:
+                                group_function = "None"
+                        else:
+                            group_function = "None"
+                        # Orthogroup_ID Gene_Group Gene_Name {species_header} transcript_ID_native Flybase Flybase_summary CAFE_p-value max_delta_GF 
+                        outfile_string = f"{OG_id}\t{gene_group}\t{group_function}\t{gene_name}\t{GF_size}\t{transcript}\t{flybase}\t{flybase_summary}\t{cafe_p}\n"
+                    outfile.write(f"{outfile_string}")
+    
     if len(unassigned_FB_IDs):
         print(f"{len(unassigned_FB_IDs)} Flybase Gene IDs in the orthogroups were not found in David")
     print(f"flybase IDs written to {outfile_name} in the data directory.")
@@ -324,7 +354,6 @@ def parse_blast_outfile(blast_filepath, query_fasta:str = "", min_seq_ident = 90
                 out_dict[orthogroup] = []
         
         return(out_dict)
-
 
 
 def parse_david_gene_groups_file(david_gene_groups_filepath:str):
@@ -543,7 +572,7 @@ if __name__ == "__main__":
         """
         if True:
             blast_outfile = "/Users/miltr339/work/PhD_code/Dmel_oDB_vs_nat.out"
-            blast_out_dict = parse_blast_outfile(blast_outfile, )
+            blast_out_dict = parse_blast_outfile(blast_outfile, query_fasta="PhD_chapter1/Dmel_transcripts_from_sig_OGs.fasta")
 
             num_transcripts = 0
             for og, tr_list in blast_out_dict.items():
@@ -552,11 +581,9 @@ if __name__ == "__main__":
             david_gene_groups_dict = parse_david_gene_groups_file(david_gene_groups_path)
             david_gene_groups_function = parse_david_group_functions(david_gene_groups_path)
 
-            ## TODO fix this somehow 
-            orthoDB_sig_all_species = OGs.parse_orthogroups_dict(orthogroups_orthoDB, )
             not_found_transcripts = make_table_with_flybase_functions(
-                orthogroup_dict_species= blast_out_dict, 
-                drosophila_gff_path= dmel_unfiltered_annot, 
+                orthogroup_dict_species = blast_out_dict, 
+                drosophila_gff_path = dmel_unfiltered_annot, 
                 outfile_name = "orthoDB_sig_OGs_flybase_IDs_with_group_function.tsv", 
                 orthogroups_dict_all = orthoDB_sig_all_species, 
                 CAFE_results_path = sig_orthoDB, 
@@ -570,7 +597,6 @@ if __name__ == "__main__":
                 print(f"{len(not_found_transcripts)} (of {num_transcripts}) transcripts from orthoDB not found in annotation: {not_found_transcripts}")
 
     if False:
-        ### TODO investigate why e.g. N0.HOG0000008 is missing in the output
         TE_only_outfile = add_cols_to_flybase_table(
             flybase_table_path = flybase_table_path_one_OG_member, 
             slopes_table_path = GF_vs_rep_slopes, 
