@@ -165,6 +165,7 @@ def make_table_with_flybase_functions(orthogroup_dict_species, drosophila_gff_pa
 
 
         for OG_id, transcripts_list in tqdm(orthogroup_dict_species.items()):
+            print(OG_id)
             # for weird parsing stuff i did like a year ago the transcript IDs in the native drosophila annotation have leading "__" that should be removed
             # also remove the tailing "_1" 
             transcripts_list = [transcript.replace("__", "")[:-2] for transcript in transcripts_list]
@@ -282,13 +283,15 @@ def make_proteinfasta_from_orthogroup(orthogroups_dict, proteinfasta_reference, 
     return filtered_fasta
 
 
-def parse_blast_outfile(blast_filepath, min_seq_ident = 90):
+def parse_blast_outfile(blast_filepath, query_fasta:str = "", min_seq_ident = 90):
     """
     makes a dictionary with only transcript IDs like:
     {
-        orthoDB_query1 : [ native_hit1 , native_hit2 , ... ] ,
-        orthoDB_query2 : [ native_hit1 , native_hit2 , ... ] ,
+        orthoDB_query_OG_id_1 : [ native_hit1 , native_hit2 , ... ] ,
+        orthoDB_query_OG_id_2 : [ native_hit1 , native_hit2 , ... ] ,
     }
+    some orthoDB query sequences will have no hit in the native annotation, and if you give
+    a query fasta, then the query sequences with no hits will be dict keys with empty lists.
     """
 
     out_dict = {}
@@ -310,7 +313,18 @@ def parse_blast_outfile(blast_filepath, min_seq_ident = 90):
             except:
                 out_dict[OG_id] = [native_trans_ID]
     
-    return(out_dict)
+    if query_fasta == "":
+        return(out_dict)
+    
+    else:
+        proteinfasta = {record.id : record for record in SeqIO.parse(query_fasta,"fasta")}
+        orthogroups = [fasta_header.split()[0].split("_1_")[-1] for fasta_header in proteinfasta.keys()]
+        for orthogroup in orthogroups:
+            if orthogroup not in out_dict:
+                out_dict[orthogroup] = []
+        
+        return(out_dict)
+
 
 
 def parse_david_gene_groups_file(david_gene_groups_filepath:str):
@@ -527,9 +541,9 @@ if __name__ == "__main__":
         makeblastdb -in D_melanogaster.faa -dbtype prot     # native annotation for reference db
         blastp -query PhD_chapter1/Dmel_transcripts_from_sig_OGs.fasta -db /Users/miltr339/work/native_proteinseqs/D_melanogaster.faa -out /Users/miltr339/work/PhD_code/Dmel_oDB_vs_nat.out -outfmt 6 -num_threads 5 -evalue 1e-10
         """
-        if False:
+        if True:
             blast_outfile = "/Users/miltr339/work/PhD_code/Dmel_oDB_vs_nat.out"
-            blast_out_dict = parse_blast_outfile(blast_outfile)
+            blast_out_dict = parse_blast_outfile(blast_outfile, )
 
             num_transcripts = 0
             for og, tr_list in blast_out_dict.items():
@@ -539,12 +553,14 @@ if __name__ == "__main__":
             david_gene_groups_function = parse_david_group_functions(david_gene_groups_path)
 
             ## TODO fix this somehow 
-            # orthoDB_sig_all_species = OGs.parse_orthogroups_dict(orthogroups_orthoDB)
-            not_found_transcripts = make_table_with_flybase_functions(blast_out_dict, dmel_unfiltered_annot, 
+            orthoDB_sig_all_species = OGs.parse_orthogroups_dict(orthogroups_orthoDB, )
+            not_found_transcripts = make_table_with_flybase_functions(
+                orthogroup_dict_species= blast_out_dict, 
+                drosophila_gff_path= dmel_unfiltered_annot, 
                 outfile_name = "orthoDB_sig_OGs_flybase_IDs_with_group_function.tsv", 
                 orthogroups_dict_all = orthoDB_sig_all_species, 
                 CAFE_results_path = sig_orthoDB, 
-                get_gene_functions_from_API=True,
+                get_gene_functions_from_API=False,
                 david_gene_groups = david_gene_groups_dict, 
                 david_functions = david_gene_groups_function, 
                 species_tree = tree_path
@@ -553,19 +569,20 @@ if __name__ == "__main__":
             if len(not_found_transcripts)>0:
                 print(f"{len(not_found_transcripts)} (of {num_transcripts}) transcripts from orthoDB not found in annotation: {not_found_transcripts}")
 
-    ### TODO investigate why e.g. N0.HOG0000008 is missing in the output
-    TE_only_outfile = add_cols_to_flybase_table(
-        flybase_table_path = flybase_table_path_one_OG_member, 
-        slopes_table_path = GF_vs_rep_slopes, 
-        col_name_prefix = "repeat_correlation", 
-        insert_after_named_col = "Gene_Name")
+    if False:
+        ### TODO investigate why e.g. N0.HOG0000008 is missing in the output
+        TE_only_outfile = add_cols_to_flybase_table(
+            flybase_table_path = flybase_table_path_one_OG_member, 
+            slopes_table_path = GF_vs_rep_slopes, 
+            col_name_prefix = "repeat_correlation", 
+            insert_after_named_col = "Gene_Name")
 
-    TE_and_GS_outfile = add_cols_to_flybase_table(
-        flybase_table_path = TE_only_outfile, 
-        slopes_table_path = GF_vs_GS_slopes, 
-        col_name_prefix = "GS", 
-        insert_after_named_col = "Gene_Name")
+        TE_and_GS_outfile = add_cols_to_flybase_table(
+            flybase_table_path = TE_only_outfile, 
+            slopes_table_path = GF_vs_GS_slopes, 
+            col_name_prefix = "GS", 
+            insert_after_named_col = "Gene_Name")
 
 
-    # filter_flybase_table_to_single_OG(flybase_table_path = flybase_table_path)
-    # filter_flybase_table_to_single_OG(flybase_table_path = flybase_table_path, min_delta_GF=10)
+        # filter_flybase_table_to_single_OG(flybase_table_path = flybase_table_path)
+        # filter_flybase_table_to_single_OG(flybase_table_path = flybase_table_path, min_delta_GF=10)
