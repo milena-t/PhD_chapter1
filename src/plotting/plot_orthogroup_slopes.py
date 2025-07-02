@@ -12,7 +12,7 @@ import parse_gff as gff
 import parse_orthogroups as OGs
 
 
-def plot_slopes(GF_sizes_dict, species_list, exp_dict, x_label, filename = "sig_OGs_inclines.png", color_category = "orthoDB", percentile = 99, sig_list = [], log10_GF=True, correct_bh = False):
+def plot_slopes(GF_sizes_dict, species_list, exp_dict, x_label, filename = "sig_OGs_inclines.png", color_category = "orthoDB", percentile = 99, sig_list = [], log10_GF=False, log2_GF=True, correct_bh = False):
     """
     Plot fitted linear regression for each significant orthogroup.
     exp_dict is the dictionary with the x-axis variables, like genome size or repeat content
@@ -38,6 +38,8 @@ def plot_slopes(GF_sizes_dict, species_list, exp_dict, x_label, filename = "sig_
         ## log10 transform the GF sizes??
         if log10_GF:
             GF_sizes_vec = [np.log10(GF_sizes[species]) if species in GF_sizes else 0 for species in species_list ]
+        elif log2_GF:
+            GF_sizes_vec = [np.log2(GF_sizes[species]) if species in GF_sizes else 0 for species in species_list ]
         else:
             GF_sizes_vec = [GF_sizes[species] if species in GF_sizes else 0 for species in species_list ]
         x_axis_vec = [exp_dict[species] for species in species_list]
@@ -53,8 +55,8 @@ def plot_slopes(GF_sizes_dict, species_list, exp_dict, x_label, filename = "sig_
         OG_size = sum(list(GF_sizes.values()))
         OG_sizes[orthogroup] = OG_size
 
-        if OG_size>200:
-            print(f" --> {orthogroup} : size {OG_size}, p-value {result.pvalue:.2f}, \n\t GF sizes : {GF_sizes_dict[orthogroup]}")
+        # if OG_size>200:
+        #     print(f" --> {orthogroup} : size {OG_size}, p-value {result.pvalue:.2f}, \n\t GF sizes : {GF_sizes_dict[orthogroup]}")
 
     if sig_list==[]:
         inclines_list = list(inclines.values())
@@ -154,6 +156,8 @@ def plot_slopes(GF_sizes_dict, species_list, exp_dict, x_label, filename = "sig_
     title_ = x_label.split(" in")[0]
     if log10_GF:
         title = f"log10(Gene family size) vs. {title_}"
+    elif log2_GF:
+        title = f"log2(Gene family size) vs. {title_}"
     else:
         title = f"Gene family size vs. {title_}"
     plt.title(title, fontsize=fs*1.2)
@@ -231,10 +235,12 @@ if __name__ == "__main__":
     orthoDB_dict_lists = OGs.parse_orthogroups_dict(orthogroups_orthoDB_filepath, orthoDB_cafe_list)
     orthoDB_dict = OGs.get_GF_sizes(orthoDB_dict_lists)
 
+    print(f"\n\t\t * Genome size")
     # plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=genome_sizes_dict, x_label = "Genome size in Mb", filename = f"{data_dir}sig_OGs_vs_GS_inclines.png")
     GS_inclines = plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=genome_sizes_dict, x_label = "Genome size in Mb", filename = f"{data_dir}sig_OGs_vs_GS_inclines.png", sig_list=orthoDB_sig_list)
     gff.write_dict_to_file(GS_inclines, f"{data_dir}sig_OGs_vs_GS_inclines_pvalues.tsv", header=f"OG\tslope\tp-value", separator="\t")
 
+    print(f"\n\t\t * repeat content")
     # plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, x_label = "Repeat content in percent", filename = f"{data_dir}sig_OGs_vs_reps_inclines.png")
     TE_inclines = plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, x_label = "Repeat content in percent", filename = f"{data_dir}sig_OGs_vs_reps_inclines.png", sig_list=orthoDB_sig_list)
     gff.write_dict_to_file(TE_inclines, f"{data_dir}sig_OGs_vs_reps_inclines_pvalues.tsv", header=f"OG\tslope\tp-value", separator="\t")
