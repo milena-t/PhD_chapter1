@@ -522,7 +522,7 @@ def plot_all_species_values_barplot(all_values_native_dict, all_values_orthoDB_d
     labels = [label.replace("_", " ") for label in labels]
     new_order = [2,1,0,5,4,3] 
     handles = [handles[idx] for idx in new_order]
-    labels = [labels[idx] for idx in new_order]
+    labels = [labels[idx].replace("multi", "1-to-many").replace("1to1", "1-to-1") for idx in new_order]
     ax.legend(handles, labels, fontsize = fs, ncol=2, loc='upper center')
 
     if len(filename) == 0:
