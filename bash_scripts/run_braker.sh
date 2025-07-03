@@ -1,9 +1,7 @@
 [milenatr@rackham3 annotation_pipeline]$ cat braker3_singularity_with_RNAseq_in_SNIC_TMP.sh 
 #!/bin/bash -l
 
-# example run:
-# sbatch --job-name="C_septempunctata" --output="C_septempunctata_braker.out" /proj/naiss2023-6-65/Milena/annotation_pipeline/braker3_singularity_all_species_proteinseqs.sh C_septempunctata assembly_genomic.fna
-# sbatch --job-name="C_maculatus" --output="C_maculatus_Lu2024_braker.out" braker3_singularity_all_species_proteinseqs.sh C_maculatus_Lu2024 /proj/naiss2023-6-65/Milena/annotation_pipeline/Cmac_Lu2024_comparison/braker/GCA_040182625.1_Cmac_2024_genomic.fna
+# example run (without RNAseq)
 # sbatch --job-name="D_ponderosae" --output="D_ponderosae_braker.out" /proj/naiss2023-6-65/Milena/annotation_pipeline/braker3_singularity_all_species_proteinseqs.sh D_ponderosae /proj/naiss2023-6-65/Milena/coleoptera_sequences/d_ponderosae/GCA_020466635.2_Dpon_M_20191212v2_genomic.fna
 
 
@@ -22,7 +20,6 @@ module load bioinfo-tools
     # the safest option is probably to not have any modules loaded at all
 
 
-
 if [ $# -lt 2 ]; then
     echo "Usage: $0 name_of_species_dir path_to_masked_assembly."
     echo "you have $#"
@@ -32,7 +29,7 @@ fi
 
 
 SPECIES=$1
-ASSEMBLY_MASKED=$2
+ASSEMBLY_MASKED=$2 ## full absolute filepath!! otherwise SNIC_TMP gets confused
 PROTEIN_DATA=$3
 # $4 is optional for RNA reference data by SRR number 
 
