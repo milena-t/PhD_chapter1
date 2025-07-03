@@ -150,7 +150,7 @@ def plot_slopes(GF_sizes_dict, species_list, exp_dict, x_label, filename = "sig_
     if sig_list==[]:
         ylab = f"regression slopes of individual orthogroups \n(color by {100-percentile}th and {percentile}th percentile, {significant_lines} of \n{len(inclines)} orthogroups outside percentile bounds)"
     else:
-        ylab = f"regression slopes of individual orthogroups \n({significant_lines} of {len(inclines)} orthogroups are significant)"
+        ylab = f"regression slopes of individual orthogroups \n(only {significant_lines} significant orthogroups shown)"
     ax.set_ylabel(ylab, fontsize = fs)
     ax.set_xlabel("orthogroup size", fontsize = fs)
     title_ = x_label.split(" in")[0]
