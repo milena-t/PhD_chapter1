@@ -5,7 +5,7 @@
 *.faa
 *.log
 *jpeg
-*.txt
+# *.txt
 
 *transfer_files.sh
 
