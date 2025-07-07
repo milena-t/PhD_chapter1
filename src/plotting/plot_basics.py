@@ -398,8 +398,9 @@ if __name__ == "__main__":
         Kaufmann_labels = {'C_maculatus__' : "RNA same population", 'c_maculatus_only_orthoDB' : "no RNA", 'c_maculatus_RNA_combined' : "DE RNA different population", 'c_maculatus_RNA_simple' : "RNA different population"}
         # plot_Kaufmann_annotation_comparison(Kaufman_cmac_annotation_comparison, Kaufmann_labels, filename = "Kaufmann_annotation_comparison.png")
 
-    if True:
-        ## plot just the gene numbers from the two (three) annotation methods
+    if False:
+        ## plot just the gene numbers from the two (three) annotation methods 
+        ## based on the proteinfasta files
         orthoDB_annot = "/Users/miltr339/work/orthoDB_annotations/"
         orthoDB_TE_filtered = "/Users/miltr339/work/orthoDB_proteinseqs_TE_filtered/" # "/proj/naiss2023-6-65/Milena/gene_family_analysis/orthofinder_only_orthoDB_annotations/protein_sequences_TE_filtered/"
         # native_annot = "/Users/miltr339/work/native_annotations/all_native_annot/"
@@ -418,6 +419,7 @@ if __name__ == "__main__":
     ### plot protein length histograms
     ## filepaths
     if False:
+    
         data = "/Users/miltr339/work/PhD_code/PhD_chapter1/data"
         native_dir = "/Users/miltr339/work/native_proteinseqs"
         native_files = {
@@ -460,4 +462,13 @@ if __name__ == "__main__":
         # for species in native_files.keys():
         #     plot_histogram_protein_lengths(native_files[species], orthoDB_files[species], species_name=species, filename = f"protein_lengths_histogram_{species}.png")
         
+        plot_all_species_protein_length_distribution(native_files, orthoDB_files, filename=f"{data}/protein_lengths_histogram.png")
+
+    if True:
+        annot_com_dir = "/Users/miltr339/work/c_maculatus/annotation_comparison/superscaffolded_annotation"
+        comparison_files = {
+            "Cmac_Lome_diverse" : f"{annot_com_dir}/Cmac_Lome_diverse_filtered.faa",
+            "Cmac_Lu_simple" : f"{annot_com_dir}/Cmac_Lu_simple_filtered.faa",
+            "Cmac_SI_diverse" : f"{annot_com_dir}/Cmac_SI_diverse_filtered.faa",
+        }
         plot_all_species_protein_length_distribution(native_files, orthoDB_files, filename=f"{data}/protein_lengths_histogram.png")
