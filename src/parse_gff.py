@@ -113,8 +113,8 @@ def get_transcript_lengths(parsed_gff_dict,verbose=False):
 def print_single_exon_stats(filepath, include_list = True):
     try:
         gff_dict = parse_gff3_general(filepath)
-    except:
-        raise RuntimeError("parsing gone wrong")
+    except Exception as e:
+        raise RuntimeError(f"parsing gone wrong! \nError: \n{e}")
     no_transcripts = {key : value for key, value in gff_dict.items() if value.category == FeatureCategory.Transcript}
     no_genes = {key : value for key, value in gff_dict.items() if value.category == FeatureCategory.Gene}
     print(f"total number of transcripts: {len(no_transcripts)}")
