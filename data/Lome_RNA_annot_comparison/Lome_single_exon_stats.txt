@@ -1,0 +1,13 @@
+File that is being parsed: Cmac_Lome_RNA_diverse.gff
+	parsing time: 1.98 seconds
+	  * gene features: 14861
+	  * mRNA features: 842 (0 'transcript' features)
+	  * transcript features: 14861 (0 mRNA features)
+	  * exon features: 86472
+	  * total number of features: 304838
+total number of transcripts: 15703
+total number of top-level features (genes): 14861
+no. single exon transcripts: 2566
+no. multi exon transcripts: 13137
+2566 single-exon transcripts with average length 1905.36
+13137 multi-exon transcripts with average length 32859.1

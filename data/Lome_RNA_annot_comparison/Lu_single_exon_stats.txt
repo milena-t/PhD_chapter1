@@ -1,0 +1,13 @@
+File that is being parsed: Cmac_Lu_RNA_simple.gff
+	parsing time: 1.98 seconds
+	  * gene features: 14670
+	  * mRNA features: 826 (0 'transcript' features)
+	  * transcript features: 14670 (0 mRNA features)
+	  * exon features: 85299
+	  * total number of features: 300729
+total number of transcripts: 15496
+total number of top-level features (genes): 14670
+no. single exon transcripts: 2469
+no. multi exon transcripts: 13027
+2469 single-exon transcripts with average length 1863.17
+13027 multi-exon transcripts with average length 32910.0
