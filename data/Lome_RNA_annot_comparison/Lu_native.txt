@@ -1,0 +1,12 @@
+File that is being parsed: C_maculatus_Lu2024_native_isoform_filtered.gff
+	parsing time: 1.74 seconds
+	  * gene features: 14013
+	  * mRNA features: 14013 (0 'transcript' features)
+	  * exon features: 88312
+	  * total number of features: 145397
+total number of transcripts: 14013
+total number of top-level features (genes): 14013
+no. single exon transcripts: 1599
+no. multi exon transcripts: 12414
+1599 single-exon transcripts with average length: 1753.57
+12414 multi-exon transcripts with average length: 3529.4
