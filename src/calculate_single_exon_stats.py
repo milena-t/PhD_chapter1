@@ -1,8 +1,9 @@
 ### calculate gff statistics focused on single- and multi-exon genes
 ## write the results to stdout
 """
+This is just a wrapper script around print_single_exon_stats() in parse_gff.py to make automating it a little easier
 useage: 
-python3 calculate_single_exon_stats.py annotation.gff [True|False]
+python3 calculate_single_exon_stats.py path/to/annotation.gff [True|False]
 """
 
 import parse_gff as gff
@@ -17,6 +18,7 @@ if True:
         print(f"error:{e}")
         print(f"\narguments: {sys.argv}")
         print(f"useage: python3 calculate_single_exon_stats.py annotation.gff [True|False]")
+        sys.exit(1)
 
     if arg.lower() == "true":
         boolean_value = True
