@@ -13,7 +13,8 @@ def filepaths_SE_stats():
         "Lome_RNA" : "/Users/miltr339/work/PhD_code/PhD_chapter1/data/Lome_RNA_annot_comparison/Lome_single_exon_stats.txt",
         "Lu_RNA" : "/Users/miltr339/work/PhD_code/PhD_chapter1/data/Lome_RNA_annot_comparison/Lu_single_exon_stats.txt",
         "SI_RNA" : "/Users/miltr339/work/PhD_code/PhD_chapter1/data/Lome_RNA_annot_comparison/SI_single_exon_stats.txt",
-        "Kaufmann" : "/Users/miltr339/work/PhD_code/PhD_chapter1/data/Lome_RNA_annot_comparison/Kaufmann_nonsuperscaffoleded.txt"
+        "Lu_native" : "/Users/miltr339/work/PhD_code/PhD_chapter1/data/Lome_RNA_annot_comparison/Lu_native.txt",
+        "Kaufmann_native" : "/Users/miltr339/work/PhD_code/PhD_chapter1/data/Lome_RNA_annot_comparison/Kaufmann_nonsuperscaffoleded.txt",
     }
     return SE_stats_dict
 
@@ -67,7 +68,7 @@ def plot_single_exon_no_species_specific_three_annot(numbers, filename = ""):
     
     
     width = 0.2 # (this is a fraction of the standardized 1 unit of space between axis ticks)
-    aspect_ratio = 17 / 12 # nice for a presentation
+    aspect_ratio = 20 / 12 # nice for a presentation
 
 
     height_pixels = 2000  # Height in pixels
@@ -96,7 +97,7 @@ def plot_single_exon_no_species_specific_three_annot(numbers, filename = ""):
     ME_transcript_len = [numbers[annot]['multi-exon transcripts with average length'] for annot in annotation_names]
     y_max_genes = max(ME_transcript_len)
 
-    color = [colors["uniform"] if "RNA" in annot else  colors["native"] for annot in annotation_names]
+    color = [colors["native"] if "native" in annot else  colors["uniform"] for annot in annotation_names]
     hatching = {
         "yes" : "//", 
         "no" : "" }
@@ -130,7 +131,7 @@ def plot_single_exon_no_species_specific_three_annot(numbers, filename = ""):
     #### set up labels and stuff ####
     
     ax.set_ylabel('Number of genes', fontsize=fs+4)
-    ax.set_title('Gene numbers and proportion of single-exon genes', fontsize=fs*1.3)
+    ax.set_title('Gene numbers and proportion of single-exon genes of \nsuperscaffolded assembly from the Lome population', fontsize=fs*1.3)
     ax.set_xticks(x)
 
     ax.set_xlabel('', fontsize=fs+4)
