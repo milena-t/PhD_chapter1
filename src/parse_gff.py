@@ -93,14 +93,18 @@ def get_single_exon_transcripts(parsed_gff_dict, verbose=False):
     return(transcripts_single_exon, transcripts_multi_exon)
 
 
-def get_transcript_lengths(parsed_gff_dict,verbose=False):
+def get_transcript_lengths(subset_transcripts_dict, all_parsed_dict,verbose=False):
+    """
+    takes the subset of the annotation by get_single_exon_transcripts which is only exons, 
+    and the complete parsed annotation
+    """
     transcript_lengths = {} 
-    for trans_id, attributes in parsed_gff_dict.items():
+    for trans_id, attributes in subset_transcripts_dict.items():
         if attributes.category == FeatureCategory.Transcript:
             exons = attributes.child_ids_list
             length = 0
             for exon in exons:
-                exon = parsed_gff_dict[exon]
+                exon = all_parsed_dict[exon]
                 exon_length = int(exon.end) - int(exon.start)
                 exon_length = abs(exon_length)
                 length += exon_length
@@ -130,11 +134,11 @@ def print_single_exon_stats(filepath, include_list = True):
         multi_exon_IDs = ",".join(aobt_multi_exon)
         print(f"list of single-exon transcript IDs: {multi_exon_IDs }")
 
-    single_exon_transcript_lengths = get_transcript_lengths(aobt_single_exon)
+    single_exon_transcript_lengths = get_transcript_lengths(subset_transcripts_dict= aobt_single_exon, all_parsed_dict=gff_dict)
     mean_len = sum(single_exon_transcript_lengths.values())/len(single_exon_transcript_lengths)
     print(f"{len(single_exon_transcript_lengths)} single-exon transcripts with average length {mean_len:.6}")
 
-    multi_exon_transcript_lengths = get_transcript_lengths(aobt_multi_exon)
+    multi_exon_transcript_lengths = get_transcript_lengths(subset_transcripts_dict= aobt_multi_exon, all_parsed_dict=gff_dict)
     mean_len = sum(multi_exon_transcript_lengths.values())/len(multi_exon_transcript_lengths)
     print(f"{len(multi_exon_transcript_lengths)} multi-exon transcripts with average length {mean_len:.6}")
 
