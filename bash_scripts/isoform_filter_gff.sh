@@ -22,7 +22,8 @@ module load bioinfo-tools AGAT/1.3.2
 W_DIR=$(pwd)
 
 # ANNOT_DIRS=/proj/naiss2023-6-65/Milena/annotation_pipeline/Cmac_Kaufmann_2023_comparison/RNA*
-ANNOT_DIRS=/proj/naiss2023-6-65/Milena/gene_family_analysis/native_annotations_gff/*gff
+# ANNOT_DIRS=/proj/naiss2023-6-65/Milena/gene_family_analysis/native_annotations_gff/*gff
+ANNOT_DIRS=/proj/naiss2023-6-65/Milena/annotation_pipeline/Cmac_Lome_superscaffolded_comparison/Cmac_*/Cmac_*/braker/braker.gtf
 
 for ANNOT_GTF in $(echo $ANNOT_DIRS)
 do 
