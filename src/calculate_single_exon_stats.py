@@ -1,14 +1,23 @@
 ### calculate gff statistics focused on single- and multi-exon genes
 ## write the results to stdout
-
+"""
+useage: 
+python3 calculate_single_exon_stats.py annotation.gff [True|False]
+"""
 
 import parse_gff as gff
 import sys
 
-try:
-    orthodb_annot = sys.argv[1]
-    # native_annot = sys.argv[2]
-    arg =  sys.argv[2]
+if True:
+    try:
+        orthodb_annot = sys.argv[1]
+        # native_annot = sys.argv[2]
+        arg =  sys.argv[2]
+    except Exception as e:
+        print(f"error:{e}")
+        print(f"\narguments: {sys.argv}")
+        print(f"useage: python3 calculate_single_exon_stats.py annotation.gff [True|False]")
+
     if arg.lower() == "true":
         boolean_value = True
     elif arg.lower() == "false":
@@ -21,8 +30,3 @@ try:
 
     # write to stdout, so if you include the list a long list of gene IDs will be written to stdout
     # parse_gff.print_single_exon_stats(native_annot, include_list=boolean_value)
-
-except:
-    print(f"incorrect number of arguments")
-    print(sys.argv)
-    print(f"useage: python3 calculate_single_exon_stats.py annotation.gff [True|False]")
