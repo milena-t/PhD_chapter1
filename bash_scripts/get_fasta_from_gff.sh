@@ -14,10 +14,13 @@
 
 module load bioinfo-tools gffread/0.12.7 samtools/1.20 emboss/6.6.0
 
-ANNOT_DIRS=/proj/naiss2023-6-65/Milena/annotation_pipeline/only_orthodb_annotation
+# ANNOT_DIRS=/proj/naiss2023-6-65/Milena/annotation_pipeline/only_orthodb_annotation
+ANNOT_DIRS=/proj/naiss2023-6-65/Milena/annotation_pipeline/Cmac_Lome_superscaffolded_comparison/Cmac_*
 
-for ANNOT_DIR in $(echo $ANNOT_DIRS/*) # add string to specify species (or species subsets) around wildcard
+for ANNOT_DIR in $(echo $ANNOT_DIRS) # add string to specify species (or species subsets) around wildcard
 do 
+    cd $ANNOT_DIR
+    ANNOT_GTF="${ANNOT_DIR}/Cmac_*/braker/braker.gtf"
     FILTERED_GTF="${ANNOT_GTF%.*}_isoform_filtered.gff" # originally gtf but keep_longest_isoform.pl automatically returns gff version 3 
     ANNOT_TRANSCRIPTS=isoform_filtered_transcripts.fna
     ANNOT_PROTEINS=isoform_filtered_proteins.faa
