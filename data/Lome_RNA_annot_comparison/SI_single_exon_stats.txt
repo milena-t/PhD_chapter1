@@ -9,5 +9,5 @@ total number of transcripts: 14881
 total number of top-level features (genes): 13866
 no. single exon transcripts: 2495
 no. multi exon transcripts: 12386
-2495 single-exon transcripts with average length 1833.95
-12386 multi-exon transcripts with average length 31667.0
+2495 single-exon transcripts with average length: 1833.95
+12386 multi-exon transcripts with average length: 31667.0

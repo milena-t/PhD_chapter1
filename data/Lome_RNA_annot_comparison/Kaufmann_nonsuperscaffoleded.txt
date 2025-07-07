@@ -1,0 +1,12 @@
+File that is being parsed: Kaufmann_native.gff
+	parsing time: 3.19 seconds
+	  * gene features: 35865
+	  * transcript features: 35865 (0 mRNA features)
+	  * exon features: 103171
+	  * total number of features: 417013
+total number of transcripts: 35865
+total number of top-level features (genes): 35865
+no. single exon transcripts: 18827
+no. multi exon transcripts: 17038
+18827 single-exon transcripts with average length: 2111.69
+17038 multi-exon transcripts with average length: 10598.1
