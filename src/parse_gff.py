@@ -136,11 +136,11 @@ def print_single_exon_stats(filepath, include_list = True):
 
     single_exon_transcript_lengths = get_transcript_lengths(subset_transcripts_dict= aobt_single_exon, all_parsed_dict=gff_dict)
     mean_len = sum(single_exon_transcript_lengths.values())/len(single_exon_transcript_lengths)
-    print(f"{len(single_exon_transcript_lengths)} single-exon transcripts with average length {mean_len:.6}")
+    print(f"{len(single_exon_transcript_lengths)} single-exon transcripts with average length: {mean_len:.6}")
 
     multi_exon_transcript_lengths = get_transcript_lengths(subset_transcripts_dict= aobt_multi_exon, all_parsed_dict=gff_dict)
     mean_len = sum(multi_exon_transcript_lengths.values())/len(multi_exon_transcript_lengths)
-    print(f"{len(multi_exon_transcript_lengths)} multi-exon transcripts with average length {mean_len:.6}")
+    print(f"{len(multi_exon_transcript_lengths)} multi-exon transcripts with average length: {mean_len:.6}")
 
 
 
