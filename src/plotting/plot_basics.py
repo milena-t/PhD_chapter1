@@ -266,33 +266,45 @@ def plot_histogram_protein_lengths(native_path:str, orthoDB_path:str, species_na
     print(f"plot saved in the current working directory as: {filename}")
 
 
-def plot_all_species_protein_length_distribution(native_files:dict, orthoDB_files:dict, columns = 3, no_bins = 20, max_length = 1000, filename = "protein_lengths_histogram.png", legend_in_last = True):
+def plot_all_species_protein_length_distribution(native_files:dict, orthoDB_files:dict, third_column_files:dict = {}, columns = 3, no_bins = 20, max_length = 1000, filename = "protein_lengths_histogram.png", legend_in_last = True):
     """
     plot a grid of histograms for all species. input is dictionaries with species names as keys and filepaths to aminoacid fasta files as values
     """
     cols = columns
     rows = int(len(native_files)/cols)  +1
-    fig, axes = plt.subplots(rows, cols, figsize=(12, 15))
+    if rows>2:
+        fig, axes = plt.subplots(rows, cols, figsize=(12, 15)) # for more than three rows
+    else:
+        fig, axes = plt.subplots(rows, cols, figsize=(15, 10)) # for more than three rows
     fs = 20
 
     colors = {
         "orthoDB" : "#F2933A",
-        "native" : "#b82946"
+        "native" : "#b82946",
+        "third" : "#9C4C32",
     }
 
     for idx, species in enumerate(native_files.keys()):
         
         native_lengths = [length for length in get_lengths_list(native_files[species]) if length < max_length]
         orthoDB_lengths = [length for length in get_lengths_list(orthoDB_files[species]) if length < max_length]
+        if third_column_files != {}:
+            third_lengths = [length for length in get_lengths_list(third_column_files[species]) if length < max_length]
         
         # Calculate row and column indices for the current subplot
         row = idx // cols
         col = idx % cols
-        species_name = species.replace("_", ". ")
+        if third_column_files == {}:
+            species_name = species.replace("_", ". ")
+        else:
+            species_name = species.replace("_", " ")
         print(f"\tin position {row+1},{col+1}: \t{species_name}")
 
         # Plot histogram on the corresponding subplot axis
-        axes[row, col].hist([native_lengths, orthoDB_lengths], bins=no_bins, histtype="bar", color = [colors["native"], colors["orthoDB"]])
+        if third_column_files == {}:
+            axes[row, col].hist([native_lengths, orthoDB_lengths], bins=no_bins, histtype="bar", color = [colors["native"], colors["orthoDB"]])
+        else:
+            axes[row, col].hist([native_lengths, orthoDB_lengths, third_lengths], bins=no_bins, histtype="bar", color = [colors["native"], colors["orthoDB"], colors["third"]])
         axes[row, col].set_title(f'{species_name}', fontsize = fs)
         axes[row, col].set_xlabel('')
         axes[row, col].set_ylabel('')
@@ -312,7 +324,11 @@ def plot_all_species_protein_length_distribution(native_files:dict, orthoDB_file
         labels.append("native")
         handles.append(mpatches.Patch(color=colors["orthoDB"]))
         labels.append("uniform")
+        if third_column_files != {}:
+            handles.append(mpatches.Patch(color=colors["third"]))
+            labels.append("different RNA populations")
         axes[row, col].legend(handles, labels, fontsize = fs, loc='center', title_fontsize = fs)
+            
     
     # Set a single x-axis label for all subplots
     x_label = f"protein length (Aminoacids, up to {max_length})"
@@ -328,6 +344,13 @@ def plot_all_species_protein_length_distribution(native_files:dict, orthoDB_file
 if __name__ == "__main__":
 
     ## plot basic gene counts
+
+    # output dir
+    data = "/Users/miltr339/work/PhD_code/PhD_chapter1/data"
+    # proteinfasta files dir
+    native_dir = "/Users/miltr339/work/native_proteinseqs"
+    orthoDB_dir = "/Users/miltr339/work/orthoDB_proteinseqs_TE_filtered"
+    
     if False:
 
         try:
@@ -405,7 +428,6 @@ if __name__ == "__main__":
         orthoDB_TE_filtered = "/Users/miltr339/work/orthoDB_proteinseqs_TE_filtered/" # "/proj/naiss2023-6-65/Milena/gene_family_analysis/orthofinder_only_orthoDB_annotations/protein_sequences_TE_filtered/"
         # native_annot = "/Users/miltr339/work/native_annotations/all_native_annot/"
         native_annot = "/Users/miltr339/work/native_proteinseqs/"
-        data = "/Users/miltr339/work/PhD_code/PhD_chapter1/data"
         try:
             tree = "/Users/milena/Box Sync/code/annotation_pipeline/annotation_scripts_ordered/14_species_orthofinder_tree.nw"
             plot_gene_counts(native_annot_dir=native_annot, species_tree=tree, orthoDB_filtered_annot_dir=orthoDB_TE_filtered, filename="only_genome_size_14_species.png")
@@ -421,7 +443,6 @@ if __name__ == "__main__":
     if False:
     
         data = "/Users/miltr339/work/PhD_code/PhD_chapter1/data"
-        native_dir = "/Users/miltr339/work/native_proteinseqs"
         native_files = {
             "A_obtectus" : f"{native_dir}/A_obtectus.faa",
             "A_verrucosus" : f"{native_dir}/A_verrucosus.faa",
@@ -439,7 +460,6 @@ if __name__ == "__main__":
             "Z_morio" : f"{native_dir}/Z_morio.faa",
         }
 
-        orthoDB_dir = "/Users/miltr339/work/orthoDB_proteinseqs_TE_filtered"
         orthoDB_files = {
             "A_obtectus" : f"{orthoDB_dir}/A_obtectus_filtered_proteinfasta_TE_filtered.fa",
             "A_verrucosus" : f"{orthoDB_dir}/A_verrucosus_filtered_proteinfasta_TE_filtered.fa",
@@ -471,4 +491,14 @@ if __name__ == "__main__":
             "Cmac_Lu_simple" : f"{annot_com_dir}/Cmac_Lu_simple_filtered.faa",
             "Cmac_SI_diverse" : f"{annot_com_dir}/Cmac_SI_diverse_filtered.faa",
         }
-        plot_all_species_protein_length_distribution(native_files, orthoDB_files, filename=f"{data}/protein_lengths_histogram.png")
+        native_files = {
+            "Cmac_Lome_diverse" : f"{native_dir}/C_maculatus.faa",
+            "Cmac_Lu_simple" : f"{native_dir}/C_maculatus.faa",
+            "Cmac_SI_diverse" : f"{native_dir}/C_maculatus.faa",
+        }
+        orthoDB_files = {
+            "Cmac_Lome_diverse" : f"{orthoDB_dir}/C_maculatus_filtered_proteinfasta_TE_filtered.fa",
+            "Cmac_Lu_simple" : f"{orthoDB_dir}/C_maculatus_filtered_proteinfasta_TE_filtered.fa",
+            "Cmac_SI_diverse" : f"{orthoDB_dir}/C_maculatus_filtered_proteinfasta_TE_filtered.fa",
+        }
+        plot_all_species_protein_length_distribution(native_files, orthoDB_files, third_column_files= comparison_files, columns=2, max_length=1500, filename=f"{data}/Lome_RNA_annot_comparison/protein_lengths_histogram.png")

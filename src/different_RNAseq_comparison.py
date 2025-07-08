@@ -77,6 +77,7 @@ def plot_single_exon_no_species_specific_three_annot(numbers, filename = ""):
     ax = fig.add_subplot(111)
 
     colors = {
+        "RNAseq" : "#9C4C32", # "#21295C",
         "uniform" : "#F2933A",
         "native" : "#b82946",
         "SE_length" : "#94ADC7", # lighter blue
@@ -97,7 +98,7 @@ def plot_single_exon_no_species_specific_three_annot(numbers, filename = ""):
     ME_transcript_len = [numbers[annot]['multi-exon transcripts with average length'] for annot in annotation_names]
     y_max_genes = max(ME_transcript_len)
 
-    color = [colors["native"] if "native" in annot else  colors["uniform"] for annot in annotation_names]
+    color = [colors["native"] if "native" in annot else  colors["RNAseq"] for annot in annotation_names]
     hatching = {
         "yes" : "//", 
         "no" : "" }
@@ -106,7 +107,7 @@ def plot_single_exon_no_species_specific_three_annot(numbers, filename = ""):
 
     # total number of genes (with single-exons hatched)
     annotation_base = ax.bar(x - width, SE_numbers, width = width, label='proportion of which are single-exon', color= color, hatch=hatching["yes"])
-    annotation_top = ax.bar(x - width, ME_numbers, width = width, bottom=SE_numbers, label='all genes in uniform annotation', color=color, hatch=hatching["no"])
+    annotation_top = ax.bar(x - width, ME_numbers, width = width, bottom=SE_numbers, label='all genes in uniform (with RNAseq) annotation', color=color, hatch=hatching["no"])
 
     # Make some labels.
     labels = [f"{transcript_number}" for transcript_number in transcript_numbers]
