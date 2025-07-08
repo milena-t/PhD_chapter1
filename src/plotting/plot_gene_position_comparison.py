@@ -456,7 +456,10 @@ def plot_all_species_values_barplot(all_values_native_dict, all_values_orthoDB_d
         print(f"species names order from tree: {species_names_list}")
 
     fs = 60 # set font size
-    aspect_ratio = 30 / 10
+    if len(species_names_list)>2:
+        aspect_ratio = 30 / 10
+    else:
+        aspect_ratio = 20 / 10
     height_pixels = 2000  # Height in pixels
     width_pixels = int(height_pixels * aspect_ratio)  # Width in pixels
     fig = plt.figure(figsize=(width_pixels / 100, height_pixels / 100), dpi=100)
@@ -512,7 +515,10 @@ def plot_all_species_values_barplot(all_values_native_dict, all_values_orthoDB_d
     xtick_labels = [species.replace("_", ". ") for species in species_names_list]
     # print(f"x ticks:{x}\nx-tick labels: {xtick_labels}")
     ax.set_xticks(x)
-    ax.set_xticklabels(xtick_labels, rotation=90, fontsize=fs)
+    if len(species_names_list)>2:
+        ax.set_xticklabels(xtick_labels, rotation=90, fontsize=fs)
+    else:
+        ax.set_xticklabels(xtick_labels, fontsize=fs)
     ax.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 1 else f'{int(x*100)}%'))
     ax.tick_params(axis='y', labelsize=fs)
     # plt.tight_layout()
@@ -676,7 +682,7 @@ if __name__ == "__main__":
         # print(processed_dict_exon)
     
     ## --> transcript features
-    if True:
+    if False:
         all_species_values_native = {}
         all_species_values_orthoDB = {}
         
@@ -722,8 +728,8 @@ if __name__ == "__main__":
         plot_all_species_values_barplot(all_values_native_dict=all_species_values_native, all_values_orthoDB_dict=all_species_values_orthoDB, species_names_list=species_order, filename = f"{data_path}annotaion_overlaps_transcript_level.png", feature_name="transcripts")
 
 
-        ## --> exon features
-    if True:
+    ## --> exon features
+    if False:
         all_species_values_native = {}
         all_species_values_orthoDB = {}
         
@@ -768,3 +774,64 @@ if __name__ == "__main__":
 
         #plot_all_species_values(all_values_native_dict=all_species_values_native, all_values_orthoDB_dict=all_species_values_orthoDB, species_names_list=species_order, filename = "annotaion_overlaps_exon_level.png")
         plot_all_species_values_barplot(all_values_native_dict=all_species_values_native, all_values_orthoDB_dict=all_species_values_orthoDB, species_names_list=tree_filepath, filename = f"{data_path}annotaion_overlaps_exon_level.png")
+
+    ## --> Cmac annotation RNAseq comparison (transcript)
+    if True:
+        data_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/Lome_RNA_annot_comparison/"
+        overlap_transcript_path = "/Users/miltr339/work/c_maculatus/annotation_comparison/superscaffolded_annotation/position_overlap/"
+        overlap_files_transcript = {
+            "Lome_vs_Lu" : f"{overlap_transcript_path}Lome_vs_Lu_overlap_complete.txt",
+            "Lome_vs_SI" : f"{overlap_transcript_path}Lome_vs_SI_overlap_complete.txt",
+        }
+
+        native_query_transcript = {
+            "Lome_vs_Lu" : f"{overlap_transcript_path}Lome_vs_Lu_overlap_numbers_only_native_query.txt",
+            "Lome_vs_SI" : f"{overlap_transcript_path}Lome_vs_SI_overlap_numbers_only_native_query.txt",
+        }
+
+        orthodb_query_transcript = {
+            "Lome_vs_Lu" : f"{overlap_transcript_path}Lome_vs_Lu_overlap_numbers_only_orthodb_query.txt",
+            "Lome_vs_SI" : f"{overlap_transcript_path}Lome_vs_SI_overlap_numbers_only_orthodb_query.txt",
+        }
+    if True:
+        all_species_values_native = {}
+        all_species_values_orthoDB = {}
+        
+        verbose = True
+        
+        if verbose:
+            print(f"get all values for all species:")
+        for species_name in overlap_files_transcript.keys():
+        #for species_name in tqdm(overlap_files_transcript.keys()): 
+            if verbose:
+                print(f"\n\n================> {species_name} <================")
+            
+            all_overlaps_dict = read_overlaps(overlap_files_transcript[species_name], verbose=verbose)
+            if verbose:
+                print("\n\t --> transcripts (Lome)")
+
+            overlap_lists_native = read_overlap_num_file(native_query_transcript[species_name], verbose=verbose)
+            feature_ids_one_overlap_native = overlap_lists_native["one_overlap"]
+            native_1to1 = get_reciprocal_1to1(all_overlaps_dict, feature_ids_one_overlap_native, verbose = verbose)
+
+            native_required_overlap_numbers = get_plot_numbers(overlap_lists_native, native_1to1, ratio=True, verbose = verbose)
+
+            all_species_values_native[species_name] = native_required_overlap_numbers
+            if verbose:
+                print("\n\t --> transcripts (other population)")
+
+            overlap_lists_orthoDB = read_overlap_num_file(orthodb_query_transcript[species_name], verbose=verbose)
+            feature_ids_one_overlap_orthoDB = overlap_lists_orthoDB["one_overlap"]
+            orthoDB_1to1 = get_reciprocal_1to1(all_overlaps_dict, feature_ids_one_overlap_orthoDB, verbose = verbose)
+
+            orthoDB_required_overlap_numbers = get_plot_numbers(overlap_lists_orthoDB, orthoDB_1to1, ratio=True, verbose = verbose)
+
+            all_species_values_orthoDB[species_name] = orthoDB_required_overlap_numbers
+
+        # print(all_species_values)
+        ## TODO plot all_species_values
+        # print(f"native: \n\t{all_species_values_native}")
+        # print(f"orthoDB: \n\t{all_species_values_orthoDB}")
+        species_order = list(overlap_files_transcript.keys())
+
+        plot_all_species_values_barplot(all_values_native_dict=all_species_values_native, all_values_orthoDB_dict=all_species_values_orthoDB, species_names_list=species_order, filename = f"{data_path}annotation_overlaps_transcript_level.png", feature_name="transcripts")
