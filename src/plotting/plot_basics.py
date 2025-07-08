@@ -320,11 +320,16 @@ def plot_all_species_protein_length_distribution(native_files:dict, orthoDB_file
         axes[row, col].set_title(f'')
         handles = []
         labels = [] 
-        handles.append(mpatches.Patch(color=colors["native"]))
-        labels.append("native")
-        handles.append(mpatches.Patch(color=colors["orthoDB"]))
-        labels.append("uniform")
+        if third_column_files == {}:
+            handles.append(mpatches.Patch(color=colors["native"]))
+            labels.append("native")
+            handles.append(mpatches.Patch(color=colors["orthoDB"]))
+            labels.append("uniform")
         if third_column_files != {}:
+            handles.append(mpatches.Patch(color=colors["native"]))
+            labels.append("native (Kaufnamm)")
+            handles.append(mpatches.Patch(color=colors["orthoDB"]))
+            labels.append("uniform (no RNAseq)")
             handles.append(mpatches.Patch(color=colors["third"]))
             labels.append("different RNA populations")
         axes[row, col].legend(handles, labels, fontsize = fs, loc='center', title_fontsize = fs)
