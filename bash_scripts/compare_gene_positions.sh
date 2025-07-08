@@ -55,11 +55,14 @@ echo "temporary orthoDB: ${tmp_orthodb}"
 
 ### prepare input files:
 # filter only for the transcripts since otherwise you compute the overlap stats of every line because it ignores nested features.
-grep -P "mRNA\t" $native_path > ${tmp_native}.2  #OBS! on linux you need the -P flag for \t, on macOS it's not necessary
+
+# grep -P "mRNA\t" $native_path > ${tmp_native}.2  #OBS! on linux you need the -P flag for \t, on macOS it's not necessary
+grep "\ttranscript\t" $native_path > ${tmp_native}.2  
 # if the tag for the transcripts is not "mRNA"
 if [ ! -s "${tmp_native}.2" ]; then
     # If the file size is 0, try again with "transcript"
-    grep -P "transcript\t" $native_path > ${tmp_native}.2 
+    # grep -P "transcript\t" $native_path > ${tmp_native}.2 
+    grep "transcript\t" $native_path > ${tmp_native}.2 
     echo "native transcript flag: \"transcript\""
 else
     echo "native transcript flag: \"mRNA\""
@@ -77,7 +80,8 @@ head -n 20 ${tmp_native}
 
 
 # filter uniform annotations the same as above, except the transcript tag is always "transcript" so no testing is necessary
-grep -P "\ttranscript\t" $orthoDB_path > ${tmp_orthodb}.2
+# grep -P "\ttranscript\t" $orthoDB_path > ${tmp_orthodb}.2
+grep "\ttranscript\t" $orthoDB_path > ${tmp_orthodb}.2
 awk -F'\t' '$4 ~ /^[0-9]+$/' ${tmp_orthodb}.2 > $tmp_orthodb
 
 filesize_tmp=$(stat -c%s "${tmp_orthodb}")
