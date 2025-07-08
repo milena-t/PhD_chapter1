@@ -276,7 +276,7 @@ def plot_all_species_protein_length_distribution(native_files:dict, orthoDB_file
         fig, axes = plt.subplots(rows, cols, figsize=(12, 15)) # for more than three rows
     else:
         fig, axes = plt.subplots(rows, cols, figsize=(15, 10)) # for more than three rows
-    fs = 20
+    fs = 28
 
     colors = {
         "orthoDB" : "#F2933A",
@@ -327,7 +327,7 @@ def plot_all_species_protein_length_distribution(native_files:dict, orthoDB_file
             labels.append("uniform")
         if third_column_files != {}:
             handles.append(mpatches.Patch(color=colors["native"]))
-            labels.append("native (Kaufnamm)")
+            labels.append("native (Kaufmann)")
             handles.append(mpatches.Patch(color=colors["orthoDB"]))
             labels.append("uniform (no RNAseq)")
             handles.append(mpatches.Patch(color=colors["third"]))

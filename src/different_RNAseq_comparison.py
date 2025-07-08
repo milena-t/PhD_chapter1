@@ -64,7 +64,7 @@ def plot_single_exon_no_species_specific_three_annot(numbers, filename = ""):
     # figure proportions according to the data included (longer or shorter)
 
     # fontsize scales with the dpi somehow which i have to do extra because i change the aspect ratio manually below
-    fs = 35 # 37 originally
+    fs = 45 # 37 originally
     
     
     width = 0.2 # (this is a fraction of the standardized 1 unit of space between axis ticks)
@@ -107,7 +107,7 @@ def plot_single_exon_no_species_specific_three_annot(numbers, filename = ""):
 
     # total number of genes (with single-exons hatched)
     annotation_base = ax.bar(x - width, SE_numbers, width = width, label='proportion of which are single-exon', color= color, hatch=hatching["yes"])
-    annotation_top = ax.bar(x - width, ME_numbers, width = width, bottom=SE_numbers, label='all genes in uniform (with RNAseq) annotation', color=color, hatch=hatching["no"])
+    annotation_top = ax.bar(x - width, ME_numbers, width = width, bottom=SE_numbers, label='all genes in uniform RNAseq annotation', color=color, hatch=hatching["no"])
 
     # Make some labels.
     labels = [f"{transcript_number}" for transcript_number in transcript_numbers]
@@ -126,8 +126,8 @@ def plot_single_exon_no_species_specific_three_annot(numbers, filename = ""):
     ax2.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x < 1 or x>max(ME_transcript_len)*1.1 else f'{x / 1e3:.0f} kbp'))
 
     narrow=0.5 # make the bars a little more narrow
-    SE_transcript_length = ax2.bar(x, SE_transcript_len, width= width*narrow, label='avg. single-exon transcript length', color=colors["SE_length"], hatch=hatching["no"])
-    ME_transcript_length = ax2.bar(x+width*narrow, ME_transcript_len, width= width*narrow, label='avg. multi-exon transcript length', color=colors["ME_length"], hatch=hatching["no"])
+    SE_transcript_length = ax2.bar(x, SE_transcript_len, width= width*narrow, label='avg. single-exon cds length', color=colors["SE_length"], hatch=hatching["no"])
+    ME_transcript_length = ax2.bar(x+width*narrow, ME_transcript_len, width= width*narrow, label='avg. multi-exon cds length', color=colors["ME_length"], hatch=hatching["no"])
 
     #### set up labels and stuff ####
     
@@ -145,7 +145,7 @@ def plot_single_exon_no_species_specific_three_annot(numbers, filename = ""):
     plt.rcParams.update({'hatch.color': "#3f3832ff"})
     dashed_handle = mpatches.Patch(hatch = "//", alpha = 0.0)
     native_handle = mpatches.Patch(color=colors["native"])
-    dashed_label = "proportion of genes that are single-exon"
+    dashed_label = "proportion of genes with no introns"
     native_label = "all genes in native annotation"
 
     # Legend with custom order
