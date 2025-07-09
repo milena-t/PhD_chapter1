@@ -2,6 +2,7 @@
 
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
+from matplotlib.ticker import FuncFormatter
 from statistics import mean
 import numpy as np
 import scipy.stats
@@ -152,6 +153,8 @@ def plot_gene_counts(orthogroups_dict, sig_list, all_cafe_list, species_names, a
         
         ax.plot(species_names, gene_family_members, color = colors["background"], alpha = 0.25, linewidth = 1) # originally 0.8
 
+    ax.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x < 0  else f'{int(x)}'))
+
     ax.set_ylabel(ylab, fontsize = fs)
     plt.xticks(labels=[species.replace("_", ". ") for species in species_names], ticks=species_names, rotation = 90, fontsize = fs)
     
@@ -170,7 +173,10 @@ def plot_gene_counts(orthogroups_dict, sig_list, all_cafe_list, species_names, a
     ax.yaxis.grid(False)
 
     ymax = ymax*1.1
-    ax.set_ylim(-5,ymax)
+    if ymax>15:
+        ax.set_ylim(-4.5,ymax)
+    else:
+        ax.set_ylim(-1.5,ymax)
     ax.tick_params(axis='y', labelsize=fs)
 
     plt.tight_layout()
