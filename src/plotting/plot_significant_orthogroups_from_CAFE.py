@@ -95,7 +95,7 @@ def read_whole_genome_stats(filepath):
     return(stats_dict)
 
 
-def plot_gene_counts(orthogroups_dict, sig_list, all_cafe_list, species_names, annotation = "native", filename = "significant_orthogroups_from_CAFE.png"):
+def plot_gene_counts(orthogroups_dict, sig_list, all_cafe_list, species_names, annotation = "native", filename = "significant_orthogroups_from_CAFE.png", transparent_bg=True):
     fs = 30 # set font size
     # plot each column in the dataframe as a line in the same plot thorugh a for-loop
     fig = plt.figure(figsize=(17,11))
@@ -132,7 +132,10 @@ def plot_gene_counts(orthogroups_dict, sig_list, all_cafe_list, species_names, a
         if max(gene_family_members) > ymax:
             ymax = max(gene_family_members)
 
-        ax.plot(species_names, gene_family_members, color = colors[annotation], alpha = 0.4, linewidth = 2)
+        if transparent_bg:
+            ax.plot(species_names, gene_family_members, color = colors[annotation], alpha = 0.4, linewidth = 3)
+        else:
+            ax.plot(species_names, gene_family_members, color = colors[annotation], linewidth = 3)
     
     for orthogroup in all_cafe_list:
         gene_family_members = []
@@ -147,7 +150,7 @@ def plot_gene_counts(orthogroups_dict, sig_list, all_cafe_list, species_names, a
         if max(gene_family_members) > ymax:
             ymax = max(gene_family_members)
         
-        ax.plot(species_names, gene_family_members, color = colors["background"], alpha = 0.25, linewidth = 2) # originally 0.8
+        ax.plot(species_names, gene_family_members, color = colors["background"], alpha = 0.25, linewidth = 1) # originally 0.8
 
     ax.set_ylabel(ylab, fontsize = fs)
     plt.xticks(labels=[species.replace("_", ". ") for species in species_names], ticks=species_names, rotation = 90, fontsize = fs)
@@ -172,7 +175,7 @@ def plot_gene_counts(orthogroups_dict, sig_list, all_cafe_list, species_names, a
 
     plt.tight_layout()
 
-    plt.savefig(filename, dpi = 300, transparent = True)
+    plt.savefig(filename, dpi = 300, transparent = transparent_bg)
     print("Figure saved in the current working directory directory as: "+filename)
 
 
