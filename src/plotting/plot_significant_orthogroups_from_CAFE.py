@@ -147,7 +147,7 @@ def plot_gene_counts(orthogroups_dict, sig_list, all_cafe_list, species_names, a
         if max(gene_family_members) > ymax:
             ymax = max(gene_family_members)
         
-        ax.plot(species_names, gene_family_members, color = colors["background"], alpha = 0.25, linewidth = 1) # originally 0.8
+        ax.plot(species_names, gene_family_members, color = colors["background"], alpha = 0.25, linewidth = 2) # originally 0.8
 
     ax.set_ylabel(ylab, fontsize = fs)
     plt.xticks(labels=[species.replace("_", ". ") for species in species_names], ticks=species_names, rotation = 90, fontsize = fs)
