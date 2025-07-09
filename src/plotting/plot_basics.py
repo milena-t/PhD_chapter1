@@ -493,17 +493,17 @@ if __name__ == "__main__":
         annot_com_dir = "/Users/miltr339/work/c_maculatus/annotation_comparison/superscaffolded_annotation"
         comparison_files = {
             "Cmac_Lome_diverse" : f"{annot_com_dir}/Cmac_Lome_diverse_filtered.faa",
-            "Cmac_Lu_simple" : f"{annot_com_dir}/Cmac_Lu_simple_filtered.faa",
+            "Cmac_Nigeria_simple" : f"{annot_com_dir}/Cmac_Lu_simple_filtered.faa",
             "Cmac_SI_diverse" : f"{annot_com_dir}/Cmac_SI_diverse_filtered.faa",
         }
         native_files = {
             "Cmac_Lome_diverse" : f"{native_dir}/C_maculatus.faa",
-            "Cmac_Lu_simple" : f"{native_dir}/C_maculatus.faa",
+            "Cmac_Nigeria_simple" : f"{native_dir}/C_maculatus.faa",
             "Cmac_SI_diverse" : f"{native_dir}/C_maculatus.faa",
         }
         orthoDB_files = {
             "Cmac_Lome_diverse" : f"{orthoDB_dir}/C_maculatus_filtered_proteinfasta_TE_filtered.fa",
-            "Cmac_Lu_simple" : f"{orthoDB_dir}/C_maculatus_filtered_proteinfasta_TE_filtered.fa",
+            "Cmac_Nigeria_simple" : f"{orthoDB_dir}/C_maculatus_filtered_proteinfasta_TE_filtered.fa",
             "Cmac_SI_diverse" : f"{orthoDB_dir}/C_maculatus_filtered_proteinfasta_TE_filtered.fa",
         }
         plot_all_species_protein_length_distribution(native_files, orthoDB_files, third_column_files= comparison_files, columns=2, max_length=1500, filename=f"{data}/Lome_RNA_annot_comparison/protein_lengths_histogram.png")

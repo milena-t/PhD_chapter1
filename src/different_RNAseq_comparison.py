@@ -11,10 +11,10 @@ import numpy as np
 def filepaths_SE_stats():
     SE_stats_dict = {
         "Lome_RNA" : "/Users/miltr339/work/PhD_code/PhD_chapter1/data/Lome_RNA_annot_comparison/Lome_single_exon_stats.txt",
-        "Lu_RNA" : "/Users/miltr339/work/PhD_code/PhD_chapter1/data/Lome_RNA_annot_comparison/Lu_single_exon_stats.txt",
+        "Nigeria_RNA" : "/Users/miltr339/work/PhD_code/PhD_chapter1/data/Lome_RNA_annot_comparison/Lu_single_exon_stats.txt",
         "SI_RNA" : "/Users/miltr339/work/PhD_code/PhD_chapter1/data/Lome_RNA_annot_comparison/SI_single_exon_stats.txt",
-        "Lu_native" : "/Users/miltr339/work/PhD_code/PhD_chapter1/data/Lome_RNA_annot_comparison/Lu_native.txt",
         "Kaufmann_native" : "/Users/miltr339/work/PhD_code/PhD_chapter1/data/Lome_RNA_annot_comparison/Kaufmann_nonsuperscaffoleded.txt",
+        "Lu_native" : "/Users/miltr339/work/PhD_code/PhD_chapter1/data/Lome_RNA_annot_comparison/Lu_native.txt",
     }
     return SE_stats_dict
 
