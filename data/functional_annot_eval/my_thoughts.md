@@ -51,7 +51,7 @@ Which are these orthogroups (all are unsignificant in GS and TE correlations):
 * N0.HOG0000401 (Gene Group 9) 
 * N0.HOG0009002 (Gene Group 9)
 
-similar to the detoxification, which means not a lot going on in Bruchinae and Curculionidae, but there's one massively expanding in Z. morio (N0.HOG0000401).
+similar to the detoxification, which means not a lot going on in Bruchinae and Curculionidae, but there's one massively expanding in Z. morio (N0.HOG0000401). TODO read about that one specifically? what is it about the reproduction in that species?
 
 
 
