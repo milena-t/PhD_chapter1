@@ -96,7 +96,7 @@ def read_whole_genome_stats(filepath):
     return(stats_dict)
 
 
-def plot_gene_counts(orthogroups_dict, sig_list, all_cafe_list, species_names, annotation = "native", filename = "significant_orthogroups_from_CAFE.png", transparent_bg=True):
+def plot_gene_counts(orthogroups_dict, sig_list, all_cafe_list, species_names, annotation = "native", filename = "significant_orthogroups_from_CAFE.png", transparent_bg=True, title = ""):
     fs = 30 # set font size
     # plot each column in the dataframe as a line in the same plot thorugh a for-loop
     fig = plt.figure(figsize=(17,11))
@@ -165,7 +165,10 @@ def plot_gene_counts(orthogroups_dict, sig_list, all_cafe_list, species_names, a
     handles.append(mpatches.Patch(color=colors["background"]))
     labels.append("non-significant")
 
-    ax.legend(handles, labels, fontsize = fs, loc='upper center', title_fontsize = fs)
+    if title == "":
+        ax.legend(handles, labels, fontsize = fs, loc='upper center', title_fontsize = fs)
+    else:
+        plt.title(title, fontsize = fs)
 
     #ax.legend(fontsize = fs)
     # set grid only for X axis ticks 
