@@ -66,7 +66,7 @@ It contains these orthogroups:
 * N0.HOG0002393
 * N0.HOG0000085 (21 members in *Z. morio*!)
 
-N0.HOG0000085 shows an expansion in *Z. morio*, which also relates to the polyethylene synthesis described above. 
+N0.HOG0000085 shows an expansion in *Z. morio*, which also relates to the polyethylene synthesis described above. The other two are pretty boring
 
 Cytochrome P450 according to [this paper](https://link.springer.com/article/10.1186/1471-2164-14-174#Sec2) is also important in mitochondria, but Gene Group 33, which is mitochondrial translation shows no interesting dynamics.
 
@@ -82,7 +82,7 @@ which is insignificant for the correlation with repeat content and also with gen
 </p>
 
 
-Aldehyde is a byproduct of alcohol metabolism (in humans?) and is broken down into less toxic molecules by aldehyde oxidase. In insects, aldehyde can come from other sources, such as pheromones, and "*Long-chain, unsaturated alcohol and aldehyde compounds arecommon  female-produced  sex  pheromones (REF)*" ([source](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0067794)). They conclude that "*\[The\] results suggest that an antennae-specific aldehyde oxidasefrom  the  navel  orangeworm,  AtraAOX2,  might  be  involved  indegradation  of  host  plant  volatile  compounds  and  pheromone*", which helps both with distinguishing plant compounds from the pheromones they are actually interested in, and also protects them from volatile plant compounts and potentiallz even pesticides.
+Aldehyde is a byproduct of alcohol metabolism (in humans?) and is broken down into less toxic molecules by aldehyde oxidase. In insects, aldehyde can come from other sources, such as pheromones, and "*Long-chain, unsaturated alcohol and aldehyde compounds are common  female-produced  sex  pheromones (REF)*" ([source](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0067794)). They conclude that "*\[The\] results suggest that an antennae-specific aldehyde oxidasefrom  the  navel  orangeworm,  AtraAOX2,  might  be  involved  indegradation  of  host  plant  volatile  compounds  and  pheromone*", which helps both with distinguishing plant compounds from the pheromones they are actually interested in, and also protects them from volatile plant compounts and potentially even pesticides.
 
 Quote from the abstract: "*Our data suggest AtraAOX2 might be involved in degradation of a diversity of aldehydes including sex pheromones, plant-derived semiochemicals, and chemical cues for oviposition sites. Additionally, AtraAOX2 could protect the insect's olfactory system from xenobiotics, including pesticides that might reach the sensillar lymph surrounding the olfactory receptor neurons.*" (I don't understand the methods or biochemistry in general enough to judge how accurate this is). 
 
@@ -101,7 +101,7 @@ Which are these orthogroups (all are unsignificant in GS and TE correlations):
 * N0.HOG0000401 (Gene Group 9) (21 in *Z. morio*)
 * N0.HOG0009002 (Gene Group 9) (4 in *I. luminosus*)
   
-Similar to the detoxification, which means not a lot going on in Bruchinae and Curculionidae, but there's one massively expanding in *Z. morio* (N0.HOG0000401), whose expression peak is in adult males, and is predicted to be in the ER according to flybase, the molecular function is just protein homodimerization. Otherwise there is not a lot of info, even in *D. melanogaster*. I have a hard time finding good papers for this based on this extremely vague information.
+Similar to the detoxification, which means not a lot going on in Bruchinae and Curculionidae, but there's one massively expanding in *Z. morio* (N0.HOG0000401), whose expression peak is in adult males, and is predicted to be in the ER according to flybase, the molecular function is just protein homodimerization. Otherwise there is not a lot of info, even in *D. melanogaster*. I have a hard time finding good papers for this based on this extremely vague information.  The other orthogroups are also not super helpful, none show very interesting dynamics that I could read into.
 
 <p>
 <img src="/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_5_8_9_reproduction_GF_sizes.png" alt="Gene group 5,8,9" width=45%>
@@ -114,9 +114,9 @@ Similar to the detoxification, which means not a lot going on in Bruchinae and C
 This also involves cuticular proteins due to how insects actually do the sensing, so here I think these are the relevant Gene Groups:
 
 * Gene Group 7, Function: odorant binding
+* Gene Group 30, Function: pheromone sensing
 * Gene Group 16, Function: chitin-related
 * Gene Group 23, Function: Cuticular protein
-* Gene Group 30, Function: pheromone sensing
 
 
 

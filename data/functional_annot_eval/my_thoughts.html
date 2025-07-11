@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="UTF-8">
-            <title>Functional annotation of rapidly evolving orthogroups</title>
-            <style>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Functional annotation of rapidly evolving orthogroups</title>
+        <style>
 /* From extension vscode.github */
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
@@ -11,14 +11,47 @@
  *--------------------------------------------------------------------------------------------*/
 
 .vscode-dark img[src$=\#gh-light-mode-only],
-.vscode-light img[src$=\#gh-dark-mode-only],
-.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
-.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+.vscode-light img[src$=\#gh-dark-mode-only] {
 	display: none;
 }
 
+/* From extension ms-toolsai.jupyter */
+/* These classnames are inherited from bootstrap, but are present in most notebook renderers */
+
+.alert {
+    width: auto;
+    padding: 1em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+.alert > *:last-child {
+    margin-bottom: 0;
+}
+#preview > .alert:last-child {
+    /* Prevent this being set to zero by the default notebook stylesheet */
+    padding-bottom: 1em;
+}
+
+.alert-success {
+    /* Note there is no suitable color available, so we just copy "info" */
+    background-color: var(--theme-info-background);
+    color: var(--theme-info-foreground);
+}
+.alert-info {
+    background-color: var(--theme-info-background);
+    color: var(--theme-info-foreground);
+}
+.alert-warning {
+    background-color: var(--theme-warning-background);
+    color: var(--theme-warning-foreground);
+}
+.alert-danger {
+    background-color: var(--theme-error-background);
+    color: var(--theme-error-foreground);
+}
+
 </style>
-            
+        
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
 <style>
@@ -39,106 +72,10 @@
     pointer-events: none;
 }
 </style>
-<style>
-:root {
-  --color-note: #0969da;
-  --color-tip: #1a7f37;
-  --color-warning: #9a6700;
-  --color-severe: #bc4c00;
-  --color-caution: #d1242f;
-  --color-important: #8250df;
-}
-
-</style>
-<style>
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-note: #2f81f7;
-    --color-tip: #3fb950;
-    --color-warning: #d29922;
-    --color-severe: #db6d28;
-    --color-caution: #f85149;
-    --color-important: #a371f7;
-  }
-}
-
-</style>
-<style>
-.markdown-alert {
-  padding: 0.5rem 1rem;
-  margin-bottom: 16px;
-  color: inherit;
-  border-left: .25em solid #888;
-}
-
-.markdown-alert>:first-child {
-  margin-top: 0
-}
-
-.markdown-alert>:last-child {
-  margin-bottom: 0
-}
-
-.markdown-alert .markdown-alert-title {
-  display: flex;
-  font-weight: 500;
-  align-items: center;
-  line-height: 1
-}
-
-.markdown-alert .markdown-alert-title .octicon {
-  margin-right: 0.5rem;
-  display: inline-block;
-  overflow: visible !important;
-  vertical-align: text-bottom;
-  fill: currentColor;
-}
-
-.markdown-alert.markdown-alert-note {
-  border-left-color: var(--color-note);
-}
-
-.markdown-alert.markdown-alert-note .markdown-alert-title {
-  color: var(--color-note);
-}
-
-.markdown-alert.markdown-alert-important {
-  border-left-color: var(--color-important);
-}
-
-.markdown-alert.markdown-alert-important .markdown-alert-title {
-  color: var(--color-important);
-}
-
-.markdown-alert.markdown-alert-warning {
-  border-left-color: var(--color-warning);
-}
-
-.markdown-alert.markdown-alert-warning .markdown-alert-title {
-  color: var(--color-warning);
-}
-
-.markdown-alert.markdown-alert-tip {
-  border-left-color: var(--color-tip);
-}
-
-.markdown-alert.markdown-alert-tip .markdown-alert-title {
-  color: var(--color-tip);
-}
-
-.markdown-alert.markdown-alert-caution {
-  border-left-color: var(--color-caution);
-}
-
-.markdown-alert.markdown-alert-caution .markdown-alert-title {
-  color: var(--color-caution);
-}
-
-</style>
         
-        </head>
-        <body class="vscode-body vscode-light">
-            <h1 id="functional-annotation-of-rapidly-evolving-orthogroups">Functional annotation of rapidly evolving orthogroups</h1>
+    </head>
+    <body class="vscode-body vscode-light">
+        <h1 id="functional-annotation-of-rapidly-evolving-orthogroups">Functional annotation of rapidly evolving orthogroups</h1>
 <p>The goal here is to identify interesting functional annotation orthogroups that can be summarized in a table in the main text. Probably like 8-15 or so. Ones that i definitely want to mention:</p>
 <ul>
 <li>Whatever is going on with the giant ones in A. obtectus</li>
@@ -159,7 +96,7 @@
 <p>I am doing stuff with the table in <code>/PhD_chapter1/src/functional_annotation_eval.py</code>.</p>
 <h2 id="large-expansion-in-a-obtectus">large expansion in <em>A. obtectus</em></h2>
 <p>A. obtectus has two large orthogroups that are twice as large as the third largest one, N0.HOG0000035 and N0.HOG0000014. The flybase IDs have no functional annotation, and are not associated with any DAVID gene group. The correlation with genome size and repeat content is <em>significant</em> in both cases. Considering that the others are not significant in their association, maybe that's not a biological signal for selection based on function, but instead the expansion is caused by drift through TE activity (and whatever the genome size does)?</p>
-<p><img src="file:////Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Aobt_expansion_GF_sizes.png" alt="A. obtectus expansion" width=45%></p>
+<p><img src="file:////Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/Aobt_expansion_GF_sizes.png" alt="A. obtectus expansion" width=45%></p>
 <h2 id="detoxification">Detoxification</h2>
 <p>Gene Group 1 is the main detoxification group, with all the cytochrome P450 in it, but Gene Group 17 which has aldehyde deoxide in it also has something to do with detoxification. All of these orthogroups are very quiet in <em>Bruchinae</em> and <em>Curculionidae</em> (<em>D. ponderosae</em> and <em>R. ferrugineus</em>). Notable expansions are especially <em>Elateriforma</em> (<em>I. luminosus</em>) which are fluorescent, and <em>Tenebrioids</em>. The two functional anotations in this category are:</p>
 <ul>
@@ -167,13 +104,6 @@
 <li>Aldehyde oxidase is a part of the acetaldehyde metabolic process, which breaks down acetaldehyde into less toxic substances</li>
 </ul>
 <p><em>Tenebrioid</em> insects such as <em>T. molitor</em> and <em>Z. morio</em> can break down plasctics in their gut as larvae. This is possible through specific microorganisms in their gut working together with insect-encoded proteins that are secreted (the degradation rate of isolated microorganisms is significantly lower). <a href="https://link.springer.com/article/10.1007/s10924-023-03029-z#Sec11">Source</a> for all that follows. The first step is polyethylene being oxidated by Cytochrome p450 (and others), then more chemistry (involving aldehyde dehydrogenase, which is not the same as aldehyde oxidase!), until it is broken down by lipid metabolism in the cells. According to the flybase annotations, the expression profiles of the Gene Group 1 orthogroups have their peak mostly during larval, and pupae stages, but not exclusively (some are adult sex specific). The differential expression analysis does not provide super strong evidence for CYP though.</p>
-<p>Since the lipid metabolism in the cells is the end of the polyethylene breakdown, this gene group is also relevant:</p>
-<ul>
-<li>Gene Group 3, Function: lipid metabolic process (digestion)</li>
-</ul>
-<p>
-<img src="file:////Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_3_lipid_metabolism_GF_sizes.png" alt="Gene group 3" width=45%>
-</p>
 <h3 id="gene-group-1-cytochrome-p450">Gene Group 1: Cytochrome P450</h3>
 <p>This gene group is very insignificant for the correlation with both repeat content and genome size. All orthogroups in this gene group are:</p>
 <ul>
@@ -190,6 +120,22 @@
 <p>
 <img src="file:////Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_1_detoxofication_GF_sizes.png" alt="Gene group 1" width=45%>
 </p>
+<h4 id="gene-group-3-lipid-metabolic-process">Gene Group 3: lipid metabolic process</h4>
+<p>Since the lipid metabolism in the cells is the end of the polyethylene breakdown, this gene group is also relevant:</p>
+<ul>
+<li>Gene Group 3, Function: lipid metabolic process (digestion)</li>
+</ul>
+<p>
+<img src="file:////Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_3_lipid_metabolism_GF_sizes.png" alt="Gene group 3" width=45%>
+</p>
+<p>It contains these orthogroups:</p>
+<ul>
+<li>N0.HOG0000086</li>
+<li>N0.HOG0002393</li>
+<li>N0.HOG0000085 (21 members in <em>Z. morio</em>!)</li>
+</ul>
+<p>N0.HOG0000085 shows an expansion in <em>Z. morio</em>, which also relates to the polyethylene synthesis described above.</p>
+<p>Cytochrome P450 according to <a href="https://link.springer.com/article/10.1186/1471-2164-14-174#Sec2">this paper</a> is also important in mitochondria, but Gene Group 33, which is mitochondrial translation shows no interesting dynamics.</p>
 <h3 id="gene-group-17-aldehyde-oxidase">Gene Group 17: aldehyde oxidase</h3>
 <p>This gene group contains only aldehyde oxidase. The only rapidly evolving orthogroup is:</p>
 <ul>
@@ -222,9 +168,12 @@ which is insignificant for the correlation with repeat content and also with gen
 <img src="file:////Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/OG_N0.HOG0000401_reproduction_GF_sizes.png" alt="N0.HOG0000401" width=45%>
 </p>
 <h2 id="pheromone-sensing">Pheromone sensing</h2>
-<p>This also involves cuticular proteins due to how insects actually do the sensing</p>
+<p>This also involves cuticular proteins due to how insects actually do the sensing, so here I think these are the relevant Gene Groups:</p>
 <ul>
-<li>Gene Group 30   Function: pheromone sensing</li>
+<li>Gene Group 7, Function: odorant binding</li>
+<li>Gene Group 16, Function: chitin-related</li>
+<li>Gene Group 23, Function: Cuticular protein</li>
+<li>Gene Group 30, Function: pheromone sensing</li>
 </ul>
 <h1 id="papers">Papers</h1>
 <p>These are papers I didn't cite anywhere above but might still want to reference in my manuscript.</p>
@@ -237,9 +186,10 @@ which is insignificant for the correlation with repeat content and also with gen
 | N0.HOG0000035 | 0.0 | None | None | 0.07833822365005534 | 0.017242915938343744 | 0.004367727725001441 | 0.011561278395119738 | None | 1 | 11 | 23 | 19 | 5 | 1 | 15 | 10 | 3 | 4 | 135 | 1 | 32 | 17 | 134 | rna-NM_001275459.1 | FBgn0037633 |
 | N0.HOG0000014 | 0.0 | None | None | 0.08252868448759042 | 0.029857058816618244 | 0.00544176454054848 | 0.003931094669538225 | None | 1 | 29 | 60 | 13 | 34 | 1 | 10 | 4 | 1 | 3 | 121 | 6 | 38 | 56 | 120 | rna-NM_136949.2 | FBgn0033750 |
 | N0.HOG0000140 | 0.0 | Gene Group 1 | detoxification | 0.0074300433129667505 | 0.7286375887369507 | 0.00030145542591610025 | 0.7920270858115639 | Cytochrome P450 6w1(Cyp6w1) | 6 | 26 | 8 | 8 | 9 | 8 | 14 | 17 | 1 | 6 | 5 | 3 | 2 | 6 | 25 | rna-NM_001299216.1 | FBgn0033065 |
+| N0.HOG0000085 | 0.0 | Gene Group 3 | None | -0.0193651890143579 | 0.21640001185062122 | -0.0005013295348651256 | 0.5585610643744727 | uncharacterized protein(CG3635) | 13 | 6 | 7 | 10 | 7 | 2 | 21 | 5 | 9 | 6 | 2 | 4 | 7 | 7 | 19 | rna-NM_136294.5 | FBgn0032981 |
 | N0.HOG0000401 | 0.0 | Gene Group 9 | sexual reproduction | -0.022203390866792034 | 0.3806646826028459 | -0.0013093512895652032 | 0.33042982105018115 | uncharacterized protein(CG34189) | 3 | 10 | 6 | 4 | 9 | 3 | 21 | 5 | 1 | 3 | 1 | 1 | 1 | 1 | 20 | rna-NM_001103877.2 | FBgn0085218 |</p>
 
-            
-            
-        </body>
-        </html>
+        
+        
+    </body>
+    </html>
