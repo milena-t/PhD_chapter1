@@ -356,7 +356,7 @@ def parse_blast_outfile(blast_filepath, query_fasta:str = "", min_seq_ident = 90
         return(out_dict)
 
 
-def parse_david_gene_groups_file(david_gene_groups_filepath:str):
+def parse__gene_groups_file(david_gene_groups_filepath:str):
     """
     parse the gene groups output from DAVID functional analysis to sort the flybase IDs into functional gene groups
     out_dict = {

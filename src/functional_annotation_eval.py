@@ -5,17 +5,22 @@ Plot some stuff to evaluate the functional annotation of the gene groups
 import plot_basics as my_plotting
 import parse_orthogroups as OGs
 import plotting.plot_significant_orthogroups_from_CAFE as plot_OG
+import make_orthogroup_flybaseID_table as parse_DAVID
 import matplotlib.pyplot as plt
+import numpy as np
 import base64
 import re
 from bs4 import BeautifulSoup
+
+from collections import Counter
 
 
 def filepaths():
     orthogroups_orthoDB_filepath = "/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/orthofinder_uniform/N0.tsv"
     out_dir = "/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/"
     tree = "/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_only_species_names.nw"
-    return out_dir,orthogroups_orthoDB_filepath,tree
+    DAVID_path = "/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/functional_table_per_OG.tsv"
+    return out_dir,orthogroups_orthoDB_filepath,tree, DAVID_path
 
 def orthogroups_lists():
     out_dict = {
@@ -84,7 +89,7 @@ def inline_svgs_in_html(html_path, output_path = ""):
 
             if 'height' in svg_soup.attrs:
                 del svg_soup['height']
-                
+
             return str(svg_soup)
             # return svg_content
         except FileNotFoundError:
@@ -109,10 +114,95 @@ def get_base64_for_html_embed(image_path):
     return encoded
 
 
+def get_OG_david_annot(table_path:str):
+    """
+    parse the table created from the flybase ID functional annotation into a dictionary
+    orthogroups = { orthogroup_ID : [ Gene_Group_A , Gene_Group_B , ... ] }
+    gene_groups = { gene_group : "function" }
+    """
+    orthogroups = {}
+    gene_groups = {}
+    with open(table_path, "r") as table:
+        table_lines = table.readlines()
+        for line in table_lines[1:]:
+            Orthogroup_ID,CAFE_p_value,Gene_Group,Group_function,repeat_correlation_slope,repeat_correlation_p_value,GS_correlation_slope,GS_correlation_p_value,Gene_Name,D_melanogaster,I_luminosus,P_pyralis,C_septempunctata,A_verrucosus,T_castaneum,Z_morio,T_molitor,D_ponderosae,R_ferrugineus,A_obtectus,B_siliquastri,C_chinensis,C_maculatus,max_delta_GF,transcript_ID_native,Flybase,Flybase_summary = line.strip().split("\t")
+            
+            if Orthogroup_ID in orthogroups:
+                orthogroups[Orthogroup_ID].append(Gene_Group)
+            else:
+                orthogroups[Orthogroup_ID] = [Gene_Group]
+            
+            if Gene_Group not in gene_groups:
+                gene_groups[Gene_Group] = Group_function
+    
+    return orthogroups, gene_groups
+
+
+
+def investigate_large_gene_families(tree_path:str, DAVID_table_path:str, orthogroups_path:str, percentile:int = 95, verbose = False):
+    """
+    go through the orthogroups by species, and get each that is the largest nth percentile of gene family size in that species
+    Then check the DAVID gene groups, and count how these orthogroups are represented there to see if some 
+    gene groups are more often expanded in one species than others.
+    """
+
+    # get sorted species names from tree
+    species_names_unsorted = my_plotting.plot_tree_manually(tree_path)
+    species_coords_sorted = sorted(list(species_names_unsorted.keys()))
+    species_list = [species_names_unsorted[species_coord] for species_coord in species_coords_sorted]
+    orthogroups_GG_dict, gene_groups_function = get_OG_david_annot(DAVID_table_path)
+    
+    GF_function_counts = {}
+    for species in species_list:
+        species_dict_list = OGs.parse_orthogroups_dict(orthogroups_path, species=species)
+        GF_sizes_list = [ len(transcript_IDs) if transcript_IDs != [''] else 0 for transcript_IDs in species_dict_list.values()]
+        sizes = np.array(GF_sizes_list)
+        percentile_size = np.percentile(sizes, q = percentile)
+
+        if percentile_size<2:
+            percentile_size = 2.0
+        expanded_OGs = { orthogroup : members_list  for orthogroup, members_list in species_dict_list.items() if len(members_list) > percentile_size}
+        if verbose:
+            print(f" * {species} : number of gene families with more than {int(percentile_size)} members (upper {percentile}th percentile) = {len(expanded_OGs)}")
+
+        gene_groups_list = []
+        functions = []
+        for orthogroup in expanded_OGs.keys():
+            try:
+                gene_groups = orthogroups_GG_dict[orthogroup]
+            except:
+                gene_groups = ["unsignificant"] # if the orthogroup is not in the table then it is not significantly rapidly evolving according to CAFE
+            gene_groups_list = gene_groups_list + gene_groups
+            
+            functions_list = [gene_groups_function[gg] if gg != "unsignificant" else "unsignificant" for gg in gene_groups ]
+            functions = functions + functions_list
+        
+        gene_groups_counts = Counter(gene_groups_list)
+        functions_conunts = Counter(functions)
+                
+        if verbose:
+            print(f"\t{len(gene_groups_counts)-2} unique Gene Groups with functional annotations")
+            for function, count in functions_conunts.items():
+                if count>1 and function not in ["unsignificant", "None"]:
+                    print(f"\t  - {count} GFs annotated as : {function}")
+        
+        GF_function_counts[species] = functions_conunts
+        if verbose:
+            print(f"")
+    return GF_function_counts
+
+        
+
+
+
+
+
 if __name__ == "__main__":
     
-    out_dir,orthogroups_orthoDB_filepath,tree_path = filepaths()
+    out_dir,orthogroups_orthoDB_filepath,tree_path,DAVID_path = filepaths()
     OG_lists_dict = orthogroups_lists()
+
+    investigate_large_gene_families(tree_path=tree_path, DAVID_table_path=DAVID_path, orthogroups_path=orthogroups_orthoDB_filepath, verbose = True)
 
     # --> AOBT EXPANSION
     OGs_title = " and ".join(OG_lists_dict["Aobt_expansion"])
@@ -139,5 +229,6 @@ if __name__ == "__main__":
 
 
     ##  IMPORT SVG TO HTML
-    html_path = "/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/my_thoughts.html"
-    inline_svgs_in_html(html_path=html_path)
+    if False:
+        html_path = "/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/my_thoughts.html"
+        inline_svgs_in_html(html_path=html_path)
