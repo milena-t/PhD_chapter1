@@ -155,6 +155,7 @@ def investigate_large_gene_families(tree_path:str, DAVID_table_path:str, orthogr
     GF_function_counts = {}
     for species in species_list:
         species_dict_list = OGs.parse_orthogroups_dict(orthogroups_path, species=species)
+        OGs_species = [OG_id for OG_id,transcript_list in species_dict_list.items() if transcript_list != ['']]
         GF_sizes_list = [ len(transcript_IDs) if transcript_IDs != [''] else 0 for transcript_IDs in species_dict_list.values()]
         sizes = np.array(GF_sizes_list)
         percentile_size = np.percentile(sizes, q = percentile)
@@ -163,7 +164,7 @@ def investigate_large_gene_families(tree_path:str, DAVID_table_path:str, orthogr
             percentile_size = 2.0
         expanded_OGs = { orthogroup : members_list  for orthogroup, members_list in species_dict_list.items() if len(members_list) > percentile_size}
         if verbose:
-            print(f" * {species} : number of gene families with more than {int(percentile_size)} members (upper {percentile}th percentile) = {len(expanded_OGs)}")
+            print(f" * {species} : number of gene families with more than {int(percentile_size)} members (upper {100-percentile}th percentile) = {len(expanded_OGs)} (of {len(OGs_species)} orthogroups)")
 
         gene_groups_list = []
         functions = []
@@ -181,7 +182,7 @@ def investigate_large_gene_families(tree_path:str, DAVID_table_path:str, orthogr
         functions_conunts = Counter(functions)
                 
         if verbose:
-            print(f"\t{len(gene_groups_counts)-2} unique Gene Groups with functional annotations")
+            print(f"\t{len(gene_groups_counts)-2} unique Gene Groups with functional annotations, these ones appear more than once:")
             for function, count in functions_conunts.items():
                 if count>1 and function not in ["unsignificant", "None"]:
                     print(f"\t  - {count} GFs annotated as : {function}")

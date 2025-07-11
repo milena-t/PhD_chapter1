@@ -1,5 +1,5 @@
- * D_melanogaster : number of gene families with more than 2 members (upper 95th percentile) = 506
-	25 unique Gene Groups with functional annotations
+ * D_melanogaster : number of gene families with more than 2 members (upper 5th percentile) = 506 (of 8760 orthogroups)
+	25 unique Gene Groups with functional annotations, these ones appear more than once:
 	  - 6 GFs annotated as : detoxification
 	  - 2 GFs annotated as : transmembrane transport (toxin resistance)
 	  - 3 GFs annotated as : pheromone sensing
@@ -10,8 +10,8 @@
 	  - 2 GFs annotated as : molting and development
 	  - 2 GFs annotated as : immunity (antimicrobial)
 
- * I_luminosus : number of gene families with more than 3 members (upper 95th percentile) = 1276
-	27 unique Gene Groups with functional annotations
+ * I_luminosus : number of gene families with more than 3 members (upper 5th percentile) = 1276 (of 13090 orthogroups)
+	27 unique Gene Groups with functional annotations, these ones appear more than once:
 	  - 6 GFs annotated as : detoxification
 	  - 3 GFs annotated as : transmembrane transport (toxin resistance)
 	  - 3 GFs annotated as : pheromone sensing
@@ -26,8 +26,8 @@
 	  - 2 GFs annotated as : chitin-related
 	  - 2 GFs annotated as : sexual reproduction
 
- * P_pyralis : number of gene families with more than 3 members (upper 95th percentile) = 1213
-	27 unique Gene Groups with functional annotations
+ * P_pyralis : number of gene families with more than 3 members (upper 5th percentile) = 1213 (of 12644 orthogroups)
+	27 unique Gene Groups with functional annotations, these ones appear more than once:
 	  - 6 GFs annotated as : detoxification
 	  - 3 GFs annotated as : transmembrane transport (toxin resistance)
 	  - 3 GFs annotated as : pheromone sensing
@@ -44,8 +44,8 @@
 	  - 3 GFs annotated as : neurological (mostly uncharacterized)
 	  - 2 GFs annotated as : chitin-related
 
- * C_septempunctata : number of gene families with more than 2 members (upper 95th percentile) = 968
-	27 unique Gene Groups with functional annotations
+ * C_septempunctata : number of gene families with more than 2 members (upper 5th percentile) = 968 (of 10892 orthogroups)
+	27 unique Gene Groups with functional annotations, these ones appear more than once:
 	  - 4 GFs annotated as : detoxification
 	  - 3 GFs annotated as : pheromone sensing
 	  - 2 GFs annotated as : Cuticular protein
@@ -60,8 +60,8 @@
 	  - 3 GFs annotated as : chromatin organization and transcription regulation
 	  - 2 GFs annotated as : neurological (mostly uncharacterized)
 
- * A_verrucosus : number of gene families with more than 2 members (upper 95th percentile) = 914
-	27 unique Gene Groups with functional annotations
+ * A_verrucosus : number of gene families with more than 2 members (upper 5th percentile) = 914 (of 12405 orthogroups)
+	27 unique Gene Groups with functional annotations, these ones appear more than once:
 	  - 6 GFs annotated as : detoxification
 	  - 2 GFs annotated as : transmembrane transport (toxin resistance)
 	  - 6 GFs annotated as : pheromone sensing
@@ -75,8 +75,8 @@
 	  - 3 GFs annotated as : neurological (mostly uncharacterized)
 	  - 2 GFs annotated as : microtubule
 
- * T_castaneum : number of gene families with more than 2 members (upper 95th percentile) = 548
-	31 unique Gene Groups with functional annotations
+ * T_castaneum : number of gene families with more than 2 members (upper 5th percentile) = 548 (of 11778 orthogroups)
+	31 unique Gene Groups with functional annotations, these ones appear more than once:
 	  - 7 GFs annotated as : detoxification
 	  - 2 GFs annotated as : transmembrane transport (toxin resistance)
 	  - 6 GFs annotated as : pheromone sensing
@@ -90,8 +90,8 @@
 	  - 2 GFs annotated as : neurological (mostly uncharacterized)
 	  - 2 GFs annotated as : chromatin organization and transcription regulation
 
- * Z_morio : number of gene families with more than 2 members (upper 95th percentile) = 1373
-	34 unique Gene Groups with functional annotations
+ * Z_morio : number of gene families with more than 2 members (upper 5th percentile) = 1373 (of 13008 orthogroups)
+	34 unique Gene Groups with functional annotations, these ones appear more than once:
 	  - 2 GFs annotated as : transmembrane transport (toxin resistance)
 	  - 6 GFs annotated as : pheromone sensing
 	  - 2 GFs annotated as : Cuticular protein
@@ -110,8 +110,8 @@
 	  - 2 GFs annotated as : mitochondrial translation
 	  - 2 GFs annotated as : G-protein coupled receptor (and other?)
 
- * T_molitor : number of gene families with more than 2 members (upper 95th percentile) = 732
-	34 unique Gene Groups with functional annotations
+ * T_molitor : number of gene families with more than 2 members (upper 5th percentile) = 732 (of 11174 orthogroups)
+	34 unique Gene Groups with functional annotations, these ones appear more than once:
 	  - 7 GFs annotated as : detoxification
 	  - 6 GFs annotated as : pheromone sensing
 	  - 2 GFs annotated as : Cuticular protein
@@ -126,8 +126,8 @@
 	  - 2 GFs annotated as : neurological (mostly uncharacterized)
 	  - 2 GFs annotated as : chromatin organization and transcription regulation
 
- * D_ponderosae : number of gene families with more than 2 members (upper 95th percentile) = 839
-	23 unique Gene Groups with functional annotations
+ * D_ponderosae : number of gene families with more than 2 members (upper 5th percentile) = 839 (of 10658 orthogroups)
+	23 unique Gene Groups with functional annotations, these ones appear more than once:
 	  - 5 GFs annotated as : detoxification
 	  - 2 GFs annotated as : pheromone sensing
 	  - 3 GFs annotated as : uncharacterized
@@ -137,8 +137,8 @@
 	  - 2 GFs annotated as : transcription regulation
 	  - 3 GFs annotated as : chromatin organization and transcription regulation
 
- * R_ferrugineus : number of gene families with more than 2 members (upper 95th percentile) = 600
-	23 unique Gene Groups with functional annotations
+ * R_ferrugineus : number of gene families with more than 2 members (upper 5th percentile) = 600 (of 11320 orthogroups)
+	23 unique Gene Groups with functional annotations, these ones appear more than once:
 	  - 6 GFs annotated as : detoxification
 	  - 3 GFs annotated as : pheromone sensing
 	  - 3 GFs annotated as : Cuticular protein
@@ -150,8 +150,8 @@
 	  - 2 GFs annotated as : chromatin organization and transcription regulation
 	  - 2 GFs annotated as : G-protein coupled receptor (and other?)
 
- * A_obtectus : number of gene families with more than 3 members (upper 95th percentile) = 1211
-	20 unique Gene Groups with functional annotations
+ * A_obtectus : number of gene families with more than 3 members (upper 5th percentile) = 1211 (of 12608 orthogroups)
+	20 unique Gene Groups with functional annotations, these ones appear more than once:
 	  - 7 GFs annotated as : detoxification
 	  - 3 GFs annotated as : transmembrane transport (toxin resistance)
 	  - 3 GFs annotated as : pheromone sensing
@@ -164,8 +164,8 @@
 	  - 5 GFs annotated as : chromatin organization and transcription regulation
 	  - 3 GFs annotated as : neurological (mostly uncharacterized)
 
- * B_siliquastri : number of gene families with more than 2 members (upper 95th percentile) = 433
-	18 unique Gene Groups with functional annotations
+ * B_siliquastri : number of gene families with more than 2 members (upper 5th percentile) = 433 (of 11255 orthogroups)
+	18 unique Gene Groups with functional annotations, these ones appear more than once:
 	  - 5 GFs annotated as : detoxification
 	  - 3 GFs annotated as : transmembrane transport (toxin resistance)
 	  - 3 GFs annotated as : pheromone sensing
@@ -177,8 +177,8 @@
 	  - 4 GFs annotated as : protein breakdown (proteolysis)
 	  - 3 GFs annotated as : neurological (mostly uncharacterized)
 
- * C_chinensis : number of gene families with more than 3 members (upper 95th percentile) = 877
-	25 unique Gene Groups with functional annotations
+ * C_chinensis : number of gene families with more than 3 members (upper 5th percentile) = 877 (of 12655 orthogroups)
+	25 unique Gene Groups with functional annotations, these ones appear more than once:
 	  - 4 GFs annotated as : detoxification
 	  - 2 GFs annotated as : transmembrane transport (toxin resistance)
 	  - 2 GFs annotated as : uncharacterized
@@ -189,8 +189,8 @@
 	  - 6 GFs annotated as : chromatin organization and transcription regulation
 	  - 3 GFs annotated as : mitochondrial translation
 
- * C_maculatus : number of gene families with more than 4 members (upper 95th percentile) = 1106
-	22 unique Gene Groups with functional annotations
+ * C_maculatus : number of gene families with more than 4 members (upper 5th percentile) = 1106 (of 14402 orthogroups)
+	22 unique Gene Groups with functional annotations, these ones appear more than once:
 	  - 5 GFs annotated as : detoxification
 	  - 3 GFs annotated as : transmembrane transport (toxin resistance)
 	  - 3 GFs annotated as : uncharacterized
