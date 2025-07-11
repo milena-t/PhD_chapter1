@@ -185,7 +185,7 @@ def plot_gene_counts(orthogroups_dict, sig_list, all_cafe_list, species_names, a
     plt.tight_layout()
 
     plt.savefig(filename, dpi = 300, transparent = transparent_bg)
-    print("Figure saved in the current working directory directory as: "+filename)
+    print(f"Figure saved in the current working directory directory as: {filename}")
     return filename
 
 
