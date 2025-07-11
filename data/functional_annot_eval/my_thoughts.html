@@ -159,7 +159,7 @@
 <p>I am doing stuff with the table in <code>/PhD_chapter1/src/functional_annotation_eval.py</code>.</p>
 <h2 id="large-expansion-in-a-obtectus">large expansion in <em>A. obtectus</em></h2>
 <p>A. obtectus has two large orthogroups that are twice as large as the third largest one, N0.HOG0000035 and N0.HOG0000014. The flybase IDs have no functional annotation, and are not associated with any DAVID gene group. The correlation with genome size and repeat content is <em>significant</em> in both cases. Considering that the others are not significant in their association, maybe that's not a biological signal for selection based on function, but instead the expansion is caused by drift through TE activity (and whatever the genome size does)?</p>
-<p><img src="file:////Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Aobt_expansion_GF_sizes.png" alt="A. obtectus expansion" width=45%></p>
+<p><img src="file:////Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Aobt_expansion_GF_sizes.svg" alt="A. obtectus expansion" width=45%></p>
 <h2 id="detoxification">Detoxification</h2>
 <p>Gene Group 1 is the main detoxification group, with all the cytochrome P450 in it, but Gene Group 17 which has aldehyde deoxide in it also has something to do with detoxification. All of these orthogroups are very quiet in <em>Bruchinae</em> and <em>Curculionidae</em> (<em>D. ponderosae</em> and <em>R. ferrugineus</em>). Notable expansions are especially <em>Elateriforma</em> (<em>I. luminosus</em>) which are fluorescent, and <em>Tenebrioids</em>. The two functional anotations in this category are:</p>
 <ul>
@@ -181,7 +181,7 @@
 </ul>
 <p>This proliferation is unsurprising (expected even?), especially in insects (<a href="https://link.springer.com/article/10.1186/1471-2164-14-174">source</a>, <em>T. castaneum</em> already has more duplications in the CYP superfamily than <em>B. mori</em> or <em>D. melanogaster</em>). Also detoxification, yes, but they also talk about it in relation to larval development and egg maturation. Some subfamilies (not found as significant here) have also been linked to insecticide resistance in <em>T. castaneum</em></p>
 <p>
-<img src="file:////Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_1_detoxofication_GF_sizes.png" alt="Gene group 1" width=45%>
+<img src="file:////Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_1_detoxofication_GF_sizes.svg" alt="Gene group 1" width=45%>
 </p>
 <h4 id="gene-group-3-lipid-metabolic-process">Gene Group 3: lipid metabolic process</h4>
 <p>Since the lipid metabolism in the cells is the end of the polyethylene breakdown, this gene group is also relevant:</p>
@@ -189,7 +189,7 @@
 <li>Gene Group 3, Function: lipid metabolic process (digestion)</li>
 </ul>
 <p>
-<img src="file:////Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_3_lipid_metabolism_GF_sizes.png" alt="Gene group 3" width=45%>
+<img src="file:////Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_3_lipid_metabolism_GF_sizes.svg" alt="Gene group 3" width=45%>
 </p>
 <p>It contains these orthogroups:</p>
 <ul>
@@ -206,7 +206,7 @@
 which is insignificant for the correlation with repeat content and also with genome size. It is expressed during all developmental stages and adults of both sexes. There is what seems like a significant expansion in <em>I. luminosus</em>, but <em>I. luminosus</em> has a shit assembly so take that with a grain of salt.</li>
 </ul>
 <p>
-<img src="file:////Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_17_detoxofication_GF_sizes.png" alt="Gene group 17" width=45%>
+<img src="file:////Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_17_detoxofication_GF_sizes.svg" alt="Gene group 17" width=45%>
 </p>
 <p>Aldehyde is a byproduct of alcohol metabolism (in humans?) and is broken down into less toxic molecules by aldehyde oxidase. In insects, aldehyde can come from other sources, such as pheromones, and &quot;<em>Long-chain, unsaturated alcohol and aldehyde compounds are common  female-produced  sex  pheromones (REF)</em>&quot; (<a href="https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0067794">source</a>). They conclude that &quot;<em>[The] results suggest that an antennae-specific aldehyde oxidasefrom  the  navel  orangeworm,  AtraAOX2,  might  be  involved  indegradation  of  host  plant  volatile  compounds  and  pheromone</em>&quot;, which helps both with distinguishing plant compounds from the pheromones they are actually interested in, and also protects them from volatile plant compounts and potentially even pesticides.</p>
 <p>Quote from the abstract: &quot;<em>Our data suggest AtraAOX2 might be involved in degradation of a diversity of aldehydes including sex pheromones, plant-derived semiochemicals, and chemical cues for oviposition sites. Additionally, AtraAOX2 could protect the insect's olfactory system from xenobiotics, including pesticides that might reach the sensillar lymph surrounding the olfactory receptor neurons.</em>&quot; (I don't understand the methods or biochemistry in general enough to judge how accurate this is).</p>
@@ -227,8 +227,8 @@ which is insignificant for the correlation with repeat content and also with gen
 </ul>
 <p>Similar to the detoxification, which means not a lot going on in Bruchinae and Curculionidae, but there's one massively expanding in <em>Z. morio</em> (N0.HOG0000401), whose expression peak is in adult males, and is predicted to be in the ER according to flybase, the molecular function is just protein homodimerization. Otherwise there is not a lot of info, even in <em>D. melanogaster</em>. I have a hard time finding good papers for this based on this extremely vague information.  The other orthogroups are also not super helpful, none show very interesting dynamics that I could read into.</p>
 <p>
-<img src="file:////Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_5_8_9_reproduction_GF_sizes.png" alt="Gene group 5,8,9" width=45%>
-<img src="file:////Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/OG_N0.HOG0000401_reproduction_GF_sizes.png" alt="N0.HOG0000401" width=45%>
+<img src="file:////Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_5_8_9_reproduction_GF_sizes.svg" alt="Gene group 5,8,9" width=45%>
+<img src="file:////Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/OG_N0.HOG0000401_reproduction_GF_sizes.svg" alt="N0.HOG0000401" width=45%>
 </p>
 <h2 id="pheromone-sensing">Pheromone sensing</h2>
 <p>This also involves cuticular proteins due to how insects actually do the sensing, so here I think these are the relevant Gene Groups:</p>
@@ -255,8 +255,8 @@ which is insignificant for the correlation with repeat content and also with gen
 <li>Gene Group 7 : N0.HOG0009039</li>
 </ul>
 <p>
-<img src="file:////Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_30_pheromone_sensing_GF_sizes.png" alt="Gene group 30" width=45%>
-<img src="file:////Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_7_odorant_binding_GF_sizes.png" alt="Gene Group 7" width=45%>
+<img src="file:////Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_30_pheromone_sensing_GF_sizes.svg" alt="Gene group 30" width=45%>
+<img src="file:////Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_7_odorant_binding_GF_sizes.svg" alt="Gene Group 7" width=45%>
 </p>
 <p>The highlight is N0.HOG0000037 for Gene Group 30 and N0.HOG0000056 for Gene group 7, which make the &quot;M&quot; shape with the peaks at <em>A. verrucosus</em> and <em>Z. morio</em> or <em>T. molitor</em> respectively. Both of them have their expression peak in adult males.</p>
 <p>N0.HOG0000038 (GG30) and N0.HOG0000436 (GG7) have the high peak in <em>I. luminosus</em>.</p>
@@ -272,9 +272,10 @@ which is insignificant for the correlation with repeat content and also with gen
 <li>Gene Group 23: N0.HOG0001108</li>
 <li>Gene Group 23: N0.HOG0000067</li>
 </ul>
+<p>There is again expansions in <em>Z. morio</em>, for both categories. Also this time there's stuff going on in bruchids! GG23:N0.HOG0000108 GG16:N0.HOG0000307 have expansions in bruchids. However, N0.HOG0000108 is involvedin cuticular development during larval and pupae stages, where it's expression peak also happens, so this is not related to adult pheromone sensing.</p>
 <p>
-<img src="file:////Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_16_chitin_related_GF_sizes.png" alt="Gene group 16" width=45%>
-<img src="file:////Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_23_cuticular_protein_GF_sizes.png" alt="Gene Group 23" width=45%>
+<img src="file:////Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_16_chitin_related_GF_sizes.svg" alt="Gene group 16" width=45%>
+<img src="file:////Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_23_cuticular_protein_GF_sizes.svg" alt="Gene Group 23" width=45%>
 </p>
 <h1 id="papers">Papers</h1>
 <p>These are papers I didn't cite anywhere above but might still want to reference in my manuscript.</p>

@@ -96,7 +96,7 @@ def read_whole_genome_stats(filepath):
     return(stats_dict)
 
 
-def plot_gene_counts(orthogroups_dict, sig_list, all_cafe_list, species_names, annotation = "native", filename = "significant_orthogroups_from_CAFE.png", transparent_bg=True, title = ""):
+def plot_gene_counts(orthogroups_dict, sig_list, all_cafe_list, species_names, annotation = "native", filename = "significant_orthogroups_from_CAFE.png", transparent_bg=True, title = "", svg = False):
     fs = 30 # set font size
     # plot each column in the dataframe as a line in the same plot thorugh a for-loop
     fig = plt.figure(figsize=(17,11))
@@ -184,7 +184,11 @@ def plot_gene_counts(orthogroups_dict, sig_list, all_cafe_list, species_names, a
 
     plt.tight_layout()
 
-    plt.savefig(filename, dpi = 300, transparent = transparent_bg)
+    if svg:
+        filename = filename.replace(".png", ".svg")
+        plt.savefig(filename, transparent = transparent_bg)
+    else:
+        plt.savefig(filename, dpi = 300, transparent = transparent_bg)
     print("Figure saved in the current working directory directory as: "+filename)
 
 

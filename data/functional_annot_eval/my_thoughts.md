@@ -19,7 +19,7 @@ I am doing stuff with the table in `/PhD_chapter1/src/functional_annotation_eval
 
 A. obtectus has two large orthogroups that are twice as large as the third largest one, N0.HOG0000035 and N0.HOG0000014. The flybase IDs have no functional annotation, and are not associated with any DAVID gene group. The correlation with genome size and repeat content is *significant* in both cases. Considering that the others are not significant in their association, maybe that's not a biological signal for selection based on function, but instead the expansion is caused by drift through TE activity (and whatever the genome size does)?
 
-<p><img src="/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Aobt_expansion_GF_sizes.png" alt="A. obtectus expansion" width=45%></p>
+<p><img src="Aobt_expansion_GF_sizes.svg" alt="A. obtectus expansion" width=45%></p>
 
 ## Detoxification
 
@@ -46,7 +46,7 @@ This gene group is very insignificant for the correlation with both repeat conte
 This proliferation is unsurprising (expected even?), especially in insects ([source](https://link.springer.com/article/10.1186/1471-2164-14-174), *T. castaneum* already has more duplications in the CYP superfamily than *B. mori* or *D. melanogaster*). Also detoxification, yes, but they also talk about it in relation to larval development and egg maturation. Some subfamilies (not found as significant here) have also been linked to insecticide resistance in *T. castaneum*
 
 <p>
-<img src="/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_1_detoxofication_GF_sizes.png" alt="Gene group 1" width=45%>
+<img src="Gene_Group_1_detoxofication_GF_sizes.svg" alt="Gene group 1" width=45%>
 </p>
 
 
@@ -57,7 +57,7 @@ Since the lipid metabolism in the cells is the end of the polyethylene breakdown
 * Gene Group 3, Function: lipid metabolic process (digestion)
 
 <p>
-<img src="/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_3_lipid_metabolism_GF_sizes.png" alt="Gene group 3" width=45%>
+<img src="Gene_Group_3_lipid_metabolism_GF_sizes.svg" alt="Gene group 3" width=45%>
 </p>
 
 It contains these orthogroups:
@@ -78,7 +78,7 @@ This gene group contains only aldehyde oxidase. The only rapidly evolving orthog
 which is insignificant for the correlation with repeat content and also with genome size. It is expressed during all developmental stages and adults of both sexes. There is what seems like a significant expansion in *I. luminosus*, but *I. luminosus* has a shit assembly so take that with a grain of salt.
 
 <p>
-<img src="/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_17_detoxofication_GF_sizes.png" alt="Gene group 17" width=45%>
+<img src="Gene_Group_17_detoxofication_GF_sizes.svg" alt="Gene group 17" width=45%>
 </p>
 
 
@@ -104,8 +104,8 @@ Which are these orthogroups (all are unsignificant in GS and TE correlations):
 Similar to the detoxification, which means not a lot going on in Bruchinae and Curculionidae, but there's one massively expanding in *Z. morio* (N0.HOG0000401), whose expression peak is in adult males, and is predicted to be in the ER according to flybase, the molecular function is just protein homodimerization. Otherwise there is not a lot of info, even in *D. melanogaster*. I have a hard time finding good papers for this based on this extremely vague information.  The other orthogroups are also not super helpful, none show very interesting dynamics that I could read into.
 
 <p>
-<img src="/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_5_8_9_reproduction_GF_sizes.png" alt="Gene group 5,8,9" width=45%>
-<img src="/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/OG_N0.HOG0000401_reproduction_GF_sizes.png" alt="N0.HOG0000401" width=45%>
+<img src="Gene_Group_5_8_9_reproduction_GF_sizes.svg" alt="Gene group 5,8,9" width=45%>
+<img src="OG_N0.HOG0000401_reproduction_GF_sizes.svg" alt="N0.HOG0000401" width=45%>
 </p>
 
 
@@ -136,8 +136,8 @@ None of them have a significant correlation with GS or TE content except the one
 * Gene Group 7 : N0.HOG0009039
 
 <p>
-<img src="/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_30_pheromone_sensing_GF_sizes.png" alt="Gene group 30" width=45%>
-<img src="/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_7_odorant_binding_GF_sizes.png" alt="Gene Group 7" width=45%>
+<img src="Gene_Group_30_pheromone_sensing_GF_sizes.svg" alt="Gene group 30" width=45%>
+<img src="Gene_Group_7_odorant_binding_GF_sizes.svg" alt="Gene Group 7" width=45%>
 </p>
 
 The highlight is N0.HOG0000037 for Gene Group 30 and N0.HOG0000056 for Gene group 7, which make the "M" shape with the peaks at *A. verrucosus* and *Z. morio* or *T. molitor* respectively. Both of them have their expression peak in adult males.
@@ -160,8 +160,8 @@ Chitin related (GG16) and cuticular protein (GG23). No significant correlation w
 There is again expansions in *Z. morio*, for both categories. Also this time there's stuff going on in bruchids! GG23:N0.HOG0000108 GG16:N0.HOG0000307 have expansions in bruchids. However, N0.HOG0000108 is involvedin cuticular development during larval and pupae stages, where it's expression peak also happens, so this is not related to adult pheromone sensing.
 
 <p>
-<img src="/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_16_chitin_related_GF_sizes.png" alt="Gene group 16" width=45%>
-<img src="/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_23_cuticular_protein_GF_sizes.png" alt="Gene Group 23" width=45%>
+<img src="Gene_Group_16_chitin_related_GF_sizes.svg" alt="Gene group 16" width=45%>
+<img src="Gene_Group_23_cuticular_protein_GF_sizes.svg" alt="Gene Group 23" width=45%>
 </p>
 
 
