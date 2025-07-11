@@ -118,6 +118,53 @@ This also involves cuticular proteins due to how insects actually do the sensing
 * Gene Group 16, Function: chitin-related
 * Gene Group 23, Function: Cuticular protein
 
+### Gene group 7 and 30 
+
+None of them have a significant correlation with GS or TE content except the one where I pointed it out.
+
+* Gene Group 30: N0.HOG0000037
+* Gene Group 30: N0.HOG0000177
+* Gene Group 30: N0.HOG0001445 (significant correlation with GS and TE!)
+* Gene Group 30: N0.HOG0000038
+* Gene Group 30: N0.HOG0000194
+* Gene Group 30: N0.HOG0000345
+* Gene Group 30: N0.HOG0000467
+* Gene Group 7 : N0.HOG0000056
+* Gene Group 7 : N0.HOG0000454
+* Gene Group 7 : N0.HOG0000436
+* Gene Group 7 : N0.HOG0000480
+* Gene Group 7 : N0.HOG0009039
+
+<p>
+<img src="/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_30_pheromone_sensing_GF_sizes.png" alt="Gene group 30" width=45%>
+<img src="/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_7_odorant_binding_GF_sizes.png" alt="Gene Group 7" width=45%>
+</p>
+
+The highlight is N0.HOG0000037 for Gene Group 30 and N0.HOG0000056 for Gene group 7, which make the "M" shape with the peaks at *A. verrucosus* and *Z. morio* or *T. molitor* respectively. Both of them have their expression peak in adult males.
+
+N0.HOG0000038 (GG30) and N0.HOG0000436 (GG7) have the high peak in *I. luminosus*.
+
+### Gene Group 16 and 23
+
+Chitin related (GG16) and cuticular protein (GG23). No significant correlation with repeats or GS, except where I pointed it out
+
+* Gene Group 16: N0.HOG0000307
+* Gene Group 16: N0.HOG0001194
+* Gene Group 16: N0.HOG0003035
+* Gene Group 23: N0.HOG0000108 (significant repeat correlation!)
+* Gene Group 23: N0.HOG0000039
+* Gene Group 23: N0.HOG0000044
+* Gene Group 23: N0.HOG0001108
+* Gene Group 23: N0.HOG0000067
+
+There is again expansions in *Z. morio*, for both categories. Also this time there's stuff going on in bruchids! GG23:N0.HOG0000108 GG16:N0.HOG0000307 have expansions in bruchids. However, N0.HOG0000108 is involvedin cuticular development during larval and pupae stages, where it's expression peak also happens, so this is not related to adult pheromone sensing.
+
+<p>
+<img src="/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_16_chitin_related_GF_sizes.png" alt="Gene group 16" width=45%>
+<img src="/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_23_cuticular_protein_GF_sizes.png" alt="Gene Group 23" width=45%>
+</p>
+
+
 
 
 # Papers 
@@ -135,3 +182,5 @@ These are papers I didn't cite anywhere above but might still want to reference 
 | N0.HOG0000140 | 0.0 | Gene Group 1 | detoxification | 0.0074300433129667505 | 0.7286375887369507 | 0.00030145542591610025 | 0.7920270858115639 | Cytochrome P450 6w1(Cyp6w1) | 6 | 26 | 8 | 8 | 9 | 8 | 14 | 17 | 1 | 6 | 5 | 3 | 2 | 6 | 25 | rna-NM_001299216.1 | FBgn0033065 |
 | N0.HOG0000085 | 0.0 | Gene Group 3 | None | -0.0193651890143579 | 0.21640001185062122 | -0.0005013295348651256 | 0.5585610643744727 | uncharacterized protein(CG3635) | 13 | 6 | 7 | 10 | 7 | 2 | 21 | 5 | 9 | 6 | 2 | 4 | 7 | 7 | 19 | rna-NM_136294.5 | FBgn0032981 | 
 | N0.HOG0000401 | 0.0 | Gene Group 9 | sexual reproduction | -0.022203390866792034 | 0.3806646826028459 | -0.0013093512895652032 | 0.33042982105018115 | uncharacterized protein(CG34189) | 3 | 10 | 6 | 4 | 9 | 3 | 21 | 5 | 1 | 3 | 1 | 1 | 1 | 1 | 20 | rna-NM_001103877.2 | FBgn0085218 | 
+N0.HOG0000037
+N0.HOG0000056

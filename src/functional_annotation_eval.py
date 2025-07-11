@@ -20,7 +20,11 @@ def orthogroups_lists():
         "Gene Group 1" : ["N0.HOG0000027","N0.HOG0000059","N0.HOG0000095","N0.HOG0000204","N0.HOG0001077","N0.HOG0000140","N0.HOG0000492","N0.HOG0001030"],
         "Gene Group 3" : ["N0.HOG0000086","N0.HOG0002393","N0.HOG0000085"],
         "Gene Group 17" : ["N0.HOG0000669"],
-        "Gene Group 5,8,9" : ["N0.HOG0000541","N0.HOG0000775","N0.HOG0000892","N0.HOG0000401","N0.HOG0009002"]
+        "Gene Group 5,8,9" : ["N0.HOG0000541","N0.HOG0000775","N0.HOG0000892","N0.HOG0000401","N0.HOG0009002"],
+        "Gene Group 30": ["N0.HOG0000037","N0.HOG0000177","N0.HOG0001445","N0.HOG0000038","N0.HOG0000194","N0.HOG0000345","N0.HOG0000467"],
+        "Gene Group 7" : ["N0.HOG0000056","N0.HOG0000454","N0.HOG0000436","N0.HOG0000480","N0.HOG0009039"],
+        "Gene Group 16": ["N0.HOG0000307","N0.HOG0001194","N0.HOG0003035"],
+        "Gene Group 23": ["N0.HOG0000108","N0.HOG0000039","N0.HOG0000044","N0.HOG0001108","N0.HOG0000067"]
     }
     return out_dict
 
@@ -61,4 +65,10 @@ if __name__ == "__main__":
     # plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 5,8,9"], tree_path=tree_path, filename="Gene_Group_5_8_9_reproduction_GF_sizes.png", title = "Gene group 5, 8, and 9")
     # plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=["N0.HOG0000401"], tree_path=tree_path, filename="OG_N0.HOG0000401_reproduction_GF_sizes.png", title = "Orthogroup N0.HOG0000401")
     
+    # -->  ODORANT BINDING AND PHEROMONE SENSING
+    # plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 30"], tree_path=tree_path, filename="Gene_Group_30_pheromone_sensing_GF_sizes.png", title = "Gene group 30")
+    # plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 7"], tree_path=tree_path, filename="Gene_Group_7_odorant_binding_GF_sizes.png", title = "Gene group 7")
 
+    # --> CHITIN AND CUTICULAR PROTEIN
+    plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 16"], tree_path=tree_path, filename="Gene_Group_16_chitin_related_GF_sizes.png", title = "Gene group 16")
+    plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 23"], tree_path=tree_path, filename="Gene_Group_23_cuticular_protein_GF_sizes.png", title = "Gene group 23")    
