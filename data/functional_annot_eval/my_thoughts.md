@@ -3,10 +3,15 @@
 The goal here is to identify interesting functional annotation orthogroups that can be summarized in a table in the main text. Probably like 8-15 or so. Ones that i definitely want to mention:
 
 * Whatever is going on with the giant ones in A. obtectus
+    * nothing we can figure out
 * detoxification stuff about cytochrome P450
+    *  some interesting stuff potentially about polyethylene breakdown in tenebrioids?
 * Some stuff about the genes annotated with sexual reproduction
+    * Nothing concrete
 * Some stuff about the olfactory genes
+    * the chitin stuff is development, not odorant binding
 * The fluorescence stuff in i. luminosius and the other glowing one
+  * TODO!
 
 Other considerations:
 * T. molitor and Z. morio are of particular interest because they are of industrial relevance, both as feed insects for agriculture and exotic pets, and as human food (alternative to other animal proteins). (They also use BRAKER2 and then TSEBRA manually with the default weights!! they also get high gene numbers and lots of single exon genes, especially z. morio)
@@ -17,7 +22,7 @@ I am doing stuff with the table in `/PhD_chapter1/src/functional_annotation_eval
 
 ## large expansion in *A. obtectus*
 
-A. obtectus has two large orthogroups that are twice as large as the third largest one, N0.HOG0000035 and N0.HOG0000014. The flybase IDs have no functional annotation, and are not associated with any DAVID gene group. The correlation with genome size and repeat content is *significant* in both cases. Considering that the others are not significant in their association, maybe that's not a biological signal for selection based on function, but instead the expansion is caused by drift through TE activity (and whatever the genome size does)?
+A. obtectus has two large gene families, N0.HOG0000035 and N0.HOG0000014, which are twice as large as the third largest one. The flybase IDs of these orthogroups have no functional annotation, and are not associated with any DAVID gene group. The correlation with genome size and repeat content is *significant* in both cases. Considering that most of the other orthogroups investigated here are not significant in their association, maybe that means this is not a biological signal for selection based on function, but instead the expansion is caused by drift through TE activity (and whatever the genome size does)?
 
 <p><img src="Aobt_expansion_GF_sizes.svg" alt="A. obtectus expansion" width=45%></p>
 
@@ -157,7 +162,9 @@ Chitin related (GG16) and cuticular protein (GG23). No significant correlation w
 * Gene Group 23: N0.HOG0001108
 * Gene Group 23: N0.HOG0000067
 
-There is again expansions in *Z. morio*, for both categories. Also this time there's stuff going on in bruchids! GG23:N0.HOG0000108 GG16:N0.HOG0000307 have expansions in bruchids. However, N0.HOG0000108 is involvedin cuticular development during larval and pupae stages, where it's expression peak also happens, so this is not related to adult pheromone sensing.
+There is again expansions in *Z. morio*, for both categories. for GG16, it's N0.HOG0001194 and N0.HOG0003035, the former (higher peak) is only expressed in early embryonic development, but the latter is an intercellular matrix component also expressed in adults, so it might have something to do with odorants. All of Gene Group 23 is stuff only expressed during larval development and is responsible for cuticle development, nothing to do with odorant receptors.
+
+Also this time there's stuff going on in bruchids! GG23:N0.HOG0000108 GG16:N0.HOG0000307 have expansions in bruchids. However, both of these are involved in cuticular development during larval and pupae stages, where their expression peak also happens, so this is not related to adult pheromone sensing.
 
 <p>
 <img src="Gene_Group_16_chitin_related_GF_sizes.svg" alt="Gene group 16" width=45%>
