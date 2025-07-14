@@ -176,18 +176,24 @@ Also this time there's stuff going on in bruchids! GG23:N0.HOG0000108 GG16:N0.HO
 
 ### Gene Group 4
 
-Gene Group 4 (Esterase and mating behavior) expanded in *Elateriforma*, and is also common in the significantly rapidly expanding gene families.
+Gene Group 4 (Esterase and mating behavior) expanded in *Elateriforma*, and is also common in the significantly rapidly expanding gene families, which is not the case in other species. It also expands in *Z. morio*, but there only 3 of the expanding gene families overall are in this group, and this species has a lot of expansions in general
 
 <p>
 <img src="Gene_Group_4_esterase_GF_sizes.svg" alt="Gene group 4" width=45%>
 </p>
 
-### 
+### Acyl-CoA synthetase
 
-According to [this paper](https://web.archive.org/web/20180722105054id_/https://www.biorxiv.org/content/biorxiv/early/2017/12/21/237586.full.pdf), the *Elateriforma* share a common genomic mechanism for their fluorescence made up of luciferases and their paralogs, which form a cluster of genes (that's what they call it, no clue what that means exactly) containing the luciferase and close relatives such as peroxisomal fatty acyl-CoA synthetase (PACS) and non-peroxisomal acyl-CoA synthetase (ACS). This is not represented in any Gene Group, but the gene family N0.HOG0000613 is annotated as *Acyl-CoA synthetase family member 2* (but there's no other family members annotated)
+According to [this paper](https://web.archive.org/web/20180722105054id_/https://www.biorxiv.org/content/biorxiv/early/2017/12/21/237586.full.pdf) (especially figure 3), the *Elateriforma* share a common genomic mechanism for their fluorescence made up of luciferases and their paralogs, which form a cluster of genes (that's what they call it, no clue what that means exactly) containing the luciferase and close relatives such as peroxisomal fatty acyl-CoA synthetase (PACS) and non-peroxisomal acyl-CoA synthetase (ACS). This is not represented in any Gene Group, but the gene family N0.HOG0000613 is annotated as *Acyl-CoA synthetase family member 2* (but there's no other family members annotated). Some other orthogroups have Acyl-CoA synthesis-related annotations (not oxidase/reductase/hydrolase!) in their API summaries:
+
+* N0.HOG0000284 (maybe a good candidate for the table?)
+* N0.HOG0000397 (pudgy in Dmel)
+
+Seems like these all show expansions in *Elateriforma*, cool!
 
 <p>
 <img src="N0_HOG0000613_GF_sizes.svg" alt="Gene group 4" width=45%>
+<img src="Acyl_CoA_synthesis.svg" alt="Acyl_CoA_synthesis" width=45%>
 </p>
 
 # General "enrichment" of gene groups in rapidly expanding gene families
