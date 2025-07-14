@@ -1,5 +1,6 @@
 # Functional annotation of rapidly evolving orthogroups
 
+
 The goal here is to identify interesting functional annotation orthogroups that can be summarized in a table in the main text. Probably like 8-15 or so. Ones that i definitely want to mention:
 
 * Whatever is going on with the giant ones in A. obtectus
@@ -178,94 +179,113 @@ TODO
 
 # General "enrichment" of gene groups in rapidly expanding gene families
 
-I looked at all the gene families in a species, and selected the ones that are in the upper 5th size percentile of all gene families (in species with few genes, this is sometimes just with one or more members, so I also set a min. size limit of 2). Then I checked which ones are significantly rapidly evolving according to CAFE, and which ones have been assigned to functional Gene Groups by their *D. melanogaster* member.  This is only a very small subset of all gene families in the upper 5th size percentile. I have then compiled a file that shows how many of the above selected gene families fall under each functional Gene Group. I think this can get a more general idea of the kind of things that might be evolving in some of the species. The full file is here: `PhD_chapter1/data/functional_annot_eval/frequent_Gene_Groups_in_expanding_GFs.txt` and I am going to show the output for all species below, only including Gene Groups that appear at least four times.
+I looked at all the gene families in a species, and selected the ones that are in the upper 5th size percentile of all gene families (in species with few genes, this is sometimes just with one or more members, so I also set a min. size limit of 2). Then I checked which ones are significantly rapidly evolving according to CAFE, and which ones have been assigned to functional Gene Groups by their *D. melanogaster* member.  This is only a very small subset of all gene families in the upper 5th size percentile. I have then compiled a file that shows how many of the above selected gene families fall under each functional Gene Group. I think this can get a more general idea of the kind of things that might be evolving in some of the species. The full file is here: `PhD_chapter1/data/functional_annot_eval/frequent_Gene_Groups_in_expanding_GFs.txt` and I am going to show the output for all species below, only including Gene Groups that appear at least four times and are not uncharacterized or unannotated.
+
+These are my conclusions: 
+
+* Gene Group 25 (glycolysis and early development), and Gene Group 1 (detoxification, cytochrome P450) are basically in all of them.
+* Gene Group 2 (proteolysis) is in all of them except bruchids (where it only occurs in B. siliquastri)
+* Tenebrioids all have Gene Group 30 (pheromone sensing)
+* Elateriformia all have Gene Group 4: Esterase and mating behavior.
+
+
+
+## Shortened output of functional summary
 
 #### D_melanogaster
 
-number of gene families with more than 2 members (upper 5th percentile) = 506 (of 8760 orthogroups). 25 unique Gene Groups with functional annotations, these ones appear more than once:
+number of gene families with more than 2 members (upper 5th percentile) = 506 (of 8760 orthogroups). 25 unique Gene Groups with functional annotations, these ones appear at least four times:
 - 11 GFs annotated as : glycolysis and early development (and other)
 - 10 GFs annotated as : protein breakdown (proteolysis)
 - 6 GFs annotated as : detoxification
-- 5 GFs annotated as : uncharacterized
+
+### Elateriformia
 
 #### I_luminosus
 
-number of gene families with more than 3 members (upper 5th percentile) = 1276 (of 13090 orthogroups). 27 unique Gene Groups with functional annotations, these ones appear more than once:
+number of gene families with more than 3 members (upper 5th percentile) = 1276 (of 13090 orthogroups). 27 unique Gene Groups with functional annotations, these ones appear at least four times:
 - 15 GFs annotated as : protein breakdown (proteolysis)
 - 11 GFs annotated as : glycolysis and early development (and other)
-- 7 GFs annotated as : uncharacterized
 - 6 GFs annotated as : detoxification
 - 4 GFs annotated as : Esterase and mating behavior
 
 #### P_pyralis
 
-number of gene families with more than 3 members (upper 5th percentile) = 1213 (of 12644 orthogroups). 27 unique Gene Groups with functional annotations, these ones appear more than once:
+number of gene families with more than 3 members (upper 5th percentile) = 1213 (of 12644 orthogroups). 27 unique Gene Groups with functional annotations, these ones appear at least four times:
 - 20 GFs annotated as : glycolysis and early development (and other)
 - 11 GFs annotated as : protein breakdown (proteolysis)
 - 6 GFs annotated as : detoxification
-- 6 GFs annotated as : uncharacterized
 - 5 GFs annotated as : transcription regulation
 - 4 GFs annotated as : odorant binding
 - 4 GFs annotated as : Esterase and mating behavior
 
+### Coccinellidae
+
 #### C_septempunctata
 
-number of gene families with more than 2 members (upper 5th percentile) = 968 (of 10892 orthogroups). 27 unique Gene Groups with functional annotations, these ones appear more than once:
+number of gene families with more than 2 members (upper 5th percentile) = 968 (of 10892 orthogroups). 27 unique Gene Groups with functional annotations, these ones appear at least four times:
 - 16 GFs annotated as : glycolysis and early development (and other)
-- 5 GFs annotated as : uncharacterized
 - 5 GFs annotated as : protein breakdown (proteolysis)
 - 4 GFs annotated as : detoxification
 
+
+### Tenebrionidae
+
 #### A_verrucosus
 
-number of gene families with more than 2 members (upper 5th percentile) = 914 (of 12405 orthogroups). 27 unique Gene Groups with functional annotations, these ones appear more than once:
+number of gene families with more than 2 members (upper 5th percentile) = 914 (of 12405 orthogroups). 27 unique Gene Groups with functional annotations, these ones appear at least four times:
 - 28 GFs annotated as : glycolysis and early development (and other)
 - 10 GFs annotated as : protein breakdown (proteolysis)
 - 6 GFs annotated as : detoxification
 - 6 GFs annotated as : pheromone sensing
-- 6 GFs annotated as : uncharacterized
 
 #### T_castaneum
 
-number of gene families with more than 2 members (upper 5th percentile) = 548 (of 11778 orthogroups). 31 unique Gene Groups with functional annotations, these ones appear more than once:
+number of gene families with more than 2 members (upper 5th percentile) = 548 (of 11778 orthogroups). 31 unique Gene Groups with functional annotations, these ones appear at least four times:
 - 27 GFs annotated as : glycolysis and early development (and other)
-- 8 GFs annotated as : uncharacterized
 - 8 GFs annotated as : protein breakdown (proteolysis)
 - 7 GFs annotated as : detoxification
 - 6 GFs annotated as : pheromone sensing
 
 #### Z_morio
-number of gene families with more than 2 members (upper 5th percentile) = 1373 (of 13008 orthogroups). 34 unique Gene Groups with functional annotations, these ones appear more than once:
+number of gene families with more than 2 members (upper 5th percentile) = 1373 (of 13008 orthogroups). 34 unique Gene Groups with functional annotations, these ones appear at least four times:
 - 28 GFs annotated as : glycolysis and early development (and other)
 - 12 GFs annotated as : protein breakdown (proteolysis)
-- 10 GFs annotated as : uncharacterized
 - 6 GFs annotated as : pheromone sensing
 - 5 GFs annotated as : detoxification
 - 4 GFs annotated as : chromatin organization and transcription regulation
 - 4 GFs annotated as : neurological (mostly uncharacterized)
 
 #### T_molitor
-number of gene families with more than 2 members (upper 5th percentile) = 732 (of 11174 orthogroups). 34 unique Gene Groups with functional annotations, these ones appear more than once:
+number of gene families with more than 2 members (upper 5th percentile) = 732 (of 11174 orthogroups). 34 unique Gene Groups with functional annotations, these ones appear at least four times:
 - 19 GFs annotated as : glycolysis and early development (and other)
-- 8 GFs annotated as : uncharacterized
 - 8 GFs annotated as : protein breakdown (proteolysis)
 - 7 GFs annotated as : detoxification
 - 6 GFs annotated as : pheromone sensing
 
+
+### Curculionidae
+
 #### D_ponderosae
-number of gene families with more than 2 members (upper 5th percentile) = 839 (of 10658 orthogroups): 23 unique Gene Groups with functional annotations, these ones appear more than once:
+
+number of gene families with more than 2 members (upper 5th percentile) = 839 (of 10658 orthogroups): 23 unique Gene Groups with functional annotations, these ones appear at least four times:
 - 24 GFs annotated as : glycolysis and early development (and other)
 - 10 GFs annotated as : protein breakdown (proteolysis)
 - 5 GFs annotated as : detoxification
 
 #### R_ferrugineus
-number of gene families with more than 2 members (upper 5th percentile) = 600 (of 11320 orthogroups). 23 unique Gene Groups with functional annotations, these ones appear more than once:
+
+number of gene families with more than 2 members (upper 5th percentile) = 600 (of 11320 orthogroups). 23 unique Gene Groups with functional annotations, these ones appear at least four times:
 - 19 GFs annotated as : glycolysis and early development (and other)
 - 7 GFs annotated as : protein breakdown (proteolysis)
 - 6 GFs annotated as : detoxification
 
+
+### Bruchinae
+
 #### A_obtectus
-number of gene families with more than 3 members (upper 5th percentile) = 1211 (of 12608 orthogroups). 20 unique Gene Groups with functional annotations, these ones appear more than once:
+
+number of gene families with more than 3 members (upper 5th percentile) = 1211 (of 12608 orthogroups). 20 unique Gene Groups with functional annotations, these ones appear at least four times:
 - 16 GFs annotated as : glycolysis and early development (and other)
 - 12 GFs annotated as : transcription regulation
 - 7 GFs annotated as : detoxification
@@ -273,14 +293,14 @@ number of gene families with more than 3 members (upper 5th percentile) = 1211 (
 
 #### B_siliquastri
 
-number of gene families with more than 2 members (upper 5th percentile) = 433 (of 11255 orthogroups). 18 unique Gene Groups with functional annotations, these ones appear more than once:
+number of gene families with more than 2 members (upper 5th percentile) = 433 (of 11255 orthogroups). 18 unique Gene Groups with functional annotations, these ones appear at least four times:
 - 13 GFs annotated as : glycolysis and early development (and other)
 - 5 GFs annotated as : detoxification
 - 4 GFs annotated as : protein breakdown (proteolysis)
 
 #### C_chinensis
 
-number of gene families with more than 3 members (upper 5th percentile) = 877 (of 12655 orthogroups). 25 unique Gene Groups with functional annotations, these ones appear more than once:
+number of gene families with more than 3 members (upper 5th percentile) = 877 (of 12655 orthogroups). 25 unique Gene Groups with functional annotations, these ones appear at least four times:
 - 18 GFs annotated as : glycolysis and early development (and other)
 - 6 GFs annotated as : chromatin organization and transcription regulation
 - 5 GFs annotated as : transcription regulation
@@ -288,7 +308,7 @@ number of gene families with more than 3 members (upper 5th percentile) = 877 (o
 
 #### C_maculatus
 
-number of gene families with more than 4 members (upper 5th percentile) = 1106 (of 14402 orthogroups). 22 unique Gene Groups with functional annotations, these ones appear more than once:
+number of gene families with more than 4 members (upper 5th percentile) = 1106 (of 14402 orthogroups). 22 unique Gene Groups with functional annotations, these ones appear at least four times:
 - 9 GFs annotated as : glycolysis and early development (and other)
 - 5 GFs annotated as : detoxification
 
