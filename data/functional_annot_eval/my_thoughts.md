@@ -49,7 +49,7 @@ This gene group is very insignificant for the correlation with both repeat conte
 * N0.HOG0000492
 * N0.HOG0001030
 
-This proliferation is unsurprising (expected even?), especially in insects ([source](https://link.springer.com/article/10.1186/1471-2164-14-174), *T. castaneum* already has more duplications in the CYP superfamily than *B. mori* or *D. melanogaster*). Also detoxification, yes, but they also talk about it in relation to larval development and egg maturation. Some subfamilies (not found as significant here) have also been linked to insecticide resistance in *T. castaneum*
+This proliferation is unsurprising (expected even?), especially in insects ([source](https://link.springer.com/article/10.1186/1471-2164-14-174), *T. castaneum* already has more duplications in the CYP superfamily than *B. mori* or *D. melanogaster*). Also detoxification, yes, but they also talk about it in relation to larval development and egg maturation. Some subfamilies (existing but not found as significant here) have also been linked to insecticide resistance in *T. castaneum*. Cytochrome P450 according to [this paper](https://link.springer.com/article/10.1186/1471-2164-14-174#Sec2) is also important in mitochondria, but Gene Group 33, which is mitochondrial translation shows no interesting dynamics.
 
 <p>
 <img src="Gene_Group_1_detoxofication_GF_sizes.svg" alt="Gene group 1" width=45%>
@@ -73,8 +73,6 @@ It contains these orthogroups:
 * N0.HOG0000085 (21 members in *Z. morio*!)
 
 N0.HOG0000085 shows an expansion in *Z. morio*, which also relates to the polyethylene synthesis described above. The other two are pretty boring
-
-Cytochrome P450 according to [this paper](https://link.springer.com/article/10.1186/1471-2164-14-174#Sec2) is also important in mitochondria, but Gene Group 33, which is mitochondrial translation shows no interesting dynamics.
 
 
 ### Gene Group 17: aldehyde oxidase
@@ -198,15 +196,14 @@ Seems like these all show expansions in *Elateriforma*, cool!
 
 # General "enrichment" of gene groups in rapidly expanding gene families
 
-I looked at all the gene families in a species, and selected the ones that are in the upper 5th size percentile of all gene families (in species with few genes, this is sometimes just with one or more members, so I also set a min. size limit of 2). Then I checked which ones are significantly rapidly evolving according to CAFE, and which ones have been assigned to functional Gene Groups by their *D. melanogaster* member.  This is only a very small subset of all gene families in the upper 5th size percentile. I have then compiled a file that shows how many of the above selected gene families fall under each functional Gene Group. I think this can get a more general idea of the kind of things that might be evolving in some of the species. The full file is here: `PhD_chapter1/data/functional_annot_eval/frequent_Gene_Groups_in_expanding_GFs.txt` and I am going to show the output for all species below, only including Gene Groups that appear at least four times and are not uncharacterized or unannotated.
+I looked at all the gene families in a species, and selected the ones that are in the upper 5th size percentile of all gene families (in species with few genes, this is sometimes just with one or more members, so I also set a min. size limit of 2 members here). Then I checked which ones are significantly rapidly evolving according to CAFE, and of these which ones have been assigned to functional Gene Groups by their *D. melanogaster* member.  This is only a very small subset of all gene families in the upper 5th size percentile. I have then compiled a file that shows how many of the above selected gene families fall under each functional Gene Group. I think this can get a more general idea of the kind of things that might be evolving in some of the species. The full file is here: `PhD_chapter1/data/functional_annot_eval/frequent_Gene_Groups_in_expanding_GFs.txt` and I am going to show the output for all species below, only including Gene Groups that appear at least four times and are not uncharacterized or unannotated.
 
 These are my conclusions: 
 
 * Gene Group 25 (glycolysis and early development), and Gene Group 1 (detoxification, cytochrome P450) are basically in all of them.
-* Gene Group 2 (proteolysis) is in all of them except bruchids (where it only occurs in B. siliquastri)
+* Gene Group 2 (proteolysis) is in all families except bruchids (where it only occurs in B. siliquastri)
 * Tenebrioids all have Gene Group 30 (pheromone sensing)
 * Elateriformia all have Gene Group 4: Esterase and mating behavior.
-
 
 
 ## Shortened output of functional summary
@@ -343,12 +340,13 @@ These are papers I didn't cite anywhere above but might still want to reference 
 
 # TABLE
 
-| Orthogroup_ID | CAFE_p-value | Gene_Group | Group_function | repeat_correlation_slope | repeat_correlation_p-value | GS_correlation_slope | GS_correlation_p-value | Gene_Name | D_melanogaster | I_luminosus | P_pyralis | C_septempunctata | A_verrucosus | T_castaneum | Z_morio | T_molitor | D_ponderosae | R_ferrugineus | A_obtectus | B_siliquastri | C_chinensis | C_maculatus | max_delta_GF | transcript_ID_native | Flybase |
-| N0.HOG0000035 | 0.0 | None | None | 0.07833822365005534 | 0.017242915938343744 | 0.004367727725001441 | 0.011561278395119738 | None | 1 | 11 | 23 | 19 | 5 | 1 | 15 | 10 | 3 | 4 | 135 | 1 | 32 | 17 | 134 | rna-NM_001275459.1 | FBgn0037633 |
-| N0.HOG0000014 | 0.0 | None | None | 0.08252868448759042 | 0.029857058816618244 | 0.00544176454054848 | 0.003931094669538225 | None | 1 | 29 | 60 | 13 | 34 | 1 | 10 | 4 | 1 | 3 | 121 | 6 | 38 | 56 | 120 | rna-NM_136949.2 | FBgn0033750 |
-| N0.HOG0000140 | 0.0 | Gene Group 1 | detoxification | 0.0074300433129667505 | 0.7286375887369507 | 0.00030145542591610025 | 0.7920270858115639 | Cytochrome P450 6w1(Cyp6w1) | 6 | 26 | 8 | 8 | 9 | 8 | 14 | 17 | 1 | 6 | 5 | 3 | 2 | 6 | 25 | rna-NM_001299216.1 | FBgn0033065 |
-| N0.HOG0000085 | 0.0 | Gene Group 3 | None | -0.0193651890143579 | 0.21640001185062122 | -0.0005013295348651256 | 0.5585610643744727 | uncharacterized protein(CG3635) | 13 | 6 | 7 | 10 | 7 | 2 | 21 | 5 | 9 | 6 | 2 | 4 | 7 | 7 | 19 | rna-NM_136294.5 | FBgn0032981 | 
-| N0.HOG0000401 | 0.0 | Gene Group 9 | sexual reproduction | -0.022203390866792034 | 0.3806646826028459 | -0.0013093512895652032 | 0.33042982105018115 | uncharacterized protein(CG34189) | 3 | 10 | 6 | 4 | 9 | 3 | 21 | 5 | 1 | 3 | 1 | 1 | 1 | 1 | 20 | rna-NM_001103877.2 | FBgn0085218 | 
-N0.HOG0000037
-N0.HOG0000056
-N0.HOG0000284
+These are the orthogroups that should be included in a table in the paper
+
+* N0.HOG0000035 
+* N0.HOG0000014 
+* N0.HOG0000140 
+* N0.HOG0000085
+* N0.HOG0000401 
+* N0.HOG0000037
+* N0.HOG0000056
+* N0.HOG0000284
