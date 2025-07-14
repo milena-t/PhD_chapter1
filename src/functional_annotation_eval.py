@@ -22,6 +22,13 @@ def filepaths():
     DAVID_path = "/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/functional_table_per_OG.tsv"
     return out_dir,orthogroups_orthoDB_filepath,tree, DAVID_path
 
+def filepaths_work():
+    orthogroups_orthoDB_filepath = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_uniform/N0.tsv"
+    out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/"
+    tree = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_only_species_names.nw"
+    DAVID_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/functional_table_per_OG.tsv"
+    return out_dir,orthogroups_orthoDB_filepath,tree, DAVID_path
+
 def orthogroups_lists():
     out_dict = {
         "Aobt_expansion" : ["N0.HOG0000035","N0.HOG0000014"],
@@ -139,7 +146,7 @@ def get_OG_david_annot(table_path:str):
 
 
 
-def investigate_large_gene_families(tree_path:str, DAVID_table_path:str, orthogroups_path:str, percentile:int = 95, verbose = False):
+def investigate_large_gene_families(tree_path:str, DAVID_table_path:str, orthogroups_path:str, percentile:int = 95, verbose = False, min_GF_size = 2):
     """
     go through the orthogroups by species, and get each that is the largest nth percentile of gene family size in that species
     Then check the DAVID gene groups, and count how these orthogroups are represented there to see if some 
@@ -160,8 +167,10 @@ def investigate_large_gene_families(tree_path:str, DAVID_table_path:str, orthogr
         sizes = np.array(GF_sizes_list)
         percentile_size = np.percentile(sizes, q = percentile)
 
-        if percentile_size<2:
-            percentile_size = 2.0
+        if percentile_size < min_GF_size:
+            if verbose:
+                print(f"\n   {species} percentile size adjusted from {int(percentile_size)} to {min_GF_size}")
+            percentile_size = min_GF_size
         expanded_OGs = { orthogroup : members_list  for orthogroup, members_list in species_dict_list.items() if len(members_list) > percentile_size}
         if verbose:
             print(f" * {species} : number of gene families with more than {int(percentile_size)} members (upper {100-percentile}th percentile) = {len(expanded_OGs)} (of {len(OGs_species)} orthogroups)")
@@ -200,11 +209,13 @@ def investigate_large_gene_families(tree_path:str, DAVID_table_path:str, orthogr
 
 if __name__ == "__main__":
     
-    out_dir,orthogroups_orthoDB_filepath,tree_path,DAVID_path = filepaths()
+    # out_dir,orthogroups_orthoDB_filepath,tree_path,DAVID_path = filepaths()
+    out_dir,orthogroups_orthoDB_filepath,tree_path,DAVID_path = filepaths_work()
     OG_lists_dict = orthogroups_lists()
 
     # --> GENERAL ""ENRICHMENT"" OF GENE GROUP FUNCTION IN RAPIDLY EXPANDING ORTHOGROUPS
-    # investigate_large_gene_families(tree_path=tree_path, DAVID_table_path=DAVID_path, orthogroups_path=orthogroups_orthoDB_filepath, verbose = True)
+    if False:
+        investigate_large_gene_families(tree_path=tree_path, DAVID_table_path=DAVID_path, orthogroups_path=orthogroups_orthoDB_filepath, verbose = False)
 
     # --> AOBT EXPANSION
     OGs_title = " and ".join(OG_lists_dict["Aobt_expansion"])
@@ -232,5 +243,6 @@ if __name__ == "__main__":
 
     ##  IMPORT SVG TO HTML
     if True:
-        html_path = "/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/my_thoughts.html"
+        # html_path = "/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/my_thoughts.html"
+        html_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/my_thoughts.html"
         inline_svgs_in_html(html_path=html_path)

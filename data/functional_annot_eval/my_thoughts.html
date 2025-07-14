@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="UTF-8">
-            <title>Functional annotation of rapidly evolving orthogroups</title>
-            <style>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Functional annotation of rapidly evolving orthogroups</title>
+        <style>
 /* From extension vscode.github */
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
@@ -11,14 +11,47 @@
  *--------------------------------------------------------------------------------------------*/
 
 .vscode-dark img[src$=\#gh-light-mode-only],
-.vscode-light img[src$=\#gh-dark-mode-only],
-.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
-.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+.vscode-light img[src$=\#gh-dark-mode-only] {
 	display: none;
 }
 
+/* From extension ms-toolsai.jupyter */
+/* These classnames are inherited from bootstrap, but are present in most notebook renderers */
+
+.alert {
+    width: auto;
+    padding: 1em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+.alert > *:last-child {
+    margin-bottom: 0;
+}
+#preview > .alert:last-child {
+    /* Prevent this being set to zero by the default notebook stylesheet */
+    padding-bottom: 1em;
+}
+
+.alert-success {
+    /* Note there is no suitable color available, so we just copy "info" */
+    background-color: var(--theme-info-background);
+    color: var(--theme-info-foreground);
+}
+.alert-info {
+    background-color: var(--theme-info-background);
+    color: var(--theme-info-foreground);
+}
+.alert-warning {
+    background-color: var(--theme-warning-background);
+    color: var(--theme-warning-foreground);
+}
+.alert-danger {
+    background-color: var(--theme-error-background);
+    color: var(--theme-error-foreground);
+}
+
 </style>
-            
+        
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
 <style>
@@ -39,106 +72,10 @@
     pointer-events: none;
 }
 </style>
-<style>
-:root {
-  --color-note: #0969da;
-  --color-tip: #1a7f37;
-  --color-warning: #9a6700;
-  --color-severe: #bc4c00;
-  --color-caution: #d1242f;
-  --color-important: #8250df;
-}
-
-</style>
-<style>
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-note: #2f81f7;
-    --color-tip: #3fb950;
-    --color-warning: #d29922;
-    --color-severe: #db6d28;
-    --color-caution: #f85149;
-    --color-important: #a371f7;
-  }
-}
-
-</style>
-<style>
-.markdown-alert {
-  padding: 0.5rem 1rem;
-  margin-bottom: 16px;
-  color: inherit;
-  border-left: .25em solid #888;
-}
-
-.markdown-alert>:first-child {
-  margin-top: 0
-}
-
-.markdown-alert>:last-child {
-  margin-bottom: 0
-}
-
-.markdown-alert .markdown-alert-title {
-  display: flex;
-  font-weight: 500;
-  align-items: center;
-  line-height: 1
-}
-
-.markdown-alert .markdown-alert-title .octicon {
-  margin-right: 0.5rem;
-  display: inline-block;
-  overflow: visible !important;
-  vertical-align: text-bottom;
-  fill: currentColor;
-}
-
-.markdown-alert.markdown-alert-note {
-  border-left-color: var(--color-note);
-}
-
-.markdown-alert.markdown-alert-note .markdown-alert-title {
-  color: var(--color-note);
-}
-
-.markdown-alert.markdown-alert-important {
-  border-left-color: var(--color-important);
-}
-
-.markdown-alert.markdown-alert-important .markdown-alert-title {
-  color: var(--color-important);
-}
-
-.markdown-alert.markdown-alert-warning {
-  border-left-color: var(--color-warning);
-}
-
-.markdown-alert.markdown-alert-warning .markdown-alert-title {
-  color: var(--color-warning);
-}
-
-.markdown-alert.markdown-alert-tip {
-  border-left-color: var(--color-tip);
-}
-
-.markdown-alert.markdown-alert-tip .markdown-alert-title {
-  color: var(--color-tip);
-}
-
-.markdown-alert.markdown-alert-caution {
-  border-left-color: var(--color-caution);
-}
-
-.markdown-alert.markdown-alert-caution .markdown-alert-title {
-  color: var(--color-caution);
-}
-
-</style>
         
-        </head>
-        <body class="vscode-body vscode-light">
-            <h1 id="functional-annotation-of-rapidly-evolving-orthogroups">Functional annotation of rapidly evolving orthogroups</h1>
+    </head>
+    <body class="vscode-body vscode-light">
+        <h1 id="functional-annotation-of-rapidly-evolving-orthogroups">Functional annotation of rapidly evolving orthogroups</h1>
 <p>The goal here is to identify interesting functional annotation orthogroups that can be summarized in a table in the main text. Probably like 8-15 or so. Ones that i definitely want to mention:</p>
 <ul>
 <li>Whatever is going on with the giant ones in A. obtectus
@@ -179,7 +116,7 @@
 <p>I am doing stuff with the table in <code>/PhD_chapter1/src/functional_annotation_eval.py</code>.</p>
 <h2 id="large-expansion-in-a-obtectus">large expansion in <em>A. obtectus</em></h2>
 <p>A. obtectus has two large gene families, N0.HOG0000035 and N0.HOG0000014, which are twice as large as the third largest one. The flybase IDs of these orthogroups have no functional annotation, and are not associated with any DAVID gene group. The correlation with genome size and repeat content is <em>significant</em> in both cases. Considering that most of the other orthogroups investigated here are not significant in their association, maybe that means this is not a biological signal for selection based on function, but instead the expansion is caused by drift through TE activity (and whatever the genome size does)?</p>
-<p><img src="file:////Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Aobt_expansion_GF_sizes.svg" alt="A. obtectus expansion" width=45%></p>
+<p><img src="file:////Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/Aobt_expansion_GF_sizes.svg" alt="A. obtectus expansion" width=45%></p>
 <h2 id="detoxification">Detoxification</h2>
 <p>Gene Group 1 is the main detoxification group, with all the cytochrome P450 in it, but Gene Group 17 which has aldehyde deoxide in it also has something to do with detoxification. All of these orthogroups are very quiet in <em>Bruchinae</em> and <em>Curculionidae</em> (<em>D. ponderosae</em> and <em>R. ferrugineus</em>). Notable expansions are especially <em>Elateriforma</em> (<em>I. luminosus</em>) which are fluorescent, and <em>Tenebrioids</em>. The two functional anotations in this category are:</p>
 <ul>
@@ -201,7 +138,7 @@
 </ul>
 <p>This proliferation is unsurprising (expected even?), especially in insects (<a href="https://link.springer.com/article/10.1186/1471-2164-14-174">source</a>, <em>T. castaneum</em> already has more duplications in the CYP superfamily than <em>B. mori</em> or <em>D. melanogaster</em>). Also detoxification, yes, but they also talk about it in relation to larval development and egg maturation. Some subfamilies (not found as significant here) have also been linked to insecticide resistance in <em>T. castaneum</em></p>
 <p>
-<img src="file:////Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_1_detoxofication_GF_sizes.svg" alt="Gene group 1" width=45%>
+<img src="file:////Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_1_detoxofication_GF_sizes.svg" alt="Gene group 1" width=45%>
 </p>
 <h4 id="gene-group-3-lipid-metabolic-process">Gene Group 3: lipid metabolic process</h4>
 <p>Since the lipid metabolism in the cells is the end of the polyethylene breakdown, this gene group is also relevant:</p>
@@ -209,7 +146,7 @@
 <li>Gene Group 3, Function: lipid metabolic process (digestion)</li>
 </ul>
 <p>
-<img src="file:////Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_3_lipid_metabolism_GF_sizes.svg" alt="Gene group 3" width=45%>
+<img src="file:////Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_3_lipid_metabolism_GF_sizes.svg" alt="Gene group 3" width=45%>
 </p>
 <p>It contains these orthogroups:</p>
 <ul>
@@ -226,7 +163,7 @@
 which is insignificant for the correlation with repeat content and also with genome size. It is expressed during all developmental stages and adults of both sexes. There is what seems like a significant expansion in <em>I. luminosus</em>, but <em>I. luminosus</em> has a shit assembly so take that with a grain of salt.</li>
 </ul>
 <p>
-<img src="file:////Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_17_detoxofication_GF_sizes.svg" alt="Gene group 17" width=45%>
+<img src="file:////Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_17_detoxofication_GF_sizes.svg" alt="Gene group 17" width=45%>
 </p>
 <p>Aldehyde is a byproduct of alcohol metabolism (in humans?) and is broken down into less toxic molecules by aldehyde oxidase. In insects, aldehyde can come from other sources, such as pheromones, and &quot;<em>Long-chain, unsaturated alcohol and aldehyde compounds are common  female-produced  sex  pheromones (REF)</em>&quot; (<a href="https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0067794">source</a>). They conclude that &quot;<em>[The] results suggest that an antennae-specific aldehyde oxidasefrom  the  navel  orangeworm,  AtraAOX2,  might  be  involved  indegradation  of  host  plant  volatile  compounds  and  pheromone</em>&quot;, which helps both with distinguishing plant compounds from the pheromones they are actually interested in, and also protects them from volatile plant compounts and potentially even pesticides.</p>
 <p>Quote from the abstract: &quot;<em>Our data suggest AtraAOX2 might be involved in degradation of a diversity of aldehydes including sex pheromones, plant-derived semiochemicals, and chemical cues for oviposition sites. Additionally, AtraAOX2 could protect the insect's olfactory system from xenobiotics, including pesticides that might reach the sensillar lymph surrounding the olfactory receptor neurons.</em>&quot; (I don't understand the methods or biochemistry in general enough to judge how accurate this is).</p>
@@ -247,8 +184,8 @@ which is insignificant for the correlation with repeat content and also with gen
 </ul>
 <p>Similar to the detoxification, which means not a lot going on in Bruchinae and Curculionidae, but there's one massively expanding in <em>Z. morio</em> (N0.HOG0000401), whose expression peak is in adult males, and is predicted to be in the ER according to flybase, the molecular function is just protein homodimerization. Otherwise there is not a lot of info, even in <em>D. melanogaster</em>. I have a hard time finding good papers for this based on this extremely vague information.  The other orthogroups are also not super helpful, none show very interesting dynamics that I could read into.</p>
 <p>
-<img src="file:////Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_5_8_9_reproduction_GF_sizes.svg" alt="Gene group 5,8,9" width=45%>
-<img src="file:////Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/OG_N0.HOG0000401_reproduction_GF_sizes.svg" alt="N0.HOG0000401" width=45%>
+<img src="file:////Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_5_8_9_reproduction_GF_sizes.svg" alt="Gene group 5,8,9" width=45%>
+<img src="file:////Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/OG_N0.HOG0000401_reproduction_GF_sizes.svg" alt="N0.HOG0000401" width=45%>
 </p>
 <h2 id="pheromone-sensing">Pheromone sensing</h2>
 <p>This also involves cuticular proteins due to how insects actually do the sensing, so here I think these are the relevant Gene Groups:</p>
@@ -275,8 +212,8 @@ which is insignificant for the correlation with repeat content and also with gen
 <li>Gene Group 7 : N0.HOG0009039</li>
 </ul>
 <p>
-<img src="file:////Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_30_pheromone_sensing_GF_sizes.svg" alt="Gene group 30" width=45%>
-<img src="file:////Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_7_odorant_binding_GF_sizes.svg" alt="Gene Group 7" width=45%>
+<img src="file:////Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_30_pheromone_sensing_GF_sizes.svg" alt="Gene group 30" width=45%>
+<img src="file:////Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_7_odorant_binding_GF_sizes.svg" alt="Gene Group 7" width=45%>
 </p>
 <p>The highlight is N0.HOG0000037 for Gene Group 30 and N0.HOG0000056 for Gene group 7, which make the &quot;M&quot; shape with the peaks at <em>A. verrucosus</em> and <em>Z. morio</em> or <em>T. molitor</em> respectively. Both of them have their expression peak in adult males.</p>
 <p>N0.HOG0000038 (GG30) and N0.HOG0000436 (GG7) have the high peak in <em>I. luminosus</em>.</p>
@@ -295,13 +232,13 @@ which is insignificant for the correlation with repeat content and also with gen
 <p>There is again expansions in <em>Z. morio</em>, for both categories. for GG16, it's N0.HOG0001194 and N0.HOG0003035, the former (higher peak) is only expressed in early embryonic development, but the latter is an intercellular matrix component also expressed in adults, so it might have something to do with odorants. All of Gene Group 23 is stuff only expressed during larval development and is responsible for cuticle development, nothing to do with odorant receptors.</p>
 <p>Also this time there's stuff going on in bruchids! GG23:N0.HOG0000108 GG16:N0.HOG0000307 have expansions in bruchids. However, both of these are involved in cuticular development during larval and pupae stages, where their expression peak also happens, so this is not related to adult pheromone sensing.</p>
 <p>
-<img src="file:////Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_16_chitin_related_GF_sizes.svg" alt="Gene group 16" width=45%>
-<img src="file:////Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_23_cuticular_protein_GF_sizes.svg" alt="Gene Group 23" width=45%>
+<img src="file:////Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_16_chitin_related_GF_sizes.svg" alt="Gene group 16" width=45%>
+<img src="file:////Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_23_cuticular_protein_GF_sizes.svg" alt="Gene Group 23" width=45%>
 </p>
 <h2 id="fluorescence-in-elateriforma-">Fluorescence in <em>Elateriforma</em> (?)</h2>
 <p>TODO</p>
 <h1 id="general-enrichment-of-gene-groups-in-rapidly-expanding-gene-families">General &quot;enrichment&quot; of gene groups in rapidly expanding gene families</h1>
-<p>I looked at all the gene families in a species, and selected the ones that are in the upper 5th size percentile of all gene families. Then I checked which ones are significantly rapidly evolving according to CAFE, and which ones have been assigned to functional Gene Groups by their <em>D. melanogaster</em> member.  This is only a very small subset of all gene families in the upper 5th size percentile. I have then compiled a file that shows how many of the above selected gene families fall under each functional Gene Group. I think this can get a more general idea of the kind of things that might be evolving in some of the species. The full file is here: <code>PhD_chapter1/data/functional_annot_eval/frequent_Gene_Groups_in_expanding_GFs.txt</code> and I am going to show the output for all species below.</p>
+<p>I looked at all the gene families in a species, and selected the ones that are in the upper 5th size percentile of all gene families (in species with few genes, this is sometimes just with one or more members, so I also set a min. size limit of 2). Then I checked which ones are significantly rapidly evolving according to CAFE, and which ones have been assigned to functional Gene Groups by their <em>D. melanogaster</em> member.  This is only a very small subset of all gene families in the upper 5th size percentile. I have then compiled a file that shows how many of the above selected gene families fall under each functional Gene Group. I think this can get a more general idea of the kind of things that might be evolving in some of the species. The full file is here: <code>PhD_chapter1/data/functional_annot_eval/frequent_Gene_Groups_in_expanding_GFs.txt</code> and I am going to show the output for all species below, only including Gene Groups that appear at least four times.</p>
 <h4 id="d_melanogaster">D_melanogaster</h4>
 <p>number of gene families with more than 2 members (upper 5th percentile) = 506 (of 8760 orthogroups). 25 unique Gene Groups with functional annotations, these ones appear more than once:</p>
 <ul>
@@ -309,11 +246,6 @@ which is insignificant for the correlation with repeat content and also with gen
 <li>10 GFs annotated as : protein breakdown (proteolysis)</li>
 <li>6 GFs annotated as : detoxification</li>
 <li>5 GFs annotated as : uncharacterized</li>
-<li>3 GFs annotated as : pheromone sensing</li>
-<li>2 GFs annotated as : transmembrane transport (toxin resistance)</li>
-<li>2 GFs annotated as : Cuticular protein</li>
-<li>2 GFs annotated as : molting and development</li>
-<li>2 GFs annotated as : immunity (antimicrobial)</li>
 </ul>
 <h4 id="i_luminosus">I_luminosus</h4>
 <p>number of gene families with more than 3 members (upper 5th percentile) = 1276 (of 13090 orthogroups). 27 unique Gene Groups with functional annotations, these ones appear more than once:</p>
@@ -323,14 +255,6 @@ which is insignificant for the correlation with repeat content and also with gen
 <li>7 GFs annotated as : uncharacterized</li>
 <li>6 GFs annotated as : detoxification</li>
 <li>4 GFs annotated as : Esterase and mating behavior</li>
-<li>3 GFs annotated as : transmembrane transport (toxin resistance)</li>
-<li>3 GFs annotated as : pheromone sensing</li>
-<li>3 GFs annotated as : odorant binding</li>
-<li>3 GFs annotated as : chromatin organization and transcription regulation</li>
-<li>2 GFs annotated as : Cuticular protein</li>
-<li>2 GFs annotated as : molting and development</li>
-<li>2 GFs annotated as : chitin-related</li>
-<li>2 GFs annotated as : sexual reproduction</li>
 </ul>
 <h4 id="p_pyralis">P_pyralis</h4>
 <p>number of gene families with more than 3 members (upper 5th percentile) = 1213 (of 12644 orthogroups). 27 unique Gene Groups with functional annotations, these ones appear more than once:</p>
@@ -342,14 +266,6 @@ which is insignificant for the correlation with repeat content and also with gen
 <li>5 GFs annotated as : transcription regulation</li>
 <li>4 GFs annotated as : odorant binding</li>
 <li>4 GFs annotated as : Esterase and mating behavior</li>
-<li>3 GFs annotated as : transmembrane transport (toxin resistance)</li>
-<li>3 GFs annotated as : pheromone sensing</li>
-<li>3 GFs annotated as : DNA-related functions</li>
-<li>3 GFs annotated as : chromatin organization and transcription regulation</li>
-<li>3 GFs annotated as : neurological (mostly uncharacterized)</li>
-<li>2 GFs annotated as : Cuticular protein</li>
-<li>2 GFs annotated as : molting and development</li>
-<li>2 GFs annotated as : chitin-related</li>
 </ul>
 <h4 id="c_septempunctata">C_septempunctata</h4>
 <p>number of gene families with more than 2 members (upper 5th percentile) = 968 (of 10892 orthogroups). 27 unique Gene Groups with functional annotations, these ones appear more than once:</p>
@@ -358,15 +274,6 @@ which is insignificant for the correlation with repeat content and also with gen
 <li>5 GFs annotated as : uncharacterized</li>
 <li>5 GFs annotated as : protein breakdown (proteolysis)</li>
 <li>4 GFs annotated as : detoxification</li>
-<li>3 GFs annotated as : pheromone sensing</li>
-<li>3 GFs annotated as : DNA-related functions</li>
-<li>3 GFs annotated as : chromatin organization and transcription regulation</li>
-<li>3 GFs annotated as : odorant binding</li>
-<li>2 GFs annotated as : Cuticular protein</li>
-<li>2 GFs annotated as : Esterase and mating behavior</li>
-<li>2 GFs annotated as : transcription regulation</li>
-<li>2 GFs annotated as : molting and development</li>
-<li>2 GFs annotated as : neurological (mostly uncharacterized)</li>
 </ul>
 <h4 id="a_verrucosus">A_verrucosus</h4>
 <p>number of gene families with more than 2 members (upper 5th percentile) = 914 (of 12405 orthogroups). 27 unique Gene Groups with functional annotations, these ones appear more than once:</p>
@@ -376,13 +283,6 @@ which is insignificant for the correlation with repeat content and also with gen
 <li>6 GFs annotated as : detoxification</li>
 <li>6 GFs annotated as : pheromone sensing</li>
 <li>6 GFs annotated as : uncharacterized</li>
-<li>3 GFs annotated as : odorant binding</li>
-<li>3 GFs annotated as : Esterase and mating behavior</li>
-<li>3 GFs annotated as : neurological (mostly uncharacterized)</li>
-<li>2 GFs annotated as : transmembrane transport (toxin resistance)</li>
-<li>2 GFs annotated as : Cuticular protein</li>
-<li>2 GFs annotated as : glutathione metabolic process</li>
-<li>2 GFs annotated as : microtubule</li>
 </ul>
 <h4 id="t_castaneum">T_castaneum</h4>
 <p>number of gene families with more than 2 members (upper 5th percentile) = 548 (of 11778 orthogroups). 31 unique Gene Groups with functional annotations, these ones appear more than once:</p>
@@ -392,13 +292,6 @@ which is insignificant for the correlation with repeat content and also with gen
 <li>8 GFs annotated as : protein breakdown (proteolysis)</li>
 <li>7 GFs annotated as : detoxification</li>
 <li>6 GFs annotated as : pheromone sensing</li>
-<li>3 GFs annotated as : odorant binding</li>
-<li>3 GFs annotated as : Esterase and mating behavior</li>
-<li>2 GFs annotated as : transmembrane transport (toxin resistance)</li>
-<li>2 GFs annotated as : Cuticular protein</li>
-<li>2 GFs annotated as : glutathione metabolic process</li>
-<li>2 GFs annotated as : neurological (mostly uncharacterized)</li>
-<li>2 GFs annotated as : chromatin organization and transcription regulation</li>
 </ul>
 <h4 id="z_morio">Z_morio</h4>
 <p>number of gene families with more than 2 members (upper 5th percentile) = 1373 (of 13008 orthogroups). 34 unique Gene Groups with functional annotations, these ones appear more than once:</p>
@@ -410,16 +303,6 @@ which is insignificant for the correlation with repeat content and also with gen
 <li>5 GFs annotated as : detoxification</li>
 <li>4 GFs annotated as : chromatin organization and transcription regulation</li>
 <li>4 GFs annotated as : neurological (mostly uncharacterized)</li>
-<li>3 GFs annotated as : odorant binding</li>
-<li>3 GFs annotated as : Esterase and mating behavior</li>
-<li>3 GFs annotated as : DNA-related functions</li>
-<li>2 GFs annotated as : transmembrane transport (toxin resistance)</li>
-<li>2 GFs annotated as : Cuticular protein</li>
-<li>2 GFs annotated as : immunity and sexual reproduction</li>
-<li>2 GFs annotated as : immunity (antimicrobial)</li>
-<li>2 GFs annotated as : chitin-related</li>
-<li>2 GFs annotated as : mitochondrial translation</li>
-<li>2 GFs annotated as : G-protein coupled receptor (and other?)</li>
 </ul>
 <h4 id="t_molitor">T_molitor</h4>
 <p>number of gene families with more than 2 members (upper 5th percentile) = 732 (of 11174 orthogroups). 34 unique Gene Groups with functional annotations, these ones appear more than once:</p>
@@ -429,14 +312,6 @@ which is insignificant for the correlation with repeat content and also with gen
 <li>8 GFs annotated as : protein breakdown (proteolysis)</li>
 <li>7 GFs annotated as : detoxification</li>
 <li>6 GFs annotated as : pheromone sensing</li>
-<li>3 GFs annotated as : Esterase and mating behavior</li>
-<li>3 GFs annotated as : odorant binding</li>
-<li>2 GFs annotated as : Cuticular protein</li>
-<li>2 GFs annotated as : DNA-related functions</li>
-<li>2 GFs annotated as : glutathione metabolic process</li>
-<li>2 GFs annotated as : transcription regulation</li>
-<li>2 GFs annotated as : neurological (mostly uncharacterized)</li>
-<li>2 GFs annotated as : chromatin organization and transcription regulation</li>
 </ul>
 <h4 id="d_ponderosae">D_ponderosae</h4>
 <p>number of gene families with more than 2 members (upper 5th percentile) = 839 (of 10658 orthogroups): 23 unique Gene Groups with functional annotations, these ones appear more than once:</p>
@@ -444,11 +319,6 @@ which is insignificant for the correlation with repeat content and also with gen
 <li>24 GFs annotated as : glycolysis and early development (and other)</li>
 <li>10 GFs annotated as : protein breakdown (proteolysis)</li>
 <li>5 GFs annotated as : detoxification</li>
-<li>3 GFs annotated as : uncharacterized</li>
-<li>3 GFs annotated as : chromatin organization and transcription regulation</li>
-<li>2 GFs annotated as : pheromone sensing</li>
-<li>2 GFs annotated as : Esterase and mating behavior</li>
-<li>2 GFs annotated as : transcription regulation</li>
 </ul>
 <h4 id="r_ferrugineus">R_ferrugineus</h4>
 <p>number of gene families with more than 2 members (upper 5th percentile) = 600 (of 11320 orthogroups). 23 unique Gene Groups with functional annotations, these ones appear more than once:</p>
@@ -456,13 +326,6 @@ which is insignificant for the correlation with repeat content and also with gen
 <li>19 GFs annotated as : glycolysis and early development (and other)</li>
 <li>7 GFs annotated as : protein breakdown (proteolysis)</li>
 <li>6 GFs annotated as : detoxification</li>
-<li>3 GFs annotated as : pheromone sensing</li>
-<li>3 GFs annotated as : Cuticular protein</li>
-<li>3 GFs annotated as : uncharacterized</li>
-<li>2 GFs annotated as : odorant binding</li>
-<li>2 GFs annotated as : Esterase and mating behavior</li>
-<li>2 GFs annotated as : chromatin organization and transcription regulation</li>
-<li>2 GFs annotated as : G-protein coupled receptor (and other?)</li>
 </ul>
 <h4 id="a_obtectus">A_obtectus</h4>
 <p>number of gene families with more than 3 members (upper 5th percentile) = 1211 (of 12608 orthogroups). 20 unique Gene Groups with functional annotations, these ones appear more than once:</p>
@@ -471,13 +334,6 @@ which is insignificant for the correlation with repeat content and also with gen
 <li>12 GFs annotated as : transcription regulation</li>
 <li>7 GFs annotated as : detoxification</li>
 <li>5 GFs annotated as : chromatin organization and transcription regulation</li>
-<li>3 GFs annotated as : transmembrane transport (toxin resistance)</li>
-<li>3 GFs annotated as : protein breakdown (proteolysis)</li>
-<li>3 GFs annotated as : neurological (mostly uncharacterized)</li>
-<li>3 GFs annotated as : pheromone sensing</li>
-<li>2 GFs annotated as : Cuticular protein</li>
-<li>2 GFs annotated as : uncharacterized</li>
-<li>2 GFs annotated as : Esterase and mating behavior</li>
 </ul>
 <h4 id="b_siliquastri">B_siliquastri</h4>
 <p>number of gene families with more than 2 members (upper 5th percentile) = 433 (of 11255 orthogroups). 18 unique Gene Groups with functional annotations, these ones appear more than once:</p>
@@ -485,13 +341,6 @@ which is insignificant for the correlation with repeat content and also with gen
 <li>13 GFs annotated as : glycolysis and early development (and other)</li>
 <li>5 GFs annotated as : detoxification</li>
 <li>4 GFs annotated as : protein breakdown (proteolysis)</li>
-<li>3 GFs annotated as : transmembrane transport (toxin resistance)</li>
-<li>3 GFs annotated as : pheromone sensing</li>
-<li>3 GFs annotated as : uncharacterized</li>
-<li>3 GFs annotated as : neurological (mostly uncharacterized)</li>
-<li>3 GFs annotated as : Esterase and mating behavior</li>
-<li>2 GFs annotated as : transcription regulation</li>
-<li>2 GFs annotated as : Cuticular protein</li>
 </ul>
 <h4 id="c_chinensis">C_chinensis</h4>
 <p>number of gene families with more than 3 members (upper 5th percentile) = 877 (of 12655 orthogroups). 25 unique Gene Groups with functional annotations, these ones appear more than once:</p>
@@ -500,24 +349,12 @@ which is insignificant for the correlation with repeat content and also with gen
 <li>6 GFs annotated as : chromatin organization and transcription regulation</li>
 <li>5 GFs annotated as : transcription regulation</li>
 <li>4 GFs annotated as : detoxification</li>
-<li>3 GFs annotated as : Esterase and mating behavior</li>
-<li>3 GFs annotated as : protein breakdown (proteolysis)</li>
-<li>3 GFs annotated as : mitochondrial translation</li>
-<li>2 GFs annotated as : transmembrane transport (toxin resistance)</li>
-<li>2 GFs annotated as : uncharacterized</li>
 </ul>
 <h4 id="c_maculatus">C_maculatus</h4>
 <p>number of gene families with more than 4 members (upper 5th percentile) = 1106 (of 14402 orthogroups). 22 unique Gene Groups with functional annotations, these ones appear more than once:</p>
 <ul>
 <li>9 GFs annotated as : glycolysis and early development (and other)</li>
 <li>5 GFs annotated as : detoxification</li>
-<li>3 GFs annotated as : transmembrane transport (toxin resistance)</li>
-<li>3 GFs annotated as : uncharacterized</li>
-<li>3 GFs annotated as : transcription regulation</li>
-<li>3 GFs annotated as : protein breakdown (proteolysis)</li>
-<li>3 GFs annotated as : chromatin organization and transcription regulation</li>
-<li>3 GFs annotated as : neurological (mostly uncharacterized)</li>
-<li>2 GFs annotated as : DNA-related functions</li>
 </ul>
 <h1 id="papers">Papers</h1>
 <p>These are papers I didn't cite anywhere above but might still want to reference in my manuscript.</p>
@@ -535,7 +372,7 @@ which is insignificant for the correlation with repeat content and also with gen
 N0.HOG0000037
 N0.HOG0000056</p>
 
-            
-            
-        </body>
-        </html>
+        
+        
+    </body>
+    </html>
