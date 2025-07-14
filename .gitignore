@@ -6,7 +6,7 @@
 *.log
 *jpeg
 # *.txt
-*.svg
+# *.svg
 
 *transfer_files.sh
 
