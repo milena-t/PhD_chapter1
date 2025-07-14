@@ -174,8 +174,21 @@ Also this time there's stuff going on in bruchids! GG23:N0.HOG0000108 GG16:N0.HO
 
 ## Fluorescence in *Elateriforma* (?)
 
-TODO
+### Gene Group 4
 
+Gene Group 4 (Esterase and mating behavior) expanded in *Elateriforma*, and is also common in the significantly rapidly expanding gene families.
+
+<p>
+<img src="Gene_Group_4_esterase_GF_sizes.svg" alt="Gene group 4" width=45%>
+</p>
+
+### 
+
+According to [this paper](https://web.archive.org/web/20180722105054id_/https://www.biorxiv.org/content/biorxiv/early/2017/12/21/237586.full.pdf), the *Elateriforma* share a common genomic mechanism for their fluorescence made up of luciferases and their paralogs, which form a cluster of genes (that's what they call it, no clue what that means exactly) containing the luciferase and close relatives such as peroxisomal fatty acyl-CoA synthetase (PACS) and non-peroxisomal acyl-CoA synthetase (ACS). This is not represented in any Gene Group, but the gene family N0.HOG0000613 is annotated as *Acyl-CoA synthetase family member 2* (but there's no other family members annotated)
+
+<p>
+<img src="N0_HOG0000613_GF_sizes.svg" alt="Gene group 4" width=45%>
+</p>
 
 # General "enrichment" of gene groups in rapidly expanding gene families
 

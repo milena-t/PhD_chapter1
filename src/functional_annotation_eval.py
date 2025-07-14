@@ -39,7 +39,8 @@ def orthogroups_lists():
         "Gene Group 30": ["N0.HOG0000037","N0.HOG0000177","N0.HOG0001445","N0.HOG0000038","N0.HOG0000194","N0.HOG0000345","N0.HOG0000467"],
         "Gene Group 7" : ["N0.HOG0000056","N0.HOG0000454","N0.HOG0000436","N0.HOG0000480","N0.HOG0009039"],
         "Gene Group 16": ["N0.HOG0000307","N0.HOG0001194","N0.HOG0003035"],
-        "Gene Group 23": ["N0.HOG0000108","N0.HOG0000039","N0.HOG0000044","N0.HOG0001108","N0.HOG0000067"]
+        "Gene Group 23": ["N0.HOG0000108","N0.HOG0000039","N0.HOG0000044","N0.HOG0001108","N0.HOG0000067"],
+        "Gene Group 4": ["N0.HOG0000120","N0.HOG0000141","N0.HOG0000365","N0.HOG0000378","N0.HOG0007183"],
     }
     return out_dict
 
@@ -239,7 +240,16 @@ if __name__ == "__main__":
     # image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 16"], tree_path=tree_path, filename="Gene_Group_16_chitin_related_GF_sizes.png", title = "Gene group 16")
     # image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 23"], tree_path=tree_path, filename="Gene_Group_23_cuticular_protein_GF_sizes.png", title = "Gene group 23")    
 
-
+    # --> ESTERASE AND MATING BEHAVIOUR
+    # This group is expanding in elateriformia
+    if False:
+        # latop path
+        image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 4"], tree_path=tree_path, filename="Gene_Group_4_esterase_GF_sizes.png", title = "Gene group 4")    
+    if True:
+        # work computer path
+        # image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 4"], tree_path=tree_path, out_dir="/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", filename="Gene_Group_4_esterase_GF_sizes.png", title = "Gene group 4")    
+        # image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=["N0.HOG0000613"], tree_path=tree_path, out_dir="/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", filename="N0_HOG0000613_GF_sizes.png", title = "N0.HOG0000613 (Acyl-CoA synthetase family member 2)")    
+        pass
 
     ##  IMPORT SVG TO HTML
     if True:
