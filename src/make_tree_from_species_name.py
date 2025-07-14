@@ -205,6 +205,8 @@ if True:
     # species_names = ['Megabruchidius dorsalis', 'Megabruchidius tonkineus', 'Bruchidius siliquastri', 'Dendroctonus ponderosae', 'Diabrotica virgifera', 'Asbolus verrucosus', 'Photinus pyralis', 'Ignelater luminosus', 'Rhynchophorus ferrugineus', 'Dendroctonus ponderosae', 'Zophobas morio', 'Tenebrio molitor', 'Acanthoscelides obtectus', 'Callosobruchus analis', 'Callosobruchus chinensis', 'Callosobruchus maculatus', 'Tribolium castaneum', 'Drosophila melanogaster', 'Megabruchidius tonkineus', 'Megabruchidius dorsalis', 'Coccinella septempunctata']
 
 if __name__ == "__main__":
+    
+    data = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/"
     species_names = ["Acanthoscelides obtectus", "Asbolus verrucosus", "Callosobruchus chinensis", "Callosobruchus maculatus", "Coccinella septempunctata", "Dendroctonus ponderosae", "Drosophila melanogaster", "Ignelater luminosus", "Photinus pyralis", "Rhynchophorus ferrugineus", "Tenebrio molitor", "Tribolium castaneum", "Zophobas morio"] 
     print(len(species_names))
 
@@ -231,7 +233,7 @@ if __name__ == "__main__":
     #print(ete_tree.get_ascii(show_internal=True, attributes=["name", "taxid"]))
 
     # save the tree as newick tree to a file, and include the taxid feature in each leaf
-    ete_tree.write(outfile="tree_with_taxid.newick",features=["taxid", "path_score"])
+    ete_tree.write(outfile=f"{data}lineage_tree_with_taxid.newick",features=["taxid", "path_score"])
 
 
 #################################################
