@@ -207,7 +207,7 @@ if True:
 if __name__ == "__main__":
     
     data = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/"
-    species_names = ["Acanthoscelides obtectus", "Asbolus verrucosus", "Callosobruchus chinensis", "Callosobruchus maculatus", "Coccinella septempunctata", "Dendroctonus ponderosae", "Drosophila melanogaster", "Ignelater luminosus", "Photinus pyralis", "Rhynchophorus ferrugineus", "Tenebrio molitor", "Tribolium castaneum", "Zophobas morio"] 
+    species_names = ["Acanthoscelides obtectus", "Asbolus verrucosus", "Bruchidius siliquastri", "Callosobruchus chinensis", "Callosobruchus maculatus", "Coccinella septempunctata", "Dendroctonus ponderosae", "Ignelater luminosus", "Photinus pyralis", "Rhynchophorus ferrugineus", "Tenebrio molitor", "Tribolium castaneum", "Zophobas morio"] 
     print(len(species_names))
 
     root = TreeNode("root", 1, species_names)
@@ -242,7 +242,7 @@ if __name__ == "__main__":
 
 # copy-pasted command line result from above
 
-# (((((((((Acanthoscelides obtectus:1)Acanthoscelides:1,(Callosobruchus chinensis:1,Callosobruchus maculatus:1)Callosobruchus:1)Bruchini:1)Bruchinae:1)Chrysomelidae:1)Chrysomeloidea:1,((((Asbolus verrucosus:1)Asbolus:1)Pimeliinae:1,((Tenebrio molitor:1)Tenebrio:1,(Zophobas morio:1)Zophobas:1)Tenebrioninae:1,((Tribolium castaneum:1)Tribolium:1)Tenebrionidae incertae sedis:1)Tenebrionidae:1)Tenebrionoidea:1,(((((Coccinella septempunctata:1)Coccinella:1)Coccinellini:1)Coccinellinae:1)Coccinellidae:1)Coccinelloidea:1,((((Dendroctonus ponderosae:1)Dendroctonus:1)Scolytinae:1,((Rhynchophorus ferrugineus:1)Rhynchophorus:1)Dryophthorinae:1)Curculionidae:1)Curculionoidea:1)Cucujiformia:1,((((((Ignelater luminosus:1)Ignelater:1)Pyrophorini:1)Agrypninae:1)Elateridae:1,(((Photinus pyralis:1)Photinus:1)Lampyrinae:1)Lampyridae:1)Elateroidea:1)Elateriformia:1)Polyphaga:1)Coleoptera:1);
+# (((((((((Acanthoscelides obtectus:1)Acanthoscelides:1,(Bruchidius siliquastri:1)Bruchidius:1,(Callosobruchus chinensis:1,Callosobruchus maculatus:1)Callosobruchus:1)Bruchini:1)Bruchinae:1)Chrysomelidae:1)Chrysomeloidea:1,((((Asbolus verrucosus:1)Asbolus:1)Pimeliinae:1,((Tenebrio molitor:1)Tenebrio:1,(Zophobas morio:1)Zophobas:1)Tenebrioninae:1,((Tribolium castaneum:1)Tribolium:1)Tenebrionidae incertae sedis:1)Tenebrionidae:1)Tenebrionoidea:1,(((((Coccinella septempunctata:1)Coccinella:1)Coccinellini:1)Coccinellinae:1)Coccinellidae:1)Coccinelloidea:1,((((Dendroctonus ponderosae:1)Dendroctonus:1)Scolytinae:1,((Rhynchophorus ferrugineus:1)Rhynchophorus:1)Dryophthorinae:1)Curculionidae:1)Curculionoidea:1)Cucujiformia:1,((((((Ignelater luminosus:1)Ignelater:1)Pyrophorini:1)Agrypninae:1)Elateridae:1,(((Photinus pyralis:1)Photinus:1)Lampyrinae:1)Lampyridae:1)Elateroidea:1)Elateriformia:1)Polyphaga:1)Coleoptera:1);
 
 
 
