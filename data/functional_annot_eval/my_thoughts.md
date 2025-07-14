@@ -184,7 +184,7 @@ Gene Group 4 (Esterase and mating behavior) expanded in *Elateriforma*, and is a
 
 ### Acyl-CoA synthetase
 
-According to [this paper](https://web.archive.org/web/20180722105054id_/https://www.biorxiv.org/content/biorxiv/early/2017/12/21/237586.full.pdf) (especially figure 3), the *Elateriforma* share a common genomic mechanism for their fluorescence made up of luciferases and their paralogs, which form a cluster of genes (that's what they call it, no clue what that means exactly) containing the luciferase and close relatives such as peroxisomal fatty acyl-CoA synthetase (PACS) and non-peroxisomal acyl-CoA synthetase (ACS). This is not represented in any Gene Group, but the gene family N0.HOG0000613 is annotated as *Acyl-CoA synthetase family member 2* (but there's no other family members annotated). Some other orthogroups have Acyl-CoA synthesis-related annotations (not oxidase/reductase/hydrolase!) in their API summaries:
+According to [this paper](https://web.archive.org/web/20180722105054id_/https://www.biorxiv.org/content/biorxiv/early/2017/12/21/237586.full.pdf) (especially figure 3), the *Elateriforma* share a common genomic mechanism for their fluorescence made up of luciferases and their paralogs, which form a cluster of genes (that's what they call it, no clue what that means exactly. I assume a gene family since they talk about how it came to be through tandem duplication later) containing the luciferase and close relatives such as peroxisomal fatty acyl-CoA synthetase (PACS) and non-peroxisomal acyl-CoA synthetase (ACS). This is not represented in any Gene Group, but the gene family N0.HOG0000613 is annotated as *Acyl-CoA synthetase family member 2* (but there's no other family members annotated). Some other orthogroups have Acyl-CoA synthesis-related annotations (not oxidase/reductase/hydrolase!) in their API summaries:
 
 * N0.HOG0000284 (maybe a good candidate for the table?)
 * N0.HOG0000397 (pudgy in Dmel)
@@ -351,3 +351,4 @@ These are papers I didn't cite anywhere above but might still want to reference 
 | N0.HOG0000401 | 0.0 | Gene Group 9 | sexual reproduction | -0.022203390866792034 | 0.3806646826028459 | -0.0013093512895652032 | 0.33042982105018115 | uncharacterized protein(CG34189) | 3 | 10 | 6 | 4 | 9 | 3 | 21 | 5 | 1 | 3 | 1 | 1 | 1 | 1 | 20 | rna-NM_001103877.2 | FBgn0085218 | 
 N0.HOG0000037
 N0.HOG0000056
+N0.HOG0000284
