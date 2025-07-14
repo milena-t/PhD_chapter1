@@ -203,7 +203,8 @@ if __name__ == "__main__":
     out_dir,orthogroups_orthoDB_filepath,tree_path,DAVID_path = filepaths()
     OG_lists_dict = orthogroups_lists()
 
-    investigate_large_gene_families(tree_path=tree_path, DAVID_table_path=DAVID_path, orthogroups_path=orthogroups_orthoDB_filepath, verbose = True)
+    # --> GENERAL ""ENRICHMENT"" OF GENE GROUP FUNCTION IN RAPIDLY EXPANDING ORTHOGROUPS
+    # investigate_large_gene_families(tree_path=tree_path, DAVID_table_path=DAVID_path, orthogroups_path=orthogroups_orthoDB_filepath, verbose = True)
 
     # --> AOBT EXPANSION
     OGs_title = " and ".join(OG_lists_dict["Aobt_expansion"])
@@ -230,6 +231,6 @@ if __name__ == "__main__":
 
 
     ##  IMPORT SVG TO HTML
-    if False:
+    if True:
         html_path = "/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/my_thoughts.html"
         inline_svgs_in_html(html_path=html_path)

@@ -171,6 +171,227 @@ Also this time there's stuff going on in bruchids! GG23:N0.HOG0000108 GG16:N0.HO
 <img src="Gene_Group_23_cuticular_protein_GF_sizes.svg" alt="Gene Group 23" width=45%>
 </p>
 
+## Fluorescence in *Elateriforma* (?)
+
+TODO
+
+
+# General "enrichment" of gene groups in rapidly expanding gene families
+
+I looked at all the gene families in a species, and selected the ones that are in the upper 5th size percentile of all gene families. Then I checked which ones are significantly rapidly evolving according to CAFE, and which ones have been assigned to functional Gene Groups by their *D. melanogaster* member.  This is only a very small subset of all gene families in the upper 5th size percentile. I have then compiled a file that shows how many of the above selected gene families fall under each functional Gene Group. I think this can get a more general idea of the kind of things that might be evolving in some of the species. The full file is here: `PhD_chapter1/data/functional_annot_eval/frequent_Gene_Groups_in_expanding_GFs.txt` and I am going to show the output for all species below.
+
+#### D_melanogaster
+
+number of gene families with more than 2 members (upper 5th percentile) = 506 (of 8760 orthogroups). 25 unique Gene Groups with functional annotations, these ones appear more than once:
+- 11 GFs annotated as : glycolysis and early development (and other)
+- 10 GFs annotated as : protein breakdown (proteolysis)
+- 6 GFs annotated as : detoxification
+- 5 GFs annotated as : uncharacterized
+- 3 GFs annotated as : pheromone sensing
+- 2 GFs annotated as : transmembrane transport (toxin resistance)
+- 2 GFs annotated as : Cuticular protein
+- 2 GFs annotated as : molting and development
+- 2 GFs annotated as : immunity (antimicrobial)
+
+#### I_luminosus
+
+number of gene families with more than 3 members (upper 5th percentile) = 1276 (of 13090 orthogroups). 27 unique Gene Groups with functional annotations, these ones appear more than once:
+- 15 GFs annotated as : protein breakdown (proteolysis)
+- 11 GFs annotated as : glycolysis and early development (and other)
+- 7 GFs annotated as : uncharacterized
+- 6 GFs annotated as : detoxification
+- 4 GFs annotated as : Esterase and mating behavior
+- 3 GFs annotated as : transmembrane transport (toxin resistance)
+- 3 GFs annotated as : pheromone sensing
+- 3 GFs annotated as : odorant binding
+- 3 GFs annotated as : chromatin organization and transcription regulation
+- 2 GFs annotated as : Cuticular protein
+- 2 GFs annotated as : molting and development
+- 2 GFs annotated as : chitin-related
+- 2 GFs annotated as : sexual reproduction
+
+#### P_pyralis
+
+number of gene families with more than 3 members (upper 5th percentile) = 1213 (of 12644 orthogroups). 27 unique Gene Groups with functional annotations, these ones appear more than once:
+- 20 GFs annotated as : glycolysis and early development (and other)
+- 11 GFs annotated as : protein breakdown (proteolysis)
+- 6 GFs annotated as : detoxification
+- 6 GFs annotated as : uncharacterized
+- 5 GFs annotated as : transcription regulation
+- 4 GFs annotated as : odorant binding
+- 4 GFs annotated as : Esterase and mating behavior
+- 3 GFs annotated as : transmembrane transport (toxin resistance)
+- 3 GFs annotated as : pheromone sensing
+- 3 GFs annotated as : DNA-related functions
+- 3 GFs annotated as : chromatin organization and transcription regulation
+- 3 GFs annotated as : neurological (mostly uncharacterized)
+- 2 GFs annotated as : Cuticular protein
+- 2 GFs annotated as : molting and development
+- 2 GFs annotated as : chitin-related
+
+#### C_septempunctata
+
+number of gene families with more than 2 members (upper 5th percentile) = 968 (of 10892 orthogroups). 27 unique Gene Groups with functional annotations, these ones appear more than once:
+- 16 GFs annotated as : glycolysis and early development (and other)
+- 5 GFs annotated as : uncharacterized
+- 5 GFs annotated as : protein breakdown (proteolysis)
+- 4 GFs annotated as : detoxification
+- 3 GFs annotated as : pheromone sensing
+- 3 GFs annotated as : DNA-related functions
+- 3 GFs annotated as : chromatin organization and transcription regulation
+- 3 GFs annotated as : odorant binding
+- 2 GFs annotated as : Cuticular protein
+- 2 GFs annotated as : Esterase and mating behavior
+- 2 GFs annotated as : transcription regulation
+- 2 GFs annotated as : molting and development
+- 2 GFs annotated as : neurological (mostly uncharacterized)
+
+#### A_verrucosus
+
+number of gene families with more than 2 members (upper 5th percentile) = 914 (of 12405 orthogroups). 27 unique Gene Groups with functional annotations, these ones appear more than once:
+- 28 GFs annotated as : glycolysis and early development (and other)
+- 10 GFs annotated as : protein breakdown (proteolysis)
+- 6 GFs annotated as : detoxification
+- 6 GFs annotated as : pheromone sensing
+- 6 GFs annotated as : uncharacterized
+- 3 GFs annotated as : odorant binding
+- 3 GFs annotated as : Esterase and mating behavior
+- 3 GFs annotated as : neurological (mostly uncharacterized)
+- 2 GFs annotated as : transmembrane transport (toxin resistance)
+- 2 GFs annotated as : Cuticular protein
+- 2 GFs annotated as : glutathione metabolic process
+- 2 GFs annotated as : microtubule
+
+#### T_castaneum
+
+number of gene families with more than 2 members (upper 5th percentile) = 548 (of 11778 orthogroups). 31 unique Gene Groups with functional annotations, these ones appear more than once:
+- 27 GFs annotated as : glycolysis and early development (and other)
+- 8 GFs annotated as : uncharacterized
+- 8 GFs annotated as : protein breakdown (proteolysis)
+- 7 GFs annotated as : detoxification
+- 6 GFs annotated as : pheromone sensing
+- 3 GFs annotated as : odorant binding
+- 3 GFs annotated as : Esterase and mating behavior
+- 2 GFs annotated as : transmembrane transport (toxin resistance)
+- 2 GFs annotated as : Cuticular protein
+- 2 GFs annotated as : glutathione metabolic process
+- 2 GFs annotated as : neurological (mostly uncharacterized)
+- 2 GFs annotated as : chromatin organization and transcription regulation
+
+#### Z_morio
+number of gene families with more than 2 members (upper 5th percentile) = 1373 (of 13008 orthogroups). 34 unique Gene Groups with functional annotations, these ones appear more than once:
+- 28 GFs annotated as : glycolysis and early development (and other)
+- 12 GFs annotated as : protein breakdown (proteolysis)
+- 10 GFs annotated as : uncharacterized
+- 6 GFs annotated as : pheromone sensing
+- 5 GFs annotated as : detoxification
+- 4 GFs annotated as : chromatin organization and transcription regulation
+- 4 GFs annotated as : neurological (mostly uncharacterized)
+- 3 GFs annotated as : odorant binding
+- 3 GFs annotated as : Esterase and mating behavior
+- 3 GFs annotated as : DNA-related functions
+- 2 GFs annotated as : transmembrane transport (toxin resistance)
+- 2 GFs annotated as : Cuticular protein
+- 2 GFs annotated as : immunity and sexual reproduction
+- 2 GFs annotated as : immunity (antimicrobial)
+- 2 GFs annotated as : chitin-related
+- 2 GFs annotated as : mitochondrial translation
+- 2 GFs annotated as : G-protein coupled receptor (and other?)
+
+#### T_molitor
+number of gene families with more than 2 members (upper 5th percentile) = 732 (of 11174 orthogroups). 34 unique Gene Groups with functional annotations, these ones appear more than once:
+- 19 GFs annotated as : glycolysis and early development (and other)
+- 8 GFs annotated as : uncharacterized
+- 8 GFs annotated as : protein breakdown (proteolysis)
+- 7 GFs annotated as : detoxification
+- 6 GFs annotated as : pheromone sensing
+- 3 GFs annotated as : Esterase and mating behavior
+- 3 GFs annotated as : odorant binding
+- 2 GFs annotated as : Cuticular protein
+- 2 GFs annotated as : DNA-related functions
+- 2 GFs annotated as : glutathione metabolic process
+- 2 GFs annotated as : transcription regulation
+- 2 GFs annotated as : neurological (mostly uncharacterized)
+- 2 GFs annotated as : chromatin organization and transcription regulation
+
+#### D_ponderosae
+number of gene families with more than 2 members (upper 5th percentile) = 839 (of 10658 orthogroups): 23 unique Gene Groups with functional annotations, these ones appear more than once:
+- 24 GFs annotated as : glycolysis and early development (and other)
+- 10 GFs annotated as : protein breakdown (proteolysis)
+- 5 GFs annotated as : detoxification
+- 3 GFs annotated as : uncharacterized
+- 3 GFs annotated as : chromatin organization and transcription regulation
+- 2 GFs annotated as : pheromone sensing
+- 2 GFs annotated as : Esterase and mating behavior
+- 2 GFs annotated as : transcription regulation
+
+#### R_ferrugineus
+number of gene families with more than 2 members (upper 5th percentile) = 600 (of 11320 orthogroups). 23 unique Gene Groups with functional annotations, these ones appear more than once:
+- 19 GFs annotated as : glycolysis and early development (and other)
+- 7 GFs annotated as : protein breakdown (proteolysis)
+- 6 GFs annotated as : detoxification
+- 3 GFs annotated as : pheromone sensing
+- 3 GFs annotated as : Cuticular protein
+- 3 GFs annotated as : uncharacterized
+- 2 GFs annotated as : odorant binding
+- 2 GFs annotated as : Esterase and mating behavior
+- 2 GFs annotated as : chromatin organization and transcription regulation
+- 2 GFs annotated as : G-protein coupled receptor (and other?)
+
+#### A_obtectus
+number of gene families with more than 3 members (upper 5th percentile) = 1211 (of 12608 orthogroups). 20 unique Gene Groups with functional annotations, these ones appear more than once:
+- 16 GFs annotated as : glycolysis and early development (and other)
+- 12 GFs annotated as : transcription regulation
+- 7 GFs annotated as : detoxification
+- 5 GFs annotated as : chromatin organization and transcription regulation
+- 3 GFs annotated as : transmembrane transport (toxin resistance)
+- 3 GFs annotated as : protein breakdown (proteolysis)
+- 3 GFs annotated as : neurological (mostly uncharacterized)
+- 3 GFs annotated as : pheromone sensing
+- 2 GFs annotated as : Cuticular protein
+- 2 GFs annotated as : uncharacterized
+- 2 GFs annotated as : Esterase and mating behavior
+
+#### B_siliquastri
+
+number of gene families with more than 2 members (upper 5th percentile) = 433 (of 11255 orthogroups). 18 unique Gene Groups with functional annotations, these ones appear more than once:
+- 13 GFs annotated as : glycolysis and early development (and other)
+- 5 GFs annotated as : detoxification
+- 4 GFs annotated as : protein breakdown (proteolysis)
+- 3 GFs annotated as : transmembrane transport (toxin resistance)
+- 3 GFs annotated as : pheromone sensing
+- 3 GFs annotated as : uncharacterized
+- 3 GFs annotated as : neurological (mostly uncharacterized)
+- 3 GFs annotated as : Esterase and mating behavior
+- 2 GFs annotated as : transcription regulation
+- 2 GFs annotated as : Cuticular protein
+
+#### C_chinensis
+
+number of gene families with more than 3 members (upper 5th percentile) = 877 (of 12655 orthogroups). 25 unique Gene Groups with functional annotations, these ones appear more than once:
+- 18 GFs annotated as : glycolysis and early development (and other)
+- 6 GFs annotated as : chromatin organization and transcription regulation
+- 5 GFs annotated as : transcription regulation
+- 4 GFs annotated as : detoxification
+- 3 GFs annotated as : Esterase and mating behavior
+- 3 GFs annotated as : protein breakdown (proteolysis)
+- 3 GFs annotated as : mitochondrial translation
+- 2 GFs annotated as : transmembrane transport (toxin resistance)
+- 2 GFs annotated as : uncharacterized
+
+#### C_maculatus
+
+number of gene families with more than 4 members (upper 5th percentile) = 1106 (of 14402 orthogroups). 22 unique Gene Groups with functional annotations, these ones appear more than once:
+- 9 GFs annotated as : glycolysis and early development (and other)
+- 5 GFs annotated as : detoxification
+- 3 GFs annotated as : transmembrane transport (toxin resistance)
+- 3 GFs annotated as : uncharacterized
+- 3 GFs annotated as : transcription regulation
+- 3 GFs annotated as : protein breakdown (proteolysis)
+- 3 GFs annotated as : chromatin organization and transcription regulation
+- 3 GFs annotated as : neurological (mostly uncharacterized)
+- 2 GFs annotated as : DNA-related functions
+
 
 
 
