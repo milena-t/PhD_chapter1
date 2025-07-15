@@ -1,0 +1,12 @@
+#Batch CD-search tool	NIH/NLM/NCBI
+#cdsid	QM3-qcdsearch-4FD13B4A9270206-34F3A3F54AEE6D37
+#datatype	hitsFull Results
+#status	0
+#Start time	2025-07-15T14:20:14	Run time	0:00:01:09
+#status	success
+
+Query	Hit type	PSSM-ID	From	To	E-Value	Bitscore	Accession	Short name	Incomplete	Superfamily	Definition
+Q#1 - >D_melanogaster_g7327.t1_1[D_melanogaster_g7327.t1_1]	non-specific	433521	146	448	7.24888e-24	103.145	pfam13843	DDE_Tnp_1_7	 - 	cl16433	Transposase IS4; Transposase IS4.  
+Q#1 - >D_melanogaster_g7327.t1_1[D_melanogaster_g7327.t1_1]	superfamily	433521	146	448	7.24888e-24	103.145	cl16433	DDE_Tnp_1_7 superfamily	 - 	 - 	Transposase IS4; Transposase IS4.  
+Q#1 - >D_melanogaster_g7327.t1_1[D_melanogaster_g7327.t1_1]	specific	404687	548	577	4.86495e-07	46.2677	pfam13842	Tnp_zf-ribbon_2	 - 	cl16432	DDE_Tnp_1-like zinc-ribbon; This zinc-ribbon domain is frequently found at the C-terminal of proteins derived from transposable elements.
+Q#1 - >D_melanogaster_g7327.t1_1[D_melanogaster_g7327.t1_1]	superfamily	404687	548	577	4.86495e-07	46.2677	cl16432	Tnp_zf-ribbon_2 superfamily	 - 	 - 	DDE_Tnp_1-like zinc-ribbon; This zinc-ribbon domain is frequently found at the C-terminal of proteins derived from transposable elements.
