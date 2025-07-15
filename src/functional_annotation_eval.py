@@ -63,7 +63,7 @@ def plot_selected_OGs(orthogroups_path:str, OG_IDs:list, tree_path:str, filename
     plot_OG.plot_gene_counts(OGs_of_interest_dict, sig_list=OG_IDs, all_cafe_list=OG_IDs, 
                              species_names=species_list, annotation = "orthoDB", 
                              filename = plot_name, transparent_bg=False, 
-                             title=title, svg=True)
+                             title=title, svg=False)
     return plot_name
 
 
@@ -221,41 +221,41 @@ if __name__ == "__main__":
 
     # --> AOBT EXPANSION
     OGs_title = " and ".join(OG_lists_dict["Aobt_expansion"])
-    # image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Aobt_expansion"], tree_path=tree_path, filename="Aobt_expansion_GF_sizes.png", title = f"A. obtectus expansion: {OGs_title}")
+    image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Aobt_expansion"], tree_path=tree_path, out_dir="/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", filename="Aobt_expansion_GF_sizes.png", title = f"A. obtectus expansion: {OGs_title}")
 
     # --> DETOXIFICATION
-    # image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 1"], tree_path=tree_path, filename="Gene_Group_1_detoxofication_GF_sizes.png", title = "Gene group 1")
-    # image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 17"], tree_path=tree_path, filename="Gene_Group_17_detoxofication_GF_sizes.png", title = "Gene group 17")
-    # image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=["N0.HOG0000140"], tree_path=tree_path, filename="detoxofication_N0.HOG0000140_GF_sizes.png", title = "Orthogroup N0.HOG0000140")
-    # image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 3"], tree_path=tree_path, filename="Gene_Group_3_lipid_metabolism_GF_sizes.png", title = "Gene Group 3")
+    image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 1"], tree_path=tree_path, out_dir="/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", filename="Gene_Group_1_detoxofication_GF_sizes.png", title = "Gene group 1")
+    image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 17"], tree_path=tree_path, out_dir="/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", filename="Gene_Group_17_detoxofication_GF_sizes.png", title = "Gene group 17")
+    image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=["N0.HOG0000140"], tree_path=tree_path, out_dir="/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", filename="detoxofication_N0.HOG0000140_GF_sizes.png", title = "Orthogroup N0.HOG0000140")
+    image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 3"], tree_path=tree_path, out_dir="/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", filename="Gene_Group_3_lipid_metabolism_GF_sizes.png", title = "Gene Group 3")
 
     # --> REPRODUCTION
-    # image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 5,8,9"], tree_path=tree_path, filename="Gene_Group_5_8_9_reproduction_GF_sizes.png", title = "Gene group 5, 8, and 9")
-    # image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=["N0.HOG0000401"], tree_path=tree_path, filename="OG_N0.HOG0000401_reproduction_GF_sizes.png", title = "Orthogroup N0.HOG0000401")
+    image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 5,8,9"], tree_path=tree_path, out_dir="/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", filename="Gene_Group_5_8_9_reproduction_GF_sizes.png", title = "Gene group 5, 8, and 9")
+    image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=["N0.HOG0000401"], tree_path=tree_path, out_dir="/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", filename="OG_N0.HOG0000401_reproduction_GF_sizes.png", title = "Orthogroup N0.HOG0000401")
     
     # -->  ODORANT BINDING AND PHEROMONE SENSING
-    # image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 30"], tree_path=tree_path, filename="Gene_Group_30_pheromone_sensing_GF_sizes.png", title = "Gene group 30")
-    # image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 7"], tree_path=tree_path, filename="Gene_Group_7_odorant_binding_GF_sizes.png", title = "Gene group 7")
+    image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 30"], tree_path=tree_path, out_dir="/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", filename="Gene_Group_30_pheromone_sensing_GF_sizes.png", title = "Gene group 30")
+    image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 7"], tree_path=tree_path, out_dir="/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", filename="Gene_Group_7_odorant_binding_GF_sizes.png", title = "Gene group 7")
 
     # --> CHITIN AND CUTICULAR PROTEIN
-    # image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 16"], tree_path=tree_path, filename="Gene_Group_16_chitin_related_GF_sizes.png", title = "Gene group 16")
-    # image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 23"], tree_path=tree_path, filename="Gene_Group_23_cuticular_protein_GF_sizes.png", title = "Gene group 23")    
+    image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 16"], tree_path=tree_path, out_dir="/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", filename="Gene_Group_16_chitin_related_GF_sizes.png", title = "Gene group 16")
+    image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 23"], tree_path=tree_path, out_dir="/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", filename="Gene_Group_23_cuticular_protein_GF_sizes.png", title = "Gene group 23")    
 
     # --> ESTERASE AND MATING BEHAVIOUR
     # This group is expanding in elateriformia
     if False:
         # latop path
-        image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 4"], tree_path=tree_path, filename="Gene_Group_4_esterase_GF_sizes.png", title = "Gene group 4")    
+        image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 4"], tree_path=tree_path, out_dir="/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", filename="Gene_Group_4_esterase_GF_sizes.png", title = "Gene group 4")    
     if True:
         # work computer path
-        # image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 4"], tree_path=tree_path, out_dir="/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", filename="Gene_Group_4_esterase_GF_sizes.png", title = "Gene group 4")    
-        # image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=["N0.HOG0000613"], tree_path=tree_path, out_dir="/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", filename="N0_HOG0000613_GF_sizes.png", title = "N0.HOG0000613 (Acyl-CoA synthetase family member 2)")    
-        # image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Acyl_CoA_synthesis"], tree_path=tree_path, out_dir="/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", filename="Acyl_CoA_synthesis.png", title = ", ".join(OG_lists_dict["Acyl_CoA_synthesis"]))    
+        image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 4"], tree_path=tree_path, out_dir="/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", filename="Gene_Group_4_esterase_GF_sizes.png", title = "Gene group 4")    
+        image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=["N0.HOG0000613"], tree_path=tree_path, out_dir="/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", filename="N0_HOG0000613_GF_sizes.png", title = "N0.HOG0000613 (Acyl-CoA synthetase family member 2)")    
+        image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Acyl_CoA_synthesis"], tree_path=tree_path, out_dir="/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", filename="Acyl_CoA_synthesis.png", title = ", ".join(OG_lists_dict["Acyl_CoA_synthesis"]))    
 
         pass
 
     ##  IMPORT SVG TO HTML
-    if True:
+    if False:
         # html_path = "/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/my_thoughts.html"
         html_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/my_thoughts.html"
         inline_svgs_in_html(html_path=html_path)
