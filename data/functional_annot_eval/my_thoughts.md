@@ -25,6 +25,9 @@ I am doing stuff with the table in `/PhD_chapter1/src/functional_annotation_eval
 
 A. obtectus has two large gene families, N0.HOG0000035 and N0.HOG0000014, which are twice as large as the third largest one. The flybase IDs of these orthogroups have no functional annotation, and are not associated with any DAVID gene group. The correlation with genome size and repeat content is *significant* in both cases. Considering that most of the other orthogroups investigated here are not significant in their association, maybe that means this is not a biological signal for selection based on function, but instead the expansion is caused by drift through TE activity (and whatever the genome size does)?
 
+I used the [ncbi conserved domain search](https://www.ncbi.nlm.nih.gov/Structure/cdd/wrpsb.cgi) on all the proteins in these orthogroups, and for both of them most proteins match transposases, and sometimes at the c-terminus zinc-finger related domains (which is also common for transposases), which probably means that this is a false positive gene. I also then checked the uniform *D. melanogaster* orthologs and the corresponding flybase IDs (FBgn0037633 for N0.HOG0000035 and FBgn0033750 for N0.HOG0000014) and all of those also follow the pattern of a very good transposase hit and a less good zinc-finger hit at the C-terminus. Therefore this is likely a false positive.
+
+
 <p><img src="Aobt_expansion_GF_sizes.svg" alt="A. obtectus expansion" width=45%></p>
 
 ## Detoxification
