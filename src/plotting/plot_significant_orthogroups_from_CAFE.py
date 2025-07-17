@@ -361,7 +361,7 @@ if __name__ == "__main__":
     orthoDB_sig_list, orthoDB_cafe_list = OGs.get_sig_orthogroups(sig_orthoDB)
     print(f"{len(orthoDB_cafe_list)} of {len(orthoDB_dict)} orthoDB orthogroups considered in CAFE, of which {len(orthoDB_sig_list)} are significantly changing")
     all_unsig_orthoDB, all_sig_orthoDB = get_means(orthoDB_dict, orthoDB_sig_list, orthoDB_cafe_list, species_names)
-    plot_gene_counts(orthoDB_dict, orthoDB_sig_list, orthoDB_cafe_list, species_names, annotation = "orthoDB", filename = f"{out_dir}orthoDB_significant_orthogroups_from_CAFE.png")
+    # plot_gene_counts(orthoDB_dict, orthoDB_sig_list, orthoDB_cafe_list, species_names, annotation = "orthoDB", filename = f"{out_dir}orthoDB_significant_orthogroups_from_CAFE.png")
 
     orthoDB_means = {
         "unsignificant" : all_unsig_orthoDB, 
