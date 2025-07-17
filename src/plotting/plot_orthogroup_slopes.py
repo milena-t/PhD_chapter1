@@ -7,6 +7,7 @@ plot the slope of all of those together, and highlight OGs with high slopes
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.stats
+from statsmodels.stats.multitest import multipletests
 from tqdm import tqdm
 import parse_gff as gff
 import parse_orthogroups as OGs
@@ -72,8 +73,10 @@ def plot_slopes(GF_sizes_dict, species_list, exp_dict, x_label, filename = "sig_
     colors = {
         "native" : "#b82946", # red
         "native_unsignificant" : "#DE6880", #light red
+        "native_multiple_testing_sig" : "#861D32", #dark orange
         "orthoDB": "#F2933A", # orange
         "orthoDB_unsignificant" : "#F6B679", # light orange
+        "orthoDB_multiple_testing_sig" : "#C0630C", #dark orange
         "background" : "#838383" # grey
     }
 
@@ -114,25 +117,44 @@ def plot_slopes(GF_sizes_dict, species_list, exp_dict, x_label, filename = "sig_
         # OG_sizes_list = [OG_sizes[orthogroup] for orthogroup in sig_list]
         inclines_unsig_list = []
         OG_sizes_unsig_list = []
-        
-        for orthogroup in sig_list:
-            p_val = p_values[orthogroup]
-            if p_val<0.05:
-                inclines_sig_list.append(inclines[orthogroup])
-                OG_sizes_sig_list.append(OG_sizes[orthogroup])
-            else:   
-                inclines_unsig_list.append(inclines[orthogroup])
-                OG_sizes_unsig_list.append(OG_sizes[orthogroup])
-        
-        ax.scatter(OG_sizes_sig_list, inclines_sig_list, color = colors[color_category], s=75, label = "p < 0.05")
-        ax.scatter(OG_sizes_unsig_list, inclines_unsig_list, color = colors[f"{color_category}_unsignificant"], s=30, marker = "x", label = "p > 0.05")# with marker="o" use facecolors = "none" to make an un-filled circle
 
-        # if correct_bh:
-        #     p_values_list = [p_values[orthogroup] for orthogroup in sig_list]
-        #     p_values_bh = scipy.stats.false_discovery_control(p_values_list) # default benjamini-hochberg correction
-        #     colors_list = [colors[color_category] if p_values_bh[i] < 0.05 else colors["background"] for i in range(len(p_values_bh))] 
-        # else:
-        #     colors_list = [colors[color_category] if p_values[orthogroup] < 0.05 else colors["background"] for orthogroup in sig_list] 
+        if correct_bh == False:
+            for orthogroup in sig_list:
+                p_val = p_values[orthogroup]
+                if p_val<0.05:
+                    inclines_sig_list.append(inclines[orthogroup])
+                    OG_sizes_sig_list.append(OG_sizes[orthogroup])
+                else:   
+                    inclines_unsig_list.append(inclines[orthogroup])
+                    OG_sizes_unsig_list.append(OG_sizes[orthogroup])
+        
+            ax.scatter(OG_sizes_unsig_list, inclines_unsig_list, color = colors[f"{color_category}_unsignificant"], s=30, marker = "x", label = "unsignificant")# with marker="o" use facecolors = "none" to make an un-filled circle
+            ax.scatter(OG_sizes_sig_list, inclines_sig_list, color = colors[color_category], s=75, label = "significant")
+
+        elif correct_bh:
+            inclines_bh_cor_sig_list = []
+            OG_sizes_bh_cor_sig_list = []
+            p_values_list = [p_values[orthogroup] for orthogroup in sig_list]
+            reject, p_values_bh, _, _ = multipletests(p_values_list, alpha=0.05, method='fdr_bh')
+            # p_values_bh = scipy.stats.false_discovery_control(p_values_list) # default benjamini-hochberg correction
+
+            for i, orthogroup in enumerate(sig_list):
+                p_val = p_values_list[i]
+                p_cor = p_values_bh[i]
+                if p_cor < 0.05:
+                    print(f"\t\t-- {orthogroup}")
+                    inclines_bh_cor_sig_list.append(inclines[orthogroup])
+                    OG_sizes_bh_cor_sig_list.append(OG_sizes[orthogroup])
+                elif p_val < 0.05:
+                    inclines_sig_list.append(inclines[orthogroup])
+                    OG_sizes_sig_list.append(OG_sizes[orthogroup])
+                else:   
+                    inclines_unsig_list.append(inclines[orthogroup])
+                    OG_sizes_unsig_list.append(OG_sizes[orthogroup])
+            
+            ax.scatter(OG_sizes_unsig_list, inclines_unsig_list, color = colors[f"{color_category}_unsignificant"], s=30, marker = "x", label = "unsignificant")# with marker="o" use facecolors = "none" to make an un-filled circle
+            ax.scatter(OG_sizes_sig_list, inclines_sig_list, color = colors[color_category], s=75, label = "significant")
+            ax.scatter(OG_sizes_bh_cor_sig_list, inclines_bh_cor_sig_list, color = colors[f"{color_category}_multiple_testing_sig"], s=75, marker="v", label = "B.H. corrected")
             
                
     
@@ -237,10 +259,10 @@ if __name__ == "__main__":
 
     print(f"\n\t\t * Genome size")
     # plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=genome_sizes_dict, x_label = "Genome size in Mb", filename = f"{data_dir}sig_OGs_vs_GS_inclines.png")
-    GS_inclines = plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=genome_sizes_dict, x_label = "Genome size in Mb", filename = f"{data_dir}sig_OGs_vs_GS_inclines.png", sig_list=orthoDB_sig_list)
+    GS_inclines = plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=genome_sizes_dict, x_label = "Genome size in Mb", filename = f"{data_dir}sig_OGs_vs_GS_inclines_bh_corrected.png", sig_list=orthoDB_sig_list, correct_bh=True)
     gff.write_dict_to_file(GS_inclines, f"{data_dir}sig_OGs_vs_GS_inclines_pvalues.tsv", header=f"OG\tslope\tp-value", separator="\t")
 
     print(f"\n\t\t * repeat content")
     # plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, x_label = "Repeat content in percent", filename = f"{data_dir}sig_OGs_vs_reps_inclines.png")
-    TE_inclines = plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, x_label = "Repeat content in percent", filename = f"{data_dir}sig_OGs_vs_reps_inclines.png", sig_list=orthoDB_sig_list)
+    TE_inclines = plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, x_label = "Repeat content in percent", filename = f"{data_dir}sig_OGs_vs_reps_inclines_bh_corrected.png", sig_list=orthoDB_sig_list, correct_bh=True)
     gff.write_dict_to_file(TE_inclines, f"{data_dir}sig_OGs_vs_reps_inclines_pvalues.tsv", header=f"OG\tslope\tp-value", separator="\t")
