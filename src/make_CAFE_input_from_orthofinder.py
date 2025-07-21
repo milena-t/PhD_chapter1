@@ -153,7 +153,7 @@ def filter_CAFE_input_file(cafe_filepath:str, outgroup_header_name = "D_melanoga
             
             cafe_outfile.write(line_raw)
 
-    print(f"{no_outgroup} OGs not at the root of the tree, \n{too_big_OG} orthogroups with gene families larger than {max_GF_size}\noutfile written to {outfile_path}")
+    print(f"{no_outgroup} OGs not in the outgroup, \n{too_big_OG} orthogroups with gene families larger than {max_GF_size}\noutfile written to {outfile_path}")
                 
         
             
