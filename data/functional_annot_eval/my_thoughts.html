@@ -116,6 +116,7 @@
 <p>I am doing stuff with the table in <code>/PhD_chapter1/src/functional_annotation_eval.py</code>.</p>
 <h2 id="large-expansion-in-a-obtectus">large expansion in <em>A. obtectus</em></h2>
 <p>A. obtectus has two large gene families, N0.HOG0000035 and N0.HOG0000014, which are twice as large as the third largest one. The flybase IDs of these orthogroups have no functional annotation, and are not associated with any DAVID gene group. The correlation with genome size and repeat content is <em>significant</em> in both cases. Considering that most of the other orthogroups investigated here are not significant in their association, maybe that means this is not a biological signal for selection based on function, but instead the expansion is caused by drift through TE activity (and whatever the genome size does)?</p>
+<p>I used the <a href="https://www.ncbi.nlm.nih.gov/Structure/cdd/wrpsb.cgi">ncbi conserved domain search</a> on all the proteins in these orthogroups, and for both of them most proteins match transposases, and sometimes at the c-terminus zinc-finger related domains (which is also common for transposases), which probably means that this is a false positive gene. I also then checked the uniform <em>D. melanogaster</em> orthologs and the corresponding flybase IDs (FBgn0037633 for N0.HOG0000035 and FBgn0033750 for N0.HOG0000014) and all of those also follow the pattern of a very good transposase hit and a less good zinc-finger hit at the C-terminus. Therefore this is likely a false positive.</p>
 <p><img src="file:////Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/Aobt_expansion_GF_sizes.svg" alt="A. obtectus expansion" width=45%></p>
 <h2 id="detoxification">Detoxification</h2>
 <p>Gene Group 1 is the main detoxification group, with all the cytochrome P450 in it, but Gene Group 17 which has aldehyde deoxide in it also has something to do with detoxification. All of these orthogroups are very quiet in <em>Bruchinae</em> and <em>Curculionidae</em> (<em>D. ponderosae</em> and <em>R. ferrugineus</em>). Notable expansions are especially <em>Elateriforma</em> (<em>I. luminosus</em>) which are fluorescent, and <em>Tenebrioids</em>. The two functional anotations in this category are:</p>
@@ -136,7 +137,7 @@
 <li>N0.HOG0000492</li>
 <li>N0.HOG0001030</li>
 </ul>
-<p>This proliferation is unsurprising (expected even?), especially in insects (<a href="https://link.springer.com/article/10.1186/1471-2164-14-174">source</a>, <em>T. castaneum</em> already has more duplications in the CYP superfamily than <em>B. mori</em> or <em>D. melanogaster</em>). Also detoxification, yes, but they also talk about it in relation to larval development and egg maturation. Some subfamilies (not found as significant here) have also been linked to insecticide resistance in <em>T. castaneum</em></p>
+<p>This proliferation is unsurprising (expected even?), especially in insects (<a href="https://link.springer.com/article/10.1186/1471-2164-14-174">source</a>, <em>T. castaneum</em> already has more duplications in the CYP superfamily than <em>B. mori</em> or <em>D. melanogaster</em>). Also detoxification, yes, but they also talk about it in relation to larval development and egg maturation. Some subfamilies (existing but not found as significant here) have also been linked to insecticide resistance in <em>T. castaneum</em>. Cytochrome P450 according to <a href="https://link.springer.com/article/10.1186/1471-2164-14-174#Sec2">this paper</a> is also important in mitochondria, but Gene Group 33, which is mitochondrial translation shows no interesting dynamics.</p>
 <p>
 <img src="file:////Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_1_detoxofication_GF_sizes.svg" alt="Gene group 1" width=45%>
 </p>
@@ -155,7 +156,6 @@
 <li>N0.HOG0000085 (21 members in <em>Z. morio</em>!)</li>
 </ul>
 <p>N0.HOG0000085 shows an expansion in <em>Z. morio</em>, which also relates to the polyethylene synthesis described above. The other two are pretty boring</p>
-<p>Cytochrome P450 according to <a href="https://link.springer.com/article/10.1186/1471-2164-14-174#Sec2">this paper</a> is also important in mitochondria, but Gene Group 33, which is mitochondrial translation shows no interesting dynamics.</p>
 <h3 id="gene-group-17-aldehyde-oxidase">Gene Group 17: aldehyde oxidase</h3>
 <p>This gene group contains only aldehyde oxidase. The only rapidly evolving orthogroup is:</p>
 <ul>
@@ -242,7 +242,7 @@ which is insignificant for the correlation with repeat content and also with gen
 <img src="file:////Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/Gene_Group_4_esterase_GF_sizes.svg" alt="Gene group 4" width=45%>
 </p>
 <h3 id="acyl-coa-synthetase">Acyl-CoA synthetase</h3>
-<p>According to <a href="https://web.archive.org/web/20180722105054id_/https://www.biorxiv.org/content/biorxiv/early/2017/12/21/237586.full.pdf">this paper</a> (especially figure 3), the <em>Elateriforma</em> share a common genomic mechanism for their fluorescence made up of luciferases and their paralogs, which form a cluster of genes (that's what they call it, no clue what that means exactly) containing the luciferase and close relatives such as peroxisomal fatty acyl-CoA synthetase (PACS) and non-peroxisomal acyl-CoA synthetase (ACS). This is not represented in any Gene Group, but the gene family N0.HOG0000613 is annotated as <em>Acyl-CoA synthetase family member 2</em> (but there's no other family members annotated). Some other orthogroups have Acyl-CoA synthesis-related annotations (not oxidase/reductase/hydrolase!) in their API summaries:</p>
+<p>According to <a href="https://web.archive.org/web/20180722105054id_/https://www.biorxiv.org/content/biorxiv/early/2017/12/21/237586.full.pdf">this paper</a> (especially figure 3), the <em>Elateriforma</em> share a common genomic mechanism for their fluorescence made up of luciferases and their paralogs, which form a cluster of genes (that's what they call it, no clue what that means exactly. I assume a gene family since they talk about how it came to be through tandem duplication later) containing the luciferase and close relatives such as peroxisomal fatty acyl-CoA synthetase (PACS) and non-peroxisomal acyl-CoA synthetase (ACS). This is not represented in any Gene Group, but the gene family N0.HOG0000613 is annotated as <em>Acyl-CoA synthetase family member 2</em> (but there's no other family members annotated). Some other orthogroups have Acyl-CoA synthesis-related annotations (not oxidase/reductase/hydrolase!) in their API summaries:</p>
 <ul>
 <li>N0.HOG0000284 (maybe a good candidate for the table?)</li>
 <li>N0.HOG0000397 (pudgy in Dmel)</li>
@@ -253,11 +253,11 @@ which is insignificant for the correlation with repeat content and also with gen
 <img src="file:////Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/Acyl_CoA_synthesis.svg" alt="Acyl_CoA_synthesis" width=45%>
 </p>
 <h1 id="general-enrichment-of-gene-groups-in-rapidly-expanding-gene-families">General &quot;enrichment&quot; of gene groups in rapidly expanding gene families</h1>
-<p>I looked at all the gene families in a species, and selected the ones that are in the upper 5th size percentile of all gene families (in species with few genes, this is sometimes just with one or more members, so I also set a min. size limit of 2). Then I checked which ones are significantly rapidly evolving according to CAFE, and which ones have been assigned to functional Gene Groups by their <em>D. melanogaster</em> member.  This is only a very small subset of all gene families in the upper 5th size percentile. I have then compiled a file that shows how many of the above selected gene families fall under each functional Gene Group. I think this can get a more general idea of the kind of things that might be evolving in some of the species. The full file is here: <code>PhD_chapter1/data/functional_annot_eval/frequent_Gene_Groups_in_expanding_GFs.txt</code> and I am going to show the output for all species below, only including Gene Groups that appear at least four times and are not uncharacterized or unannotated.</p>
+<p>I looked at all the gene families in a species, and selected the ones that are in the upper 5th size percentile of all gene families (in species with few genes, this is sometimes just with one or more members, so I also set a min. size limit of 2 members here). Then I checked which ones are significantly rapidly evolving according to CAFE, and of these which ones have been assigned to functional Gene Groups by their <em>D. melanogaster</em> member.  This is only a very small subset of all gene families in the upper 5th size percentile. I have then compiled a file that shows how many of the above selected gene families fall under each functional Gene Group. I think this can get a more general idea of the kind of things that might be evolving in some of the species. The full file is here: <code>PhD_chapter1/data/functional_annot_eval/frequent_Gene_Groups_in_expanding_GFs.txt</code> and I am going to show the output for all species below, only including Gene Groups that appear at least four times and are not uncharacterized or unannotated.</p>
 <p>These are my conclusions:</p>
 <ul>
 <li>Gene Group 25 (glycolysis and early development), and Gene Group 1 (detoxification, cytochrome P450) are basically in all of them.</li>
-<li>Gene Group 2 (proteolysis) is in all of them except bruchids (where it only occurs in B. siliquastri)</li>
+<li>Gene Group 2 (proteolysis) is in all families except bruchids (where it only occurs in B. siliquastri)</li>
 <li>Tenebrioids all have Gene Group 30 (pheromone sensing)</li>
 <li>Elateriformia all have Gene Group 4: Esterase and mating behavior.</li>
 </ul>
@@ -383,14 +383,17 @@ which is insignificant for the correlation with repeat content and also with gen
 <li>beetles are super underrepresented in sequencing projects: <a href="https://doi.org/10.1073/pnas.2109019118">https://doi.org/10.1073/pnas.2109019118</a></li>
 </ul>
 <h1 id="table">TABLE</h1>
-<p>| Orthogroup_ID | CAFE_p-value | Gene_Group | Group_function | repeat_correlation_slope | repeat_correlation_p-value | GS_correlation_slope | GS_correlation_p-value | Gene_Name | D_melanogaster | I_luminosus | P_pyralis | C_septempunctata | A_verrucosus | T_castaneum | Z_morio | T_molitor | D_ponderosae | R_ferrugineus | A_obtectus | B_siliquastri | C_chinensis | C_maculatus | max_delta_GF | transcript_ID_native | Flybase |
-| N0.HOG0000035 | 0.0 | None | None | 0.07833822365005534 | 0.017242915938343744 | 0.004367727725001441 | 0.011561278395119738 | None | 1 | 11 | 23 | 19 | 5 | 1 | 15 | 10 | 3 | 4 | 135 | 1 | 32 | 17 | 134 | rna-NM_001275459.1 | FBgn0037633 |
-| N0.HOG0000014 | 0.0 | None | None | 0.08252868448759042 | 0.029857058816618244 | 0.00544176454054848 | 0.003931094669538225 | None | 1 | 29 | 60 | 13 | 34 | 1 | 10 | 4 | 1 | 3 | 121 | 6 | 38 | 56 | 120 | rna-NM_136949.2 | FBgn0033750 |
-| N0.HOG0000140 | 0.0 | Gene Group 1 | detoxification | 0.0074300433129667505 | 0.7286375887369507 | 0.00030145542591610025 | 0.7920270858115639 | Cytochrome P450 6w1(Cyp6w1) | 6 | 26 | 8 | 8 | 9 | 8 | 14 | 17 | 1 | 6 | 5 | 3 | 2 | 6 | 25 | rna-NM_001299216.1 | FBgn0033065 |
-| N0.HOG0000085 | 0.0 | Gene Group 3 | None | -0.0193651890143579 | 0.21640001185062122 | -0.0005013295348651256 | 0.5585610643744727 | uncharacterized protein(CG3635) | 13 | 6 | 7 | 10 | 7 | 2 | 21 | 5 | 9 | 6 | 2 | 4 | 7 | 7 | 19 | rna-NM_136294.5 | FBgn0032981 |
-| N0.HOG0000401 | 0.0 | Gene Group 9 | sexual reproduction | -0.022203390866792034 | 0.3806646826028459 | -0.0013093512895652032 | 0.33042982105018115 | uncharacterized protein(CG34189) | 3 | 10 | 6 | 4 | 9 | 3 | 21 | 5 | 1 | 3 | 1 | 1 | 1 | 1 | 20 | rna-NM_001103877.2 | FBgn0085218 |
-N0.HOG0000037
-N0.HOG0000056</p>
+<p>These are the orthogroups that should be included in a table in the paper</p>
+<ul>
+<li>N0.HOG0000035</li>
+<li>N0.HOG0000014</li>
+<li>N0.HOG0000140</li>
+<li>N0.HOG0000085</li>
+<li>N0.HOG0000401</li>
+<li>N0.HOG0000037</li>
+<li>N0.HOG0000056</li>
+<li>N0.HOG0000284</li>
+</ul>
 
         
         

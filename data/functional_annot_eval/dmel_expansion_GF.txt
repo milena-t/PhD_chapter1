@@ -1,0 +1,2 @@
+N0.HOG0000035:D_melanogaster_g3238.t1_1
+N0.HOG0000014:D_melanogaster_g7327.t1_1
