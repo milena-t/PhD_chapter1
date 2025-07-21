@@ -96,7 +96,7 @@ def modify_orthogroups_from_N0(orthogroups_filepath, species_names, outfile_name
     outfile_name = outfile_path+"/"+outfile_name
 
     # remove the unnecessary column
-    orthogroups_df.drop('Gene Tree Parent Clade', axis=1, inplace=True)
+    orthogroups_df.drop('Gene Tree Parent Clade', axis=1, inplace=True) # this can not be used to determine the MRCA of the gene family! see documentation for the hierarchical orthogroups output file
     orthogroups_df.drop('OG', axis=1, inplace=True) 
 
     orthogroups_df.iloc[:, 1:] = orthogroups_df.iloc[:, 1:].map(count_csv_items)
@@ -118,16 +118,59 @@ def modify_orthogroups_from_N0(orthogroups_filepath, species_names, outfile_name
     print(f"modified tsv file for CAFE written to: {outfile_name}")
 
 
+def filter_CAFE_input_file(cafe_filepath:str, outgroup_header_name = "D_melanogaster", max_GF_size = 100, outfile_path = ""):
+    """
+    Filter the CAFE input file to 
+    * only include species present at the root of the tree (here in D. melanogaster)
+    * only inlcude orthogroups where all gene families are below a certain size threshold
+    """
+    if outfile_path == "":
+        outfile_path = cafe_filepath.replace(f".tsv", "")
+        outfile_path = f"{outfile_path}_filtered.tsv"
+
+    no_outgroup = 0
+    too_big_OG = 0
+    with open(cafe_filepath, "r") as cafe_infile, open(outfile_path, "w") as cafe_outfile:
+        cafe_lines = cafe_infile.readlines()
+        header = cafe_lines[0]
+        cafe_outfile.write(header)
+        
+        header = header.strip().split("\t")
+        outgroup_index = header.index(outgroup_header_name)
+        
+        for line_raw in cafe_lines[1:]:
+            line = line_raw.strip().split("\t")
+
+            if line[outgroup_index] == "0":
+                # print(f"no Dmel --> {line_raw}")
+                no_outgroup += 1
+                continue
+
+            if any(int(GF_size) > max_GF_size for GF_size in line[2:]):
+                print(f" too big GF --> {line_raw}")
+                too_big_OG += 1
+                continue
+            
+            cafe_outfile.write(line_raw)
+
+    print(f"{no_outgroup} OGs not at the root of the tree, \n{too_big_OG} orthogroups with gene families larger than {max_GF_size}\noutfile written to {outfile_path}")
+                
+        
+            
+
+            
 
 if __name__ == '__main__':
 
-
-    # species_names = make_species_order_from_tree("/Users/miltr339/Box Sync/code/annotation_pipeline/annotation_scripts_ordered/14_species_orthofinder_tree.nw")
-    species_names = gff.make_species_order_from_tree("/Users/milena/Box Sync/code/annotation_pipeline/annotation_scripts_ordered/14_species_orthofinder_tree.nw")
+    try:
+        species_names = gff.make_species_order_from_tree("/Users/miltr339/Box Sync/code/annotation_pipeline/annotation_scripts_ordered/14_species_orthofinder_tree.nw")
+    except:
+        species_names = gff.make_species_order_from_tree("/Users/milena/Box Sync/code/annotation_pipeline/annotation_scripts_ordered/14_species_orthofinder_tree.nw")
 
     orthoDB_orthogroups = "/Users/milena/work/chapter1_final_postprocessing/orthofinder_uniform/N0.tsv"
     native_orthogroups = "/Users/milena/work/chapter1_final_postprocessing/orthofinder_native/N0.tsv"
     
-    modify_orthogroups_from_N0(native_orthogroups, species_names=species_names, outfile_name="CAFE_input_native_from_N0.tsv")
-    modify_orthogroups_from_N0(orthoDB_orthogroups, species_names=species_names, outfile_name="CAFE_input_orthoDB_from_N0.tsv")
+    # modify_orthogroups_from_N0(native_orthogroups, species_names=species_names, outfile_name="CAFE_input_native_from_N0.tsv")
+    # modify_orthogroups_from_N0(orthoDB_orthogroups, species_names=species_names, outfile_name="CAFE_input_orthoDB_from_N0.tsv")
     
+    filter_CAFE_input_file(cafe_filepath = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_uniform/CAFE_input_orthoDB_from_N0.tsv", outgroup_header_name = "D_melanogaster", max_GF_size = 100, )
