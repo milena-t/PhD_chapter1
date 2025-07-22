@@ -1,0 +1,36 @@
+Gene Group 1    Function: Cytochrome P450
+Gene Group 2    Function: protein breakdown (proteolysis)
+Gene Group 3    Function: lipid metabolic process (digestion)
+Gene Group 4    Function: Esterase and mating behavior
+Gene Group 5    Function: protease inhibitor (immunity, reproduction)
+Gene Group 6    Function: immunity (antimicrobial)
+Gene Group 7    Function: odorant binding
+Gene Group 8    Function: immunity and sexual reproduction
+Gene Group 9    Function: sexual reproduction
+Gene Group 10   Function: uncharacterized
+Gene Group 11   Function: growth factor (Adenosine deaminase-related growth factor)
+Gene Group 12   Function: digesting complicated sugars (Lysosomal alpha-mannosidase)
+Gene Group 13   Function: molting and development
+Gene Group 14   Function: heat stress and neurological
+Gene Group 15   Function: chitin-related
+Gene Group 16   Function: uncharacterized
+Gene Group 17   Function: uncharacterized
+Gene Group 18   Function: Aldehyde oxidase
+Gene Group 19   Function: uncharacterized
+Gene Group 20   Function: transmembrane transport (toxin resistance) 
+Gene Group 21   Function: vision and energy metabolism
+Gene Group 22   Function: transcription regulation
+Gene Group 23   Function: glutathione metabolic process
+Gene Group 24   Function: Cuticular protein
+Gene Group 25   Function: uncharacterized
+Gene Group 26   Function: glycolysis and early development (and other)
+Gene Group 27   Function: ribosomal protein and protein modification
+Gene Group 28   Function: DNA-related functions
+Gene Group 29   Function: microtubule
+Gene Group 30   Function: pheromone sensing
+Gene Group 31   Function: chromatin organization and transcription regulation   
+Gene Group 32   Function: transcription regulation
+Gene Group 33   Function: mitochondrial translation
+Gene Group 34   Function: uncharacterized
+Gene Group 35   Function: RNA polymerase II transcription regulation
+Gene Group 36   Function: uncharacterized
