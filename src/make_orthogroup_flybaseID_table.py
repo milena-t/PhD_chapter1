@@ -518,13 +518,13 @@ if __name__ == "__main__":
     orthoDB_annotations, orthogroups_orthoDB, sig_orthoDB, orthoDB_proteinseqs = filepaths_orthoDB()
     native_annotations, orthogroups_native, sig_native, native_proteinseqs = filepaths_native()
     dmel_unfiltered_annot = "/Users/miltr339/work/native_annotations/d_melanogaster_NOT_isoform_filtered.gff"    
-    david_gene_groups_path = "/Users/miltr339/Box Sync/thesis writing/Milena chapter1/Sig OG Flybase IDs/DAVID-FunctionalClustering_FBgenes.txt"
+    david_gene_groups_path = "/Users/milena/Box Sync/thesis writing/Milena chapter1/Sig OG Flybase IDs/DAVID-FunctionalClustering_FBgenes.txt"
     david_gene_groups_path_home = "/Users/milena/Box Sync/thesis writing/Milena chapter1/Sig OG Flybase IDs/DAVID-FunctionalClustering_FBgenes.txt"
     tree_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_only_species_names.nw"
-    flybase_table_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthoDB_sig_OGs_flybase_IDs_with_group_function.tsv"
+    flybase_table_path = "/Users/milena/work/PhD_code/PhD_chapter1/data/orthoDB_sig_OGs_flybase_IDs_with_group_function.tsv"
     # flybase_table_path_one_OG_member = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthoDB_sig_OGs_flybase_IDs_with_group_function_only_one_OG_member.tsv"
-    GF_vs_rep_slopes = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/sig_OGs_vs_reps_inclines_pvalues.tsv"
-    GF_vs_GS_slopes = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/sig_OGs_vs_GS_inclines_pvalues.tsv"
+    GF_vs_rep_slopes = "/Users/milena/work/PhD_code/PhD_chapter1/data/sig_OGs_vs_reps_inclines_pvalues.tsv"
+    GF_vs_GS_slopes = "/Users/milena/work/PhD_code/PhD_chapter1/data/sig_OGs_vs_GS_inclines_pvalues.tsv"
 
     CAFE_runs_dir = "/Users/milena/work/PhD_code/PhD_chapter1/data/CAFE_convergence/runs_to_test_convergence"
 
@@ -578,7 +578,7 @@ if __name__ == "__main__":
         makeblastdb -in D_melanogaster.faa -dbtype prot     # native annotation for reference db
         blastp -query /Users/milena/work/PhD_code/PhD_chapter1/src/Dmel_transcripts_from_sig_OGs.fasta -db /Users/milena/work/native_proteinseqs/D_melanogaster.faa -out /Users/milena/work/PhD_code/PhD_chapter1/data/Dmel_oDB_vs_nat.out -outfmt 6 -num_threads 5 -evalue 1e-10
         """
-        if True:
+        if False:
             # blast_outfile = "/Users/miltr339/work/PhD_code/Dmel_oDB_vs_nat.out"
             blast_outfile = "/Users/milena/work/PhD_code/PhD_chapter1/data/Dmel_oDB_vs_nat.out"
             blast_out_dict = parse_blast_outfile(blast_outfile, query_fasta="/Users/milena/work/PhD_code/PhD_chapter1/src/Dmel_transcripts_from_sig_OGs.fasta")
@@ -592,8 +592,8 @@ if __name__ == "__main__":
                 num_transcripts += len(tr_list)
 
             david_gene_groups_dict = parse_david_gene_groups_file(david_gene_groups_path)
-            # david_gene_groups_function = parse_david_group_functions(david_gene_groups_path)
-            david_gene_groups_function = {}
+            david_gene_groups_function = parse_david_group_functions(david_gene_groups_path)
+            # david_gene_groups_function = {}
 
             tree_path = "/Users/milena/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_only_species_names.nw"
             dmel_unfiltered_annot = "/Users/milena/work/native_annotations/d_melanogaster_NOT_isoform_filtered.gff" 
