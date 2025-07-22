@@ -30,7 +30,7 @@ def filepaths_work():
     return out_dir,orthogroups_orthoDB_filepath,tree, DAVID_path
 
 def orthogroups_lists():
-    out_dict = {
+    out_dict_old_single_CAFE_run = {
         "Aobt_expansion" : ["N0.HOG0000035","N0.HOG0000014"],
         "Gene Group 1" : ["N0.HOG0000027","N0.HOG0000059","N0.HOG0000095","N0.HOG0000204","N0.HOG0001077","N0.HOG0000140","N0.HOG0000492","N0.HOG0001030"],
         "Gene Group 3" : ["N0.HOG0000086","N0.HOG0002393","N0.HOG0000085"],
@@ -41,6 +41,10 @@ def orthogroups_lists():
         "Gene Group 16": ["N0.HOG0000307","N0.HOG0001194","N0.HOG0003035"],
         "Gene Group 23": ["N0.HOG0000108","N0.HOG0000039","N0.HOG0000044","N0.HOG0001108","N0.HOG0000067"],
         "Gene Group 4": ["N0.HOG0000120","N0.HOG0000141","N0.HOG0000365","N0.HOG0000378","N0.HOG0007183"],
+        "Acyl_CoA_synthesis" : ["N0.HOG0000284","N0.HOG0000397","N0.HOG0000613"],
+    }
+    out_dict = {
+        "Aobt_expansion" : ["N0.HOG0000035","N0.HOG0000014"],
         "Acyl_CoA_synthesis" : ["N0.HOG0000284","N0.HOG0000397","N0.HOG0000613"],
     }
     return out_dict
