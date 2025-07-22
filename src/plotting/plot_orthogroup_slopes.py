@@ -10,6 +10,7 @@ import scipy.stats
 from statsmodels.stats.multitest import multipletests
 from tqdm import tqdm
 import parse_gff as gff
+import analyze_multiple_CAFE_runs as CAFE
 import parse_orthogroups as OGs
 
 
@@ -200,10 +201,16 @@ def plot_slopes(GF_sizes_dict, species_list, exp_dict, x_label, filename = "sig_
 
 
 if __name__ == "__main__":
-    tree = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_only_species_names.nw"
-    species_names = gff.make_species_order_from_tree(tree)
 
-    data_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/"
+    try:
+        tree = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_only_species_names.nw"
+        species_names = gff.make_species_order_from_tree(tree)
+        data_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/"
+    except:
+        tree = "/Users/milena/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_only_species_names.nw"
+        species_names = gff.make_species_order_from_tree(tree)
+        data_dir = "/Users/milena/work/PhD_code/PhD_chapter1/data/"
+
     orthogroups_native_filepath = f"{data_dir}orthofinder_native/N0.tsv"
     orthogroups_orthoDB_filepath = f"{data_dir}orthofinder_uniform/N0.tsv"
     sig_native = f"{data_dir}CAFE_native_Base_Family_results.txt"
@@ -253,7 +260,9 @@ if __name__ == "__main__":
 
 
     print(f"\n\torthoDB")
-    orthoDB_sig_list, orthoDB_cafe_list = OGs.get_sig_orthogroups(sig_orthoDB)
+    # orthoDB_sig_list, orthoDB_cafe_list = OGs.get_sig_orthogroups(sig_orthoDB)
+    CAFE_runs_dir = "/Users/milena/work/PhD_code/PhD_chapter1/data/CAFE_convergence/runs_to_test_convergence"
+    orthoDB_sig_list, orthoDB_cafe_list = CAFE.get_overlap_OG_sig_list(CAFE_runs_dir)
     orthoDB_dict_lists = OGs.parse_orthogroups_dict(orthogroups_orthoDB_filepath, orthoDB_cafe_list)
     orthoDB_dict = OGs.get_GF_sizes(orthoDB_dict_lists)
 
