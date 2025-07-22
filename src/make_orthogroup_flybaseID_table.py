@@ -58,7 +58,7 @@ def filepaths_native():
     return native_annotations,orthogroups_native,sig_native,native_proteinseqs
 
 def filepaths_orthoDB():
-    orthoDB_annot_dir = "/Users/miltr339/work/orthoDB_annotations/"
+    orthoDB_annot_dir = "/Users/milena/work/orthoDB_annotations/"
     orthoDB_annotations = {
         "A_obtectus" : f"{orthoDB_annot_dir}A_obtectus_braker_isoform_filtered.gff",
         "A_verrucosus" : f"{orthoDB_annot_dir}A_verrucosus_braker_isoform_filtered.gff",
@@ -77,7 +77,7 @@ def filepaths_orthoDB():
         "Z_morio" : f"{orthoDB_annot_dir}Z_morio_braker_isoform_filtered.gff",
     }
 
-    orthoDB_proteinseqs_dir = "/Users/miltr339/work/orthoDB_proteinseqs_TE_filtered/"
+    orthoDB_proteinseqs_dir = "/Users/milena/work/orthoDB_proteinseqs_TE_filtered/"
     orthoDB_proteinseqs = {
         "A_obtectus" : f"{orthoDB_proteinseqs_dir}A_obtectus_filtered_proteinfasta_TE_filtered.fa",
         "A_verrucosus" : f"{orthoDB_proteinseqs_dir}A_verrucosus_filtered_proteinfasta_TE_filtered.fa",
@@ -100,8 +100,8 @@ def filepaths_orthoDB():
     # orthogroups_orthoDB = "/Users/milena/work/orthofinder/orthoDB_uniform_masking_orthogroups/N0.tsv"
     # sig_orthoDB = "/Users/miltr339/Box Sync/code/CAFE/orthoDB_TE_filtered_Base_family_results.txt"
     
-    orthogroups_orthoDB = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_uniform/N0.tsv"
-    sig_orthoDB = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_uniform_Base_Family_results.txt"
+    orthogroups_orthoDB = "/Users/milena/work/PhD_code/PhD_chapter1/data/orthofinder_uniform/N0.tsv"
+    sig_orthoDB = "/Users/milena/work/PhD_code/PhD_chapter1/data/CAFE_uniform_Base_Family_results.txt"
 
     return orthoDB_annotations, orthogroups_orthoDB, sig_orthoDB, orthoDB_proteinseqs
 
@@ -526,7 +526,7 @@ if __name__ == "__main__":
     GF_vs_rep_slopes = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/sig_OGs_vs_reps_inclines_pvalues.tsv"
     GF_vs_GS_slopes = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/sig_OGs_vs_GS_inclines_pvalues.tsv"
 
-    CAFE_runs_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_convergence/runs_to_test_convergence"
+    CAFE_runs_dir = "/Users/milena/work/PhD_code/PhD_chapter1/data/CAFE_convergence/runs_to_test_convergence"
 
     ## Get stuff from native with functional annotations
     if False:
@@ -554,7 +554,7 @@ if __name__ == "__main__":
     if True:
         print(f"\n\torthoDB")
         orthoDB_single_run_sig_list, orthoDB_all_list =OGs.get_sig_orthogroups(f"{CAFE_runs_dir}/run1/Base_family_results.txt")
-        orthoDB_sig_list = CAFE.get_overlap_OG_sig_list(CAFE_runs_dir)
+        orthoDB_sig_list, orthoDB_all_list = CAFE.get_overlap_OG_sig_list(CAFE_runs_dir)
 
         
         orthoDB_sig_OGs_dict = OGs.parse_orthogroups_dict(orthogroups_orthoDB, sig_list = orthoDB_sig_list, species="D_melanogaster")
@@ -578,6 +578,7 @@ if __name__ == "__main__":
         makeblastdb -in D_melanogaster.faa -dbtype prot     # native annotation for reference db
         blastp -query PhD_chapter1/Dmel_transcripts_from_sig_OGs.fasta -db /Users/miltr339/work/native_proteinseqs/D_melanogaster.faa -out /Users/miltr339/work/PhD_code/Dmel_oDB_vs_nat.out -outfmt 6 -num_threads 5 -evalue 1e-10
         """
+        raise RuntimeError(f"\t ----> TEST UNTIL BLAST SEARCH")
         if False:
             blast_outfile = "/Users/miltr339/work/PhD_code/Dmel_oDB_vs_nat.out"
             blast_out_dict = parse_blast_outfile(blast_outfile, query_fasta="PhD_chapter1/Dmel_transcripts_from_sig_OGs.fasta")
