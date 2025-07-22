@@ -8,6 +8,7 @@ import numpy as np
 import scipy.stats
 import pandas as pd
 import parse_gff as gff
+import analyze_multiple_CAFE_runs as CAFE
 import parse_orthogroups as OGs
 
 
@@ -310,15 +311,20 @@ def plot_means(orthoDB, whole_genome_stats, species_names, x_category = "", file
 
 if __name__ == "__main__":
 
-    tree = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_only_species_names.nw"
-    species_names = gff.make_species_order_from_tree(tree)
+    try:
+        tree = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_only_species_names.nw"
+        species_names = gff.make_species_order_from_tree(tree)
+    except:
+        tree = "/Users/milena/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_only_species_names.nw"
+        species_names = gff.make_species_order_from_tree(tree)
 
     orthogroups_native_filepath = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_native/N0.tsv"
-    orthogroups_orthoDB_filepath = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_uniform/N0.tsv"
+    orthogroups_orthoDB_filepath = "/Users/milena/work/PhD_code/PhD_chapter1/data/orthofinder_uniform/N0.tsv"
     sig_native = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_native_Base_Family_results.txt"
-    sig_orthoDB = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_uniform_Base_Family_results.txt"
+    # sig_orthoDB = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_uniform_Base_Family_results.txt"
+    CAFE_runs_dir = "/Users/milena/work/PhD_code/PhD_chapter1/data/CAFE_convergence/runs_to_test_convergence"
 
-    out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/"
+    out_dir = "/Users/milena/work/PhD_code/PhD_chapter1/data/"
 
     genome_sizes_dict = {"D_melanogaster" : 180,
                     "I_luminosus" : 842,
@@ -337,8 +343,13 @@ if __name__ == "__main__":
                     "C_maculatus" : 1202 
                     }
 
-    whole_genome_stats_filepath = "/Users/miltr339/Box Sync/code/annotation_pipeline/repeatmasking_eval/eval_stats_3_annots_with_genome_size.csv"
-    whole_genome_stats = read_whole_genome_stats(whole_genome_stats_filepath)
+    try:
+        whole_genome_stats_filepath = "/Users/miltr339/Box Sync/code/annotation_pipeline/repeatmasking_eval/eval_stats_3_annots_with_genome_size.csv"
+        whole_genome_stats = read_whole_genome_stats(whole_genome_stats_filepath)
+    except:
+        whole_genome_stats_filepath = "/Users/milena/Box Sync/code/annotation_pipeline/repeatmasking_eval/eval_stats_3_annots_with_genome_size.csv"
+        whole_genome_stats = read_whole_genome_stats(whole_genome_stats_filepath)
+
     if False:
         print(f"\n\tnative")
         # native_dict = read_orthogroups_input(orthogroups_native_filepath)
@@ -358,7 +369,9 @@ if __name__ == "__main__":
     # orthoDB_dict = read_orthogroups_input(orthogroups_orthoDB_filepath)
     orthoDB_dict_lists = OGs.parse_orthogroups_dict(orthogroups_orthoDB_filepath)
     orthoDB_dict = OGs.get_GF_sizes(orthoDB_dict_lists)
-    orthoDB_sig_list, orthoDB_cafe_list = OGs.get_sig_orthogroups(sig_orthoDB)
+    orthoDB_sig_list, orthoDB_cafe_list = CAFE.get_overlap_OG_sig_list(CAFE_runs_dir)
+    # orthoDB_sig_list, orthoDB_cafe_list = OGs.get_sig_orthogroups(sig_orthoDB)
+
     print(f"{len(orthoDB_cafe_list)} of {len(orthoDB_dict)} orthoDB orthogroups considered in CAFE, of which {len(orthoDB_sig_list)} are significantly changing")
     all_unsig_orthoDB, all_sig_orthoDB = get_means(orthoDB_dict, orthoDB_sig_list, orthoDB_cafe_list, species_names)
     # plot_gene_counts(orthoDB_dict, orthoDB_sig_list, orthoDB_cafe_list, species_names, annotation = "orthoDB", filename = f"{out_dir}orthoDB_significant_orthogroups_from_CAFE.png")
@@ -369,6 +382,6 @@ if __name__ == "__main__":
     }
 
     # plot_means(native_means, orthoDB_means, whole_genome_stats, species_names)
-    out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/"
+    out_dir = "/Users/milena/work/PhD_code/PhD_chapter1/data/"
     plot_means(orthoDB_means, whole_genome_stats, species_names, x_category="genome_size", filename=f"{out_dir}uniform_mean_orthogroups_from_CAFE_vs_genome_size.png")
     plot_means(orthoDB_means, whole_genome_stats, species_names, x_category="repeat_percentage", filename=f"{out_dir}uniform_mean_orthogroups_from_CAFE_vs_repeats.png")
