@@ -8,17 +8,23 @@ I will try to  figure out a good way to select a set of significantly rapidly ev
 import os
 import parse_orthogroups as OGs
 import matplotlib.pyplot as plt
-import plotting.plot_significant_orthogroups_from_CAFE as plot_OG
+try:
+    import plotting.plot_significant_orthogroups_from_CAFE as plot_OG
+except:
+    import plot_significant_orthogroups_from_CAFE as plot_OG
 import parse_gff as gff
 
 
 def CAFE_output_paths(in_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_convergence/runs_to_test_convergence"):
     
     # get results files for all runs
+    if in_dir[-1] == "/":
+        in_dir = in_dir[:-1]
     runs_list = [] 
     for run in os.listdir(in_dir):
         name = f"{in_dir}/{run}/Base_family_results.txt"
         runs_list.append(name)
+    
     return runs_list
 
 
@@ -53,6 +59,10 @@ def get_overlap_OG_sig_list(cafe_outputs_list):
     """
     get a list of orthogroups that are significant in all runs
     """
+    if type(cafe_outputs_list) != list:
+        # if the output is not a list yet
+        cafe_outputs_list = CAFE_output_paths(cafe_outputs_list)
+
     sig_OG_counts, unsig_list = count_OG_occurence(cafe_outputs_list)
     num_runs = len(cafe_outputs_list)
 
@@ -86,12 +96,13 @@ def plot_sig_OG_occurence_histogram(sig_counts_list:list[int], filename = ""):
     print("Figure saved in the current working directory directory as: "+filename)
 
 
+CAFE_runs_dir = "/Users/milena/work/PhD_code/PhD_chapter1/data/CAFE_convergence/runs_to_test_convergence"
 
 
 if __name__ == "__main__":
 
     out_data = "/Users/milena/work/PhD_code/PhD_chapter1/data/CAFE_convergence"
-    cafe_outputs_list = CAFE_output_paths("/Users/milena/work/PhD_code/PhD_chapter1/data/CAFE_convergence/runs_to_test_convergence")
+    cafe_outputs_list = CAFE_output_paths(CAFE_runs_dir)
 
     
     overlap_sig_OGs, all_OGs_list = get_overlap_OG_sig_list(cafe_outputs_list)
