@@ -4,6 +4,7 @@ Are they on the same or different contig? how close/distant are they?
 """
 import parse_gff as gff
 import parse_orthogroups as OGs
+import analyze_multiple_CAFE_runs as CAFE
 from Bio import SeqIO
 import requests as req
 from tqdm import tqdm
@@ -525,6 +526,8 @@ if __name__ == "__main__":
     GF_vs_rep_slopes = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/sig_OGs_vs_reps_inclines_pvalues.tsv"
     GF_vs_GS_slopes = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/sig_OGs_vs_GS_inclines_pvalues.tsv"
 
+    CAFE_runs_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_convergence/runs_to_test_convergence"
+
     ## Get stuff from native with functional annotations
     if False:
         print(f"\n\tnative")
@@ -550,7 +553,10 @@ if __name__ == "__main__":
     # get stuff for orthoDB annotations
     if True:
         print(f"\n\torthoDB")
-        orthoDB_sig_list, orthoDB_all_list =OGs.get_sig_orthogroups(sig_orthoDB)
+        orthoDB_single_run_sig_list, orthoDB_all_list =OGs.get_sig_orthogroups(f"{CAFE_runs_dir}/run1/Base_family_results.txt")
+        orthoDB_sig_list = CAFE.get_overlap_OG_sig_list(CAFE_runs_dir)
+
+        
         orthoDB_sig_OGs_dict = OGs.parse_orthogroups_dict(orthogroups_orthoDB, sig_list = orthoDB_sig_list, species="D_melanogaster")
         if len(orthoDB_sig_list) != len(orthoDB_sig_OGs_dict):
             print(f"{len(orthoDB_sig_list)} significant orthogroups : {orthoDB_sig_list[0:5]}...")
