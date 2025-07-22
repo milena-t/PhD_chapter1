@@ -591,8 +591,7 @@ if __name__ == "__main__":
             for og, tr_list in blast_out_dict.items():
                 num_transcripts += len(tr_list)
 
-            # david_gene_groups_dict = parse_david_gene_groups_file(david_gene_groups_path)
-            david_gene_groups_dict = {}
+            david_gene_groups_dict = parse_david_gene_groups_file(david_gene_groups_path)
             # david_gene_groups_function = parse_david_group_functions(david_gene_groups_path)
             david_gene_groups_function = {}
 

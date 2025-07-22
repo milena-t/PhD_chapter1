@@ -30,11 +30,6 @@ I used the [ncbi conserved domain search](https://www.ncbi.nlm.nih.gov/Structure
 
 <p><img src="Aobt_expansion_GF_sizes.svg" alt="A. obtectus expansion" width=45%></p>
 
-# TODO re-do pictures and double check all from here on down
-
-## new: Adenosine deaminase-related growth factor
-[paper](https://www.sciencedirect.com/science/article/abs/pii/S0378111901007624)
-
 ## Detoxification
 
 Gene Group 1 is the main detoxification group, with all the cytochrome P450 in it, but Gene Group 17 which has aldehyde deoxide in it also has something to do with detoxification. All of these orthogroups are very quiet in *Bruchinae* and *Curculionidae* (*D. ponderosae* and *R. ferrugineus*). Notable expansions are especially *Elateriforma* (*I. luminosus*) which are fluorescent, and *Tenebrioids*. The two functional anotations in this category are:
