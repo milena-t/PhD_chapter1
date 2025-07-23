@@ -6,6 +6,7 @@ import plot_basics as my_plotting
 import parse_orthogroups as OGs
 import plotting.plot_significant_orthogroups_from_CAFE as plot_OG
 import make_orthogroup_flybaseID_table as parse_DAVID
+from matplotlib.ticker import FuncFormatter
 import matplotlib.pyplot as plt
 import numpy as np
 import base64
@@ -34,12 +35,15 @@ def orthogroups_lists():
         "Aobt_expansion" : ["N0.HOG0000035","N0.HOG0000014"],
         "Gene Group 1" : ["N0.HOG0000027","N0.HOG0000059","N0.HOG0000095","N0.HOG0000140","N0.HOG0000204","N0.HOG0000492","N0.HOG0001030","N0.HOG0001077"],
         "Gene Group 3" : ["N0.HOG0000086","N0.HOG0002393","N0.HOG0000085"],
-        "Gene Group 17" : ["N0.HOG0000669"],
+        "Gene Group 18" : ["N0.HOG0000669"],
         "Gene Group 5,8,9" : ["N0.HOG0000541","N0.HOG0000775","N0.HOG0000892","N0.HOG0000401","N0.HOG0009002"],
+        "Gene Group 20" : ["N0.HOG0000030","N0.HOG0000450","N0.HOG0000526","N0.HOG0000756","N0.HOG0000761","N0.HOG0010885"],
         "Gene Group 30": ["N0.HOG0000037","N0.HOG0000177","N0.HOG0001445","N0.HOG0000038","N0.HOG0000194","N0.HOG0000345","N0.HOG0000467"],
         "Gene Group 7" : ["N0.HOG0000056","N0.HOG0000454","N0.HOG0000436","N0.HOG0000480","N0.HOG0009039"],
-        "Gene Group 16": ["N0.HOG0000307","N0.HOG0001194","N0.HOG0003035"],
-        "Gene Group 23": ["N0.HOG0000108","N0.HOG0000039","N0.HOG0000044","N0.HOG0001108","N0.HOG0000067"],
+        "Gene Group 15": ["N0.HOG0000307","N0.HOG0001194","N0.HOG0003035"],
+        "Gene Group 24": ["N0.HOG0000108","N0.HOG0000039","N0.HOG0000044","N0.HOG0001108"],
+        "Gene Group 26" : ["N0.HOG0000078","N0.HOG0000112","N0.HOG0000113","N0.HOG0000173","N0.HOG0000174","N0.HOG0000215","N0.HOG0000276","N0.HOG0000305","N0.HOG0000385","N0.HOG0000424","N0.HOG0000445","N0.HOG0000462","N0.HOG0000506","N0.HOG0000555","N0.HOG0000560","N0.HOG0000562","N0.HOG0000582","N0.HOG0000590","N0.HOG0000624","N0.HOG0000653","N0.HOG0000662","N0.HOG0000668","N0.HOG0000709","N0.HOG0000715","N0.HOG0000730","N0.HOG0000798","N0.HOG0000836","N0.HOG0000854","N0.HOG0000859","N0.HOG0000885","N0.HOG0000888","N0.HOG0000890","N0.HOG0000902","N0.HOG0000915","N0.HOG0000916","N0.HOG0000960","N0.HOG0001028","N0.HOG0001040","N0.HOG0001065","N0.HOG0001094","N0.HOG0001097","N0.HOG0001100","N0.HOG0001311","N0.HOG0001487","N0.HOG0001719","N0.HOG0001774","N0.HOG0001781","N0.HOG0001850","N0.HOG0001925","N0.HOG0001928","N0.HOG0002240","N0.HOG0002511","N0.HOG0002693","N0.HOG0003778","N0.HOG0004409","N0.HOG0005613","N0.HOG0008866","N0.HOG0010108","N0.HOG0010919","N0.HOG0012168","N0.HOG0013047","N0.HOG0014474","N0.HOG0017274","N0.HOG0000415","N0.HOG0001112","N0.HOG0001856"],
+        "Gene Group 13" : ["N0.HOG0000278","N0.HOG0001036"],
         "Gene Group 4": ["N0.HOG0000120","N0.HOG0000141","N0.HOG0000365","N0.HOG0000378","N0.HOG0007183"],
         "Acyl_CoA_synthesis" : ["N0.HOG0000284","N0.HOG0000397","N0.HOG0000613"],
     }
@@ -47,27 +51,90 @@ def orthogroups_lists():
         "Aobt_expansion" : ["N0.HOG0000035","N0.HOG0000014"],
         "Acyl_CoA_synthesis" : ["N0.HOG0000284","N0.HOG0000397","N0.HOG0000613"],
     }
-    return out_dict
+    return out_dict_old_single_CAFE_run
 
-def plot_selected_OGs(orthogroups_path:str, OG_IDs:list, tree_path:str, filename:str, out_dir:str = "/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/", title = ""):
+def plot_selected_OGs(orthogroups_path:str, OG_IDs:list[list[str]], colors:list, labels:list, tree_path:str, filename:str, out_dir:str = "/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/", title = "", transparent_bg=True, svg = False):
     """
     plot the gene family sizes in a subset of orthogroup_IDs
+    takes a list of lists of OG IDs, grouped by which should have the same color. 
+    The colors list is then these colors, in the same order as the lists in OG_IDs
     """
+    fs = 22 # set font size
+    # plot each column in the dataframe as a line in the same plot thorugh a for-loop
+    fig = plt.figure(figsize=(15,10))
+    ax = fig.add_subplot(1, 1, 1)
 
     # get sorted species names from tree
     species_names_unsorted = my_plotting.plot_tree_manually(tree_path)
     species_coords_sorted = sorted(list(species_names_unsorted.keys()))
-    species_list = [species_names_unsorted[species_coord] for species_coord in species_coords_sorted]
+    species_names = [species_names_unsorted[species_coord] for species_coord in species_coords_sorted]
 
     orthoDB_dict_lists = OGs.parse_orthogroups_dict(orthogroups_path)
     orthoDB_dict = OGs.get_GF_sizes(orthoDB_dict_lists)
-    OGs_of_interest_dict = {OG_id : orthoDB_dict[OG_id] for OG_id in OG_IDs}
     
     plot_name = f"{out_dir}{filename}"
-    plot_OG.plot_gene_counts(OGs_of_interest_dict, sig_list=OG_IDs, all_cafe_list=OG_IDs, 
-                             species_names=species_list, annotation = "orthoDB", 
-                             filename = plot_name, transparent_bg=False, 
-                             title=title, svg=True)
+
+    if type(OG_IDs[0]) != list:
+        OG_IDs = [OG_IDs]
+    if len(OG_IDs) != len(colors) and len(colors) == len(labels):
+        raise RuntimeError(f"\t --> list with orthogroup IDs lists and list with colors do not have the same length!")
+    elif len(OG_IDs) != len(labels) and len(colors) == len(labels):
+        raise RuntimeError(f"\t --> list with orthogroup IDs lists and list with labels do not have the same length!")
+    elif len(colors) != len(labels):
+        raise RuntimeError(f"\t --> list with colors and list with labels do not have the same length!")
+
+    ymax = 0
+    for i,OG_IDs_list in enumerate(OG_IDs):
+        
+        ax.plot(0, 0, color = colors[i], alpha = 1, linewidth =2, label = labels[i]) 
+        OGs_of_interest_dict = {OG_id : orthoDB_dict[OG_id] for OG_id in OG_IDs_list}
+
+        for orthogroup in OG_IDs_list:
+            gene_family_members = []
+            for species in species_names:
+                try:
+                    gene_family_members.append(OGs_of_interest_dict[orthogroup][species])
+                except:
+                    gene_family_members.append(0)
+        
+            if max(gene_family_members) > ymax:
+                ymax = max(gene_family_members)
+
+            ax.plot(species_names, gene_family_members, color = colors[i], alpha = 1, linewidth =2) # originally 0.8
+
+
+    ax.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x < 0  else f'{int(x)}'))
+
+    ylab="number of gene family members"
+    ax.set_ylabel(ylab, fontsize = fs)
+    plt.xticks(labels=[species.replace("_", ". ") for species in species_names], ticks=species_names, rotation = 90, fontsize = fs)
+
+    handles, labels = ax.get_legend_handles_labels()
+    ax.legend(handles, labels, fontsize = fs, loc='upper center')
+
+    plt.title(title, fontsize = fs)
+
+    #ax.legend(fontsize = fs)
+    # set grid only for X axis ticks 
+    ax.grid(True)
+    ax.yaxis.grid(False)
+
+    ymax = ymax*1.25
+    if ymax>15:
+        ax.set_ylim(-4.5,ymax)
+    else:
+        ax.set_ylim(-1.5,ymax)
+    ax.tick_params(axis='y', labelsize=fs)
+
+    plt.tight_layout()
+
+    if svg:
+        plot_name = plot_name.replace(".png", ".svg")
+        plt.savefig(plot_name, transparent = transparent_bg)
+    else:
+        plt.savefig(plot_name, dpi = 300, transparent = transparent_bg)
+    print("Figure saved in the current working directory directory as: "+plot_name)
+    
     return plot_name
 
 
@@ -220,7 +287,7 @@ if __name__ == "__main__":
     OG_lists_dict = orthogroups_lists()
 
     ##  IMPORT SVG TO HTML
-    if True:
+    if False:
         # html_path = "/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/my_thoughts.html"
         html_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/my_thoughts.html"
         inline_svgs_in_html(html_path=html_path)
@@ -234,10 +301,28 @@ if __name__ == "__main__":
     # image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Aobt_expansion"], tree_path=tree_path, filename="Aobt_expansion_GF_sizes.png", title = f"A. obtectus expansion: {OGs_title}")
 
     # --> DETOXIFICATION
-    # image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 1"], tree_path=tree_path, filename="Gene_Group_1_detoxofication_GF_sizes.png", title = "Gene group 1")
-    # image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 17"], tree_path=tree_path, filename="Gene_Group_17_detoxofication_GF_sizes.png", title = "Gene group 17")
-    # image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=["N0.HOG0000140"], tree_path=tree_path, filename="detoxofication_N0.HOG0000140_GF_sizes.png", title = "Orthogroup N0.HOG0000140")
-    # image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 3"], tree_path=tree_path, filename="Gene_Group_3_lipid_metabolism_GF_sizes.png", title = "Gene Group 3")
+    cols_list = [
+        "#a9c5e2",
+        "#434b4c",
+        "#DE6449",
+        ] # first light blue: "#a9c5e2"
+    labels_list = [
+        "Cluster 1: Cytochrome P450", 
+        "Cluster 3: lipid metabolic process",
+        "Cluster 18: aldehyde oxidase", 
+        ]
+    IDs_lists = [
+        OG_lists_dict["Gene Group 1"],
+        OG_lists_dict["Gene Group 3"],
+        OG_lists_dict["Gene Group 18"],
+    ]
+    image_path = plot_selected_OGs(
+        orthogroups_path=orthogroups_orthoDB_filepath, 
+        OG_IDs=IDs_lists, colors=cols_list, labels=labels_list, 
+        tree_path=tree_path, filename="detoxificatoin_clusters.png", 
+        out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", 
+        title = "Detoxification-related clusters", 
+        transparent_bg=True, svg = True)
 
     # --> REPRODUCTION
     # image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 5,8,9"], tree_path=tree_path, filename="Gene_Group_5_8_9_reproduction_GF_sizes.png", title = "Gene group 5, 8, and 9")

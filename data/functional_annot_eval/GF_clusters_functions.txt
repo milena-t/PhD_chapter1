@@ -17,7 +17,7 @@ Gene Group 16   Function: uncharacterized
 Gene Group 17   Function: uncharacterized
 Gene Group 18   Function: Aldehyde oxidase
 Gene Group 19   Function: uncharacterized
-Gene Group 20   Function: transmembrane transport (toxin resistance) 
+Gene Group 20   Function: transmembrane transport (olfactory) 
 Gene Group 21   Function: vision and energy metabolism
 Gene Group 22   Function: transcription regulation
 Gene Group 23   Function: glutathione metabolic process
