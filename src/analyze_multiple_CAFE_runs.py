@@ -32,6 +32,10 @@ def get_union_sig_list(cafe_outputs_list:str):
     """
     get a list of all orthogorups that are significant in at least one run
     """
+    if type(cafe_outputs_list) != list:
+        # if the output is not a list yet
+        cafe_outputs_list = CAFE_output_paths(cafe_outputs_list)
+        
     all_sig_OGs = []
     for run_path in cafe_outputs_list:
         sig_list, unsig_list = OGs.get_sig_orthogroups(run_path)

@@ -571,7 +571,7 @@ if __name__ == "__main__":
             print(len(orthoDB_sig_all_species))
             print(len(large_OG_IDs))
         
-        make_proteinfasta_from_orthogroup(orthoDB_sig_OGs_dict, orthoDB_proteinseqs["D_melanogaster"], orthogroups_to_include=large_OG_IDs)
+        # make_proteinfasta_from_orthogroup(orthoDB_sig_OGs_dict, orthoDB_proteinseqs["D_melanogaster"], orthogroups_to_include=large_OG_IDs)
 
         # blast the orthoDB proteins against the native ones
         """
@@ -580,7 +580,7 @@ if __name__ == "__main__":
         makeblastdb -in D_melanogaster.faa -dbtype prot     # native annotation for reference db
         blastp -query /Users/milena/work/PhD_code/PhD_chapter1/src/Dmel_transcripts_from_sig_OGs.fasta -db /Users/milena/work/native_proteinseqs/D_melanogaster.faa -out /Users/milena/work/PhD_code/PhD_chapter1/data/Dmel_oDB_vs_nat.out -outfmt 6 -num_threads 5 -evalue 1e-10
         """
-        if False:
+        if True:
             # blast_outfile = "/Users/miltr339/work/PhD_code/Dmel_oDB_vs_nat.out"
             blast_outfile = "/Users/milena/work/PhD_code/PhD_chapter1/data/Dmel_oDB_vs_nat.out"
             blast_out_dict = parse_blast_outfile(blast_outfile, query_fasta="/Users/milena/work/PhD_code/PhD_chapter1/src/Dmel_transcripts_from_sig_OGs.fasta")
@@ -602,7 +602,7 @@ if __name__ == "__main__":
             not_found_transcripts = make_table_with_flybase_functions(
                 orthogroup_dict_species = blast_out_dict, 
                 drosophila_gff_path = dmel_unfiltered_annot, 
-                outfile_name = "orthoDB_sig_OGs_flybase_IDs_with_group_function.tsv", 
+                outfile_name = "orthoDB_anyCAFE_run_sig_OGs_flybase_IDs_with_group_function.tsv", 
                 orthogroups_dict_all = orthoDB_sig_all_species, 
                 CAFE_results_path = sig_orthoDB, 
                 get_gene_functions_from_API=True,
