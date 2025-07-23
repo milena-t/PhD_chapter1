@@ -32,7 +32,7 @@ def filepaths_work():
 def orthogroups_lists():
     out_dict_old_single_CAFE_run = {
         "Aobt_expansion" : ["N0.HOG0000035","N0.HOG0000014"],
-        "Gene Group 1" : ["N0.HOG0000027","N0.HOG0000059","N0.HOG0000095","N0.HOG0000204","N0.HOG0001077","N0.HOG0000140","N0.HOG0000492","N0.HOG0001030"],
+        "Gene Group 1" : ["N0.HOG0000027","N0.HOG0000059","N0.HOG0000095","N0.HOG0000140","N0.HOG0000204","N0.HOG0000492","N0.HOG0001030","N0.HOG0001077"],
         "Gene Group 3" : ["N0.HOG0000086","N0.HOG0002393","N0.HOG0000085"],
         "Gene Group 17" : ["N0.HOG0000669"],
         "Gene Group 5,8,9" : ["N0.HOG0000541","N0.HOG0000775","N0.HOG0000892","N0.HOG0000401","N0.HOG0009002"],
@@ -219,6 +219,12 @@ if __name__ == "__main__":
     out_dir,orthogroups_orthoDB_filepath,tree_path,DAVID_path = filepaths_work()
     OG_lists_dict = orthogroups_lists()
 
+    ##  IMPORT SVG TO HTML
+    if True:
+        # html_path = "/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/my_thoughts.html"
+        html_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/my_thoughts.html"
+        inline_svgs_in_html(html_path=html_path)
+
     # --> GENERAL ""ENRICHMENT"" OF GENE GROUP FUNCTION IN RAPIDLY EXPANDING ORTHOGROUPS
     if False:
         investigate_large_gene_families(tree_path=tree_path, DAVID_table_path=DAVID_path, orthogroups_path=orthogroups_orthoDB_filepath, verbose = False)
@@ -258,8 +264,3 @@ if __name__ == "__main__":
 
         pass
 
-    ##  IMPORT SVG TO HTML
-    if True:
-        # html_path = "/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/my_thoughts.html"
-        html_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/my_thoughts.html"
-        inline_svgs_in_html(html_path=html_path)
