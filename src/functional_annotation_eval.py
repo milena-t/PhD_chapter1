@@ -381,7 +381,7 @@ if __name__ == "__main__":
             transparent_bg=True, svg = True)
 
     # --> CHITIN AND CUTICULAR PROTEIN
-    if True:
+    if False:
         cols_list = [
             # "#A9C4D9",
             "#331E36",
