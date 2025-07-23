@@ -555,6 +555,8 @@ if __name__ == "__main__":
         print(f"\n\torthoDB")
         orthoDB_single_run_sig_list, orthoDB_all_list =OGs.get_sig_orthogroups(f"{CAFE_runs_dir}/run1/Base_family_results.txt")
         orthoDB_sig_list, orthoDB_all_list = CAFE.get_overlap_OG_sig_list(CAFE_runs_dir)
+        # get union sig list of all OGs that are significant in at least one run
+        orthoDB_sig_list = CAFE.get_union_sig_list(CAFE_runs_dir)
 
         
         orthoDB_sig_OGs_dict = OGs.parse_orthogroups_dict(orthogroups_orthoDB, sig_list = orthoDB_sig_list, species="D_melanogaster")
@@ -569,7 +571,7 @@ if __name__ == "__main__":
             print(len(orthoDB_sig_all_species))
             print(len(large_OG_IDs))
         
-        # make_proteinfasta_from_orthogroup(orthoDB_sig_OGs_dict, orthoDB_proteinseqs["D_melanogaster"], orthogroups_to_include=large_OG_IDs)
+        make_proteinfasta_from_orthogroup(orthoDB_sig_OGs_dict, orthoDB_proteinseqs["D_melanogaster"], orthogroups_to_include=large_OG_IDs)
 
         # blast the orthoDB proteins against the native ones
         """
@@ -613,7 +615,7 @@ if __name__ == "__main__":
             if len(not_found_transcripts)>0:
                 print(f"{len(not_found_transcripts)} (of {num_transcripts}) transcripts from orthoDB not found in annotation: {not_found_transcripts}")
         
-    if True:
+    if False:
 
         flybase_table_path_one_OG_member = filter_flybase_table_to_single_OG(flybase_table_path)
 

@@ -4,7 +4,7 @@
 The goal here is to identify interesting functional annotation orthogroups that can be summarized in a table in the main text. Probably like 8-15 or so. Ones that i definitely want to mention:
 
 * Whatever is going on with the giant ones in A. obtectus
-    * nothing we can figure out
+    * Transposases misannotated in flybase
 * detoxification stuff about cytochrome P450
     *  some interesting stuff potentially about polyethylene breakdown in tenebrioids?
 * Some stuff about the genes annotated with sexual reproduction
