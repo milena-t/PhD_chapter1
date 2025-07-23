@@ -48,6 +48,7 @@ def orthogroups_lists():
         "Gene Group 13" : ["N0.HOG0000278","N0.HOG0001036"],
         "Gene Group 4": ["N0.HOG0000120","N0.HOG0000141","N0.HOG0000365","N0.HOG0000378","N0.HOG0007183"],
         "Acyl_CoA_synthesis" : ["N0.HOG0000284","N0.HOG0000397","N0.HOG0000613"],
+        "Gene Group 11" : ["N0.HOG0000525"],
     }
     out_dict = {
         "Aobt_expansion" : ["N0.HOG0000035","N0.HOG0000014"],
@@ -123,6 +124,7 @@ def plot_selected_OGs(orthogroups_path:str, OG_IDs:list[list[str]], colors:list,
 
     # ymax = ymax*1.25
     ymax = ymax*1.5
+
     if ymax>15:
         ax.set_ylim(-4.5,ymax)
     else:
@@ -289,8 +291,8 @@ if __name__ == "__main__":
     out_dir,orthogroups_orthoDB_filepath,tree_path,DAVID_path = filepaths_work()
     OG_lists_dict = orthogroups_lists()
 
-    ##  IMPORT SVG TO HTML
-    if False:
+    ##  IMPORT SVG TO HTML --> makes it so the html file has no external figure dependencies and can be sent by email
+    if True:
         # html_path = "/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/my_thoughts.html"
         html_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/my_thoughts.html"
         inline_svgs_in_html(html_path=html_path)
@@ -329,7 +331,7 @@ if __name__ == "__main__":
             transparent_bg=True, svg = True)
 
     # --> REPRODUCTION
-    if True:
+    if False:
         cols_list = [
             "#5C3348",
             "#957186",
@@ -352,7 +354,6 @@ if __name__ == "__main__":
             out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", 
             title = "reproduction and immunity clusters", 
             transparent_bg=True, svg = False)
-
 
     # -->  ODORANT BINDING AND PHEROMONE SENSING
     if False:
@@ -380,19 +381,74 @@ if __name__ == "__main__":
             transparent_bg=True, svg = True)
 
     # --> CHITIN AND CUTICULAR PROTEIN
-    # image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 16"], tree_path=tree_path, filename="Gene_Group_16_chitin_related_GF_sizes.png", title = "Gene group 16")
-    # image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 23"], tree_path=tree_path, filename="Gene_Group_23_cuticular_protein_GF_sizes.png", title = "Gene group 23")    
+    if True:
+        cols_list = [
+            # "#A9C4D9",
+            "#331E36",
+            "#5C48AD",
+            "#7F98C7",
+            ] # first light blue: "#a9c5e2"
+        labels_list = [
+            # "Cluster 26: glycolysis and early development",
+            "Cluster 11: Adenosine deaminase-related growth factor",
+            "Cluster 15: chitin-related", 
+            "Cluster 24: Cuticular protein", 
+            ]
+        IDs_lists = [
+            # OG_lists_dict["Gene Group 26"],
+            OG_lists_dict["Gene Group 11"],
+            OG_lists_dict["Gene Group 15"],
+            OG_lists_dict["Gene Group 24"],
+        ]
+        image_path = plot_selected_OGs(
+            orthogroups_path=orthogroups_orthoDB_filepath, 
+            OG_IDs=IDs_lists, colors=cols_list, labels=labels_list, 
+            tree_path=tree_path, filename="early_development.png", 
+            out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", 
+            title = "chitin formation and Adenosine deaminase-related growth factor", 
+            transparent_bg=True, svg = True)
+
+        ## only gene group 26
+        cols_list = [
+            "#719EC1",
+            ] # first light blue: "#a9c5e2"
+        labels_list = [
+            "Cluster 26: glycolysis and early development",
+            ]
+        IDs_lists = [
+            OG_lists_dict["Gene Group 26"],
+        ]
+        image_path = plot_selected_OGs(
+            orthogroups_path=orthogroups_orthoDB_filepath, 
+            OG_IDs=IDs_lists, colors=cols_list, labels=labels_list, 
+            tree_path=tree_path, filename="early_development_GF_cluster_26.png", 
+            out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", 
+            title = "glycolysis and early development", 
+            transparent_bg=True, svg = True)
 
     # --> ESTERASE AND MATING BEHAVIOUR
     # This group is expanding in elateriformia
     if False:
-        # latop path
-        image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 4"], tree_path=tree_path, filename="Gene_Group_4_esterase_GF_sizes.png", title = "Gene group 4")    
-    if True:
-        # work computer path
-        # image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 4"], tree_path=tree_path, out_dir="/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", filename="Gene_Group_4_esterase_GF_sizes.png", title = "Gene group 4")    
-        # image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=["N0.HOG0000613"], tree_path=tree_path, out_dir="/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", filename="N0_HOG0000613_GF_sizes.png", title = "N0.HOG0000613 (Acyl-CoA synthetase family member 2)")    
-        # image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Acyl_CoA_synthesis"], tree_path=tree_path, out_dir="/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", filename="Acyl_CoA_synthesis.png", title = ", ".join(OG_lists_dict["Acyl_CoA_synthesis"]))    
-
-        pass
+        cols_list = [
+            "#885E5E",
+            "#62A87C",
+            "#4990C7",
+            ] # first light blue: "#a9c5e2"
+        labels_list = [
+            "Cluster 4: Esterase and mating behavior", 
+            "Acyl-CoA synthesis related",
+            "Acyl-CoA synthetase", 
+            ]
+        IDs_lists = [
+            OG_lists_dict["Gene Group 4"],
+            ["N0.HOG0000284","N0.HOG0000397"],
+            ["N0.HOG0000613"]
+        ]
+        image_path = plot_selected_OGs(
+            orthogroups_path=orthogroups_orthoDB_filepath, 
+            OG_IDs=IDs_lists, colors=cols_list, labels=labels_list, 
+            tree_path=tree_path, filename="fluorescence_elateriformia.png", 
+            out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", 
+            title = "Expansions in Elateriformia", 
+            transparent_bg=True, svg = False)
 

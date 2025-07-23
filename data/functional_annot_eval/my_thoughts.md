@@ -44,7 +44,6 @@ I used the [ncbi conserved domain search](https://www.ncbi.nlm.nih.gov/Structure
 
 <p><img src="Aobt_expansion_GF_sizes.svg" alt="A. obtectus expansion" width=45%></p>
 
-# TODO re-do pictures and double check all from here on down
 
 ## Detoxification
 
@@ -124,33 +123,32 @@ N0.HOG0000038 (GG30) and N0.HOG0000436 (GG7) have the high peak in *I. luminosus
 
 ## Development
 
-### Gene Family Cluster 15, 24, and 26
+### Gene Family Cluster 15, 24, 
 
 Chitin related and cuticular protein. No significant correlation with repeats or GS not even in the large cluster 26, except N0.HOG0000108 in Cluster 24
 
 There is again expansions in *Z. morio*, for both categories. for GC16, it's N0.HOG0001194 and N0.HOG0003035, the former (higher peak) is only expressed in early embryonic development, but the latter is an intercellular matrix component also expressed in adults, so it might have something to do with odorants. All of Gene Family Cluster 23 is stuff only expressed during larval development and is responsible for cuticle development, nothing to do with odorant receptors. For this reason I decided to investigate other Gene Family Clusters that also have function in early development, such as Gene Family cluster 26 and 13. TODO
 
-Also this time there's stuff going on in bruchids! GG23:N0.HOG0000108 GG16:N0.HOG0000307 have expansions in bruchids. However, both of these are involved in cuticular development during larval and pupae stages, where their expression peak also happens, so this is not related to adult pheromone sensing.
+Also this time there's stuff going on in bruchids! GG23:N0.HOG0000108 (cluster 24) and N0.HOG0000307 (cluster 15) have expansions in bruchids. However, both of these are involved in cuticular development during larval and pupae stages, where their expression peak also happens, so this is not related to adult pheromone sensing.
+
+
+### Gene Family Cluster 11 and 26
+
+Gene Family cluster 26 is annnotated as the recently identified Adenosine deaminase-related growth factor in drosophila ([paper](https://www.sciencedirect.com/science/article/abs/pii/S0378111901007624)). Maybe they also have something to do with the early development? It is always expressed at low levels, but peak expression is in adult males. Gene Cluster 26 is early development in general. All are insignificant for the correlation with GS or repeat content.
+
+### Plots
 
 <p>
-<img src="Gene_Group_16_chitin_related_GF_sizes.svg" alt="Gene Family Cluster 16" width=45%>
-<img src="Gene_Group_23_cuticular_protein_GF_sizes.svg" alt="Gene Family Cluster 23" width=45%>
+<img src="early_development.svg" alt="early development" width=45%>
+<img src="early_development_GF_cluster_26.svg" alt="cluster 26" width=45%>
 </p>
 
-### new: Adenosine deaminase-related growth factor
-
-Recently identified growth factors: [paper](https://www.sciencedirect.com/science/article/abs/pii/S0378111901007624)
-
-
-## Fluorescence in *Elateriforma* (?)
+## Fluorescence in *Elateriformia*
 
 ### Gene Family Cluster 4
 
 Gene Family Cluster 4 (Esterase and mating behavior) expanded in *Elateriforma*, and is also common in the significantly rapidly expanding gene families, which is not the case in other species. It also expands in *Z. morio*, but there only 3 of the expanding gene families overall are in this group, and this species has a lot of expansions in general
 
-<p>
-<img src="Gene_Group_4_esterase_GF_sizes.svg" alt="Gene Family Cluster 4" width=45%>
-</p>
 
 ### Acyl-CoA synthetase
 
@@ -159,11 +157,12 @@ According to [this paper](https://web.archive.org/web/20180722105054id_/https://
 * N0.HOG0000284 (maybe a good candidate for the table?)
 * N0.HOG0000397 (pudgy in Dmel)
 
+### Plots
+
 Seems like these all show expansions in *Elateriforma*, cool!
 
 <p>
-<img src="N0_HOG0000613_GF_sizes.svg" alt="Gene Family Cluster 4" width=45%>
-<img src="Acyl_CoA_synthesis.svg" alt="Acyl_CoA_synthesis" width=45%>
+<img src="fluorescence_elateriformia.svg" alt="elateriformia" width=45%>
 </p>
 
 # General "enrichment" of Gene Family Clusters in rapidly expanding gene families
