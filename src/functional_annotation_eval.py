@@ -36,7 +36,9 @@ def orthogroups_lists():
         "Gene Group 1" : ["N0.HOG0000027","N0.HOG0000059","N0.HOG0000095","N0.HOG0000140","N0.HOG0000204","N0.HOG0000492","N0.HOG0001030","N0.HOG0001077"],
         "Gene Group 3" : ["N0.HOG0000086","N0.HOG0002393","N0.HOG0000085"],
         "Gene Group 18" : ["N0.HOG0000669"],
-        "Gene Group 5,8,9" : ["N0.HOG0000541","N0.HOG0000775","N0.HOG0000892","N0.HOG0000401","N0.HOG0009002"],
+        "Gene Group 5,8" : ["N0.HOG0000541"],
+        "Gene Group 8" : ["N0.HOG0000775","N0.HOG0000892"],
+        "Gene Group 9" : ["N0.HOG0000401","N0.HOG0009002"],
         "Gene Group 20" : ["N0.HOG0000030","N0.HOG0000450","N0.HOG0000526","N0.HOG0000756","N0.HOG0000761","N0.HOG0010885"],
         "Gene Group 30": ["N0.HOG0000037","N0.HOG0000177","N0.HOG0001445","N0.HOG0000038","N0.HOG0000194","N0.HOG0000345","N0.HOG0000467"],
         "Gene Group 7" : ["N0.HOG0000056","N0.HOG0000454","N0.HOG0000436","N0.HOG0000480","N0.HOG0009039"],
@@ -119,7 +121,8 @@ def plot_selected_OGs(orthogroups_path:str, OG_IDs:list[list[str]], colors:list,
     ax.grid(True)
     ax.yaxis.grid(False)
 
-    ymax = ymax*1.25
+    # ymax = ymax*1.25
+    ymax = ymax*1.5
     if ymax>15:
         ax.set_ylim(-4.5,ymax)
     else:
@@ -301,36 +304,80 @@ if __name__ == "__main__":
     # image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Aobt_expansion"], tree_path=tree_path, filename="Aobt_expansion_GF_sizes.png", title = f"A. obtectus expansion: {OGs_title}")
 
     # --> DETOXIFICATION
-    cols_list = [
-        "#a9c5e2",
-        "#434b4c",
-        "#DE6449",
-        ] # first light blue: "#a9c5e2"
-    labels_list = [
-        "Cluster 1: Cytochrome P450", 
-        "Cluster 3: lipid metabolic process",
-        "Cluster 18: aldehyde oxidase", 
+    if False:
+        cols_list = [
+            "#a9c5e2",
+            "#434b4c",
+            "#DE6449",
+            ] # first light blue: "#a9c5e2"
+        labels_list = [
+            "Cluster 1: Cytochrome P450", 
+            "Cluster 3: lipid metabolic process",
+            "Cluster 18: aldehyde oxidase", 
+            ]
+        IDs_lists = [
+            OG_lists_dict["Gene Group 1"],
+            OG_lists_dict["Gene Group 3"],
+            OG_lists_dict["Gene Group 18"],
         ]
-    IDs_lists = [
-        OG_lists_dict["Gene Group 1"],
-        OG_lists_dict["Gene Group 3"],
-        OG_lists_dict["Gene Group 18"],
-    ]
-    image_path = plot_selected_OGs(
-        orthogroups_path=orthogroups_orthoDB_filepath, 
-        OG_IDs=IDs_lists, colors=cols_list, labels=labels_list, 
-        tree_path=tree_path, filename="detoxificatoin_clusters.png", 
-        out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", 
-        title = "Detoxification-related clusters", 
-        transparent_bg=True, svg = True)
+        image_path = plot_selected_OGs(
+            orthogroups_path=orthogroups_orthoDB_filepath, 
+            OG_IDs=IDs_lists, colors=cols_list, labels=labels_list, 
+            tree_path=tree_path, filename="detoxificatoin_clusters.png", 
+            out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", 
+            title = "Detoxification-related clusters", 
+            transparent_bg=True, svg = True)
 
     # --> REPRODUCTION
-    # image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 5,8,9"], tree_path=tree_path, filename="Gene_Group_5_8_9_reproduction_GF_sizes.png", title = "Gene group 5, 8, and 9")
-    # image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=["N0.HOG0000401"], tree_path=tree_path, filename="OG_N0.HOG0000401_reproduction_GF_sizes.png", title = "Orthogroup N0.HOG0000401")
-    
+    if True:
+        cols_list = [
+            "#5C3348",
+            "#957186",
+            "#D9B8C4",
+            ] # first light blue: "#a9c5e2"
+        labels_list = [
+            "Cluster 8: immunity and reproduction", 
+            "Cluster 9: sexual reproduction",
+            "Cluster 5 and 8: protease inhibitor (immunity and reproduction)", 
+            ]
+        IDs_lists = [
+            OG_lists_dict["Gene Group 8"],
+            OG_lists_dict["Gene Group 9"],
+            OG_lists_dict["Gene Group 5,8"],
+        ]
+        image_path = plot_selected_OGs(
+            orthogroups_path=orthogroups_orthoDB_filepath, 
+            OG_IDs=IDs_lists, colors=cols_list, labels=labels_list, 
+            tree_path=tree_path, filename="sexual_reproduction.png", 
+            out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", 
+            title = "reproduction and immunity clusters", 
+            transparent_bg=True, svg = False)
+
+
     # -->  ODORANT BINDING AND PHEROMONE SENSING
-    # image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 30"], tree_path=tree_path, filename="Gene_Group_30_pheromone_sensing_GF_sizes.png", title = "Gene group 30")
-    # image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 7"], tree_path=tree_path, filename="Gene_Group_7_odorant_binding_GF_sizes.png", title = "Gene group 7")
+    if False:
+        cols_list = [
+            "#a9c5e2",
+            "#91584B",
+            "#899D58",
+            ] # first light blue: "#a9c5e2"
+        labels_list = [
+            "Cluster 7: odorant binding", 
+            "Cluster 30: pheromone sensing", 
+            "Cluster 20: transmembrane transport (in antennae)",
+            ]
+        IDs_lists = [
+            OG_lists_dict["Gene Group 7"],
+            OG_lists_dict["Gene Group 30"],
+            OG_lists_dict["Gene Group 20"],
+        ]
+        image_path = plot_selected_OGs(
+            orthogroups_path=orthogroups_orthoDB_filepath, 
+            OG_IDs=IDs_lists, colors=cols_list, labels=labels_list, 
+            tree_path=tree_path, filename="pheromone_sensing_clusters.png", 
+            out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", 
+            title = "Detoxification-related clusters", 
+            transparent_bg=True, svg = True)
 
     # --> CHITIN AND CUTICULAR PROTEIN
     # image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Gene Group 16"], tree_path=tree_path, filename="Gene_Group_16_chitin_related_GF_sizes.png", title = "Gene group 16")

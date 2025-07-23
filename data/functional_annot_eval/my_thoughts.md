@@ -23,6 +23,18 @@ Other considerations:
 
 I am doing stuff with the table in `/PhD_chapter1/src/functional_annotation_eval.py`. 
 
+## CAFE significant orthogroups
+
+CAFE is a maximum likelihood method and needs to be run multiple times to ensure convergence. I have run CAFE 20 times, and the lambda values all converge nicely to ca. 0.4067, and each run has between 530 and 570 significant orthogorups. I want to inlcude only orthogroups where I can be certain they are significant, so I decided to only include ones significant in all runs, which are 496 orthogroups (out of 8315 considered.)
+
+<p><img src="../CAFE_convergence/runs_sig_OGs_hist.svg" alt="Sig OG abundance histogram" width=30%></p>
+
+Other pre-processing I did to the CAFE input:
+
+1. only include orthogroups that have at least one member in *D. melanogaster* because this means they are for sure only present at the root of the tree.
+2. only inlcude orthogroups with fewer than 100 gene family members in any species. This excludes (after the first step) only two more, which have huge expansions in *A. obtectus* and are explained below.
+
+
 ## large expansion in *A. obtectus*
 
 A. obtectus has two large gene families, N0.HOG0000035 and N0.HOG0000014, which are twice as large as the third largest one. The flybase IDs of these orthogroups have no functional annotation, and are not associated with any DAVID Gene Family Cluster. The correlation with genome size and repeat content is *significant* in both cases. Considering that most of the other orthogroups investigated here are not significant in their association, maybe that means this is not a biological signal for selection based on function, but instead the expansion is caused by drift through TE activity (and whatever the genome size does)?
@@ -74,24 +86,16 @@ Quote from the abstract: "*Our data suggest AtraAOX2 might be involved in degrad
 
 ## Sexual reproduction 
 
-Here, the relevant Gene Family Clusters are these:
+Here, the relevant Gene Family Clusters are these, and all orthogroups are insiginificant for correlations with GS or repeat content. It seems like immunity and sexual reproduction are tightly linked.
 
 * Gene Family Cluster 5, Function: protease inhibitor (immunity, reproduction)
 * Gene Family Cluster 8, Function: immunity and sexual reproduction
 * Gene Family Cluster 9, Function: sexual reproduction
-
-Which are these orthogroups (all are unsignificant in GS and TE correlations):
-* N0.HOG0000541 (Gene Family Cluster 5,Gene Family Cluster 8,Gene Family Cluster 25) (15 members in *D. melanogaster*, otherwise low family size)
-* N0.HOG0000775 (Gene Family Cluster 8) (6 in *R. ferrugineus*)
-* N0.HOG0000892 (Gene Family Cluster 8) (7 in *P. pyralis*)
-* N0.HOG0000401 (Gene Family Cluster 9) (21 in *Z. morio*)
-* N0.HOG0009002 (Gene Family Cluster 9) (4 in *I. luminosus*)
   
 Similar to the detoxification, which means not a lot going on in Bruchinae and Curculionidae, but there's one massively expanding in *Z. morio* (N0.HOG0000401), whose expression peak is in adult males, and is predicted to be in the ER according to flybase, the molecular function is just protein homodimerization. Otherwise there is not a lot of info, even in *D. melanogaster*. I have a hard time finding good papers for this based on this extremely vague information.  The other orthogroups are also not super helpful, none show very interesting dynamics that I could read into.
 
 <p>
-<img src="Gene_Group_5_8_9_reproduction_GF_sizes.svg" alt="Gene Family Cluster 5,8,9" width=45%>
-<img src="OG_N0.HOG0000401_reproduction_GF_sizes.svg" alt="N0.HOG0000401" width=45%>
+<img src="sexual_reproduction.svg" alt="Gene Family Cluster 5,8,9" width=45%>
 </p>
 
 
@@ -100,18 +104,18 @@ Similar to the detoxification, which means not a lot going on in Bruchinae and C
 This also involves cuticular proteins due to how insects actually do the sensing, so here I think these are the relevant Gene Family Clusters:
 
 * Gene Family Cluster 7, Function: odorant binding
+* Gene Family Cluster 20, Function: transmembrane transport (olfactory) 
 * Gene Family Cluster 30, Function: pheromone sensing
-* Gene Family Cluster 15, Function: chitin-related
-* Gene Family Cluster 24, Function: Cuticular protein
 
-### Gene Family Cluster 7,20 and 30 
+Chitin can also be related to pheromone sensing due to cuticular hydrocarbons. No orthogroup that is significant in any CAFE run is annotated with cuticular hydrocarbons, and the others with chitin/cuticular functions are expresssed only in early development and regulate chitin formation.
+
+### Gene Family Cluster 7, 20 and 30 
 
 None of them have a significant correlation with GS or TE content except N0.HOG0001445 in cluster 30.
 Cluster 20, ATPase-coupled transmembrane transporter mostly is not annotated on flybase (N0.HOG0000761 is annotated with "response to toxic substance"). According to [this paper](https://www.mdpi.com/2075-4450/15/12/1016), it's expressed in antennae in drosophila and might be related to odorant processing.
 
 <p>
-<img src="Gene_Group_30_pheromone_sensing_GF_sizes.svg" alt="Gene Family Cluster 30" width=45%>
-<img src="Gene_Group_7_odorant_binding_GF_sizes.svg" alt="Gene Family Cluster 7" width=45%>
+<img src="pheromone_sensing_clusters.svg" alt="Pheromone sensing" width=45%>
 </p>
 
 The highlight is N0.HOG0000037 for Gene Family Cluster 30 and N0.HOG0000056 for Gene Family Cluster 7, which make the "M" shape with the peaks at *A. verrucosus* and *Z. morio* or *T. molitor* respectively. Both of them have their expression peak in adult males.
@@ -120,20 +124,11 @@ N0.HOG0000038 (GG30) and N0.HOG0000436 (GG7) have the high peak in *I. luminosus
 
 ## Development
 
-### Gene Family Cluster 16 and 23
+### Gene Family Cluster 15, 24, and 26
 
-Chitin related (GG16) and cuticular protein (GG23). No significant correlation with repeats or GS, except where I pointed it out
+Chitin related and cuticular protein. No significant correlation with repeats or GS not even in the large cluster 26, except N0.HOG0000108 in Cluster 24
 
-* Gene Family Cluster 15: N0.HOG0000307
-* Gene Family Cluster 15: N0.HOG0001194
-* Gene Family Cluster 15: N0.HOG0003035
-* Gene Family Cluster 24: N0.HOG0000108 (significant repeat correlation!)
-* Gene Family Cluster 24: N0.HOG0000039
-* Gene Family Cluster 24: N0.HOG0000044
-* Gene Family Cluster 24: N0.HOG0001108
-* Gene Family Cluster 26: many
-
-There is again expansions in *Z. morio*, for both categories. for GG16, it's N0.HOG0001194 and N0.HOG0003035, the former (higher peak) is only expressed in early embryonic development, but the latter is an intercellular matrix component also expressed in adults, so it might have something to do with odorants. All of Gene Family Cluster 23 is stuff only expressed during larval development and is responsible for cuticle development, nothing to do with odorant receptors. For this reason I decided to investigate other Gene Family Clusters that also have function in early development, such as Gene Family cluster 26 and 13. TODO
+There is again expansions in *Z. morio*, for both categories. for GC16, it's N0.HOG0001194 and N0.HOG0003035, the former (higher peak) is only expressed in early embryonic development, but the latter is an intercellular matrix component also expressed in adults, so it might have something to do with odorants. All of Gene Family Cluster 23 is stuff only expressed during larval development and is responsible for cuticle development, nothing to do with odorant receptors. For this reason I decided to investigate other Gene Family Clusters that also have function in early development, such as Gene Family cluster 26 and 13. TODO
 
 Also this time there's stuff going on in bruchids! GG23:N0.HOG0000108 GG16:N0.HOG0000307 have expansions in bruchids. However, both of these are involved in cuticular development during larval and pupae stages, where their expression peak also happens, so this is not related to adult pheromone sensing.
 
@@ -144,7 +139,7 @@ Also this time there's stuff going on in bruchids! GG23:N0.HOG0000108 GG16:N0.HO
 
 ### new: Adenosine deaminase-related growth factor
 
-[paper](https://www.sciencedirect.com/science/article/abs/pii/S0378111901007624)
+Recently identified growth factors: [paper](https://www.sciencedirect.com/science/article/abs/pii/S0378111901007624)
 
 
 ## Fluorescence in *Elateriforma* (?)

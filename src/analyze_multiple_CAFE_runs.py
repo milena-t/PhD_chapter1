@@ -100,19 +100,19 @@ def plot_sig_OG_occurence_histogram(sig_counts_list:list[int], filename = ""):
     print("Figure saved in the current working directory directory as: "+filename)
 
 
-CAFE_runs_dir = "/Users/milena/work/PhD_code/PhD_chapter1/data/CAFE_convergence/runs_to_test_convergence"
+CAFE_runs_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_convergence/runs_to_test_convergence"
 
 
 if __name__ == "__main__":
 
-    out_data = "/Users/milena/work/PhD_code/PhD_chapter1/data/CAFE_convergence"
+    out_data = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_convergence"
     cafe_outputs_list = CAFE_output_paths(CAFE_runs_dir)
 
     
     overlap_sig_OGs, all_OGs_list = get_overlap_OG_sig_list(cafe_outputs_list)
     print(f"{len(overlap_sig_OGs)} orthogroups significant out of {len(all_OGs_list)} in all {len(cafe_outputs_list)} CAFE runs")
 
-    if True:
+    if False:
         ## plot gene family sizes
         orthogroups_orthoDB_filepath = "/Users/milena/work/PhD_code/PhD_chapter1/data/orthofinder_uniform/N0.tsv"
         orthoDB_dict_lists = OGs.parse_orthogroups_dict(orthogroups_orthoDB_filepath)
@@ -125,9 +125,9 @@ if __name__ == "__main__":
                                  title = f"Orthogroups that are significant in all {len(cafe_outputs_list)} CAFE5 runs", 
                                  svg = False)
 
-    if False:
+    if True:
         ## plot histogram of the number of runs that OGs are significant in
-        sig_OG_counts = count_OG_occurence(cafe_outputs_list)
+        sig_OG_counts, all_OGs = count_OG_occurence(cafe_outputs_list)
         sig_counts_list = list(sig_OG_counts.values())
-        plot_sig_OG_occurence_histogram(sig_counts_list, f"{out_data}/runs_sig_OGs_hist.png")
+        plot_sig_OG_occurence_histogram(sig_counts_list, f"{out_data}/runs_sig_OGs_hist.svg")
     
