@@ -13,3 +13,4 @@
 * DONE! new table with all the functional stuff like correlation p-values and slopes and david gene family cluster annotations is here (`/Users/milena/work/PhD_code/PhD_chapter1/data/orthoDB_sig_OGs_flybase_IDs_with_group_function_only_one_OG_member_lm_repeat_correlation_lm_GS_correlation.tsv`)
   
 * new analysis for all the functional stuff
+  * DONE!
