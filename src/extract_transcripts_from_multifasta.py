@@ -36,10 +36,9 @@ if __name__ == "__main__":
     # in_list,in_fasta,out_path,species = obtectus_paths()
     in_list,in_fasta,out_path,species = melanogaster_paths()
 
-    orthogroups_dict = read_dict_from_file(in_list)
+    # orthogroups_dict = read_dict_from_file(in_list)
+    # for orthogroup, transcript_list in orthogroups_dict.items():
+    #     filter_fasta_by_header(in_fasta=in_fasta, headers=transcript_list, out_fasta=f"{out_path}{species}_{orthogroup}_proteins.fasta")
 
-    for orthogroup, transcript_list in orthogroups_dict.items():
-        filter_fasta_by_header(in_fasta=in_fasta, headers=transcript_list, out_fasta=f"{out_path}{species}_{orthogroup}_proteins.fasta")
-
-
+    filter_fasta_by_header(in_fasta="/Users/miltr339/work/native_proteinseqs/C_maculatus.faa", headers=["C_maculatus_mTor.t1_1"], out_fasta=f"Cmac_mTor_native.faa")
  
