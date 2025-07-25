@@ -12,10 +12,13 @@ def filter_bad_proteins(input_proteinfasta, output_filtered_proteinfasta):
     count_non_start_M = 0
     count_internal_stop = 0
     count_good_records = 0
+    count_all_records = 0
     filtered_records = [] 
 
     # loop through each sequence in the input multifasta file
     for record in SeqIO.parse(input_proteinfasta, "fasta"):
+        count_all_records += 1
+
         transcript = record.seq
         transcript_modif = transcript[0:len(transcript)-1] # cut off last stop codon
 
@@ -33,8 +36,8 @@ def filter_bad_proteins(input_proteinfasta, output_filtered_proteinfasta):
     
     # print output stats
     print(input_proteinfasta)
-    print("non-M start codons: ", count_non_start_M, "("+str(round(count_non_start_M/count_good_records, 4))+ " %)")
-    print("internal stop codons: ", count_internal_stop, "("+str(round(count_internal_stop/count_good_records, 4))+ " %)")
+    print("non-M start codons: ", count_non_start_M, "("+str(round(count_non_start_M/count_all_records, 4))+ " %)")
+    print("internal stop codons: ", count_internal_stop, "("+str(round(count_internal_stop/count_all_records, 4))+ " %)")
     print("number of normal records: ", count_good_records)
     print(" ----------------- ")
     # write good-records-list to output file
