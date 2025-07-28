@@ -56,13 +56,12 @@ def orthogroups_lists():
     }
     return out_dict_old_single_CAFE_run
 
-def plot_selected_OGs(orthogroups_path:str, OG_IDs:list[list[str]], colors:list, labels:list, tree_path:str, filename:str, out_dir:str = "/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/", title = "", transparent_bg=True, svg = False):
+def plot_selected_OGs(orthogroups_path:str, OG_IDs:list[list[str]], colors:list, labels:list, tree_path:str, filename:str, out_dir:str = "/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/", title = "", transparent_bg=True, svg = False, fs = 22):
     """
     plot the gene family sizes in a subset of orthogroup_IDs
     takes a list of lists of OG IDs, grouped by which should have the same color. 
     The colors list is then these colors, in the same order as the lists in OG_IDs
     """
-    fs = 22 # set font size
     # plot each column in the dataframe as a line in the same plot thorugh a for-loop
     fig = plt.figure(figsize=(15,10))
     ax = fig.add_subplot(1, 1, 1)
@@ -426,29 +425,29 @@ if __name__ == "__main__":
             title = "glycolysis and early development", 
             transparent_bg=True, svg = True)
 
-    # --> ESTERASE AND MATING BEHAVIOUR
+    # --> FLUORESCENCE IN ELATERIFORMIA
     # This group is expanding in elateriformia
-    if False:
+    if True:
         cols_list = [
-            "#885E5E",
+            #"#885E5E",
             "#62A87C",
             "#4990C7",
             ] # first light blue: "#a9c5e2"
         labels_list = [
-            "Cluster 4: Esterase and mating behavior", 
+            #"Cluster 4: Esterase and mating behavior", 
             "Acyl-CoA synthesis related",
             "Acyl-CoA synthetase", 
             ]
         IDs_lists = [
-            OG_lists_dict["Gene Group 4"],
+            #OG_lists_dict["Gene Group 4"],
             ["N0.HOG0000284","N0.HOG0000397"],
             ["N0.HOG0000613"]
         ]
         image_path = plot_selected_OGs(
             orthogroups_path=orthogroups_orthoDB_filepath, 
             OG_IDs=IDs_lists, colors=cols_list, labels=labels_list, 
-            tree_path=tree_path, filename="fluorescence_elateriformia.png", 
+            tree_path=tree_path, filename="fluorescence_elateriformia_only_Acyl_CoA.png", 
             out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", 
-            title = "Expansions in Elateriformia", 
-            transparent_bg=True, svg = False)
+            title = "Expansions in Elateriformia related to fluorescence", 
+            transparent_bg=True, svg = False, fs = 30)
 
