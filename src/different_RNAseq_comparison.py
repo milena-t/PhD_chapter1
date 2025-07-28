@@ -186,7 +186,7 @@ def plot_single_exon_no_species_specific_three_annot(numbers, filename = ""):
 if __name__ == "__main__":
     
     SE_stats_paths_dict = filepaths_SE_stats()
-    data = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/"
+    data = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/Lome_RNA_annot_comparison/"
 
     numbers = {}
     for annotation, path in SE_stats_paths_dict.items():
