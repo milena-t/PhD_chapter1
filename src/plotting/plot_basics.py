@@ -244,7 +244,6 @@ def plot_histogram_protein_lengths(native_path:str, orthoDB_path:str, third_path
     """
     native_lengths = [length for length in get_lengths_list(native_path) if length < max_length]
     orthoDB_lengths = [length for length in get_lengths_list(orthoDB_path) if length < max_length]
-    third_lengths = [length for length in get_lengths_list(third_path) if length < max_length]
 
     fig, ax = plt.subplots(1,1, figsize=(15, 12))
     fs = 35
@@ -259,6 +258,7 @@ def plot_histogram_protein_lengths(native_path:str, orthoDB_path:str, third_path
     if third_path == "":
         plt.hist([native_lengths, orthoDB_lengths], bins=no_bins, histtype="bar", color = [colors["native"], colors["orthoDB"]], label=["native", "orthoDB"])
     else:
+        third_lengths = [length for length in get_lengths_list(third_path) if length < max_length]
         plt.hist([native_lengths, orthoDB_lengths, third_lengths], bins=no_bins, histtype="bar", color = [colors["native"], colors["orthoDB"], colors["third"]], label=["native", "uniform", "Lome RNA"])
     
     ax.tick_params(axis='both', labelsize=fs)
@@ -451,7 +451,7 @@ if __name__ == "__main__":
     
     ### plot protein length histograms
     ## filepaths
-    if False:
+    if True:
     
         data = "/Users/miltr339/work/PhD_code/PhD_chapter1/data"
         native_files = {
@@ -493,9 +493,13 @@ if __name__ == "__main__":
         # for species in native_files.keys():
         #     plot_histogram_protein_lengths(native_files[species], orthoDB_files[species], species_name=species, filename = f"protein_lengths_histogram_{species}.png")
         
-        plot_all_species_protein_length_distribution(native_files, orthoDB_files, filename=f"{data}/protein_lengths_histogram.png")
+        # plot_all_species_protein_length_distribution(native_files, orthoDB_files, filename=f"{data}/protein_lengths_histogram.png")
+        
+        # plot individual species
+        plot_histogram_protein_lengths(native_path = native_files["T_castaneum"], orthoDB_path = orthoDB_files["T_castaneum"], species_name="T. castaneum", no_bins = 20, max_length = 1500, filename = f"{data}/Tcas_protein_lengths_histogram.png")
+        plot_histogram_protein_lengths(native_path = native_files["B_siliquastri"], orthoDB_path = orthoDB_files["B_siliquastri"], species_name="T. castaneum", no_bins = 20, max_length = 1500, filename = f"{data}/Bsil_protein_lengths_histogram.png")
 
-    if True:
+    if False:
         annot_com_dir = "/Users/miltr339/work/c_maculatus/annotation_comparison/superscaffolded_annotation"
         comparison_files = {
             "Cmac_Lome_diverse" : f"{annot_com_dir}/Cmac_Lome_diverse_filtered.faa",
