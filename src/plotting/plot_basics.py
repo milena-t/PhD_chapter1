@@ -256,7 +256,7 @@ def plot_histogram_protein_lengths(native_path:str, orthoDB_path:str, third_path
     }
 
     if third_path == "":
-        plt.hist([native_lengths, orthoDB_lengths], bins=no_bins, histtype="bar", color = [colors["native"], colors["orthoDB"]], label=["native", "orthoDB"])
+        plt.hist([native_lengths, orthoDB_lengths], bins=no_bins, histtype="bar", color = [colors["native"], colors["orthoDB"]], label=["native", "uniform"])
     else:
         third_lengths = [length for length in get_lengths_list(third_path) if length < max_length]
         plt.hist([native_lengths, orthoDB_lengths, third_lengths], bins=no_bins, histtype="bar", color = [colors["native"], colors["orthoDB"], colors["third"]], label=["native", "uniform", "Lome RNA"])
@@ -497,7 +497,7 @@ if __name__ == "__main__":
         
         # plot individual species
         plot_histogram_protein_lengths(native_path = native_files["T_castaneum"], orthoDB_path = orthoDB_files["T_castaneum"], species_name="T. castaneum", no_bins = 20, max_length = 1500, filename = f"{data}/Tcas_protein_lengths_histogram.png")
-        plot_histogram_protein_lengths(native_path = native_files["B_siliquastri"], orthoDB_path = orthoDB_files["B_siliquastri"], species_name="T. castaneum", no_bins = 20, max_length = 1500, filename = f"{data}/Bsil_protein_lengths_histogram.png")
+        plot_histogram_protein_lengths(native_path = native_files["B_siliquastri"], orthoDB_path = orthoDB_files["B_siliquastri"], species_name="B. siliquastri", no_bins = 20, max_length = 1500, filename = f"{data}/Bsil_protein_lengths_histogram.png")
 
     if False:
         annot_com_dir = "/Users/miltr339/work/c_maculatus/annotation_comparison/superscaffolded_annotation"
