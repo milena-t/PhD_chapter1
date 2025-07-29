@@ -449,5 +449,5 @@ if __name__ == "__main__":
             tree_path=tree_path, filename="fluorescence_elateriformia_only_Acyl_CoA.png", 
             out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", 
             title = "Expansions in Elateriformia related to fluorescence", 
-            transparent_bg=True, svg = False, fs = 30)
+            transparent_bg=True, svg = False)#, fs = 30) # fs=30 for the poster
 
