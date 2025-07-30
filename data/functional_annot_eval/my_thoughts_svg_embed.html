@@ -1161,7 +1161,6 @@ z
 <p>A. obtectus has two large gene families, N0.HOG0000035 and N0.HOG0000014, which are twice as large as the third largest one. The flybase IDs of these orthogroups have no functional annotation, and are not associated with any DAVID Gene Family Cluster. The correlation with genome size and repeat content is <em>significant</em> in both cases. Considering that most of the other orthogroups investigated here are not significant in their association, maybe that means this is not a biological signal for selection based on function, but instead the expansion is caused by drift through TE activity (and whatever the genome size does)?</p>
 <p>I used the <a href="https://www.ncbi.nlm.nih.gov/Structure/cdd/wrpsb.cgi">ncbi conserved domain search</a> on all the proteins in these orthogroups, and for both of them most proteins match transposases, and sometimes at the c-terminus zinc-finger related domains (which is also common for transposases), which probably means that this is a false positive gene. I also then checked the uniform <em>D. melanogaster</em> orthologs and the corresponding flybase IDs (FBgn0037633 for N0.HOG0000035 and FBgn0033750 for N0.HOG0000014) and all of those also follow the pattern of a very good transposase hit and a less good zinc-finger hit at the C-terminus. Therefore this is likely a false positive.</p>
 <p><img src="file:////Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/Aobt_expansion_GF_sizes.svg" alt="A. obtectus expansion" width=45%></p>
-<h1 id="todo-re-do-pictures-and-double-check-all-from-here-on-down">TODO re-do pictures and double check all from here on down</h1>
 <h2 id="detoxification">Detoxification</h2>
 <p>Gene Family Cluster 1 is the main detoxification group, with all the cytochrome P450 in it, but Gene Family Cluster 17 which has aldehyde deoxide in it also has something to do with detoxification. All of these orthogroups are very quiet in <em>Bruchinae</em> and <em>Curculionidae</em> (<em>D. ponderosae</em> and <em>R. ferrugineus</em>). Notable expansions are especially <em>Elateriforma</em> (<em>I. luminosus</em>) which are fluorescent, and <em>Tenebrioids</em>. The two functional anotations in this category are:</p>
 <ul>
@@ -7015,9 +7014,9 @@ z
 <h3 id="gene-family-cluster-15-24">Gene Family Cluster 15, 24,</h3>
 <p>Chitin related and cuticular protein. No significant correlation with repeats or GS not even in the large cluster 26, except N0.HOG0000108 in Cluster 24</p>
 <p>There is again expansions in <em>Z. morio</em>, for both categories. for GC16, it's N0.HOG0001194 and N0.HOG0003035, the former (higher peak) is only expressed in early embryonic development, but the latter is an intercellular matrix component also expressed in adults, so it might have something to do with odorants. All of Gene Family Cluster 23 is stuff only expressed during larval development and is responsible for cuticle development, nothing to do with odorant receptors. For this reason I decided to investigate other Gene Family Clusters that also have function in early development, such as Gene Family cluster 26 and 13. TODO</p>
-<p>Also this time there's stuff going on in bruchids! GG23:N0.HOG0000108 GG16:N0.HOG0000307 have expansions in bruchids. However, both of these are involved in cuticular development during larval and pupae stages, where their expression peak also happens, so this is not related to adult pheromone sensing.</p>
+<p>Also this time there's stuff going on in bruchids! GG23:N0.HOG0000108 (cluster 24) and N0.HOG0000307 (cluster 15) have expansions in bruchids. However, both of these are involved in cuticular development during larval and pupae stages, where their expression peak also happens, so this is not related to adult pheromone sensing.</p>
 <h3 id="gene-family-cluster-11-and-26">Gene Family Cluster 11 and 26</h3>
-<p>Gene Family cluster 26 has recently identified as the Adenosine deaminase-related growth factor in drosophila: <a href="https://www.sciencedirect.com/science/article/abs/pii/S0378111901007624">paper</a>. Maybe they also have something to do with the early development? Expressed a little bit always, but peak in adult males. Gene Cluster 26 is early development in general. All are insignificant for the correlation with GS or repeat content.</p>
+<p>Gene Family cluster 26 is annnotated as the recently identified Adenosine deaminase-related growth factor in drosophila (<a href="https://www.sciencedirect.com/science/article/abs/pii/S0378111901007624">paper</a>). Maybe they also have something to do with the early development? It is always expressed at low levels, but peak expression is in adult males. Gene Cluster 26 is early development in general. All are insignificant for the correlation with GS or repeat content.</p>
 <h3 id="plots">Plots</h3>
 <p>
 <svg version="1.1" viewbox="0 0 1080 720" width="45%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -13285,6 +13284,23 @@ L 360.786563 126.760313
 <li>Gene Family Cluster 2 (proteolysis) is in all families except bruchids (where it only occurs in B. siliquastri)</li>
 <li>Tenebrioids all have Gene Family Cluster 30 (pheromone sensing)</li>
 <li>Elateriformia all have Gene Family Cluster 4: Esterase and mating behavior.</li>
+</ul>
+<h1 id="orthogroups-where-gene-family-size-is-significantly-correlated-with-gs-after-multiple-testing-correction">Orthogroups where gene family size is significantly correlated with GS after multiple testing correction</h1>
+<p>We test the correlation of the gene family sizes of individual (CAFE5-significant) orthogorups with genome size or repeat content. After Benjamini Hochberg multiple testing correction, there are no significant correlations with repeat content, and these are significantly correlated with genome size:</p>
+<ul>
+<li><code>N0.HOG0001353</code>: Dmel ortholog has no flybase match</li>
+<li><code>N0.HOG0000469</code>: Dmel ortholog has no flybase match</li>
+<li><code>N0.HOG0001504</code>: No Gene family cluster, FBgn0034460, uncharacterized</li>
+<li><code>N0.HOG0003221</code>: No Gene family cluster, FBgn0061361 (Threonyl-carbamoyl synthesis 1), tRNA threonylcarbamoyladenosine modification</li>
+<li><code>N0.HOG0002042</code>: No Gene family cluster, FBgn0029843 (Neprilysin 1), proteolysis</li>
+<li><code>N0.HOG0006000</code>: No Gene family cluster, FBgn0260759, cilium organization</li>
+<li><code>N0.HOG0001328</code>: No Gene family cluster, FBgn0261802, cell-cell junction organization</li>
+<li><code>N0.HOG0000827</code>: No Gene family cluster, FBgn0261555, postsynaptic actin cytoskeleton organization</li>
+<li><code>N0.HOG0001579</code>: No Gene family cluster, FBgn0032136 (Apolipoprotein lipid transfer particle), lipid transport and transport across blood-brain barrier.</li>
+<li><code>N0.HOG0000761</code>: Gene family cluster 20 (transmembrane transport (olfactory)), FBgn0032456 (Multidrug-Resistance like Protein 1), transmembrane transporter activity</li>
+<li><code>N0.HOG0002614</code>: Gene Family cluster 30 (pheromone sensing)</li>
+<li><code>N0.HOG0001786</code>: Gene family cluster 31 (chromatin organization and transcription regulation)</li>
+<li><code>N0.HOG0001396</code>: Gene family cluster 36 (uncharacterized), FBgn0267689</li>
 </ul>
 <h2 id="shortened-output-of-functional-summary">Shortened output of functional summary</h2>
 <h4 id="d_melanogaster">D_melanogaster</h4>

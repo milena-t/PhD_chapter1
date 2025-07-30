@@ -176,6 +176,26 @@ These are my conclusions:
 * Tenebrioids all have Gene Family Cluster 30 (pheromone sensing)
 * Elateriformia all have Gene Family Cluster 4: Esterase and mating behavior.
 
+# Orthogroups where gene family size is significantly correlated with GS after multiple testing correction
+
+We test the correlation of the gene family sizes of individual (CAFE5-significant) orthogorups with genome size or repeat content. After Benjamini Hochberg multiple testing correction, there are no significant correlations with repeat content, and these are significantly correlated with genome size:
+
+* `N0.HOG0001353`: Dmel ortholog has no flybase match
+* `N0.HOG0000469`: Dmel ortholog has no flybase match
+* `N0.HOG0001504`: No Gene family cluster, FBgn0034460, uncharacterized
+* `N0.HOG0003221`: No Gene family cluster, FBgn0061361 (Threonyl-carbamoyl synthesis 1), tRNA threonylcarbamoyladenosine modification
+* `N0.HOG0002042`: No Gene family cluster, FBgn0029843 (Neprilysin 1), proteolysis
+* `N0.HOG0006000`: No Gene family cluster, FBgn0260759, cilium organization
+* `N0.HOG0001328`: No Gene family cluster, FBgn0261802, cell-cell junction organization
+* `N0.HOG0000827`: No Gene family cluster, FBgn0261555, postsynaptic actin cytoskeleton organization
+* `N0.HOG0001579`: No Gene family cluster, FBgn0032136 (Apolipoprotein lipid transfer particle), lipid transport and transport across blood-brain barrier.
+* `N0.HOG0000761`: Gene family cluster 20 (transmembrane transport (olfactory)), FBgn0032456 (Multidrug-Resistance like Protein 1), transmembrane transporter activity
+  * slope: 0.0021171481781916733
+* `N0.HOG0002614`: Gene Family cluster 30 (pheromone sensing)
+  * slope: 0.0019572398268025573
+* `N0.HOG0001786`: Gene family cluster 31 (chromatin organization and transcription regulation)
+* `N0.HOG0001396`: Gene family cluster 36 (uncharacterized), FBgn0267689
+
 
 ## Shortened output of functional summary
 

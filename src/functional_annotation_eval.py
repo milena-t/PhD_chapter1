@@ -427,7 +427,7 @@ if __name__ == "__main__":
 
     # --> FLUORESCENCE IN ELATERIFORMIA
     # This group is expanding in elateriformia
-    if True:
+    if False:
         cols_list = [
             #"#885E5E",
             "#62A87C",
@@ -450,4 +450,6 @@ if __name__ == "__main__":
             out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", 
             title = "Expansions in Elateriformia related to fluorescence", 
             transparent_bg=True, svg = False)#, fs = 30) # fs=30 for the poster
+
+    
 

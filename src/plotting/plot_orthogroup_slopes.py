@@ -52,7 +52,7 @@ def plot_slopes(GF_sizes_dict, species_list, exp_dict, x_label, filename = "sig_
         intercepts[orthogroup] = result.intercept
         p_values[orthogroup] = result.pvalue
         std_errs[orthogroup] = result.stderr
-        return_dict[orthogroup] = [result.slope, result.pvalue]
+        return_dict[orthogroup] = [result.slope, result.pvalue, "x"]
         
         OG_size = sum(list(GF_sizes.values()))
         OG_sizes[orthogroup] = OG_size
@@ -146,21 +146,19 @@ def plot_slopes(GF_sizes_dict, species_list, exp_dict, x_label, filename = "sig_
                     print(f"\t\t-- {orthogroup}")
                     inclines_bh_cor_sig_list.append(inclines[orthogroup])
                     OG_sizes_bh_cor_sig_list.append(OG_sizes[orthogroup])
+                    return_dict[orthogroup][-1] = "y"
                 elif p_val < 0.05:
                     inclines_sig_list.append(inclines[orthogroup])
                     OG_sizes_sig_list.append(OG_sizes[orthogroup])
+                    return_dict[orthogroup][-1] = "n"
                 else:   
                     inclines_unsig_list.append(inclines[orthogroup])
                     OG_sizes_unsig_list.append(OG_sizes[orthogroup])
+                    return_dict[orthogroup][-1] = "n"
             
             ax.scatter(OG_sizes_unsig_list, inclines_unsig_list, color = colors[f"{color_category}_unsignificant"], s=30, marker = "x", label = "unsignificant")# with marker="o" use facecolors = "none" to make an un-filled circle
             ax.scatter(OG_sizes_sig_list, inclines_sig_list, color = colors[color_category], s=75, label = "significant")
             ax.scatter(OG_sizes_bh_cor_sig_list, inclines_bh_cor_sig_list, color = colors[f"{color_category}_multiple_testing_sig"], s=75, marker="v", label = "B.H. corrected")
-            
-               
-    
-    # ax.scatter(OG_sizes_list, inclines_list, color = colors_list, s=75)
-    
 
     if sig_list==[]:
         x_text_coord = max(OG_sizes_list)
@@ -206,10 +204,12 @@ if __name__ == "__main__":
         tree = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_only_species_names.nw"
         species_names = gff.make_species_order_from_tree(tree)
         data_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/"
+        CAFE_runs_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_convergence/runs_to_test_convergence"
     except:
         tree = "/Users/milena/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_only_species_names.nw"
         species_names = gff.make_species_order_from_tree(tree)
         data_dir = "/Users/milena/work/PhD_code/PhD_chapter1/data/"
+        CAFE_runs_dir = "/Users/milena/work/PhD_code/PhD_chapter1/data/CAFE_convergence/runs_to_test_convergence"
 
     orthogroups_native_filepath = f"{data_dir}orthofinder_native/N0.tsv"
     orthogroups_orthoDB_filepath = f"{data_dir}orthofinder_uniform/N0.tsv"
@@ -261,7 +261,6 @@ if __name__ == "__main__":
 
     print(f"\n\torthoDB")
     # orthoDB_sig_list, orthoDB_cafe_list = OGs.get_sig_orthogroups(sig_orthoDB)
-    CAFE_runs_dir = "/Users/milena/work/PhD_code/PhD_chapter1/data/CAFE_convergence/runs_to_test_convergence"
     orthoDB_sig_list, orthoDB_cafe_list = CAFE.get_overlap_OG_sig_list(CAFE_runs_dir)
     orthoDB_dict_lists = OGs.parse_orthogroups_dict(orthogroups_orthoDB_filepath, orthoDB_cafe_list)
     orthoDB_dict = OGs.get_GF_sizes(orthoDB_dict_lists)
@@ -269,9 +268,14 @@ if __name__ == "__main__":
     print(f"\n\t\t * Genome size")
     # plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=genome_sizes_dict, x_label = "Genome size in Mb", filename = f"{data_dir}sig_OGs_vs_GS_inclines.png")
     GS_inclines = plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=genome_sizes_dict, x_label = "Genome size in Mb", filename = f"{data_dir}sig_OGs_vs_GS_inclines_bh_corrected.png", sig_list=orthoDB_sig_list, correct_bh=True)
-    gff.write_dict_to_file(GS_inclines, f"{data_dir}sig_OGs_vs_GS_inclines_pvalues.tsv", header=f"OG\tslope\tp-value", separator="\t")
+    gff.write_dict_to_file(GS_inclines, f"{data_dir}sig_OGs_vs_GS_inclines_pvalues.tsv", header=f"OG\tslope\tp-value\tsig_after_multiple_testing", separator="\t")
 
     print(f"\n\t\t * repeat content")
     # plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, x_label = "Repeat content in percent", filename = f"{data_dir}sig_OGs_vs_reps_inclines.png")
     TE_inclines = plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, x_label = "Repeat content in percent", filename = f"{data_dir}sig_OGs_vs_reps_inclines_bh_corrected.png", sig_list=orthoDB_sig_list, correct_bh=True)
-    gff.write_dict_to_file(TE_inclines, f"{data_dir}sig_OGs_vs_reps_inclines_pvalues.tsv", header=f"OG\tslope\tp-value", separator="\t")
+    gff.write_dict_to_file(TE_inclines, f"{data_dir}sig_OGs_vs_reps_inclines_pvalues.tsv", header=f"OG\tslope\tp-value\tsig_after_multiple_testing", separator="\t")
+
+    ## last column of the sig_OGs_[...]_pvalues.tsv lists has one of three:
+    #  * x: the orthogorup is not significant according to CAFE
+    #  * n: the orthogroup is not significantly correlated after multiple testing correction
+    #  * y: the orthogroup is significantly correlated after multiple testing correction
