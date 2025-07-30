@@ -171,7 +171,7 @@ def plot_slopes(GF_sizes_dict, species_list, exp_dict, x_label, filename = "sig_
     if sig_list==[]:
         ylab = f"regression slopes of individual orthogroups \n(color by {100-percentile}th and {percentile}th percentile, {significant_lines} of \n{len(inclines)} orthogroups outside percentile bounds)"
     else:
-        ylab = f"regression slopes of individual orthogroups \n(only {significant_lines} significant orthogroups shown)"
+        ylab = f"regression slopes of individual orthogroups \n(only {len(sig_list)} significant orthogroups shown)"
     ax.set_ylabel(ylab, fontsize = fs)
     ax.set_xlabel("orthogroup size", fontsize = fs)
     title_ = x_label.split(" in")[0]
@@ -213,8 +213,8 @@ if __name__ == "__main__":
 
     orthogroups_native_filepath = f"{data_dir}orthofinder_native/N0.tsv"
     orthogroups_orthoDB_filepath = f"{data_dir}orthofinder_uniform/N0.tsv"
-    sig_native = f"{data_dir}CAFE_native_Base_Family_results.txt"
-    sig_orthoDB = f"{data_dir}CAFE_uniform_Base_Family_results.txt"
+    # sig_native = f"{data_dir}CAFE_native_Base_Family_results.txt"
+    # sig_orthoDB = f"{data_dir}CAFE_uniform_Base_Family_results.txt"
 
     genome_sizes_dict = {"D_melanogaster" : 180,
                     "I_luminosus" : 842,
@@ -262,6 +262,7 @@ if __name__ == "__main__":
     print(f"\n\torthoDB")
     # orthoDB_sig_list, orthoDB_cafe_list = OGs.get_sig_orthogroups(sig_orthoDB)
     orthoDB_sig_list, orthoDB_cafe_list = CAFE.get_overlap_OG_sig_list(CAFE_runs_dir)
+    print(f"{len(orthoDB_sig_list)} significant orthogroups out of {len(orthoDB_cafe_list)} in total")
     orthoDB_dict_lists = OGs.parse_orthogroups_dict(orthogroups_orthoDB_filepath, orthoDB_cafe_list)
     orthoDB_dict = OGs.get_GF_sizes(orthoDB_dict_lists)
 
