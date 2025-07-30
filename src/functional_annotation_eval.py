@@ -56,7 +56,8 @@ def orthogroups_lists():
     }
     return out_dict_old_single_CAFE_run
 
-def plot_selected_OGs(orthogroups_path:str, OG_IDs:list[list[str]], colors:list, labels:list, tree_path:str, filename:str, out_dir:str = "/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/", title = "", transparent_bg=True, svg = False, fs = 22):
+
+def plot_selected_OGs(orthogroups_path:str, OG_IDs:list[list[str]], colors:list, labels:list, linestyles_list:list, tree_path:str, filename:str, out_dir:str = "/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/", title = "", transparent_bg=True, svg = False, fs = 22, ymax_set = 0):
     """
     plot the gene family sizes in a subset of orthogroup_IDs
     takes a list of lists of OG IDs, grouped by which should have the same color. 
@@ -88,7 +89,7 @@ def plot_selected_OGs(orthogroups_path:str, OG_IDs:list[list[str]], colors:list,
     ymax = 0
     for i,OG_IDs_list in enumerate(OG_IDs):
         
-        ax.plot(0, 0, color = colors[i], alpha = 1, linewidth =2, label = labels[i]) 
+        ax.plot(0, 0, color = colors[i], alpha = 1, linewidth =2, label = labels[i], linestyle = linestyles_list[i]) 
         OGs_of_interest_dict = {OG_id : orthoDB_dict[OG_id] for OG_id in OG_IDs_list}
 
         for orthogroup in OG_IDs_list:
@@ -102,7 +103,7 @@ def plot_selected_OGs(orthogroups_path:str, OG_IDs:list[list[str]], colors:list,
             if max(gene_family_members) > ymax:
                 ymax = max(gene_family_members)
 
-            ax.plot(species_names, gene_family_members, color = colors[i], alpha = 1, linewidth =2) # originally 0.8
+            ax.plot(species_names, gene_family_members, color = colors[i], alpha = 1, linewidth =2, linestyle = linestyles_list[i]) # originally 0.8
 
 
     ax.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x < 0  else f'{int(x)}'))
@@ -122,7 +123,11 @@ def plot_selected_OGs(orthogroups_path:str, OG_IDs:list[list[str]], colors:list,
     ax.yaxis.grid(False)
 
     # ymax = ymax*1.25
-    ymax = ymax*1.5
+    if ymax_set == 0:
+        ymax = ymax*1.5
+    else:
+        ymax = ymax_set
+    
 
     if ymax>15:
         ax.set_ylim(-4.5,ymax)
@@ -281,6 +286,101 @@ def investigate_large_gene_families(tree_path:str, DAVID_table_path:str, orthogr
         
 
 
+def plot_selected_OGs_vs_GS(orthogroups_path:str, OG_IDs:list[list[str]], colors:list, labels:list, linestyles_list:list, genome_sizes:dict, filename:str, out_dir:str = "/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/", title = "", transparent_bg=True, svg = False, fs = 22, ymax_set = 0, log2_transform=False):
+    """
+    plot the genome size (GS) against the gene family sizes in a subset of orthogroup_IDs
+    takes a list of lists of OG IDs, grouped by which should have the same color. 
+    The colors list is then these colors, in the same order as the lists in OG_IDs
+    """
+
+    # plot each column in the dataframe as a line in the same plot thorugh a for-loop
+    fig = plt.figure(figsize=(10,8))
+    ax = fig.add_subplot(1, 1, 1)
+
+    # get sorted species names from genome sizes dict
+    genome_sizes_list_sorted = list(genome_sizes.values())
+    genome_sizes_list_sorted.sort()
+    genome_sizes_inverse = { size : species_name for species_name,size in genome_sizes.items()}
+    species_names = [genome_sizes_inverse[size] for size in genome_sizes_list_sorted]
+
+    orthoDB_dict_lists = OGs.parse_orthogroups_dict(orthogroups_path)
+    orthoDB_dict = OGs.get_GF_sizes(orthoDB_dict_lists)
+    
+    plot_name = f"{out_dir}{filename}"
+
+    if type(OG_IDs[0]) != list:
+        OG_IDs = [OG_IDs]
+    if len(OG_IDs) != len(colors) and len(colors) == len(labels):
+        raise RuntimeError(f"\t --> list with orthogroup IDs lists and list with colors do not have the same length!")
+    elif len(OG_IDs) != len(labels) and len(colors) == len(labels):
+        raise RuntimeError(f"\t --> list with orthogroup IDs lists and list with labels do not have the same length!")
+    elif len(colors) != len(labels):
+        raise RuntimeError(f"\t --> list with colors and list with labels do not have the same length!")
+
+    ymax = 0
+    for i,OG_IDs_list in enumerate(OG_IDs):
+        
+        ax.plot(0, 0, color = colors[i], alpha = 1, linewidth =2, label = labels[i], linestyle = linestyles_list[i]) 
+        OGs_of_interest_dict = {OG_id : orthoDB_dict[OG_id] for OG_id in OG_IDs_list}
+
+        for orthogroup in OG_IDs_list:
+            gene_family_members = []
+            genome_sizes = []
+            for species in species_names:
+                try:
+                    gene_family_members.append(OGs_of_interest_dict[orthogroup][species])
+                except:
+                    gene_family_members.append(0)
+                genome_sizes.append(genome_sizes_dict[species])
+
+            if max(gene_family_members) > ymax:
+                ymax = max(gene_family_members)
+
+            if log2_transform:
+                gene_family_members = [np.log2(gf) for gf in gene_family_members]
+
+            ax.plot(genome_sizes, gene_family_members, color = colors[i], alpha = 1, linewidth =2, linestyle = linestyles_list[i]) # originally 0.8
+
+    ax.xaxis.set_major_formatter(FuncFormatter(lambda x, pos:  f'{int(x)} Mb'))
+    ax.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x < 0  else f'{int(x)}'))
+
+    ylab="number of gene family members"
+    ax.set_ylabel(ylab, fontsize = fs)
+    xlab="genome size"
+    ax.set_xlabel(xlab, fontsize = fs)
+    
+
+    handles, labels = ax.get_legend_handles_labels()
+    ax.legend(handles, labels, fontsize = fs, loc='upper center')
+
+    plt.title(title, fontsize = fs)
+
+    # ymax = ymax*1.25
+    if ymax_set == 0:
+        ymax = ymax*1.5
+    else:
+        ymax = ymax_set
+
+    if ymax>15:
+        ax.set_ylim(-4.5,ymax)
+    else:
+        ax.set_ylim(-1.5,ymax)
+    
+    ax.set_xlim(0.9*min(genome_sizes),1.01*max(genome_sizes))
+
+    ax.tick_params(axis='y', labelsize=fs)
+    ax.tick_params(axis='x', labelsize=fs)
+
+    plt.tight_layout()
+
+    if svg:
+        plot_name = plot_name.replace(".png", ".svg")
+        plt.savefig(plot_name, transparent = transparent_bg)
+    else:
+        plt.savefig(plot_name, dpi = 300, transparent = transparent_bg)
+    print("Figure saved in the current working directory directory as: "+plot_name)
+    
+    return plot_name
 
 
 
@@ -291,7 +391,7 @@ if __name__ == "__main__":
     OG_lists_dict = orthogroups_lists()
 
     ##  IMPORT SVG TO HTML --> makes it so the html file has no external figure dependencies and can be sent by email
-    if True:
+    if False:
         # html_path = "/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/my_thoughts.html"
         html_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/my_thoughts.html"
         inline_svgs_in_html(html_path=html_path)
@@ -451,5 +551,109 @@ if __name__ == "__main__":
             title = "Expansions in Elateriformia related to fluorescence", 
             transparent_bg=True, svg = False)#, fs = 30) # fs=30 for the poster
 
-    
+    # --> ORTHOGROUPS CORRELATED WITH GS
+    # there are 14 orthogroups that are significantly correlated with Genome size (GS) after multiple testing correction
+    {
+    "N0.HOG0001353": "Dmel ortholog has no flybase match",
+    "N0.HOG0000469": "Dmel ortholog has no flybase match",
+    "N0.HOG0001504": "No Gene family cluster, FBgn0034460, uncharacterized",
+    "N0.HOG0003221": "No Gene family cluster, FBgn0061361 (Threonyl-carbamoyl synthesis 1), tRNA threonylcarbamoyladenosine modification",
+    "N0.HOG0002042": "No Gene family cluster, FBgn0029843 (Neprilysin 1), proteolysis",
+    "N0.HOG0006000": "No Gene family cluster, FBgn0260759, cilium organization",
+    "N0.HOG0001328": "No Gene family cluster, FBgn0261802, cell-cell junction organization",
+    "N0.HOG0000827": "No Gene family cluster, FBgn0261555, postsynaptic actin cytoskeleton organization",
+    "N0.HOG0001579": "No Gene family cluster, FBgn0032136 (Apolipoprotein lipid transfer particle), lipid transport and transport across blood-brain barrier.",
+    "N0.HOG0000761": "Gene family cluster 20 (transmembrane transport (olfactory)), FBgn0032456 (Multidrug-Resistance like Protein 1), transmembrane transporter activity",
+    "N0.HOG0002614": "Gene Family cluster 30 (pheromone sensing)",
+    "N0.HOG0001786": "Gene family cluster 31 (chromatin organization and transcription regulation)",
+    "N0.HOG0001396": "Gene family cluster 36 (uncharacterized), FBgn0267689",
+    }
 
+    genome_sizes_dict = {"D_melanogaster" : 180,
+                         "I_luminosus" : 842,
+                         "P_pyralis" : 471,
+                         "C_septempunctata" : 399,
+                         "A_verrucosus" : 250,
+                         "T_castaneum" : 204,
+                         "T_molitor" : 258,
+                         "Z_morio" : 461,
+                         "R_ferrugineus" : 589,
+                         "D_ponderosae" : 223,
+                         "A_obtectus" : 949,
+                         "B_siliquastri" : 375,
+                         "C_chinensis" : 701,
+                         # "C_analis" : 971,
+                         "C_maculatus" : 1202 
+                        }
+    
+    # We are especially interested in two that are related to olfactory stuff and pheromone sensing
+    {"N0.HOG0000761": "Gene family cluster 20 (transmembrane transport (olfactory)), FBgn0032456 (Multidrug-Resistance like Protein 1), transmembrane transporter activity",
+    "N0.HOG0002614": "Gene Family cluster 30 (pheromone sensing)"}
+
+    if False:
+        cols_list = [
+            "#9CD3B9", # lighter green "#7FC6A4", # light green
+            "#A3C0E1", #lighter blue "#74A0D2", #light blue
+            "#397F5D", # dark green
+            "#2D598B", #dark blue
+            ] # first light blue: "#a9c5e2"
+        labels_list = [
+            "Gene Group 20 (transmembrane transport (olfactory) ",
+            "Gene Group 30 (pheromone sensing)", 
+            "N0.HOG0000761 (cluster 20)",
+            "N0.HOG0002614 (cluster 30)",
+            ]
+        IDs_lists = [
+            OG_lists_dict["Gene Group 20"],
+            OG_lists_dict["Gene Group 30"],
+            ["N0.HOG0000761"],
+            ["N0.HOG0002614"],
+        ]
+        linestyles = [
+            "dotted",
+            "dotted",
+            "solid",
+            "solid",            
+        ]
+        image_path = plot_selected_OGs(
+            orthogroups_path=orthogroups_orthoDB_filepath, 
+            OG_IDs=IDs_lists, colors=cols_list, labels=labels_list, linestyles_list = linestyles,
+            tree_path=tree_path, filename="olfactory_sig_association_withGS.png", 
+            out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", 
+            title = "Two gene groups with members that are significantly correlated with GS", 
+            transparent_bg=True, svg = False, ymax_set = 9.9) # add fs=30 for the poster
+
+
+    if True:
+        cols_list = [
+            "#9CD3B9", # lighter green "#7FC6A4", # light green
+            "#A3C0E1", #lighter blue "#74A0D2", #light blue
+            "#397F5D", # dark green
+            "#2D598B", #dark blue
+            ] # first light blue: "#a9c5e2"
+        labels_list = [
+            "Gene family cluster 20",# (transmembrane transport (olfactory) ",
+            "Gene family cluster 30",# (pheromone sensing)", 
+            "N0.HOG0000761 (cluster 20)",
+            "N0.HOG0002614 (cluster 30)",
+            ]
+        IDs_lists = [
+            OG_lists_dict["Gene Group 20"],
+            OG_lists_dict["Gene Group 30"],
+            ["N0.HOG0000761"],
+            ["N0.HOG0002614"],
+        ]
+        linestyles = [
+            "dotted",
+            "dotted",
+            "solid",
+            "solid",            
+        ]
+         
+        image_path = plot_selected_OGs_vs_GS(
+            orthogroups_path=orthogroups_orthoDB_filepath, 
+            OG_IDs=IDs_lists, colors=cols_list, labels=labels_list, linestyles_list = linestyles,
+            genome_sizes=genome_sizes_dict, filename="olfactory_sig_association_withGS_vs_GS_plot.png", 
+            out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", 
+            title = "Two gene groups with members \nthat are significantly correlated with GS", 
+            transparent_bg=False, svg = False, ymax_set = 10.5)#, fs = 30) # fs=30 for the poster

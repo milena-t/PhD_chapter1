@@ -190,11 +190,17 @@ We test the correlation of the gene family sizes of individual (CAFE5-significan
 * `N0.HOG0000827`: No Gene family cluster, FBgn0261555, postsynaptic actin cytoskeleton organization
 * `N0.HOG0001579`: No Gene family cluster, FBgn0032136 (Apolipoprotein lipid transfer particle), lipid transport and transport across blood-brain barrier.
 * `N0.HOG0000761`: Gene family cluster 20 (transmembrane transport (olfactory)), FBgn0032456 (Multidrug-Resistance like Protein 1), transmembrane transporter activity
-  * slope: 0.0021171481781916733
+  * regression line slope: 0.0021171481781916733
 * `N0.HOG0002614`: Gene Family cluster 30 (pheromone sensing)
-  * slope: 0.0019572398268025573
+  * regression line slope: 0.0019572398268025573
 * `N0.HOG0001786`: Gene family cluster 31 (chromatin organization and transcription regulation)
 * `N0.HOG0001396`: Gene family cluster 36 (uncharacterized), FBgn0267689
+
+## plot
+
+<p>
+<img src="olfactory_sig_association_withGS.svg" alt="GS-correlated olfactory orthogroups" width=45%>
+</p>
 
 
 ## Shortened output of functional summary
