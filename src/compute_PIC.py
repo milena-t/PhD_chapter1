@@ -71,11 +71,11 @@ def calculate_PIC(tree_path:str, trait_values:dict[str,float]):
     """
     tree = Tree(tree_path)
 
-    # discard any traits that don't have a matching leaf in tree
+    ##  prepare data: remove trait values if they're not in the tree and remove tree leaves if they don't have trait values
     trait_values, discarded_species_list = match_trait_dict_to_tree_leaves(tree, trait_values)
-    print(tree)
     tree = test_all_leaves_have_traits(tree, trait_values)
-    print(tree)
+    
+    
     
 """
 TODO continue here:
