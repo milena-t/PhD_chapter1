@@ -36,8 +36,8 @@ def filter_bad_proteins(input_proteinfasta, output_filtered_proteinfasta):
     
     # print output stats
     print(input_proteinfasta)
-    print("non-M start codons: ", count_non_start_M, "("+str(round(count_non_start_M/count_all_records, 4))+ " %)")
-    print("internal stop codons: ", count_internal_stop, "("+str(round(count_internal_stop/count_all_records, 4))+ " %)")
+    print("non-M start codons: ", count_non_start_M, "("+str(round(count_non_start_M*100/count_all_records, 4))+ " %)")
+    print("internal stop codons: ", count_internal_stop, "("+str(round(count_internal_stop*100/count_all_records, 4))+ " %)")
     print("number of normal records: ", count_good_records)
     print(" ----------------- ")
     # write good-records-list to output file
