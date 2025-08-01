@@ -9,6 +9,7 @@ class TEST_PIC(unittest.TestCase):
         self.assertTrue(PIC.match_trait_dict_to_tree_leaves.__doc__)
         self.assertTrue(PIC.test_all_leaves_have_traits.__doc__)
 
+
     def test_associate_data(self):
         """
         test if the code correctly associates trait values 
@@ -40,6 +41,12 @@ class TEST_PIC(unittest.TestCase):
         traits = {"Human": 5.1,"Chimp": 4.8,"Gorilla": 6.3}
         trait_values, discarded_species = PIC.match_trait_dict_to_tree_leaves(primate_tree, traits)
         assert len(discarded_species) == 0
+
+        traits_short = {"Human": 5.1,"Gorilla": 6.3}
+        tree = Tree(newick_str)
+        tree_after = PIC.test_all_leaves_have_traits(tree, traits_short)
+        tree_after != tree
+        
 
         
 

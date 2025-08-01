@@ -74,7 +74,7 @@ def calculate_PIC(tree_path:str, trait_values:dict[str,float]):
     ##  prepare data: remove trait values if they're not in the tree and remove tree leaves if they don't have trait values
     trait_values, discarded_species_list = match_trait_dict_to_tree_leaves(tree, trait_values)
     tree = test_all_leaves_have_traits(tree, trait_values)
-    
+
     
     
 """
@@ -149,7 +149,6 @@ if __name__ == "__main__":
     	
     newick_str = "((Human:0.2,Chimp:0.2):0.1,Gorilla:0.3);"
     traits = {"Human": 5.1,"Chimp": 4.8,"Gorilla": 6.3}
-    traits = {"Human": 5.1,"Gorilla": 6.3}
 
     calculate_PIC(newick_str, traits)
     	
