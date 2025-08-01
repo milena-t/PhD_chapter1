@@ -37,10 +37,31 @@ def match_trait_dict_to_tree_leaves(tree, trait_values):
                 trait_vaues_matched[species] = trait_values[species]
             else:
                 discarded_species.append(species)
+                print(f"  !!! {species} ({trait_values[species]}) is not present in the tree.")
         else:
             discarded_species.append(species)
+            print(f"  !!! {species} ({trait_values[species]}) is not present in the tree.")
     
     return trait_vaues_matched, discarded_species
+
+
+def test_all_leaves_have_traits(tree, trait_values):
+    """
+    test if all leaves in the tree have a trait value associated
+    Error if not!
+    """
+    trait_names = list(trait_values.keys())
+
+    for node in tree.traverse("postorder"):
+        if node.is_leaf() == False:
+            continue
+        elif node.is_leaf() and node.name in trait_names:
+            continue 
+        else: # node is leaf and node.name not in trait_names
+            node.delete()
+            print(f"  !!! {node.name} is a tree leaf with no assigned trait --> delete from tree")
+    
+    return tree
         
 
 def calculate_PIC(tree_path:str, trait_values:dict[str,float]):
@@ -48,10 +69,13 @@ def calculate_PIC(tree_path:str, trait_values:dict[str,float]):
     calculate phylogenetically independent contrasts of trait values in respect to the tree
     the trait values are in a dictionary where the keys correspond to the leaf names in the tree!
     """
-    tree_struct = Tree(tree_path)
+    tree = Tree(tree_path)
 
-    trait_values, discarded_species_list = match_trait_dict_to_tree_leaves(tree_struct, trait_values)
-
+    # discard any traits that don't have a matching leaf in tree
+    trait_values, discarded_species_list = match_trait_dict_to_tree_leaves(tree, trait_values)
+    print(tree)
+    tree = test_all_leaves_have_traits(tree, trait_values)
+    print(tree)
     
 """
 TODO continue here:
@@ -120,11 +144,14 @@ if __name__ == "__main__":
                         "C_analis" : 971,
                         "C_maculatus" : 1202 
                         }	
+    
+    # calculate_PIC(tree_path=ultrametric_tree, trait_values=test_OG)
     	
     newick_str = "((Human:0.2,Chimp:0.2):0.1,Gorilla:0.3);"
     traits = {"Human": 5.1,"Chimp": 4.8,"Gorilla": 6.3}
+    traits = {"Human": 5.1,"Gorilla": 6.3}
 
-    calculate_PIC(tree_path=ultrametric_tree, trait_values=test_OG)
+    calculate_PIC(newick_str, traits)
     	
     	
     	

@@ -7,6 +7,7 @@ class TEST_PIC(unittest.TestCase):
     def test_documentation(self):
         self.assertTrue(PIC.calculate_PIC.__doc__)
         self.assertTrue(PIC.match_trait_dict_to_tree_leaves.__doc__)
+        self.assertTrue(PIC.test_all_leaves_have_traits.__doc__)
 
     def test_associate_data(self):
         """
