@@ -12,7 +12,7 @@ class TEST_PIC(unittest.TestCase):
 
     def test_associate_data(self):
         """
-        test if the code correctly associates trait values 
+        test if the code correctly associates trait values and tree leaves, and removes "leftover" leaves and values
         """
         ultrametric_tree= "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_ultrametric.nw"
         species_tree = Tree(ultrametric_tree)
@@ -49,8 +49,13 @@ class TEST_PIC(unittest.TestCase):
         
 
     def test_results(self):
+        """
+        test correct results, this is the same example as in R with the same results
+        """
         primates_tree2 = "((((Homo:0.21,Pongo:0.21):0.28,Macaca:0.49):0.13,Ateles:0.62):0.38,Galago:1.00);"
         primates_traits_a2 = {"Homo":4.09434, "Pongo":3.61092,"Macaca":2.37024, "Ateles":2.02815, "Galago":-1.46968}
         PICs_2 = [0.7459332543867444, 1.8594267776709599, 1.9217814355129856, 4.6945480583953465]
-        
-        
+
+        primate_PICs = PIC.calculate_PIC(primates_tree2, primates_traits_a2)
+        primate_PICs.sort()
+        assert PICs_2 == primate_PICs
