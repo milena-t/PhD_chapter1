@@ -47,23 +47,35 @@ def plot_slopes(GF_sizes_dict, species_list, exp_dict, x_label, tree_path, filen
         else:
             GF_sizes_dict = {species : GF_sizes[species] if species in GF_sizes else 0 for species in species_list }
 
+        ## log transform explanatory variables
+        if log10_GF:
+            exp_dict = {species : np.log10(exp_dict[species]) if species in exp_dict else 0 for species in species_list }
+        elif log2_GF:
+            exp_dict = {species : np.log2(exp_dict[species]) if species in exp_dict else 0 for species in species_list }
+        else:
+            exp_dict = {species : exp_dict[species] if species in exp_dict else 0 for species in species_list }
+
         ## calculate PICs
         PICs_GF_sizes = PIC.calculate_PIC(tree_path=tree_path, trait_values=GF_sizes_dict)
         x_axis_vec = PIC.calculate_PIC(tree_path=tree_path, trait_values=exp_dict)
 
-        # m, b = np.polyfit(x_axis_vec, GF_sizes_vec, 1)
+        ## linear regression
         result = scipy.stats.linregress(x_axis_vec, PICs_GF_sizes)
         inclines[orthogroup] = result.slope
         intercepts[orthogroup] = result.intercept
         p_values[orthogroup] = result.pvalue
         std_errs[orthogroup] = result.stderr
         return_dict[orthogroup] = [result.slope, result.pvalue, "x"]
-        
-        OG_size = sum(list(GF_sizes.values()))
-        OG_sizes[orthogroup] = OG_size
 
-        # if OG_size>200:
-        #     print(f" --> {orthogroup} : size {OG_size}, p-value {result.pvalue:.2f}, \n\t GF sizes : {GF_sizes_dict[orthogroup]}")
+        ## test normality of residuals
+        def predict(x):
+            pred_PIC = x*result.slope + result.intercept
+            return(pred_PIC)
+
+        # residuals = [PICs_GF_sizes[i] - predict(x_axis_vec[i]) for i in range(len(x_axis_vec))]
+        # stat, p_value = scipy.stats.shapiro(residuals)
+        # if p_value < 0.05:
+        #     raise RuntimeError(f"{orthogroup} does not have normally distributed residuals after PIC calculation!\n PIC_x = {x_axis_vec}\n PIC_GF_sizes = {PICs_GF_sizes}")
 
     if sig_list==[]:
         inclines_list = list(inclines.values())
