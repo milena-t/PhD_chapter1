@@ -293,6 +293,8 @@ if __name__ == "__main__":
     TE_inclines = plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, x_label = "Repeat content in percent", tree_path = tree,  filename = f"{data_dir}sig_OGs_vs_reps_inclines_bh_corrected_PIC.png", sig_list=orthoDB_sig_list, correct_bh=True)
     gff.write_dict_to_file(TE_inclines, f"{data_dir}sig_OGs_vs_reps_inclines_pvalues.tsv", header=f"OG\tslope\tp-value\tsig_after_multiple_testing", separator="\t")
 
+    ### TODO fix keyerror in 173. no clue why it doesn't find this orthogorup or where it can gent lost
+
     ## last column of the sig_OGs_[...]_pvalues.tsv lists has one of three:
     #  * x: the orthogorup is not significant according to CAFE
     #  * n: the orthogroup is not significantly correlated after multiple testing correction
