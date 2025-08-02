@@ -3,7 +3,10 @@ compute phylogenetically independent contrasts from:
  * species tree (ultrametric!)
  * dictionary with { species : trait_value } where the species names correspond to the leaf names in the tree
 
+all this comes from the Felsenstein 1985 paper in American Naturalist (not to be confused with the one from the same year in Evolution about bootstrap methods)
+
 How PICs work is nicely explained here: https://bio.libretexts.org/Bookshelves/Evolutionary_Developmental_Biology/Phylogenetic_Comparative_Methods_(Harmon)/04%3A_Fitting_Brownian_Motion/4.02%3A_Estimating_Rates_using_Independent_Contrasts
+(they don't take the square root of the branch lengths but apparently you should so i am adding that)
 
 There will always be one less PIC than there are values in the input dict, because the contrasts show the evolutionary change between 
 the leaves computed from the trait values and the branch lengths of the tree.
@@ -101,10 +104,8 @@ def calculate_PIC(tree_path:str, trait_values:dict[str,float], verbose = False, 
                     PICs.append(s)
 
                     # prune leaves and update MRCA to become a new leaf
-                    node_dist = 1 / (1/child1.dist + 1/child2.dist)
-                    node_value = (child1.value/child1.dist + child2.value/child2.dist) * node_dist
-                    # node_dist = node.dist + child1.dist*child2.dist/(child1.dist+child2.dist)
-                    # node_value = (child1.value/child1.dist + child2.value/child2.dist) / (1/child1.dist + 1/child2.dist)
+                    node_dist = node.dist + child1.dist*child2.dist/(child1.dist+child2.dist)
+                    node_value = (child1.value/child1.dist + child2.value/child2.dist) / (1/child1.dist + 1/child2.dist)
 
                     # node.add_feature(value = node_value)
                     node.add_feature("value", node_value)
@@ -125,38 +126,6 @@ def calculate_PIC(tree_path:str, trait_values:dict[str,float], verbose = False, 
     
     return PICs
     
-    
-"""
-TODO continue here:
-
-Chatgpt suggests this kind of recursive traversion but
- 1. it's not completely correct
- 2. not sure I like it
-
-def compute_pic(node):
-    if node.is_leaf():
-        return node.value, node.dist
-
-    # Get children
-    left, right = node.get_children()
-
-    # Recurse
-    x1, v1 = compute_pic(left)
-    x2, v2 = compute_pic(right)
-
-    # Calculate independent contrast
-    contrast = (x1 - x2) / np.sqrt(v1 + v2)
-    node.add_feature("contrast", contrast)
-
-    # Ancestral value (weighted average)
-    v_combined = 1 / (1/v1 + 1/v2)
-    x_combined = (x1/v1 + x2/v2) * v_combined
-
-    return x_combined, v_combined + node.dist
-
-
-
-"""
 
 
 if __name__ == "__main__":
@@ -208,21 +177,10 @@ if __name__ == "__main__":
 
     primates_tree2 = "((((Homo:0.21,Pongo:0.21):0.28,Macaca:0.49):0.13,Ateles:0.62):0.38,Galago:1.00);"
     primates_traits_a2 = {"Homo":4.09434, "Pongo":3.61092,"Macaca":2.37024, "Ateles":2.02815, "Galago":-1.46968}
-    # R results: 0.7459333 1.1929263 1.5847416 3.3583189 
+    # R results: 0.7459333 1.1929263 1.5847416 3.3583189  -> correct!
     primates_traits_b2 = {"Homo":4.74493,"Pongo":3.33220,"Macaca":3.36730, "Ateles":2.89037, "Galago":2.30259}
-    # R results: 0.7176125 0.8678969 0.8970604 2.1798897 
+    # R results: 0.7176125 0.8678969 0.8970604 2.1798897  -> correct!
 
-    primate_PICs = calculate_PIC(primates_tree2, primates_traits_a2)
+    primate_PICs = calculate_PIC(primates_tree2, primates_traits_b2)
     primate_PICs.sort()
     print(primate_PICs)
-    
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    
