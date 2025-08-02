@@ -12,9 +12,10 @@ from tqdm import tqdm
 import parse_gff as gff
 import analyze_multiple_CAFE_runs as CAFE
 import parse_orthogroups as OGs
+import compute_PIC as PIC
 
 
-def plot_slopes(GF_sizes_dict, species_list, exp_dict, x_label, filename = "sig_OGs_inclines.png", color_category = "orthoDB", percentile = 99, sig_list = [], log10_GF=False, log2_GF=True, correct_bh = False):
+def plot_slopes(GF_sizes_dict, species_list, exp_dict, x_label, tree_path, filename = "sig_OGs_inclines.png", color_category = "orthoDB", percentile = 99, sig_list = [], log10_GF=False, log2_GF=True, correct_bh = False):
     """
     Plot fitted linear regression for each significant orthogroup.
     exp_dict is the dictionary with the x-axis variables, like genome size or repeat content
@@ -37,17 +38,21 @@ def plot_slopes(GF_sizes_dict, species_list, exp_dict, x_label, filename = "sig_
     OG_sizes = {}
     
     for orthogroup, GF_sizes in tqdm(GF_sizes_dict.items()):
-        ## log10 transform the GF sizes??
+        
+        ## log-transform the GF sizes
         if log10_GF:
-            GF_sizes_vec = [np.log10(GF_sizes[species]) if species in GF_sizes else 0 for species in species_list ]
+            GF_sizes_dict = {species : np.log10(GF_sizes[species]) if species in GF_sizes else 0 for species in species_list }
         elif log2_GF:
-            GF_sizes_vec = [np.log2(GF_sizes[species]) if species in GF_sizes else 0 for species in species_list ]
+            GF_sizes_dict = {species : np.log2(GF_sizes[species]) if species in GF_sizes else 0 for species in species_list }
         else:
-            GF_sizes_vec = [GF_sizes[species] if species in GF_sizes else 0 for species in species_list ]
-        x_axis_vec = [exp_dict[species] for species in species_list]
+            GF_sizes_dict = {species : GF_sizes[species] if species in GF_sizes else 0 for species in species_list }
+
+        ## calculate PICs
+        PICs_GF_sizes = PIC.calculate_PIC(tree_path=tree_path, trait_values=GF_sizes_dict)
+        x_axis_vec = PIC.calculate_PIC(tree_path=tree_path, trait_values=exp_dict)
 
         # m, b = np.polyfit(x_axis_vec, GF_sizes_vec, 1)
-        result = scipy.stats.linregress(x_axis_vec, GF_sizes_vec)
+        result = scipy.stats.linregress(x_axis_vec, PICs_GF_sizes)
         inclines[orthogroup] = result.slope
         intercepts[orthogroup] = result.intercept
         p_values[orthogroup] = result.pvalue
@@ -201,12 +206,12 @@ def plot_slopes(GF_sizes_dict, species_list, exp_dict, x_label, filename = "sig_
 if __name__ == "__main__":
 
     try:
-        tree = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_only_species_names.nw"
+        tree = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_ultrametric.nw"
         species_names = gff.make_species_order_from_tree(tree)
         data_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/"
         CAFE_runs_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_convergence/runs_to_test_convergence"
     except:
-        tree = "/Users/milena/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_only_species_names.nw"
+        tree = "/Users/milena/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_ultrametric.nw"
         species_names = gff.make_species_order_from_tree(tree)
         data_dir = "/Users/milena/work/PhD_code/PhD_chapter1/data/"
         CAFE_runs_dir = "/Users/milena/work/PhD_code/PhD_chapter1/data/CAFE_convergence/runs_to_test_convergence"
@@ -229,7 +234,7 @@ if __name__ == "__main__":
                     "A_obtectus" : 949,
                     "B_siliquastri" : 375,
                     "C_chinensis" : 701,
-                    "C_analis" : 971,
+                    # "C_analis" : 971,
                     "C_maculatus" : 1202 
                     }
     repeat_percentages = {"D_melanogaster" : 22.17,
@@ -245,7 +250,7 @@ if __name__ == "__main__":
                         "A_obtectus" : 72.39,
                         "B_siliquastri" : 45.20,
                         "C_chinensis" : 59.33,
-                        "C_analis" : 69.29,
+                        # "C_analis" : 69.29,
                         "C_maculatus" : 73.49
                         }
     
@@ -268,12 +273,12 @@ if __name__ == "__main__":
 
     print(f"\n\t\t * Genome size")
     # plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=genome_sizes_dict, x_label = "Genome size in Mb", filename = f"{data_dir}sig_OGs_vs_GS_inclines.png")
-    GS_inclines = plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=genome_sizes_dict, x_label = "Genome size in Mb", filename = f"{data_dir}sig_OGs_vs_GS_inclines_bh_corrected.png", sig_list=orthoDB_sig_list, correct_bh=True)
+    GS_inclines = plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=genome_sizes_dict, x_label = "Genome size in Mb", tree_path = tree,  filename = f"{data_dir}sig_OGs_vs_GS_inclines_bh_corrected_PIC.png", sig_list=orthoDB_sig_list, correct_bh=True)
     gff.write_dict_to_file(GS_inclines, f"{data_dir}sig_OGs_vs_GS_inclines_pvalues.tsv", header=f"OG\tslope\tp-value\tsig_after_multiple_testing", separator="\t")
 
     print(f"\n\t\t * repeat content")
     # plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, x_label = "Repeat content in percent", filename = f"{data_dir}sig_OGs_vs_reps_inclines.png")
-    TE_inclines = plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, x_label = "Repeat content in percent", filename = f"{data_dir}sig_OGs_vs_reps_inclines_bh_corrected.png", sig_list=orthoDB_sig_list, correct_bh=True)
+    TE_inclines = plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, x_label = "Repeat content in percent", tree_path = tree,  filename = f"{data_dir}sig_OGs_vs_reps_inclines_bh_corrected_PIC.png", sig_list=orthoDB_sig_list, correct_bh=True)
     gff.write_dict_to_file(TE_inclines, f"{data_dir}sig_OGs_vs_reps_inclines_pvalues.tsv", header=f"OG\tslope\tp-value\tsig_after_multiple_testing", separator="\t")
 
     ## last column of the sig_OGs_[...]_pvalues.tsv lists has one of three:
