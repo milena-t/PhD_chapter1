@@ -48,6 +48,9 @@ class TEST_PIC(unittest.TestCase):
         tree_after != tree
         
 
+    def test_results(self):
+        primates_tree2 = "((((Homo:0.21,Pongo:0.21):0.28,Macaca:0.49):0.13,Ateles:0.62):0.38,Galago:1.00);"
+        primates_traits_a2 = {"Homo":4.09434, "Pongo":3.61092,"Macaca":2.37024, "Ateles":2.02815, "Galago":-1.46968}
+        PICs_2 = [0.7459332543867444, 1.8594267776709599, 1.9217814355129856, 4.6945480583953465]
         
-
         
