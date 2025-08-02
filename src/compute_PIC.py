@@ -95,14 +95,16 @@ def calculate_PIC(tree_path:str, trait_values:dict[str,float], verbose = False, 
 
                     # calculate standardized contrast between two leaves
                     c = child1.value - child2.value
-                    sum_dist = child1.dist + child2.dist
+                    sum_dist = np.sqrt(child1.dist + child2.dist)
                     s = c/sum_dist
 
                     PICs.append(s)
 
                     # prune leaves and update MRCA to become a new leaf
-                    node_value = (child1.value/child1.dist + child2.value/child2.dist) / (1/child1.dist + 1/child2.dist)
-                    node_dist = node.dist + child1.dist*child2.dist/(child1.dist+child2.dist)
+                    node_dist = 1 / (1/child1.dist + 1/child2.dist)
+                    node_value = (child1.value/child1.dist + child2.value/child2.dist) * node_dist
+                    # node_dist = node.dist + child1.dist*child2.dist/(child1.dist+child2.dist)
+                    # node_value = (child1.value/child1.dist + child2.value/child2.dist) / (1/child1.dist + 1/child2.dist)
 
                     # node.add_feature(value = node_value)
                     node.add_feature("value", node_value)
@@ -115,6 +117,7 @@ def calculate_PIC(tree_path:str, trait_values:dict[str,float], verbose = False, 
                     node.remove_child(child1)
                     node.remove_child(child2)
                     # print(f" after deleting children is node {node} a leaf: {node.is_leaf()}")
+                    # print(tree)
 
         node_number += 1
         if node_number == max_iterations:
