@@ -19,7 +19,7 @@ from ete3 import Tree
 import numpy as np
 
 
-def match_trait_dict_to_tree_leaves(tree, trait_values):
+def match_trait_dict_to_tree_leaves(tree, trait_values, verbose=False):
     """
     check if all trait value keys match all tree leaves
     """
@@ -43,12 +43,13 @@ def match_trait_dict_to_tree_leaves(tree, trait_values):
                 print(f"  !!! {species} ({trait_values[species]}) is not present in the tree.")
         else:
             discarded_species.append(species)
-            print(f"  !!! {species} ({trait_values[species]}) is not present in the tree.")
+            if verbose:
+                print(f"  !!! {species} ({trait_values[species]}) is not present in the tree.")
     
     return trait_vaues_matched, discarded_species
 
 
-def test_all_leaves_have_traits(tree, trait_values):
+def test_all_leaves_have_traits(tree, trait_values, verbose=False):
     """
     test if all leaves in the tree have a trait value associated
     Error if not!
@@ -63,7 +64,8 @@ def test_all_leaves_have_traits(tree, trait_values):
             node.add_feature("value", trait_values[node.name])
         else: # node is leaf and node.name not in trait_names
             node.delete()
-            print(f"  !!! {node.name} is a tree leaf with no assigned trait --> delete from tree")
+            if verbose:
+                print(f"  !!! {node.name} is a tree leaf with no assigned trait --> delete from tree")
     return tree
 
         
@@ -79,8 +81,8 @@ def calculate_PIC(tree_path:str, trait_values:dict[str,float], verbose = False, 
     tree = Tree(tree_path)
 
     ##  prepare data: remove trait values if they're not in the tree and remove tree leaves if they don't have trait values
-    trait_values, discarded_species_list = match_trait_dict_to_tree_leaves(tree, trait_values)
-    tree = test_all_leaves_have_traits(tree, trait_values)
+    trait_values, discarded_species_list = match_trait_dict_to_tree_leaves(tree, trait_values, verbose=verbose)
+    tree = test_all_leaves_have_traits(tree, trait_values, verbose=verbose)
 
     PICs = []
     ## Traverse through tree from the leaves up
