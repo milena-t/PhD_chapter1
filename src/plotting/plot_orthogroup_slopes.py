@@ -102,6 +102,33 @@ def get_plot_values(GF_sizes_dict, species_list, exp_dict, sig_list, tree_path, 
     return inclines,intercepts,p_values,p_values_BH,std_errs,return_dict,OG_sizes
 
 
+
+def read_repeat_categories(path:str):
+    """
+    read the csv table for the repeat categories
+    {
+        repeat_category : { species  : percentage }
+    }
+    """
+
+    with open(path, "r") as infile:
+        lines = infile.readlines()
+        header = lines[0].strip().split(",")
+        categories = header[1:]
+        repeat_categories = { category : {} for category in categories}
+
+        for line in lines[1:]:
+            line = line.strip().split(",")
+            species = line[0]
+            category_values = line[1:]
+            for i,category_value in enumerate(category_values):
+                repeat_categories[categories[i]][species] = float(category_value)
+
+    return repeat_categories
+
+
+
+
 def plot_slopes(inclines,intercepts,p_values,p_values_bh,std_errs,return_dict,OG_sizes, sig_list ,x_label, filename = "sig_OGs_inclines.png", color_category = "orthoDB", percentile = 99, log10_GF=False, log2_GF=True):
 
     ### PLOT 
@@ -276,7 +303,7 @@ if __name__ == "__main__":
         orthoDB_dict_lists = OGs.parse_orthogroups_dict(orthogroups_orthoDB_filepath, orthoDB_cafe_list)
         orthoDB_dict = OGs.get_GF_sizes(orthoDB_dict_lists)
 
-    if True:
+    if False:
 
         species_names.remove("D_melanogaster")
 
@@ -296,7 +323,10 @@ if __name__ == "__main__":
         #  * y: the orthogroup is significantly correlated after multiple testing correction
 
     ## Test stats stuff
-    if False:
+    if True:
+
+        repeats_categories_dict = read_repeat_categories(repeat_categories_in_species)
+        print(repeats_categories_dict)
 
         count_all = 0
         count_non_normal_GS = 0
@@ -305,17 +335,22 @@ if __name__ == "__main__":
         species_names_no_Dmel = species_names
         species_names_no_Dmel.remove("D_melanogaster")
 
+        ## count for all repeat categories in repeats_categories_dict
         for orthogroup, GF_sizes in tqdm(orthoDB_dict.items()):
-            count_all += 1
+            pass
 
-            GS_result,PICs_GF_sizes,x_axis_vec = calculate_OG_lin_reg(GF_sizes = GF_sizes, exp_dict= genome_sizes_dict, tree_path = tree, species_list = species_names_no_Dmel, log10_GF=False, log2_GF=True)
-            GS_stat,GS_p_value = test_normality_of_residuals(GS_result,PICs_GF_sizes,x_axis_vec)
-            if GS_p_value < 0.05:
-                count_non_normal_GS += 1
+        if False:
+            for orthogroup, GF_sizes in tqdm(orthoDB_dict.items()):
+                count_all += 1
 
-            TE_result,PICs_GF_sizes,x_axis_vec = calculate_OG_lin_reg(GF_sizes = GF_sizes, exp_dict= repeat_percentages, tree_path = tree, species_list = species_names_no_Dmel, log10_GF=False, log2_GF=True)
-            TE_stat,TE_p_value = test_normality_of_residuals(TE_result,PICs_GF_sizes,x_axis_vec)
-            if TE_p_value < 0.05:
-                count_non_normal_TE += 1
+                GS_result,PICs_GF_sizes,x_axis_vec = calculate_OG_lin_reg(GF_sizes = GF_sizes, exp_dict= genome_sizes_dict, tree_path = tree, species_list = species_names_no_Dmel, log10_GF=False, log2_GF=True)
+                GS_stat,GS_p_value = test_normality_of_residuals(GS_result,PICs_GF_sizes,x_axis_vec)
+                if GS_p_value < 0.05:
+                    count_non_normal_GS += 1
 
-        print(f"{count_all} orthogroups, linear models residuals calculated. \n\t -- GS: {count_non_normal_GS} not normal\n\t -- TE: {count_non_normal_TE} not normal")
+                TE_result,PICs_GF_sizes,x_axis_vec = calculate_OG_lin_reg(GF_sizes = GF_sizes, exp_dict= repeat_percentages, tree_path = tree, species_list = species_names_no_Dmel, log10_GF=False, log2_GF=True)
+                TE_stat,TE_p_value = test_normality_of_residuals(TE_result,PICs_GF_sizes,x_axis_vec)
+                if TE_p_value < 0.05:
+                    count_non_normal_TE += 1
+
+            print(f"{count_all} orthogroups, linear models residuals calculated. \n\t -- GS: {count_non_normal_GS} not normal\n\t -- TE: {count_non_normal_TE} not normal")
