@@ -170,9 +170,9 @@ def plot_slopes(inclines,intercepts,p_values,p_values_bh,std_errs,return_dict,OG
             OG_sizes_unsig_list.append(OG_sizes[orthogroup])
             return_dict[orthogroup][-1] = "n"
         
-        ax.scatter(OG_sizes_unsig_list, inclines_unsig_list, color = colors[f"{color_category}_unsignificant"], s=30, marker = "x", label = "unsignificant")# with marker="o" use facecolors = "none" to make an un-filled circle
-        ax.scatter(OG_sizes_sig_list, inclines_sig_list, color = colors[color_category], s=75, label = "significant")
-        ax.scatter(OG_sizes_bh_cor_sig_list, inclines_bh_cor_sig_list, color = colors[f"{color_category}_multiple_testing_sig"], s=75, marker="v", label = "B.H. corrected")
+    ax.scatter(OG_sizes_unsig_list, inclines_unsig_list, color = colors[f"{color_category}_unsignificant"], s=30, marker = "x", label = "unsignificant")# with marker="o" use facecolors = "none" to make an un-filled circle
+    ax.scatter(OG_sizes_sig_list, inclines_sig_list, color = colors[color_category], s=75, label = "significant")
+    ax.scatter(OG_sizes_bh_cor_sig_list, inclines_bh_cor_sig_list, color = colors[f"{color_category}_multiple_testing_sig"], s=75, marker="v", label = "B.H. corrected")
 
     ylab = f"regression slopes of individual orthogroups \n(only {len(sig_list)} significant orthogroups shown)"
     ax.set_ylabel(ylab, fontsize = fs)
@@ -194,7 +194,8 @@ def plot_slopes(inclines,intercepts,p_values,p_values_bh,std_errs,return_dict,OG
     else:
         filename = f"{filename}_sig_OGs_colors.png"
 
-    plt.savefig(filename, dpi = 200, transparent = True, bbox_inches='tight')
+    plt.show()
+    # plt.savefig(filename, dpi = 200, transparent = True, bbox_inches='tight')
     print("Figure with slopes and OG sizes saved in the current working directory directory as: "+filename)
     
     return return_dict
