@@ -17,7 +17,8 @@ import compute_PIC as PIC
 
 def calculate_OG_lin_reg(GF_sizes:dict, exp_dict:dict, tree_path:str, species_list:list, log10_GF=False, log2_GF=True):
     """
-    Calculate the linear regression of an orthogroup, represented as a dictionary { species : gene family members}
+    Calculate the linear regression of an orthogroup, represented as a dictionary { species : gene family members }
+    I need the tree to calculate phylogenetically independent contrasts
     """
 
     ## log-transform the GF sizes
@@ -43,28 +44,67 @@ def calculate_OG_lin_reg(GF_sizes:dict, exp_dict:dict, tree_path:str, species_li
     ## linear regression
     result = scipy.stats.linregress(x_axis_vec, PICs_GF_sizes)
     
+    return result,PICs_GF_sizes,x_axis_vec
 
+
+def test_normality_of_residuals(result,PICs_GF_sizes,x_axis_vec):
+    """
+    test the normality of residuals from a linear regression created with scipy.stats.linregress
+    """
     ## test normality of residuals
     def predict(x):
         pred_PIC = x*result.slope + result.intercept
         return(pred_PIC)
 
-    # residuals = [PICs_GF_sizes[i] - predict(x_axis_vec[i]) for i in range(len(x_axis_vec))]
-    # stat, p_value = scipy.stats.shapiro(residuals)
-    # if p_value < 0.05:
-    #     raise RuntimeError(f"{orthogroup} does not have normally distributed residuals after PIC calculation!\n PIC_x = {x_axis_vec}\n PIC_GF_sizes = {PICs_GF_sizes}")
-
-    return result
-
+    residuals = [PICs_GF_sizes[i] - predict(x_axis_vec[i]) for i in range(len(x_axis_vec))]
+    stat, p_value = scipy.stats.shapiro(residuals)
+    
+    return stat,p_value
+        
 
 
-def plot_slopes(GF_sizes_dict, species_list, exp_dict, x_label, tree_path, filename = "sig_OGs_inclines.png", color_category = "orthoDB", percentile = 99, sig_list = [], log10_GF=False, log2_GF=True, correct_bh = False):
+
+def get_plot_values(GF_sizes_dict, species_list, exp_dict, sig_list, tree_path, log10_GF=False, log2_GF=True):
     """
-    Plot fitted linear regression for each significant orthogroup.
+    calculate fitted linear regression for each significant orthogroup.
     exp_dict is the dictionary with the x-axis variables, like genome size or repeat content
     returns a dictionary with { orthogroupID : incline }
-    the percentile option lets you show only upper and lower percentile of inclines
     """
+
+    inclines = {}
+    intercepts = {}
+    p_values = {}
+    std_errs = {}
+    return_dict = {}
+    OG_sizes = {}
+    
+    for orthogroup, GF_sizes in tqdm(GF_sizes_dict.items()):
+
+        result,PICs_GF_sizes,x_axis_vec = calculate_OG_lin_reg(GF_sizes = GF_sizes, exp_dict= exp_dict, tree_path = tree_path, species_list = species_list, log10_GF=log10_GF, log2_GF=log2_GF)
+
+        inclines[orthogroup] = result.slope
+        intercepts[orthogroup] = result.intercept
+        p_values[orthogroup] = result.pvalue
+        std_errs[orthogroup] = result.stderr
+        return_dict[orthogroup] = [result.slope, result.pvalue, "x"]
+
+        OG_sizes[orthogroup] = sum([GF_sizes[species] if species in GF_sizes else 0 for species in species_list ])
+    
+    ## DO multiple testing correction
+    p_values_list = [p_values[orthogroup] for orthogroup in sig_list]
+    reject, p_values_bh, _, _ = multipletests(p_values_list, alpha=0.05, method='fdr_bh')
+
+    p_values_BH = {}
+    for i, orthogroup in enumerate(sig_list):
+            p_values_BH[orthogroup] = p_values_bh[i]
+
+    return inclines,intercepts,p_values,p_values_BH,std_errs,return_dict,OG_sizes
+
+
+def plot_slopes(inclines,intercepts,p_values,p_values_bh,std_errs,return_dict,OG_sizes, sig_list ,x_label, filename = "sig_OGs_inclines.png", color_category = "orthoDB", percentile = 99, log10_GF=False, log2_GF=True):
+
+    ### PLOT 
+
     if "/" in filename and color_category not in filename:
         filename_base = filename.split("/")[-1]
         filename_path = "/".join(filename.split("/")[:-1])
@@ -72,31 +112,22 @@ def plot_slopes(GF_sizes_dict, species_list, exp_dict, x_label, tree_path, filen
     else:
         filename = f"{color_category}_{filename}"
 
+    not_significant_lines = 0
+    significant_lines = 0
 
-    #### COMPUTE ALL PLOT VALUES
-    inclines = {}
-    intercepts = {}
-    p_values = {}
-    std_errs = {}
-    return_dict = {}
-    
-    for orthogroup, GF_sizes in tqdm(GF_sizes_dict.items()):
-        result = calculate_OG_lin_reg(GF_sizes = GF_sizes, exp_dict= exp_dict, tree_path = tree_path, species_list = species_list, log10_GF=log10_GF, log2_GF=log2_GF)
+    for orthogroup, incline in tqdm(inclines.items()):
+        if orthogroup in sig_list:
+            significant_lines+=1
+        else:
+            not_significant_lines+=1
 
-        inclines[orthogroup] = result.slope
-        intercepts[orthogroup] = result.intercept
-        p_values[orthogroup] = result.pvalue
-        std_errs[orthogroup] = result.stderr
-        return_dict[orthogroup] = [result.slope, result.pvalue, "x"]
-        
-    if sig_list==[]:
-        inclines_list = list(inclines.values())
-        percentile_upper = np.percentile(inclines_list, q = percentile)
-        percentile_lower = np.percentile(inclines_list, q = 100-percentile)
-        print(f"max incline: {max(inclines_list):.5f},\t\tmin_incline: {min(inclines_list):.5f} \n{percentile}th percentile: {percentile_upper:.5f},\t{100-percentile}th percentile: {percentile_lower:.5f}")
-
+    ### PLOT parameters
     fs = 22 # set font size
     
+    fig = plt.figure(figsize=(10,8))
+    ax = fig.add_subplot(1, 1, 1)
+    ax.tick_params(axis='both', which='major', labelsize=fs)
+
     ylab="mean number of orthogroup members"
     # get a list of lists with [native, orthoDB] number of gene families per species
 
@@ -110,97 +141,39 @@ def plot_slopes(GF_sizes_dict, species_list, exp_dict, x_label, tree_path, filen
         "background" : "#838383" # grey
     }
 
-    not_significant_lines = 0
-    significant_lines = 0
-    if sig_list==[]:
-        for orthogroup, incline in tqdm(inclines.items()):
-            if incline > percentile_upper or incline < percentile_lower:
-                significant_lines+=1
-            else:
-                not_significant_lines+=1
-                # ax.plot(x_axis_vec, [incline*x_value+intercepts[orthogroup] for x_value in x_axis_vec], color = colors["background"], linewidth = 0.5)
-    else:
-        for orthogroup, incline in tqdm(inclines.items()):
-            if orthogroup in sig_list:
-                significant_lines+=1
-            else:
-                not_significant_lines+=1
 
-    ################################
-    # make scatterplot of regression inclines and orthogroup sizes
-    fig = plt.figure(figsize=(10,8))
-    ax = fig.add_subplot(1, 1, 1)
-    ax.tick_params(axis='both', which='major', labelsize=fs)
+    # inclines_list = [inclines[orthogroup] for orthogroup in sig_list]
+    inclines_sig_list = []
+    OG_sizes_sig_list = []
+    # OG_sizes_list = [OG_sizes[orthogroup] for orthogroup in sig_list]
+    inclines_unsig_list = []
+    OG_sizes_unsig_list = []
+    # multiple testing correction    
+    inclines_bh_cor_sig_list = []
+    OG_sizes_bh_cor_sig_list = []
 
-    if sig_list == []:
-        orthogroups_list = list(intercepts.keys())
-        inclines_list = [inclines[orthogroup] for orthogroup in orthogroups_list]
-        OG_sizes_list = [OG_sizes[orthogroup] for orthogroup in orthogroups_list]
-        colors_list = [colors[color_category] if incline > percentile_upper or incline < percentile_lower else colors["background"] for incline in inclines_list]
-        if len(inclines_list) != len(OG_sizes_list):
-            raise RuntimeError(f"slopes list: {len(inclines_list)}\nOG sizes list: {len(OG_sizes_list)}")
-        ax.scatter(OG_sizes_list, inclines_list, color = colors_list, s=75)
-    else:
-        # inclines_list = [inclines[orthogroup] for orthogroup in sig_list]
-        inclines_sig_list = []
-        OG_sizes_sig_list = []
-        # OG_sizes_list = [OG_sizes[orthogroup] for orthogroup in sig_list]
-        inclines_unsig_list = []
-        OG_sizes_unsig_list = []
-
-        if correct_bh == False:
-            for orthogroup in sig_list:
-                p_val = p_values[orthogroup]
-                if p_val<0.05:
-                    inclines_sig_list.append(inclines[orthogroup])
-                    OG_sizes_sig_list.append(OG_sizes[orthogroup])
-                else:   
-                    inclines_unsig_list.append(inclines[orthogroup])
-                    OG_sizes_unsig_list.append(OG_sizes[orthogroup])
+    for i, orthogroup in enumerate(sig_list):
+        p_val = p_values[orthogroup]
+        p_cor = p_values_bh[orthogroup]
+        if p_cor < 0.05:
+            print(f"\t\t-- {orthogroup} significant after FDR correction")
+            inclines_bh_cor_sig_list.append(inclines[orthogroup])
+            OG_sizes_bh_cor_sig_list.append(OG_sizes[orthogroup])
+            return_dict[orthogroup][-1] = "y"
+        elif p_val < 0.05:
+            inclines_sig_list.append(inclines[orthogroup])
+            OG_sizes_sig_list.append(OG_sizes[orthogroup])
+            return_dict[orthogroup][-1] = "n"
+        else:   
+            inclines_unsig_list.append(inclines[orthogroup])
+            OG_sizes_unsig_list.append(OG_sizes[orthogroup])
+            return_dict[orthogroup][-1] = "n"
         
-            ax.scatter(OG_sizes_unsig_list, inclines_unsig_list, color = colors[f"{color_category}_unsignificant"], s=30, marker = "x", label = "unsignificant")# with marker="o" use facecolors = "none" to make an un-filled circle
-            ax.scatter(OG_sizes_sig_list, inclines_sig_list, color = colors[color_category], s=75, label = "significant")
+        ax.scatter(OG_sizes_unsig_list, inclines_unsig_list, color = colors[f"{color_category}_unsignificant"], s=30, marker = "x", label = "unsignificant")# with marker="o" use facecolors = "none" to make an un-filled circle
+        ax.scatter(OG_sizes_sig_list, inclines_sig_list, color = colors[color_category], s=75, label = "significant")
+        ax.scatter(OG_sizes_bh_cor_sig_list, inclines_bh_cor_sig_list, color = colors[f"{color_category}_multiple_testing_sig"], s=75, marker="v", label = "B.H. corrected")
 
-        elif correct_bh:
-            inclines_bh_cor_sig_list = []
-            OG_sizes_bh_cor_sig_list = []
-            p_values_list = [p_values[orthogroup] for orthogroup in sig_list]
-            reject, p_values_bh, _, _ = multipletests(p_values_list, alpha=0.05, method='fdr_bh')
-            # p_values_bh = scipy.stats.false_discovery_control(p_values_list) # default benjamini-hochberg correction
-
-            for i, orthogroup in enumerate(sig_list):
-                p_val = p_values_list[i]
-                p_cor = p_values_bh[i]
-                if p_cor < 0.05:
-                    print(f"\t\t-- {orthogroup}")
-                    inclines_bh_cor_sig_list.append(inclines[orthogroup])
-                    OG_sizes_bh_cor_sig_list.append(OG_sizes[orthogroup])
-                    return_dict[orthogroup][-1] = "y"
-                elif p_val < 0.05:
-                    inclines_sig_list.append(inclines[orthogroup])
-                    OG_sizes_sig_list.append(OG_sizes[orthogroup])
-                    return_dict[orthogroup][-1] = "n"
-                else:   
-                    inclines_unsig_list.append(inclines[orthogroup])
-                    OG_sizes_unsig_list.append(OG_sizes[orthogroup])
-                    return_dict[orthogroup][-1] = "n"
-            
-            ax.scatter(OG_sizes_unsig_list, inclines_unsig_list, color = colors[f"{color_category}_unsignificant"], s=30, marker = "x", label = "unsignificant")# with marker="o" use facecolors = "none" to make an un-filled circle
-            ax.scatter(OG_sizes_sig_list, inclines_sig_list, color = colors[color_category], s=75, label = "significant")
-            ax.scatter(OG_sizes_bh_cor_sig_list, inclines_bh_cor_sig_list, color = colors[f"{color_category}_multiple_testing_sig"], s=75, marker="v", label = "B.H. corrected")
-
-    if sig_list==[]:
-        x_text_coord = max(OG_sizes_list)
-        x_text_coord = 0.8*x_text_coord
-        ax.axhline(percentile_upper, linestyle='--', color = colors["background"])
-        ax.text(x_text_coord, percentile_upper+percentile_upper*1.25, f'{percentile_upper:.3f}', va='top', ha="center", fontsize=fs, color=colors["background"])
-        ax.axhline(percentile_lower, linestyle='--', color = colors["background"])
-        ax.text(x_text_coord, percentile_lower-percentile_upper*0.25, f'{percentile_lower:.3f}', va='top', ha="center", fontsize=fs, color=colors["background"])
-    
-    if sig_list==[]:
-        ylab = f"regression slopes of individual orthogroups \n(color by {100-percentile}th and {percentile}th percentile, {significant_lines} of \n{len(inclines)} orthogroups outside percentile bounds)"
-    else:
-        ylab = f"regression slopes of individual orthogroups \n(only {len(sig_list)} significant orthogroups shown)"
+    ylab = f"regression slopes of individual orthogroups \n(only {len(sig_list)} significant orthogroups shown)"
     ax.set_ylabel(ylab, fontsize = fs)
     ax.set_xlabel("orthogroup size", fontsize = fs)
     title_ = x_label.split(" in")[0]
@@ -220,7 +193,7 @@ def plot_slopes(GF_sizes_dict, species_list, exp_dict, x_label, tree_path, filen
     else:
         filename = f"{filename}_sig_OGs_colors.png"
 
-    plt.savefig(filename, dpi = 300, transparent = True, bbox_inches='tight')
+    plt.savefig(filename, dpi = 200, transparent = True, bbox_inches='tight')
     print("Figure with slopes and OG sizes saved in the current working directory directory as: "+filename)
     
     return return_dict
@@ -288,26 +261,55 @@ if __name__ == "__main__":
         plot_slopes(GF_sizes_dict=native_dict, species_list = species_names, exp_dict=repeat_percentages, x_label = "Repeat content in percent", color_category="native", filename = f"{data_dir}sig_OGs_vs_reps_inclines.png")
 
 
-    print(f"\n\torthoDB")
-    # orthoDB_sig_list, orthoDB_cafe_list = OGs.get_sig_orthogroups(sig_orthoDB)
-    orthoDB_sig_list, orthoDB_cafe_list = CAFE.get_overlap_OG_sig_list(CAFE_runs_dir)
-    print(f"{len(orthoDB_sig_list)} significant orthogroups out of {len(orthoDB_cafe_list)} in total")
-    orthoDB_dict_lists = OGs.parse_orthogroups_dict(orthogroups_orthoDB_filepath, orthoDB_cafe_list)
-    orthoDB_dict = OGs.get_GF_sizes(orthoDB_dict_lists)
+    if True:
 
-    print(f"\n\t\t * Genome size")
-    # plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=genome_sizes_dict, x_label = "Genome size in Mb", filename = f"{data_dir}sig_OGs_vs_GS_inclines.png")
-    GS_inclines = plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=genome_sizes_dict, x_label = "Genome size in Mb", tree_path = tree,  filename = f"{data_dir}sig_OGs_vs_GS_inclines_bh_corrected_PIC.png", sig_list=orthoDB_sig_list, correct_bh=True)
-    gff.write_dict_to_file(GS_inclines, f"{data_dir}sig_OGs_vs_GS_inclines_pvalues.tsv", header=f"OG\tslope\tp-value\tsig_after_multiple_testing", separator="\t")
+        print(f"\n\torthoDB")
+        # orthoDB_sig_list, orthoDB_cafe_list = OGs.get_sig_orthogroups(sig_orthoDB)
+        orthoDB_sig_list, orthoDB_cafe_list = CAFE.get_overlap_OG_sig_list(CAFE_runs_dir)
+        print(f"{len(orthoDB_sig_list)} significant orthogroups out of {len(orthoDB_cafe_list)} in total")
+        orthoDB_dict_lists = OGs.parse_orthogroups_dict(orthogroups_orthoDB_filepath, orthoDB_cafe_list)
+        orthoDB_dict = OGs.get_GF_sizes(orthoDB_dict_lists)
 
-    print(f"\n\t\t * repeat content")
-    # plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, x_label = "Repeat content in percent", filename = f"{data_dir}sig_OGs_vs_reps_inclines.png")
-    TE_inclines = plot_slopes(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, x_label = "Repeat content in percent", tree_path = tree,  filename = f"{data_dir}sig_OGs_vs_reps_inclines_bh_corrected_PIC.png", sig_list=orthoDB_sig_list, correct_bh=True)
-    gff.write_dict_to_file(TE_inclines, f"{data_dir}sig_OGs_vs_reps_inclines_pvalues.tsv", header=f"OG\tslope\tp-value\tsig_after_multiple_testing", separator="\t")
+    if True:
 
-    ### TODO fix keyerror in 173. no clue why it doesn't find this orthogorup or where it can gent lost
+        species_names.remove("D_melanogaster")
 
-    ## last column of the sig_OGs_[...]_pvalues.tsv lists has one of three:
-    #  * x: the orthogorup is not significant according to CAFE
-    #  * n: the orthogroup is not significantly correlated after multiple testing correction
-    #  * y: the orthogroup is significantly correlated after multiple testing correction
+        print(f"\n\t\t * Genome size")
+        inclines,intercepts,p_values,p_values_BH,std_errs,return_dict,OG_sizes = get_plot_values(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=genome_sizes_dict, sig_list=orthoDB_sig_list, tree_path=tree)
+        GS_inclines = plot_slopes(inclines,intercepts,p_values,p_values_BH,std_errs,return_dict,OG_sizes, x_label = "Genome size in Mb",  filename = f"{data_dir}sig_OGs_vs_GS_inclines_bh_corrected_PIC_Test.png", sig_list=orthoDB_sig_list)
+        # gff.write_dict_to_file(GS_inclines, f"{data_dir}sig_OGs_vs_GS_inclines_pvalues.tsv", header=f"OG\tslope\tp-value\tsig_after_multiple_testing", separator="\t")
+
+        print(f"\n\t\t * repeat content")
+        inclines,intercepts,p_values,p_values_BH,std_errs,return_dict,OG_sizes = get_plot_values(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, sig_list=orthoDB_sig_list, tree_path=tree)
+        TE_inclines = plot_slopes(inclines,intercepts,p_values,p_values_BH,std_errs,return_dict,OG_sizes, x_label = "Repeat content in percent",  filename = f"{data_dir}sig_OGs_vs_reps_inclines_bh_corrected_PIC_Test.png", sig_list=orthoDB_sig_list)
+        # gff.write_dict_to_file(TE_inclines, f"{data_dir}sig_OGs_vs_reps_inclines_pvalues.tsv", header=f"OG\tslope\tp-value\tsig_after_multiple_testing", separator="\t")
+
+        ## last column of the sig_OGs_[...]_pvalues.tsv lists has one of three:
+        #  * x: the orthogorup is not significant according to CAFE
+        #  * n: the orthogroup is not significantly correlated after multiple testing correction
+        #  * y: the orthogroup is significantly correlated after multiple testing correction
+
+    ## Test stats stuff
+    if False:
+
+        count_all = 0
+        count_non_normal_GS = 0
+        count_non_normal_TE = 0
+        
+        species_names_no_Dmel = species_names
+        species_names_no_Dmel.remove("D_melanogaster")
+
+        for orthogroup, GF_sizes in tqdm(orthoDB_dict.items()):
+            count_all += 1
+
+            GS_result,PICs_GF_sizes,x_axis_vec = calculate_OG_lin_reg(GF_sizes = GF_sizes, exp_dict= genome_sizes_dict, tree_path = tree, species_list = species_names_no_Dmel, log10_GF=False, log2_GF=True)
+            GS_stat,GS_p_value = test_normality_of_residuals(GS_result,PICs_GF_sizes,x_axis_vec)
+            if GS_p_value < 0.05:
+                count_non_normal_GS += 1
+
+            TE_result,PICs_GF_sizes,x_axis_vec = calculate_OG_lin_reg(GF_sizes = GF_sizes, exp_dict= repeat_percentages, tree_path = tree, species_list = species_names_no_Dmel, log10_GF=False, log2_GF=True)
+            TE_stat,TE_p_value = test_normality_of_residuals(TE_result,PICs_GF_sizes,x_axis_vec)
+            if TE_p_value < 0.05:
+                count_non_normal_TE += 1
+
+        print(f"{count_all} orthogroups, linear models residuals calculated. \n\t -- GS: {count_non_normal_GS} not normal\n\t -- TE: {count_non_normal_TE} not normal")
