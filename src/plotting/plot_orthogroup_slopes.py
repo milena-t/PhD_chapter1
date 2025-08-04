@@ -354,27 +354,27 @@ if __name__ == "__main__":
             if sig_p_val>0:
                 print(f"\t -- {sig_p_val} OGs significantly correlated after FDR correction")
 
-"""
-repeat category: Retroelements
-         -- 3238 (38.94 %) OGs not normal residuals
-repeat category: DNA transposons
-         -- 3098 (37.26 %) OGs not normal residuals
-repeat category: Rolling-circles
-         -- 2105 (25.32 %) OGs not normal residuals
-repeat category: Unclassified
-         -- 3045 (36.62 %) OGs not normal residuals
-repeat category: Small RNA
-         -- 0 (0.00 %) OGs not normal residuals
-repeat category: Satellites
-         -- 0 (0.00 %) OGs not normal residuals
-repeat category: Simple repeats
-         -- 3294 (39.62 %) OGs not normal residuals
-repeat category: Low complexity
-         -- 3337 (40.13 %) OGs not normal residuals
+            """
+            repeat category: Retroelements
+                    -- 3238 (38.94 %) OGs not normal residuals
+            repeat category: DNA transposons
+                    -- 3098 (37.26 %) OGs not normal residuals
+            repeat category: Rolling-circles
+                    -- 2105 (25.32 %) OGs not normal residuals
+            repeat category: Unclassified
+                    -- 3045 (36.62 %) OGs not normal residuals
+            repeat category: Small RNA
+                    -- 0 (0.00 %) OGs not normal residuals
+            repeat category: Satellites
+                    -- 0 (0.00 %) OGs not normal residuals
+            repeat category: Simple repeats
+                    -- 3294 (39.62 %) OGs not normal residuals
+            repeat category: Low complexity
+                    -- 3337 (40.13 %) OGs not normal residuals
 
---> not a single significant correlation after multiple testing!!
+            --> not a single significant correlation after multiple testing!!
 
-"""            
+            """            
 
 
         if False:
