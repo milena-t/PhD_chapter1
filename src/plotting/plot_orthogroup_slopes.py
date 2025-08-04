@@ -15,6 +15,49 @@ import parse_orthogroups as OGs
 import compute_PIC as PIC
 
 
+def calculate_OG_lin_reg(GF_sizes:dict, exp_dict:dict, tree_path:str, species_list:list, log10_GF=False, log2_GF=True):
+    """
+    Calculate the linear regression of an orthogroup, represented as a dictionary { species : gene family members}
+    """
+
+    ## log-transform the GF sizes
+    if log10_GF:
+        GF_sizes_dict = {species : np.log10(GF_sizes[species]) if species in GF_sizes else 0 for species in species_list }
+    elif log2_GF:
+        GF_sizes_dict = {species : np.log2(GF_sizes[species]) if species in GF_sizes else 0 for species in species_list }
+    else:
+        GF_sizes_dict = {species : GF_sizes[species] if species in GF_sizes else 0 for species in species_list }
+
+    ## log transform explanatory variables
+    if log10_GF:
+        exp_dict = {species : np.log10(exp_dict[species]) if species in exp_dict else 0 for species in species_list }
+    elif log2_GF:
+        exp_dict = {species : np.log2(exp_dict[species]) if species in exp_dict else 0 for species in species_list }
+    else:
+        exp_dict = {species : exp_dict[species] if species in exp_dict else 0 for species in species_list }
+
+    ## calculate PICs
+    PICs_GF_sizes = PIC.calculate_PIC(tree_path=tree_path, trait_values=GF_sizes_dict)
+    x_axis_vec = PIC.calculate_PIC(tree_path=tree_path, trait_values=exp_dict)
+
+    ## linear regression
+    result = scipy.stats.linregress(x_axis_vec, PICs_GF_sizes)
+    
+
+    ## test normality of residuals
+    def predict(x):
+        pred_PIC = x*result.slope + result.intercept
+        return(pred_PIC)
+
+    # residuals = [PICs_GF_sizes[i] - predict(x_axis_vec[i]) for i in range(len(x_axis_vec))]
+    # stat, p_value = scipy.stats.shapiro(residuals)
+    # if p_value < 0.05:
+    #     raise RuntimeError(f"{orthogroup} does not have normally distributed residuals after PIC calculation!\n PIC_x = {x_axis_vec}\n PIC_GF_sizes = {PICs_GF_sizes}")
+
+    return result
+
+
+
 def plot_slopes(GF_sizes_dict, species_list, exp_dict, x_label, tree_path, filename = "sig_OGs_inclines.png", color_category = "orthoDB", percentile = 99, sig_list = [], log10_GF=False, log2_GF=True, correct_bh = False):
     """
     Plot fitted linear regression for each significant orthogroup.
@@ -29,54 +72,23 @@ def plot_slopes(GF_sizes_dict, species_list, exp_dict, x_label, tree_path, filen
     else:
         filename = f"{color_category}_{filename}"
 
+
+    #### COMPUTE ALL PLOT VALUES
     inclines = {}
     intercepts = {}
     p_values = {}
     std_errs = {}
     return_dict = {}
-
-    OG_sizes = {}
     
     for orthogroup, GF_sizes in tqdm(GF_sizes_dict.items()):
-        
-        ## log-transform the GF sizes
-        if log10_GF:
-            GF_sizes_dict = {species : np.log10(GF_sizes[species]) if species in GF_sizes else 0 for species in species_list }
-        elif log2_GF:
-            GF_sizes_dict = {species : np.log2(GF_sizes[species]) if species in GF_sizes else 0 for species in species_list }
-        else:
-            GF_sizes_dict = {species : GF_sizes[species] if species in GF_sizes else 0 for species in species_list }
+        result = calculate_OG_lin_reg(GF_sizes = GF_sizes, exp_dict= exp_dict, tree_path = tree_path, species_list = species_list, log10_GF=log10_GF, log2_GF=log2_GF)
 
-        ## log transform explanatory variables
-        if log10_GF:
-            exp_dict = {species : np.log10(exp_dict[species]) if species in exp_dict else 0 for species in species_list }
-        elif log2_GF:
-            exp_dict = {species : np.log2(exp_dict[species]) if species in exp_dict else 0 for species in species_list }
-        else:
-            exp_dict = {species : exp_dict[species] if species in exp_dict else 0 for species in species_list }
-
-        ## calculate PICs
-        PICs_GF_sizes = PIC.calculate_PIC(tree_path=tree_path, trait_values=GF_sizes_dict)
-        x_axis_vec = PIC.calculate_PIC(tree_path=tree_path, trait_values=exp_dict)
-
-        ## linear regression
-        result = scipy.stats.linregress(x_axis_vec, PICs_GF_sizes)
         inclines[orthogroup] = result.slope
         intercepts[orthogroup] = result.intercept
         p_values[orthogroup] = result.pvalue
         std_errs[orthogroup] = result.stderr
         return_dict[orthogroup] = [result.slope, result.pvalue, "x"]
-
-        ## test normality of residuals
-        def predict(x):
-            pred_PIC = x*result.slope + result.intercept
-            return(pred_PIC)
-
-        # residuals = [PICs_GF_sizes[i] - predict(x_axis_vec[i]) for i in range(len(x_axis_vec))]
-        # stat, p_value = scipy.stats.shapiro(residuals)
-        # if p_value < 0.05:
-        #     raise RuntimeError(f"{orthogroup} does not have normally distributed residuals after PIC calculation!\n PIC_x = {x_axis_vec}\n PIC_GF_sizes = {PICs_GF_sizes}")
-
+        
     if sig_list==[]:
         inclines_list = list(inclines.values())
         percentile_upper = np.percentile(inclines_list, q = percentile)
