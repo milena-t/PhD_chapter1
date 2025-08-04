@@ -69,6 +69,7 @@ def get_plot_values(GF_sizes_dict, species_list, exp_dict, sig_list, tree_path, 
     calculate fitted linear regression for each significant orthogroup.
     exp_dict is the dictionary with the x-axis variables, like genome size or repeat content
     returns a dictionary with { orthogroupID : incline }
+    !! includes FDR multiple testing correction !!
     """
 
     inclines = {}
@@ -326,18 +327,55 @@ if __name__ == "__main__":
     if True:
 
         repeats_categories_dict = read_repeat_categories(repeat_categories_in_species)
-        print(repeats_categories_dict)
-
-        count_all = 0
-        count_non_normal_GS = 0
-        count_non_normal_TE = 0
         
         species_names_no_Dmel = species_names
         species_names_no_Dmel.remove("D_melanogaster")
 
         ## count for all repeat categories in repeats_categories_dict
-        for orthogroup, GF_sizes in tqdm(orthoDB_dict.items()):
-            pass
+        for repeat_category in repeats_categories_dict.keys():
+            count_all = 0
+            count_non_normal_TE = 0
+            repeat_percentages = repeats_categories_dict[repeat_category]
+            pvalues = []
+            for orthogroup, GF_sizes in orthoDB_dict.items():
+                count_all += 1
+                TE_result,PICs_GF_sizes,x_axis_vec = calculate_OG_lin_reg(GF_sizes = GF_sizes, exp_dict= repeat_percentages, tree_path = tree, species_list = species_names_no_Dmel, log10_GF=False, log2_GF=True)
+                TE_stat,TE_p_value = test_normality_of_residuals(TE_result,PICs_GF_sizes,x_axis_vec)
+                
+                if TE_p_value < 0.05:
+                    count_non_normal_TE += 1
+                pvalues.append(TE_result.pvalue)
+            
+            reject, p_values_bh, _, _ = multipletests(pvalues, alpha=0.05, method='fdr_bh')
+            sig_p_val = len([p_value for p_value in p_values_bh if p_value < 0.05])
+
+            percentage = 100*count_non_normal_TE/count_all
+            print(f"repeat category: {repeat_category}\n\t -- {count_non_normal_TE} ({percentage:.2f} %) OGs not normal residuals")
+            if sig_p_val>0:
+                print(f"\t -- {sig_p_val} OGs significantly correlated after FDR correction")
+
+"""
+repeat category: Retroelements
+         -- 3238 (38.94 %) OGs not normal residuals
+repeat category: DNA transposons
+         -- 3098 (37.26 %) OGs not normal residuals
+repeat category: Rolling-circles
+         -- 2105 (25.32 %) OGs not normal residuals
+repeat category: Unclassified
+         -- 3045 (36.62 %) OGs not normal residuals
+repeat category: Small RNA
+         -- 0 (0.00 %) OGs not normal residuals
+repeat category: Satellites
+         -- 0 (0.00 %) OGs not normal residuals
+repeat category: Simple repeats
+         -- 3294 (39.62 %) OGs not normal residuals
+repeat category: Low complexity
+         -- 3337 (40.13 %) OGs not normal residuals
+
+--> not a single significant correlation after multiple testing!!
+
+"""            
+
 
         if False:
             for orthogroup, GF_sizes in tqdm(orthoDB_dict.items()):
