@@ -78,8 +78,9 @@ def get_plot_values(GF_sizes_dict, species_list, exp_dict, sig_list, tree_path, 
     return_dict = {}
     OG_sizes = {}
     
-    for orthogroup, GF_sizes in tqdm(GF_sizes_dict.items()):
-
+    for orthogroup in tqdm(sig_list):
+        
+        GF_sizes = GF_sizes_dict[orthogroup]
         result,PICs_GF_sizes,x_axis_vec = calculate_OG_lin_reg(GF_sizes = GF_sizes, exp_dict= exp_dict, tree_path = tree_path, species_list = species_list, log10_GF=log10_GF, log2_GF=log2_GF)
 
         inclines[orthogroup] = result.slope
