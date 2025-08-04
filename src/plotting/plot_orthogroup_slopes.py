@@ -202,6 +202,8 @@ def plot_slopes(inclines,intercepts,p_values,p_values_bh,std_errs,return_dict,OG
 
 
 
+
+
 if __name__ == "__main__":
 
     try:
@@ -209,11 +211,13 @@ if __name__ == "__main__":
         species_names = gff.make_species_order_from_tree(tree)
         data_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/"
         CAFE_runs_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_convergence/runs_to_test_convergence"
+        repeat_categories_in_species = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/whole_species_repeat_categories.csv"
     except:
         tree = "/Users/milena/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_ultrametric.nw"
         species_names = gff.make_species_order_from_tree(tree)
         data_dir = "/Users/milena/work/PhD_code/PhD_chapter1/data/"
         CAFE_runs_dir = "/Users/milena/work/PhD_code/PhD_chapter1/data/CAFE_convergence/runs_to_test_convergence"
+        repeat_categories_in_species = "/Users/milena/work/PhD_code/PhD_chapter1/data/whole_species_repeat_categories.csv"
 
     orthogroups_native_filepath = f"{data_dir}orthofinder_native/N0.tsv"
     orthogroups_orthoDB_filepath = f"{data_dir}orthofinder_uniform/N0.tsv"
