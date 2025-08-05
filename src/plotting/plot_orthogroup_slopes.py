@@ -329,7 +329,7 @@ if __name__ == "__main__":
         print(f"\n\t\t * Genome size")
         inclines,intercepts,p_values,p_values_BH,std_errs,return_dict,OG_sizes,included_OGs = get_plot_values(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=genome_sizes_dict, sig_list=orthoDB_sig_list, tree_path=tree)
         print(f"{len(included_OGs)} (of {len(orthoDB_sig_list)}) orthogroups included because the LR residuals are not normally distributed")
-        GS_inclines = plot_slopes(inclines,intercepts,p_values,p_values_BH,std_errs,return_dict,OG_sizes, x_label = "Genome size in Mb",  filename = f"{data_dir}correlations/sig_OGs_vs_GS_inclines_bh_corrected_PIC.png", sig_list=included_OGs)
+        GS_inclines = plot_slopes(inclines,intercepts,p_values,p_values_BH,std_errs,return_dict,OG_sizes, x_label = "Genome size in Mb",  filename = f"{data_dir}correlations/sig_OGs_vs_GS_inclines_bh_corrected_PIC.png", sig_list=included_OGs, svg=svg_bool)
         # gff.write_dict_to_file(GS_inclines, f"{data_dir}sig_OGs_vs_GS_inclines_pvalues.tsv", header=f"OG\tslope\tp-value\tsig_after_multiple_testing", separator="\t")
 
         print(f"\n\t\t * repeat content")
