@@ -20,6 +20,8 @@ def calculate_OG_lin_reg(GF_sizes:dict, exp_dict:dict, tree_path:str, species_li
     Calculate the linear regression of an orthogroup, represented as a dictionary { species : gene family members }
     I need the tree to calculate phylogenetically independent contrasts
     """
+    
+    log_possible = True
 
     ## log-transform the GF sizes
     if log10_GF:
@@ -28,6 +30,14 @@ def calculate_OG_lin_reg(GF_sizes:dict, exp_dict:dict, tree_path:str, species_li
         GF_sizes_dict = {species : np.log2(GF_sizes[species]) if species in GF_sizes else 0 for species in species_list }
     else:
         GF_sizes_dict = {species : GF_sizes[species] if species in GF_sizes else 0 for species in species_list }
+    
+    # if any value is 0 the log doesn't work
+    if log10_GF or log2_GF:
+        if len([exp_val for exp_val in exp_dict.values() if exp_val== 0.0])>0:
+            # print(f"can't log the explanatory variable because one of the values is 0!")
+            log10_GF = False
+            log2_GF = False
+            log_possible=False
 
     ## log transform explanatory variables
     if log10_GF:
@@ -44,7 +54,7 @@ def calculate_OG_lin_reg(GF_sizes:dict, exp_dict:dict, tree_path:str, species_li
     ## linear regression
     result = scipy.stats.linregress(x_axis_vec, PICs_GF_sizes)
     
-    return result,PICs_GF_sizes,x_axis_vec
+    return result,PICs_GF_sizes,x_axis_vec,log_possible
 
 
 def test_normality_of_residuals(result,PICs_GF_sizes,x_axis_vec):
@@ -86,7 +96,8 @@ def get_plot_values(GF_sizes_dict, species_list, exp_dict, sig_list, tree_path, 
     for orthogroup in sig_list:
         
         GF_sizes = GF_sizes_dict[orthogroup]
-        result,PICs_GF_sizes,x_axis_vec = calculate_OG_lin_reg(GF_sizes = GF_sizes, exp_dict= exp_dict, tree_path = tree_path, species_list = species_list, log10_GF=log10_GF, log2_GF=log2_GF)
+        result,PICs_GF_sizes,x_axis_vec,log_possible = calculate_OG_lin_reg(GF_sizes = GF_sizes, exp_dict= exp_dict, tree_path = tree_path, species_list = species_list, log10_GF=log10_GF, log2_GF=log2_GF)
+
 
         stat,p_value = test_normality_of_residuals(result,PICs_GF_sizes,x_axis_vec)
         
@@ -113,7 +124,7 @@ def get_plot_values(GF_sizes_dict, species_list, exp_dict, sig_list, tree_path, 
     for i, orthogroup in enumerate(included_OGs):
             p_values_BH[orthogroup] = p_values_bh[i]
 
-    return inclines,intercepts,p_values,p_values_BH,std_errs,return_dict,OG_sizes,included_OGs
+    return inclines,intercepts,p_values,p_values_BH,std_errs,return_dict,OG_sizes,included_OGs,log_possible
 
 
 
@@ -143,7 +154,7 @@ def read_repeat_categories(path:str):
 
 
 
-def plot_slopes(inclines,intercepts,p_values,p_values_bh,std_errs,return_dict,OG_sizes, sig_list ,x_label, filename = "sig_OGs_inclines.png", color_category = "orthoDB", percentile = 99, log10_GF=False, log2_GF=True, svg = False):
+def plot_slopes(inclines,intercepts,p_values,p_values_bh,std_errs,return_dict,OG_sizes, sig_list ,x_label, filename = "sig_OGs_inclines.png", color_category = "orthoDB", percentile = 99, log10_GF=False, log2_GF=True, log_possible=True, svg = False):
 
     ### PLOT 
 
@@ -219,10 +230,12 @@ def plot_slopes(inclines,intercepts,p_values,p_values_bh,std_errs,return_dict,OG
     ax.set_ylabel(ylab, fontsize = fs)
     ax.set_xlabel("orthogroup size", fontsize = fs)
     title_ = x_label.split(" in")[0]
+    if log_possible:
+        title_ = f"log2({title_})"
     if log10_GF:
-        title = f"log10(Gene family size) vs. {title_}"
+        title = f"log10(Gene family size) vs. \n{title_}"
     elif log2_GF:
-        title = f"log2(Gene family size) vs. {title_}"
+        title = f"log2(Gene family size) vs. \n{title_}"
     else:
         title = f"Gene family size vs. {title_}"
     plt.title(title, fontsize=fs*1.2)
@@ -326,17 +339,18 @@ if __name__ == "__main__":
 
         species_names.remove("D_melanogaster")
 
-        print(f"\n\t\t * Genome size")
-        inclines,intercepts,p_values,p_values_BH,std_errs,return_dict,OG_sizes,included_OGs = get_plot_values(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=genome_sizes_dict, sig_list=orthoDB_sig_list, tree_path=tree)
-        print(f"{len(included_OGs)} (of {len(orthoDB_sig_list)}) orthogroups included because the LR residuals are not normally distributed")
-        GS_inclines = plot_slopes(inclines,intercepts,p_values,p_values_BH,std_errs,return_dict,OG_sizes, x_label = "Genome size in Mb",  filename = f"{data_dir}correlations/sig_OGs_vs_GS_inclines_bh_corrected_PIC.png", sig_list=included_OGs, svg=svg_bool)
-        # gff.write_dict_to_file(GS_inclines, f"{data_dir}sig_OGs_vs_GS_inclines_pvalues.tsv", header=f"OG\tslope\tp-value\tsig_after_multiple_testing", separator="\t")
+        if False:
+            print(f"\n\t\t * Genome size")
+            inclines,intercepts,p_values,p_values_BH,std_errs,return_dict,OG_sizes,included_OGs,log_possible = get_plot_values(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=genome_sizes_dict, sig_list=orthoDB_sig_list, tree_path=tree)
+            print(f"{len(included_OGs)} (of {len(orthoDB_sig_list)}) orthogroups included because the LR residuals are not normally distributed")
+            GS_inclines = plot_slopes(inclines,intercepts,p_values,p_values_BH,std_errs,return_dict,OG_sizes, x_label = "Genome size in Mb",  filename = f"{data_dir}correlations/sig_OGs_vs_GS_inclines_bh_corrected_PIC.png", sig_list=included_OGs,log_possible=log_possible, svg=svg_bool)
+            # gff.write_dict_to_file(GS_inclines, f"{data_dir}sig_OGs_vs_GS_inclines_pvalues.tsv", header=f"OG\tslope\tp-value\tsig_after_multiple_testing", separator="\t")
 
-        print(f"\n\t\t * repeat content")
-        inclines,intercepts,p_values,p_values_BH,std_errs,return_dict,OG_sizes,included_OGs = get_plot_values(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, sig_list=orthoDB_sig_list, tree_path=tree)
-        print(f"{len(included_OGs)} (of {len(orthoDB_sig_list)}) orthogroups included because the LR residuals are not normally distributed")
-        TE_inclines = plot_slopes(inclines,intercepts,p_values,p_values_BH,std_errs,return_dict,OG_sizes, x_label = "Repeat content in percent",  filename = f"{data_dir}correlations/sig_OGs_vs_reps_inclines_bh_corrected_PIC.png", sig_list=included_OGs, svg=svg_bool)
-        # gff.write_dict_to_file(TE_inclines, f"{data_dir}sig_OGs_vs_reps_inclines_pvalues.tsv", header=f"OG\tslope\tp-value\tsig_after_multiple_testing", separator="\t")
+            print(f"\n\t\t * repeat content")
+            inclines,intercepts,p_values,p_values_BH,std_errs,return_dict,OG_sizes,included_OGs,log_possible = get_plot_values(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, sig_list=orthoDB_sig_list, tree_path=tree)
+            print(f"{len(included_OGs)} (of {len(orthoDB_sig_list)}) orthogroups included because the LR residuals are not normally distributed")
+            TE_inclines = plot_slopes(inclines,intercepts,p_values,p_values_BH,std_errs,return_dict,OG_sizes, x_label = "Repeat content in percent",  filename = f"{data_dir}correlations/sig_OGs_vs_reps_inclines_bh_corrected_PIC.png", sig_list=included_OGs,log_possible=log_possible, svg=svg_bool)
+            # gff.write_dict_to_file(TE_inclines, f"{data_dir}sig_OGs_vs_reps_inclines_pvalues.tsv", header=f"OG\tslope\tp-value\tsig_after_multiple_testing", separator="\t")
 
         ## do the individual repeat categories
         repeats_categories_dict = read_repeat_categories(repeat_categories_in_species)
@@ -345,11 +359,15 @@ if __name__ == "__main__":
             repeat_percentages = repeats_categories_dict[repeat_category]
             print(f"\n\t\t * repeat category: {repeat_category}")
             
-            inclines,intercepts,p_values,p_values_BH,std_errs,return_dict,OG_sizes,included_OGs = get_plot_values(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, sig_list=orthoDB_sig_list, tree_path=tree)
-            print(f"{len(included_OGs)} (of {len(orthoDB_sig_list)}) orthogroups included because the LR residuals are not normally distributed")
+            inclines,intercepts,p_values,p_values_BH,std_errs,return_dict,OG_sizes,included_OGs,log_possible = get_plot_values(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, sig_list=orthoDB_sig_list, tree_path=tree)
+            print(f"{len(included_OGs)} (of {len(orthoDB_sig_list)}) orthogroups included because the LR residuals are normally distributed")
+
+            if len(included_OGs) == 0:
+                raise RuntimeError
+
             repeat_category_filename = repeat_category.replace(" ", "")
             repeat_category_filename = repeat_category_filename.replace(".","")
-            TE_inclines = plot_slopes(inclines,intercepts,p_values,p_values_BH,std_errs,return_dict,OG_sizes, x_label = f"{repeat_category} content in percent",  filename = f"{data_dir}correlations/sig_OGs_vs_{repeat_category_filename}_inclines_bh_corrected_PIC.png", sig_list=included_OGs, svg=svg_bool)
+            TE_inclines = plot_slopes(inclines,intercepts,p_values,p_values_BH,std_errs,return_dict,OG_sizes, x_label = f"{repeat_category} content in percent",  filename = f"{data_dir}correlations/sig_OGs_vs_{repeat_category_filename}_inclines_bh_corrected_PIC.png", sig_list=included_OGs,log_possible=log_possible, svg=svg_bool)
 
 
         ## last column of the sig_OGs_[...]_pvalues.tsv lists has one of three:
@@ -373,7 +391,7 @@ if __name__ == "__main__":
             pvalues = []
             for orthogroup, GF_sizes in orthoDB_dict.items():
                 count_all += 1
-                TE_result,PICs_GF_sizes,x_axis_vec = calculate_OG_lin_reg(GF_sizes = GF_sizes, exp_dict= repeat_percentages, tree_path = tree, species_list = species_names_no_Dmel, log10_GF=False, log2_GF=True)
+                TE_result,PICs_GF_sizes,x_axis_vec,log_possible = calculate_OG_lin_reg(GF_sizes = GF_sizes, exp_dict= repeat_percentages, tree_path = tree, species_list = species_names_no_Dmel, log10_GF=False, log2_GF=True)
                 TE_stat,TE_p_value = test_normality_of_residuals(TE_result,PICs_GF_sizes,x_axis_vec)
                 
                 if TE_p_value < 0.05:
@@ -415,12 +433,12 @@ if __name__ == "__main__":
             for orthogroup, GF_sizes in tqdm(orthoDB_dict.items()):
                 count_all += 1
 
-                GS_result,PICs_GF_sizes,x_axis_vec = calculate_OG_lin_reg(GF_sizes = GF_sizes, exp_dict= genome_sizes_dict, tree_path = tree, species_list = species_names_no_Dmel, log10_GF=False, log2_GF=True)
+                GS_result,PICs_GF_sizes,x_axis_vec,log_possible = calculate_OG_lin_reg(GF_sizes = GF_sizes, exp_dict= genome_sizes_dict, tree_path = tree, species_list = species_names_no_Dmel, log10_GF=False, log2_GF=True)
                 GS_stat,GS_p_value = test_normality_of_residuals(GS_result,PICs_GF_sizes,x_axis_vec)
                 if GS_p_value < 0.05:
                     count_non_normal_GS += 1
 
-                TE_result,PICs_GF_sizes,x_axis_vec = calculate_OG_lin_reg(GF_sizes = GF_sizes, exp_dict= repeat_percentages, tree_path = tree, species_list = species_names_no_Dmel, log10_GF=False, log2_GF=True)
+                TE_result,PICs_GF_sizes,x_axis_vec,log_possible = calculate_OG_lin_reg(GF_sizes = GF_sizes, exp_dict= repeat_percentages, tree_path = tree, species_list = species_names_no_Dmel, log10_GF=False, log2_GF=True)
                 TE_stat,TE_p_value = test_normality_of_residuals(TE_result,PICs_GF_sizes,x_axis_vec)
                 if TE_p_value < 0.05:
                     count_non_normal_TE += 1

@@ -51,5 +51,7 @@ This is the general genome-wide repeat content with no consideration for how it 
     <img src="orthoDB_sig_OGs_vs_Retroelements_inclines_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.svg" alt="correlation" width=30%>
     <img src="orthoDB_sig_OGs_vs_DNAtransposons_inclines_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.svg" alt="correlation" width=30%></p>
 
+These two repeat categories have the situation where two sister species have a percentage of 0, so the PICs have a zero in them, and the log-transformation for the explanatory variable does not work.
+
 <p><img src="orthoDB_sig_OGs_vs_SmallRNA_inclines_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.svg" alt="correlation" width=30%>
     <img src="orthoDB_sig_OGs_vs_Satellites_inclines_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.svg" alt="correlation" width=30%></p>

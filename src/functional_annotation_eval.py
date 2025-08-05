@@ -391,9 +391,10 @@ if __name__ == "__main__":
     OG_lists_dict = orthogroups_lists()
 
     ##  IMPORT SVG TO HTML --> makes it so the html file has no external figure dependencies and can be sent by email
-    if False:
+    if True:
         # html_path = "/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/my_thoughts.html"
         html_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/my_thoughts.html"
+        html_path = "/Users/milena/work/PhD_code/PhD_chapter1/data/correlations/correlations.html"
         inline_svgs_in_html(html_path=html_path)
 
     # --> GENERAL ""ENRICHMENT"" OF GENE GROUP FUNCTION IN RAPIDLY EXPANDING ORTHOGROUPS
@@ -624,7 +625,7 @@ if __name__ == "__main__":
             transparent_bg=True, svg = False, ymax_set = 9.9) # add fs=30 for the poster
 
 
-    if True:
+    if False:
         cols_list = [
             "#9CD3B9", # lighter green "#7FC6A4", # light green
             "#A3C0E1", #lighter blue "#74A0D2", #light blue
