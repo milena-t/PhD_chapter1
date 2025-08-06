@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="UTF-8">
-            <title>Correlations of gene family sizes vs&period; species genome characteristics</title>
-            <style>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Correlations of gene family sizes vs&period; species genome characteristics</title>
+        <style>
 /* From extension vscode.github */
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
@@ -11,14 +11,47 @@
  *--------------------------------------------------------------------------------------------*/
 
 .vscode-dark img[src$=\#gh-light-mode-only],
-.vscode-light img[src$=\#gh-dark-mode-only],
-.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
-.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+.vscode-light img[src$=\#gh-dark-mode-only] {
 	display: none;
 }
 
+/* From extension ms-toolsai.jupyter */
+/* These classnames are inherited from bootstrap, but are present in most notebook renderers */
+
+.alert {
+    width: auto;
+    padding: 1em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+.alert > *:last-child {
+    margin-bottom: 0;
+}
+#preview > .alert:last-child {
+    /* Prevent this being set to zero by the default notebook stylesheet */
+    padding-bottom: 1em;
+}
+
+.alert-success {
+    /* Note there is no suitable color available, so we just copy "info" */
+    background-color: var(--theme-info-background);
+    color: var(--theme-info-foreground);
+}
+.alert-info {
+    background-color: var(--theme-info-background);
+    color: var(--theme-info-foreground);
+}
+.alert-warning {
+    background-color: var(--theme-warning-background);
+    color: var(--theme-warning-foreground);
+}
+.alert-danger {
+    background-color: var(--theme-error-background);
+    color: var(--theme-error-foreground);
+}
+
 </style>
-            
+        
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
 <style>
@@ -39,106 +72,10 @@
     pointer-events: none;
 }
 </style>
-<style>
-:root {
-  --color-note: #0969da;
-  --color-tip: #1a7f37;
-  --color-warning: #9a6700;
-  --color-severe: #bc4c00;
-  --color-caution: #d1242f;
-  --color-important: #8250df;
-}
-
-</style>
-<style>
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-note: #2f81f7;
-    --color-tip: #3fb950;
-    --color-warning: #d29922;
-    --color-severe: #db6d28;
-    --color-caution: #f85149;
-    --color-important: #a371f7;
-  }
-}
-
-</style>
-<style>
-.markdown-alert {
-  padding: 0.5rem 1rem;
-  margin-bottom: 16px;
-  color: inherit;
-  border-left: .25em solid #888;
-}
-
-.markdown-alert>:first-child {
-  margin-top: 0
-}
-
-.markdown-alert>:last-child {
-  margin-bottom: 0
-}
-
-.markdown-alert .markdown-alert-title {
-  display: flex;
-  font-weight: 500;
-  align-items: center;
-  line-height: 1
-}
-
-.markdown-alert .markdown-alert-title .octicon {
-  margin-right: 0.5rem;
-  display: inline-block;
-  overflow: visible !important;
-  vertical-align: text-bottom;
-  fill: currentColor;
-}
-
-.markdown-alert.markdown-alert-note {
-  border-left-color: var(--color-note);
-}
-
-.markdown-alert.markdown-alert-note .markdown-alert-title {
-  color: var(--color-note);
-}
-
-.markdown-alert.markdown-alert-important {
-  border-left-color: var(--color-important);
-}
-
-.markdown-alert.markdown-alert-important .markdown-alert-title {
-  color: var(--color-important);
-}
-
-.markdown-alert.markdown-alert-warning {
-  border-left-color: var(--color-warning);
-}
-
-.markdown-alert.markdown-alert-warning .markdown-alert-title {
-  color: var(--color-warning);
-}
-
-.markdown-alert.markdown-alert-tip {
-  border-left-color: var(--color-tip);
-}
-
-.markdown-alert.markdown-alert-tip .markdown-alert-title {
-  color: var(--color-tip);
-}
-
-.markdown-alert.markdown-alert-caution {
-  border-left-color: var(--color-caution);
-}
-
-.markdown-alert.markdown-alert-caution .markdown-alert-title {
-  color: var(--color-caution);
-}
-
-</style>
         
-        </head>
-        <body class="vscode-body vscode-light">
-            <h1 id="correlations-of-gene-family-sizes-vs-species-genome-characteristics">Correlations of gene family sizes vs. species genome characteristics</h1>
+    </head>
+    <body class="vscode-body vscode-light">
+        <h1 id="correlations-of-gene-family-sizes-vs-species-genome-characteristics">Correlations of gene family sizes vs. species genome characteristics</h1>
 <p>We hypothesize that gene families proliferate more in genomes with a high repeat content, because some TEs can facilitate gene duplications. Therefore we calculate the linear regression in each significantly rapidly evolving orthogroup between gene family size and several genome characteristics such as genome size, overall repeat content, and repeat-category content.</p>
 <h2 id="method">Method</h2>
 <h3 id="phylogeneticlaly-independent-contrasts-pics">Phylogeneticlaly independent contrasts (PICs)</h3>
@@ -162,9 +99,10 @@
 <p>There are 496 significantly rapidly evolving orthogroups in total, but each plot shows fewer because I excluded the ones with non-normal residuals as explained above. Each plot is the orthogroup size vs. the linear regression slope to also take into account that larger orthogroups might be more prone to correlations with repetitive elements.</p>
 <p>No category shows significantly correlated orthogroups after multiple testing correction.</p>
 <h3 id="genome-size">Genome size</h3>
-<p><img src="file:////Users/milena/work/PhD_code/PhD_chapter1/data/correlations/orthoDB_sig_OGs_vs_GS_inclines_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.svg" alt="correlation" width=30%></p>
+<p><img src="file:////Users/miltr339/work/PhD_code/PhD_chapter1/data/correlations/orthoDB_sig_OGs_vs_GS_inclines_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.svg" alt="correlation" width=30%></p>
 <h3 id="repeat-content">Repeat content</h3>
 <p>This is the general genome-wide repeat content with no consideration for how it is divided in the different repeat categories</p>
+<<<<<<< HEAD
 <p><img src="file:////Users/milena/work/PhD_code/PhD_chapter1/data/correlations/orthoDB_sig_OGs_vs_reps_inclines_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.png" alt="correlation" width=30%></p>
 <h3 id="repeat-categories">repeat categories</h3>
 <p>I also checked for the percentages of the individual repeat categories but they don't have anything significant either.</p>
@@ -181,3 +119,20 @@
             
         </body>
         </html>
+=======
+<p><img src="file:////Users/miltr339/work/PhD_code/PhD_chapter1/data/correlations/orthoDB_sig_OGs_vs_reps_inclines_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.png" alt="correlation" width=30%></p>
+<h4 id="repeat-categories">repeat categories</h4>
+<p><img src="file:////Users/miltr339/work/PhD_code/PhD_chapter1/data/correlations/orthoDB_sig_OGs_vs_Unclassified_inclines_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.svg" alt="correlation" width=29%>
+    <img src="file:////Users/miltr339/work/PhD_code/PhD_chapter1/data/correlations/orthoDB_sig_OGs_vs_Lowcomplexity_inclines_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.svg" alt="correlation" width=30%>
+    <img src="file:////Users/miltr339/work/PhD_code/PhD_chapter1/data/correlations/orthoDB_sig_OGs_vs_Simplerepeats_inclines_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.svg" alt="correlation" width=30%></p>
+<p><img src="file:////Users/miltr339/work/PhD_code/PhD_chapter1/data/correlations/orthoDB_sig_OGs_vs_Rolling-circles_inclines_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.svg" alt="correlation" width=30%>
+    <img src="file:////Users/miltr339/work/PhD_code/PhD_chapter1/data/correlations/orthoDB_sig_OGs_vs_Retroelements_inclines_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.svg" alt="correlation" width=30%>
+    <img src="file:////Users/miltr339/work/PhD_code/PhD_chapter1/data/correlations/orthoDB_sig_OGs_vs_DNAtransposons_inclines_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.svg" alt="correlation" width=30%></p>
+<p>These two repeat categories have the situation where two sister species have a percentage of 0, so the PICs have a zero in them, and the log-transformation for the explanatory variable does not work.</p>
+<p><img src="file:////Users/miltr339/work/PhD_code/PhD_chapter1/data/correlations/orthoDB_sig_OGs_vs_SmallRNA_inclines_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.svg" alt="correlation" width=30%>
+    <img src="file:////Users/miltr339/work/PhD_code/PhD_chapter1/data/correlations/orthoDB_sig_OGs_vs_Satellites_inclines_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.svg" alt="correlation" width=30%></p>
+        
+        
+    </body>
+    </html>
+>>>>>>> 3d5ba61e9b4e8c8d098da410b832ea6e642f6d08
