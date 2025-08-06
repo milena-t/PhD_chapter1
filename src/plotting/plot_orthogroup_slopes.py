@@ -52,6 +52,8 @@ def calculate_OG_lin_reg(GF_sizes:dict, exp_dict:dict, tree_path:str, species_li
     x_axis_vec = PIC.calculate_PIC(tree_path=tree_path, trait_values=exp_dict)
 
     ## linear regression
+    # abs(min(x_axis_vec)-max(x_axis_vec))
+    # print(f"{}")
     result = scipy.stats.linregress(x_axis_vec, PICs_GF_sizes)
     
     return result,PICs_GF_sizes,x_axis_vec,log_possible
@@ -233,11 +235,11 @@ def plot_slopes(inclines,intercepts,p_values,p_values_bh,std_errs,return_dict,OG
     if log_possible:
         title_ = f"log2({title_})"
     if log10_GF:
-        title = f"log10(Gene family size) vs. \n{title_}"
+        title = f"lin. reg. {title_} vs. \nlog10(Gene family size) "
     elif log2_GF:
-        title = f"log2(Gene family size) vs. \n{title_}"
+        title = f"lin. reg. {title_} vs. \nlog2(Gene family size) "
     else:
-        title = f"Gene family size vs. {title_}"
+        title = f"lin. reg. {title_} vs. \nGene family size"
     plt.title(title, fontsize=fs*1.2)
     ax.legend(fontsize = fs, loc='lower right', title_fontsize = fs)
 

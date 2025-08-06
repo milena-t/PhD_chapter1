@@ -10,12 +10,14 @@ I am using my implementation of the phylogenetically independent contrasts accor
 
 ### linear regression
 
-I am calculating the linear regression with `scipy.stats.linregress(genome_characteristic, GF_sizes)`.
+I am doing two things before the linear regression
 
 * exclude *D. melanogaster* from the analysis
 * Both variables are PICs log2-transformed to make them more linear. 
 
-Unfortunately the sampling is pretty sparse and unequally distributed in the parameter space, and also the gene family sizes are discrete, so a lot of them don't have normally distributed residuals which makes the p-value of the regression unreliable. They often also are not suitable for non-linear regression since they also don't really follow an exponential trend or anything else that could be modelled, and the sample size is really low (13 species). Therefore I have excluded these orthogroups
+I am calculating the linear regression with `scipy.stats.linregress(genome_characteristic, GF_sizes)`. 
+
+Unfortunately the sampling is pretty sparse and unequally distributed in the parameter space, and also the gene family sizes are discrete, so a lot of them don't have normally distributed residuals which makes the p-value of the regression unreliable. They often also are not suitable for non-linear regression since they also don't really follow an exponential trend or anything else that could be modelled, and the sample size is really low (13 species). They often have one member in most species and only one or two expansions. Therefore I have excluded these orthogroups from the linear models. The y-axis labels show the number of orthogroups included in every plot.
 
 ### genome characteristics
 
@@ -41,7 +43,9 @@ This is the general genome-wide repeat content with no consideration for how it 
 
 <p><img src="orthoDB_sig_OGs_vs_reps_inclines_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.png" alt="correlation" width=30%></p>
 
-#### repeat categories
+### repeat categories
+
+I also checked for the percentages of the individual repeat categories but they don't have anything significant either.
 
 <p><img src="orthoDB_sig_OGs_vs_Unclassified_inclines_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.svg" alt="correlation" width=29%>
     <img src="orthoDB_sig_OGs_vs_Lowcomplexity_inclines_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.svg" alt="correlation" width=30%>
@@ -51,7 +55,7 @@ This is the general genome-wide repeat content with no consideration for how it 
     <img src="orthoDB_sig_OGs_vs_Retroelements_inclines_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.svg" alt="correlation" width=30%>
     <img src="orthoDB_sig_OGs_vs_DNAtransposons_inclines_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.svg" alt="correlation" width=30%></p>
 
-These two repeat categories have the situation where two sister species have a percentage of 0, so the PICs have a zero in them, and the log-transformation for the explanatory variable does not work.
+The next two repeat categories have the situation where two sister species have a percentage of 0, so the PICs have a zero in them, and the log-transformation for the explanatory variable does not work, so i skipped it for them. There is one singular significant orthogroup for satellites, but since the satellite content is not log transformed I probably wouldn't put too much trust in it. 
 
 <p><img src="orthoDB_sig_OGs_vs_SmallRNA_inclines_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.svg" alt="correlation" width=30%>
     <img src="orthoDB_sig_OGs_vs_Satellites_inclines_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.svg" alt="correlation" width=30%></p>
