@@ -243,7 +243,7 @@ def plot_general_annotation_comparisons(native = {}, orthoDB = {}, proteinseqs =
     # fig = plt.figure(figsize=(10,9))
     # ax = fig.add_subplot(1, 1, 1)
     
-    ylab="Number of genes and orthogroups"
+    ylab="Number of genes and gene families"
     # get a list of lists with [native, orthoDB] number of gene families per species
 
     legend_labels = []
