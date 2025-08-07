@@ -394,7 +394,7 @@ if __name__ == "__main__":
     if True:
         # html_path = "/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/my_thoughts.html"
         html_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/my_thoughts.html"
-        html_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/correlations/correlations.html"
+        # html_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/correlations/correlations.html"
         inline_svgs_in_html(html_path=html_path)
 
     # --> GENERAL ""ENRICHMENT"" OF GENE GROUP FUNCTION IN RAPIDLY EXPANDING ORTHOGROUPS
@@ -422,13 +422,19 @@ if __name__ == "__main__":
             OG_lists_dict["Gene Group 3"],
             OG_lists_dict["Gene Group 18"],
         ]
+        linestyles = [
+            "dotted",
+            "solid",
+            "solid",            
+        ]
         image_path = plot_selected_OGs(
             orthogroups_path=orthogroups_orthoDB_filepath, 
             OG_IDs=IDs_lists, colors=cols_list, labels=labels_list, 
-            tree_path=tree_path, filename="detoxificatoin_clusters.png", 
+            tree_path=tree_path, filename="polyethylene_clusters.png", 
             out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", 
-            title = "Detoxification-related clusters", 
-            transparent_bg=True, svg = True)
+            title = "polyethylene-related clusters", 
+            transparent_bg=True, svg = True, linestyles_list=linestyles, ymax_set=22)
+        
 
     # --> REPRODUCTION
     if False:
