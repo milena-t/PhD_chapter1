@@ -394,7 +394,7 @@ if __name__ == "__main__":
     if True:
         # html_path = "/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/my_thoughts.html"
         html_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/my_thoughts.html"
-        # html_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/correlations/correlations.html"
+        html_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/correlations/correlations.html"
         inline_svgs_in_html(html_path=html_path)
 
     # --> GENERAL ""ENRICHMENT"" OF GENE GROUP FUNCTION IN RAPIDLY EXPANDING ORTHOGROUPS
