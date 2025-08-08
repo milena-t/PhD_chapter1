@@ -15,6 +15,8 @@ import parse_orthogroups as OGs
 import compute_PIC as PIC
 
 
+### LINEAR REGRESSION
+
 def calculate_OG_lin_reg(GF_sizes:dict, exp_dict:dict, tree_path:str, species_list:list, log10_GF=False, log2_GF=True):
     """
     Calculate the linear regression of an orthogroup, represented as a dictionary { species : gene family members }
@@ -74,9 +76,7 @@ def test_normality_of_residuals(result,PICs_GF_sizes,x_axis_vec):
     return stat,p_value
         
 
-
-
-def get_plot_values(GF_sizes_dict, species_list, exp_dict, sig_list, tree_path, log10_GF=False, log2_GF=True):
+def get_plot_values_linreg(GF_sizes_dict, species_list, exp_dict, sig_list, tree_path, log10_GF=False, log2_GF=True):
     """
     calculate fitted linear regression for each significant orthogroup.
     exp_dict is the dictionary with the x-axis variables, like genome size or repeat content
@@ -98,15 +98,13 @@ def get_plot_values(GF_sizes_dict, species_list, exp_dict, sig_list, tree_path, 
     for orthogroup in sig_list:
         
         GF_sizes = GF_sizes_dict[orthogroup]
+
         result,PICs_GF_sizes,x_axis_vec,log_possible = calculate_OG_lin_reg(GF_sizes = GF_sizes, exp_dict= exp_dict, tree_path = tree_path, species_list = species_list, log10_GF=log10_GF, log2_GF=log2_GF)
-
-
         stat,p_value = test_normality_of_residuals(result,PICs_GF_sizes,x_axis_vec)
         
         ## if residuals not normal don't include this orthogroup in the analysis
         if p_value < 0.05:
             excluded_OGs.append(orthogroup)
-        
         else:
             included_OGs.append(orthogroup)
 
@@ -127,6 +125,65 @@ def get_plot_values(GF_sizes_dict, species_list, exp_dict, sig_list, tree_path, 
             p_values_BH[orthogroup] = p_values_bh[i]
 
     return inclines,intercepts,p_values,p_values_BH,std_errs,return_dict,OG_sizes,included_OGs,log_possible
+
+
+### SPEARMAN CORRELATION
+
+def calculate_OG_spearman(GF_sizes_dict:dict, exp_dict:dict, tree_path:str, species_list:list):
+    """
+    Calculate the spearman ranked order correlation of an orthogroup, represented as a dictionary { species : gene family members }
+    against other genome characteristics such as genome size or repeat content (exp_dict, same format as GF_sizes)
+    I need the tree to calculate phylogenetically independent contrasts, but unlike the linear regression I won't log-transform the data
+    """
+    # make sure that the same species are included in all analyses
+    GF_sizes_dict = {species : GF_sizes_dict[species] if species in GF_sizes_dict else 0 for species in species_list }
+    exp_dict = {species : exp_dict[species] if species in exp_dict else 0 for species in species_list }
+
+    ## calculate PICs
+    PICs_GF_sizes = PIC.calculate_PIC(tree_path=tree_path, trait_values=GF_sizes_dict)
+    x_axis_vec = PIC.calculate_PIC(tree_path=tree_path, trait_values=exp_dict)
+
+    ## spearman correlation coefficient
+    result = scipy.stats.spearmanr(x_axis_vec, PICs_GF_sizes)
+    # result.statistic and result.pvalue
+    
+    return result.statistic,result.pvalue
+
+
+def get_plot_values_spearman(GF_sizes_dict, species_list, exp_dict, sig_list, tree_path):
+    """
+    calculate fitted linear regression for each significant orthogroup.
+    exp_dict is the dictionary with the x-axis variables, like genome size or repeat content
+    returns a dictionary with { orthogroupID : incline }
+    !! includes FDR multiple testing correction !!
+    """
+
+    coefficients = {}
+    p_values = {}
+    OG_sizes = {}
+    return_dict = {}
+    
+    # for orthogroup in tqdm(sig_list):
+    for orthogroup in sig_list:
+        
+        GF_sizes = GF_sizes_dict[orthogroup]
+
+        coefficient, pvalue = calculate_OG_spearman(GF_sizes_dict = GF_sizes, exp_dict= exp_dict, tree_path = tree_path, species_list=species_list)
+
+        coefficients[orthogroup] = coefficient
+        p_values[orthogroup] = pvalue
+        return_dict[orthogroup] = [coefficient, pvalue, "x"]
+        OG_sizes[orthogroup] = sum([GF_sizes[species] if species in GF_sizes else 0 for species in species_list ])
+        
+    ## DO multiple testing correction
+    p_values_list = [p_values[orthogroup] for orthogroup in sig_list]
+    reject, p_values_bh, _, _ = multipletests(p_values_list, alpha=0.05, method='fdr_bh')
+
+    p_values_BH = {}
+    for i, orthogroup in enumerate(sig_list):
+            p_values_BH[orthogroup] = p_values_bh[i]
+
+    return coefficients,p_values,p_values_BH,coefficients,OG_sizes,return_dict
 
 
 
@@ -156,7 +213,7 @@ def read_repeat_categories(path:str):
 
 
 
-def plot_slopes(inclines,intercepts,p_values,p_values_bh,std_errs,return_dict,OG_sizes, sig_list ,x_label, filename = "sig_OGs_inclines.png", color_category = "orthoDB", percentile = 99, log10_GF=False, log2_GF=True, log_possible=True, svg = False):
+def plot_slopes(inclines,p_values,p_values_bh,return_dict,OG_sizes, sig_list ,x_label, filename = "sig_OGs_inclines.png", color_category = "orthoDB", percentile = 99, log10_GF=False, log2_GF=True, log_possible=True, svg = False):
 
     ### PLOT 
 
@@ -343,15 +400,21 @@ if __name__ == "__main__":
 
         if True:
             print(f"\n\t\t * Genome size")
-            inclines,intercepts,p_values,p_values_BH,std_errs,return_dict,OG_sizes,included_OGs,log_possible = get_plot_values(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=genome_sizes_dict, sig_list=orthoDB_sig_list, tree_path=tree)
-            print(f"{len(included_OGs)} (of {len(orthoDB_sig_list)}) orthogroups included because the LR residuals are not normally distributed")
-            GS_inclines = plot_slopes(inclines,intercepts,p_values,p_values_BH,std_errs,return_dict,OG_sizes, x_label = "Genome size in Mb",  filename = f"{data_dir}correlations/sig_OGs_vs_GS_inclines_bh_corrected_PIC.png", sig_list=included_OGs,log_possible=log_possible, svg=svg_bool)
+            ## linear regression
+            # inclines,intercepts,p_values,p_values_BH,std_errs,return_dict,OG_sizes,included_OGs,log_possible = get_plot_values_linreg(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=genome_sizes_dict, sig_list=orthoDB_sig_list, tree_path=tree)
+            # print(f"{len(included_OGs)} (of {len(orthoDB_sig_list)}) orthogroups included because the LR residuals are not normally distributed")
+            ## spearman correlation
+            coefficients,p_values,p_values_BH,coefficients,OG_sizes,return_dict = get_plot_values_spearman(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=genome_sizes_dict, sig_list=orthoDB_sig_list, tree_path=tree)
+            GS_inclines = plot_slopes(coefficients,p_values,p_values_BH,return_dict,OG_sizes, x_label = "Genome size in Mb",  filename = f"{data_dir}correlations/sig_OGs_vs_GS_coefficients_bh_corrected_PIC.png", sig_list=orthoDB_sig_list ,log_possible=True, svg=svg_bool)
             # gff.write_dict_to_file(GS_inclines, f"{data_dir}sig_OGs_vs_GS_inclines_pvalues.tsv", header=f"OG\tslope\tp-value\tsig_after_multiple_testing", separator="\t")
 
             print(f"\n\t\t * repeat content")
-            inclines,intercepts,p_values,p_values_BH,std_errs,return_dict,OG_sizes,included_OGs,log_possible = get_plot_values(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, sig_list=orthoDB_sig_list, tree_path=tree)
-            print(f"{len(included_OGs)} (of {len(orthoDB_sig_list)}) orthogroups included because the LR residuals are not normally distributed")
-            TE_inclines = plot_slopes(inclines,intercepts,p_values,p_values_BH,std_errs,return_dict,OG_sizes, x_label = "Repeat content in percent",  filename = f"{data_dir}correlations/sig_OGs_vs_reps_inclines_bh_corrected_PIC.png", sig_list=included_OGs,log_possible=log_possible, svg=svg_bool)
+            ## linear regression
+            # inclines,intercepts,p_values,p_values_BH,std_errs,return_dict,OG_sizes,included_OGs,log_possible = get_plot_values_linreg(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, sig_list=orthoDB_sig_list, tree_path=tree)
+            # print(f"{len(included_OGs)} (of {len(orthoDB_sig_list)}) orthogroups included because the LR residuals are not normally distributed")
+            ## spearman correlation
+            coefficients,p_values,p_values_BH,coefficients,OG_sizes,return_dict = get_plot_values_spearman(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, sig_list=orthoDB_sig_list, tree_path=tree)
+            TE_inclines = plot_slopes(coefficients,p_values,p_values_BH,return_dict,OG_sizes, x_label = "Repeat content in percent",  filename = f"{data_dir}correlations/sig_OGs_vs_reps_coefficients_bh_corrected_PIC.png", sig_list=orthoDB_sig_list ,log_possible=True, svg=svg_bool)
             # gff.write_dict_to_file(TE_inclines, f"{data_dir}sig_OGs_vs_reps_inclines_pvalues.tsv", header=f"OG\tslope\tp-value\tsig_after_multiple_testing", separator="\t")
 
         ## do the individual repeat categories
