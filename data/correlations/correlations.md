@@ -21,6 +21,14 @@ I test the gene family sizes in each orthogroup against several genome character
 * Genome size (assembly size)
 * Overall genome repeat proportion
 * proportion of different repeat categories
+    * Unclassified
+    * Low_complexity
+    * Simple_repeats
+    * Rolling-circles
+    * Retroelements
+    * DNA_transposons
+    * Small_RNA
+    * Satellites
 
 
 ## Results 
@@ -31,27 +39,34 @@ No category shows significantly correlated orthogroups after multiple testing co
 
 ### Genome size
 
-<p><img src="orthoDB_sig_OGs_vs_GS_inclines_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.svg" alt="correlation" width=30%></p>
+There are four significantly correlated orthogroups 
+
+* N0.HOG0002345: No gene family cluster. Snurportin, snRNA import into nucleus
+* N0.HOG0000761: Gene family cluster 20, transmembrane transport (olfactory). Multidrug-Resistance like Protein 1(MRP), see functional analysis for why that makes sense
+* N0.HOG0000296: Gene family cluster 31, chromatin organization and transcription regulation. uncharacterized protein
+* N0.HOG0000049: No gene family cluster. cag, DNA binding.
+
+<p><img src="orthoDB_sig_OGs_vs_GS_coefficients_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.svg" alt="correlation" width=30%></p>
 
 ### Repeat content
 
 This is the general genome-wide repeat content with no consideration for how it is divided in the different repeat categories
 
-<p><img src="orthoDB_sig_OGs_vs_reps_inclines_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.png" alt="correlation" width=30%></p>
+<p><img src="orthoDB_sig_OGs_vs_reps_coefficients_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.svg" alt="correlation" width=30%></p>
 
 ### repeat categories
 
-I also checked for the percentages of the individual repeat categories but they don't have anything significant either.
+There are two significant correlations:
+* **Satellites:** N0.HOG0000808. No gene family cluster. Kynurenine aminotransferase, kynurenic acid biosynthetic process
+* **Low complexity** N0.HOG0000056. Gene family cluster 7 (odorant binding), Odorant-binding protein 56e(Obp56e), sexual reproduction; sensory perception of chemical stimulus; sensory perception of smell
 
-<p><img src="orthoDB_sig_OGs_vs_Unclassified_inclines_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.svg" alt="correlation" width=29%>
-    <img src="orthoDB_sig_OGs_vs_Lowcomplexity_inclines_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.svg" alt="correlation" width=30%>
-    <img src="orthoDB_sig_OGs_vs_Simplerepeats_inclines_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.svg" alt="correlation" width=30%></p>
+<p><img src="orthoDB_sig_OGs_vs_Unclassified_coefficients_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.svg" alt="correlation" width=29%>
+   <img src="orthoDB_sig_OGs_vs_Low_complexity_coefficients_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.svg" alt="correlation" width=30%>
+   <img src="orthoDB_sig_OGs_vs_Simple_repeats_coefficients_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.svg" alt="correlation" width=30%></p>
 
-<p><img src="orthoDB_sig_OGs_vs_Rolling-circles_inclines_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.svg" alt="correlation" width=30%>
-    <img src="orthoDB_sig_OGs_vs_Retroelements_inclines_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.svg" alt="correlation" width=30%>
-    <img src="orthoDB_sig_OGs_vs_DNAtransposons_inclines_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.svg" alt="correlation" width=30%></p>
+<p><img src="orthoDB_sig_OGs_vs_Rolling-circles_coefficients_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.svg" alt="correlation" width=30%>
+    <img src="orthoDB_sig_OGs_vs_Retroelements_coefficients_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.svg" alt="correlation" width=30%>
+    <img src="orthoDB_sig_OGs_vs_DNA_transposons_coefficients_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.svg" alt="correlation" width=30%></p>
 
-The next two repeat categories have the situation where two sister species have a percentage of 0, so the PICs have a zero in them, and the log-transformation for the explanatory variable does not work, so i skipped it for them. There is one singular significant orthogroup for satellites, but since the satellite content is not log transformed I probably wouldn't put too much trust in it. 
-
-<p><img src="orthoDB_sig_OGs_vs_SmallRNA_inclines_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.svg" alt="correlation" width=30%>
-    <img src="orthoDB_sig_OGs_vs_Satellites_inclines_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.svg" alt="correlation" width=30%></p>
+<p><img src="orthoDB_sig_OGs_vs_Small_RNA_coefficients_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.svg" alt="correlation" width=30%>
+    <img src="orthoDB_sig_OGs_vs_Satellites_coefficients_bh_corrected_PIC_vs_OG_size_sig_OGs_colors.svg" alt="correlation" width=30%></p>

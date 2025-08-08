@@ -213,7 +213,7 @@ def read_repeat_categories(path:str):
 
 
 
-def plot_slopes(inclines,p_values,p_values_bh,return_dict,OG_sizes, sig_list ,x_label, filename = "sig_OGs_inclines.png", color_category = "orthoDB", percentile = 99, log10_GF=False, log2_GF=True, log_possible=True, svg = False):
+def plot_slopes(inclines,p_values,p_values_bh,return_dict,OG_sizes, sig_list ,x_label, filename = "sig_OGs_inclines.png", color_category = "orthoDB", percentile = 99, log10_GF=False, log2_GF=False, log_possible=True, svg = False):
 
     ### PLOT 
 
@@ -285,18 +285,22 @@ def plot_slopes(inclines,p_values,p_values_bh,return_dict,OG_sizes, sig_list ,x_
     ax.scatter(OG_sizes_sig_list, inclines_sig_list, color = colors[color_category], s=75, label = "significant")
     ax.scatter(OG_sizes_bh_cor_sig_list, inclines_bh_cor_sig_list, color = colors[f"{color_category}_multiple_testing_sig"], s=75, marker="v", label = "B.H. corrected")
 
-    ylab = f"regression slopes of individual orthogroups \n(only {len(sig_list)} significant orthogroups shown)"
+    ax.set_ylim(-1.1,1.1)
+    ax.axhline(y=0.0, linewidth=2, color='#C5C5C5', linestyle="--")
+
+    ylab = f"correlation coefficients of individual orthogroups \n(only {len(sig_list)} significant orthogroups shown)"
     ax.set_ylabel(ylab, fontsize = fs)
     ax.set_xlabel("orthogroup size", fontsize = fs)
+    
     title_ = x_label.split(" in")[0]
     if log_possible:
         title_ = f"log2({title_})"
     if log10_GF:
-        title = f"lin. reg. {title_} vs. \nlog10(Gene family size) "
+        title = f"spearman correlation of\n {title_} vs. log10(Gene family size) "
     elif log2_GF:
-        title = f"lin. reg. {title_} vs. \nlog2(Gene family size) "
+        title = f"spearman correlation of\n {title_} vs. log2(Gene family size) "
     else:
-        title = f"lin. reg. {title_} vs. \nGene family size"
+        title = f"spearman correlation of\n {title_} vs. Gene family size"
     plt.title(title, fontsize=fs*1.2)
     ax.legend(fontsize = fs, loc='lower right', title_fontsize = fs)
 
@@ -394,7 +398,7 @@ if __name__ == "__main__":
 
     if True:
 
-        svg_bool = False
+        svg_bool = True
 
         species_names.remove("D_melanogaster")
 
@@ -405,7 +409,7 @@ if __name__ == "__main__":
             # print(f"{len(included_OGs)} (of {len(orthoDB_sig_list)}) orthogroups included because the LR residuals are not normally distributed")
             ## spearman correlation
             coefficients,p_values,p_values_BH,coefficients,OG_sizes,return_dict = get_plot_values_spearman(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=genome_sizes_dict, sig_list=orthoDB_sig_list, tree_path=tree)
-            GS_inclines = plot_slopes(coefficients,p_values,p_values_BH,return_dict,OG_sizes, x_label = "Genome size in Mb",  filename = f"{data_dir}correlations/sig_OGs_vs_GS_coefficients_bh_corrected_PIC.png", sig_list=orthoDB_sig_list ,log_possible=True, svg=svg_bool)
+            GS_inclines = plot_slopes(coefficients,p_values,p_values_BH,return_dict,OG_sizes, x_label = "Genome size in Mb",  filename = f"{data_dir}correlations/sig_OGs_vs_GS_coefficients_bh_corrected_PIC.png", sig_list=orthoDB_sig_list ,log_possible=False, svg=svg_bool)
             # gff.write_dict_to_file(GS_inclines, f"{data_dir}sig_OGs_vs_GS_inclines_pvalues.tsv", header=f"OG\tslope\tp-value\tsig_after_multiple_testing", separator="\t")
 
             print(f"\n\t\t * repeat content")
@@ -414,26 +418,22 @@ if __name__ == "__main__":
             # print(f"{len(included_OGs)} (of {len(orthoDB_sig_list)}) orthogroups included because the LR residuals are not normally distributed")
             ## spearman correlation
             coefficients,p_values,p_values_BH,coefficients,OG_sizes,return_dict = get_plot_values_spearman(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, sig_list=orthoDB_sig_list, tree_path=tree)
-            TE_inclines = plot_slopes(coefficients,p_values,p_values_BH,return_dict,OG_sizes, x_label = "Repeat content in percent",  filename = f"{data_dir}correlations/sig_OGs_vs_reps_coefficients_bh_corrected_PIC.png", sig_list=orthoDB_sig_list ,log_possible=True, svg=svg_bool)
+            TE_inclines = plot_slopes(coefficients,p_values,p_values_BH,return_dict,OG_sizes, x_label = "Repeat content in percent",  filename = f"{data_dir}correlations/sig_OGs_vs_reps_coefficients_bh_corrected_PIC.png", sig_list=orthoDB_sig_list ,log_possible=False, svg=svg_bool)
             # gff.write_dict_to_file(TE_inclines, f"{data_dir}sig_OGs_vs_reps_inclines_pvalues.tsv", header=f"OG\tslope\tp-value\tsig_after_multiple_testing", separator="\t")
 
         ## do the individual repeat categories
-        if False:
+        if True:
             repeats_categories_dict = read_repeat_categories(repeat_categories_in_species)
 
             for repeat_category in repeats_categories_dict.keys():
                 repeat_percentages = repeats_categories_dict[repeat_category]
                 print(f"\n\t\t * repeat category: {repeat_category}")
                 
-                inclines,intercepts,p_values,p_values_BH,std_errs,return_dict,OG_sizes,included_OGs,log_possible = get_plot_values(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, sig_list=orthoDB_sig_list, tree_path=tree)
-                print(f"{len(included_OGs)} (of {len(orthoDB_sig_list)}) orthogroups included because the LR residuals are normally distributed")
+                coefficients,p_values,p_values_BH,coefficients,OG_sizes,return_dict = get_plot_values_spearman(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, sig_list=orthoDB_sig_list, tree_path=tree)
 
-                if len(included_OGs) == 0:
-                    raise RuntimeError
-
-                repeat_category_filename = repeat_category.replace(" ", "")
+                repeat_category_filename = repeat_category.replace(" ", "_")
                 repeat_category_filename = repeat_category_filename.replace(".","")
-                TE_inclines = plot_slopes(inclines,intercepts,p_values,p_values_BH,std_errs,return_dict,OG_sizes, x_label = f"{repeat_category} content in percent",  filename = f"{data_dir}correlations/sig_OGs_vs_{repeat_category_filename}_inclines_bh_corrected_PIC.png", sig_list=included_OGs,log_possible=log_possible, svg=svg_bool)
+                TE_inclines = plot_slopes(coefficients,p_values,p_values_BH,return_dict,OG_sizes, x_label = f"{repeat_category} content in percent",  filename = f"{data_dir}correlations/sig_OGs_vs_{repeat_category_filename}_coefficients_bh_corrected_PIC.png", sig_list=orthoDB_sig_list ,log_possible=False, svg=svg_bool)
 
 
         ## last column of the sig_OGs_[...]_pvalues.tsv lists has one of three:
