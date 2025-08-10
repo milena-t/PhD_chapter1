@@ -5,7 +5,7 @@ compute phylogenetically independent contrasts from:
 
 all this comes from the Felsenstein 1985 paper in American Naturalist (not to be confused with the one from the same year in Evolution about bootstrap methods)
 
-How PICs work is nicely explained here: https://bio.libretexts.org/Bookshelves/Evolutionary_Developmental_Biology/Phylogenetic_Comparative_Methods_(Harmon)/04%3A_Fitting_Brownian_Motion/4.02%3A_Estimating_Rates_using_Independent_Contrasts
+The paper explains it pretty well, but here is another explanation: https://bio.libretexts.org/Bookshelves/Evolutionary_Developmental_Biology/Phylogenetic_Comparative_Methods_(Harmon)/04%3A_Fitting_Brownian_Motion/4.02%3A_Estimating_Rates_using_Independent_Contrasts
 (they don't take the square root of the branch lengths but apparently you should so i am adding that)
 
 There will always be one less PIC than there are values in the input dict, because the contrasts show the evolutionary change between 
