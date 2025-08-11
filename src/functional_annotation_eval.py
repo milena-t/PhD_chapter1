@@ -394,7 +394,7 @@ if __name__ == "__main__":
     if True:
         # html_path = "/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/my_thoughts.html"
         html_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/my_thoughts.html"
-        html_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/correlations/correlations.html"
+        #html_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/correlations/correlations.html"
         inline_svgs_in_html(html_path=html_path)
 
     # --> GENERAL ""ENRICHMENT"" OF GENE GROUP FUNCTION IN RAPIDLY EXPANDING ORTHOGROUPS
@@ -453,16 +453,21 @@ if __name__ == "__main__":
             OG_lists_dict["Gene Group 9"],
             OG_lists_dict["Gene Group 5,8"],
         ]
+        linestyles = [
+            "solid",
+            "solid",
+            "solid",            
+        ]
         image_path = plot_selected_OGs(
             orthogroups_path=orthogroups_orthoDB_filepath, 
             OG_IDs=IDs_lists, colors=cols_list, labels=labels_list, 
             tree_path=tree_path, filename="sexual_reproduction.png", 
             out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", 
             title = "reproduction and immunity clusters", 
-            transparent_bg=True, svg = False)
+            transparent_bg=True, svg = False, linestyles_list=linestyles)
 
     # -->  ODORANT BINDING AND PHEROMONE SENSING
-    if False:
+    if True:
         cols_list = [
             "#a9c5e2",
             "#91584B",
@@ -478,13 +483,18 @@ if __name__ == "__main__":
             OG_lists_dict["Gene Group 30"],
             OG_lists_dict["Gene Group 20"],
         ]
+        linestyles = [
+            "solid",
+            "solid",
+            "solid",            
+        ]
         image_path = plot_selected_OGs(
             orthogroups_path=orthogroups_orthoDB_filepath, 
             OG_IDs=IDs_lists, colors=cols_list, labels=labels_list, 
             tree_path=tree_path, filename="pheromone_sensing_clusters.png", 
             out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", 
-            title = "Detoxification-related clusters", 
-            transparent_bg=True, svg = True)
+            title = "Pheromone sensing related clusters", 
+            transparent_bg=True, svg = False, linestyles_list=linestyles, ymax_set=68)
 
     # --> CHITIN AND CUTICULAR PROTEIN
     if False:
