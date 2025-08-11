@@ -74,7 +74,7 @@ This Gene Family Cluster contains only aldehyde oxidase. The only rapidly evolvi
 ### Plot
 
 <p>
-<img src="detoxificatoin_clusters.svg" alt="Gene Family Cluster 17" width=45%>
+<img src="detoxification_clusters.svg" alt="Gene Family Cluster 17" width=45%>
 <img src="polyethylene_clusters.svg" alt="Gene Family Cluster 17" width=45%>
 </p>
 

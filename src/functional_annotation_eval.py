@@ -406,7 +406,7 @@ if __name__ == "__main__":
     # image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Aobt_expansion"], tree_path=tree_path, filename="Aobt_expansion_GF_sizes.png", title = f"A. obtectus expansion: {OGs_title}")
 
     # --> DETOXIFICATION
-    if False:
+    if True:
         cols_list = [
             "#a9c5e2",
             "#434b4c",
@@ -423,17 +423,17 @@ if __name__ == "__main__":
             OG_lists_dict["Gene Group 18"],
         ]
         linestyles = [
-            "dotted",
+            "solid",#"dotted",
             "solid",
             "solid",            
         ]
         image_path = plot_selected_OGs(
             orthogroups_path=orthogroups_orthoDB_filepath, 
             OG_IDs=IDs_lists, colors=cols_list, labels=labels_list, 
-            tree_path=tree_path, filename="polyethylene_clusters.png", 
+            tree_path=tree_path, filename="detoxification_clusters.png", # filename="polyethylene_clusters.png", 
             out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", 
-            title = "polyethylene-related clusters", 
-            transparent_bg=True, svg = True, linestyles_list=linestyles, ymax_set=22)
+            title = "Detoxification-related clusters", 
+            transparent_bg=True, svg = False, linestyles_list=linestyles, ymax_set=78)
         
 
     # --> REPRODUCTION
@@ -467,7 +467,7 @@ if __name__ == "__main__":
             transparent_bg=True, svg = False, linestyles_list=linestyles)
 
     # -->  ODORANT BINDING AND PHEROMONE SENSING
-    if True:
+    if False:
         cols_list = [
             "#a9c5e2",
             "#91584B",
