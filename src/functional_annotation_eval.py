@@ -57,7 +57,7 @@ def orthogroups_lists():
     return out_dict_old_single_CAFE_run
 
 
-def plot_selected_OGs(orthogroups_path:str, OG_IDs:list[list[str]], colors:list, labels:list, linestyles_list:list, tree_path:str, filename:str, out_dir:str = "/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/", title = "", transparent_bg=True, svg = False, fs = 22, ymax_set = 0):
+def plot_selected_OGs(orthogroups_path:str, OG_IDs:list[list[str]], colors:list, labels:list, tree_path:str, filename:str, linestyles_list:list = [], out_dir:str = "/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/", title = "", transparent_bg=True, svg = False, fs = 30, ymax_set = 0):
     """
     plot the gene family sizes in a subset of orthogroup_IDs
     takes a list of lists of OG IDs, grouped by which should have the same color. 
@@ -66,6 +66,9 @@ def plot_selected_OGs(orthogroups_path:str, OG_IDs:list[list[str]], colors:list,
     # plot each column in the dataframe as a line in the same plot thorugh a for-loop
     fig = plt.figure(figsize=(15,10))
     ax = fig.add_subplot(1, 1, 1)
+
+    if linestyles_list == []:
+        linestyles_list = ["solid" for color in colors]
 
     # get sorted species names from tree
     species_names_unsorted = my_plotting.plot_tree_manually(tree_path)
@@ -286,12 +289,15 @@ def investigate_large_gene_families(tree_path:str, DAVID_table_path:str, orthogr
         
 
 
-def plot_selected_OGs_vs_GS(orthogroups_path:str, OG_IDs:list[list[str]], colors:list, labels:list, linestyles_list:list, genome_sizes:dict, filename:str, out_dir:str = "/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/", title = "", transparent_bg=True, svg = False, fs = 22, ymax_set = 0, log2_transform=False):
+def plot_selected_OGs_vs_GS(orthogroups_path:str, OG_IDs:list[list[str]], colors:list, labels:list, genome_sizes:dict, filename:str, linestyles_list:list = [], out_dir:str = "/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/", title = "", transparent_bg=True, svg = False, fs = 22, ymax_set = 0, log2_transform=False):
     """
     plot the genome size (GS) against the gene family sizes in a subset of orthogroup_IDs
     takes a list of lists of OG IDs, grouped by which should have the same color. 
     The colors list is then these colors, in the same order as the lists in OG_IDs
     """
+
+    if linestyles_list == []:
+        linestyles_list = ["solid" for color in colors]
 
     # plot each column in the dataframe as a line in the same plot thorugh a for-loop
     fig = plt.figure(figsize=(10,8))
@@ -391,7 +397,7 @@ if __name__ == "__main__":
     OG_lists_dict = orthogroups_lists()
 
     ##  IMPORT SVG TO HTML --> makes it so the html file has no external figure dependencies and can be sent by email
-    if True:
+    if False:
         # html_path = "/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/my_thoughts.html"
         html_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/my_thoughts.html"
         #html_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/correlations/correlations.html"
@@ -406,7 +412,7 @@ if __name__ == "__main__":
     # image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Aobt_expansion"], tree_path=tree_path, filename="Aobt_expansion_GF_sizes.png", title = f"A. obtectus expansion: {OGs_title}")
 
     # --> DETOXIFICATION
-    if True:
+    if False:
         cols_list = [
             "#a9c5e2",
             "#434b4c",
@@ -433,7 +439,7 @@ if __name__ == "__main__":
             tree_path=tree_path, filename="detoxification_clusters.png", # filename="polyethylene_clusters.png", 
             out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", 
             title = "Detoxification-related clusters", 
-            transparent_bg=True, svg = False, linestyles_list=linestyles, ymax_set=78)
+            transparent_bg=True, svg = False, linestyles_list=linestyles, ymax_set=95)
         
 
     # --> REPRODUCTION
@@ -446,7 +452,7 @@ if __name__ == "__main__":
         labels_list = [
             "Cluster 8: immunity and reproduction", 
             "Cluster 9: sexual reproduction",
-            "Cluster 5 and 8: protease inhibitor (immunity and reproduction)", 
+            "Cluster 5 and 8: protease inhibitor \n(immunity and reproduction)", 
             ]
         IDs_lists = [
             OG_lists_dict["Gene Group 8"],
@@ -464,10 +470,10 @@ if __name__ == "__main__":
             tree_path=tree_path, filename="sexual_reproduction.png", 
             out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", 
             title = "reproduction and immunity clusters", 
-            transparent_bg=True, svg = False, linestyles_list=linestyles)
+            transparent_bg=True, svg = False, linestyles_list=linestyles, ymax_set=45)
 
     # -->  ODORANT BINDING AND PHEROMONE SENSING
-    if False:
+    if True:
         cols_list = [
             "#a9c5e2",
             "#91584B",
@@ -494,7 +500,7 @@ if __name__ == "__main__":
             tree_path=tree_path, filename="pheromone_sensing_clusters.png", 
             out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", 
             title = "Pheromone sensing related clusters", 
-            transparent_bg=True, svg = False, linestyles_list=linestyles, ymax_set=68)
+            transparent_bg=True, svg = False, linestyles_list=linestyles, ymax_set=98)
 
     # --> CHITIN AND CUTICULAR PROTEIN
     if False:
@@ -566,10 +572,10 @@ if __name__ == "__main__":
             tree_path=tree_path, filename="fluorescence_elateriformia_only_Acyl_CoA.png", 
             out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", 
             title = "Expansions in Elateriformia related to fluorescence", 
-            transparent_bg=True, svg = False)#, fs = 30) # fs=30 for the poster
+            transparent_bg=True, svg = False, ymax_set=24)#, fs = 30) # fs=30 for the poster
 
     # --> ORTHOGROUPS CORRELATED WITH GS
-    # there are 14 orthogroups that are significantly correlated with Genome size (GS) after multiple testing correction
+    # These are the outdated orthogroups from linear models, not the new ones for the correlation!!
     {
     "N0.HOG0001353": "Dmel ortholog has no flybase match",
     "N0.HOG0000469": "Dmel ortholog has no flybase match",
@@ -599,8 +605,8 @@ if __name__ == "__main__":
                          "A_obtectus" : 949,
                          "B_siliquastri" : 375,
                          "C_chinensis" : 701,
-                         # "C_analis" : 971,
                          "C_maculatus" : 1202 
+                         # "C_analis" : 971,
                         }
     
     # We are especially interested in two that are related to olfactory stuff and pheromone sensing
