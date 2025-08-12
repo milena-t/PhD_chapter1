@@ -398,7 +398,7 @@ if __name__ == "__main__":
 
     if True:
 
-        svg_bool = True
+        svg_bool = False
 
         species_names.remove("D_melanogaster")
 
