@@ -536,9 +536,13 @@ if __name__ == "__main__":
 
         filter_stats = {}
         for species_name in blast_outfiles.keys():
-            filter_fasta_by_TE_matches(blast_outfiles[species_name], proteinfasta_files[species_name], verbose=True)
+            # filter_fasta_by_TE_matches(blast_outfiles[species_name], proteinfasta_files[species_name], verbose=True)
             filter_stats[species_name] = get_filtering_stats(blast_outfiles[species_name], proteinfasta_files[species_name])
         
+        if False:
+            # data from filtering pasted here so that I don't loose it
+            print(filter_stats)
+            filter_stats = {'A_obtectus': [29689, 28317, 1372], 'A_verrucosus': [23817, 23753, 64], 'B_siliquastri': [14999, 14804, 195], 'C_analis': [25927, 25273, 654], 'C_chinensis': [25373, 24736, 637], 'C_maculatus': [35319, 34188, 1131], 'C_septempunctata': [19848, 19843, 5], 'D_melanogaster': [14809, 14805, 4], 'D_ponderosae': [16657, 16656, 1], 'I_luminosus': [28964, 28960, 4], 'P_pyralis': [27199, 27181, 18], 'R_ferrugineus': [20416, 20413, 3], 'T_castaneum': [17591, 17318, 273], 'T_molitor': [19332, 19217, 115], 'Z_morio': [29865, 29559, 306]}
         filter_df = pd.DataFrame.from_dict(filter_stats, orient="index", columns=["before_filtering", "after_filtering", "num_filtered"])
         print(filter_df)
             
