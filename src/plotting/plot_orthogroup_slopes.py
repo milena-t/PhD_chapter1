@@ -5,6 +5,7 @@ plot the slope of all of those together, and highlight OGs with high slopes
 """
 
 import matplotlib.pyplot as plt
+from statistics import mean
 import numpy as np
 import scipy.stats
 from statsmodels.stats.multitest import multipletests
@@ -409,6 +410,8 @@ if __name__ == "__main__":
             # print(f"{len(included_OGs)} (of {len(orthoDB_sig_list)}) orthogroups included because the LR residuals are not normally distributed")
             ## spearman correlation
             coefficients,p_values,p_values_BH,coefficients,OG_sizes,return_dict = get_plot_values_spearman(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=genome_sizes_dict, sig_list=orthoDB_sig_list, tree_path=tree)
+            mean_coeff = mean(list(coefficients.values()))
+            print(f"\t\tmean correlaion coefficient: {mean_coeff:.2f}")
             GS_inclines = plot_slopes(coefficients,p_values,p_values_BH,return_dict,OG_sizes, x_label = "Genome size in Mb",  filename = f"{data_dir}correlations/sig_OGs_vs_GS_coefficients_bh_corrected_PIC.png", sig_list=orthoDB_sig_list ,log_possible=False, svg=svg_bool)
             # gff.write_dict_to_file(GS_inclines, f"{data_dir}sig_OGs_vs_GS_inclines_pvalues.tsv", header=f"OG\tslope\tp-value\tsig_after_multiple_testing", separator="\t")
 
@@ -418,11 +421,13 @@ if __name__ == "__main__":
             # print(f"{len(included_OGs)} (of {len(orthoDB_sig_list)}) orthogroups included because the LR residuals are not normally distributed")
             ## spearman correlation
             coefficients,p_values,p_values_BH,coefficients,OG_sizes,return_dict = get_plot_values_spearman(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, sig_list=orthoDB_sig_list, tree_path=tree)
+            mean_coeff = mean(list(coefficients.values()))
+            print(f"\t\tmean correlaion coefficient: {mean_coeff:.2f}")
             TE_inclines = plot_slopes(coefficients,p_values,p_values_BH,return_dict,OG_sizes, x_label = "Repeat content in percent",  filename = f"{data_dir}correlations/sig_OGs_vs_reps_coefficients_bh_corrected_PIC.png", sig_list=orthoDB_sig_list ,log_possible=False, svg=svg_bool)
             # gff.write_dict_to_file(TE_inclines, f"{data_dir}sig_OGs_vs_reps_inclines_pvalues.tsv", header=f"OG\tslope\tp-value\tsig_after_multiple_testing", separator="\t")
 
         ## do the individual repeat categories
-        if True:
+        if False:
             repeats_categories_dict = read_repeat_categories(repeat_categories_in_species)
 
             for repeat_category in repeats_categories_dict.keys():
@@ -430,7 +435,9 @@ if __name__ == "__main__":
                 print(f"\n\t\t * repeat category: {repeat_category}")
                 
                 coefficients,p_values,p_values_BH,coefficients,OG_sizes,return_dict = get_plot_values_spearman(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, sig_list=orthoDB_sig_list, tree_path=tree)
-
+                mean_coeff = mean(list(coefficients.values()))
+                print(f"\t\tmean correlaion coefficient: {mean_coeff:.2f}")
+                
                 repeat_category_filename = repeat_category.replace(" ", "_")
                 repeat_category_filename = repeat_category_filename.replace(".","")
                 TE_inclines = plot_slopes(coefficients,p_values,p_values_BH,return_dict,OG_sizes, x_label = f"{repeat_category} content in percent",  filename = f"{data_dir}correlations/sig_OGs_vs_{repeat_category_filename}_coefficients_bh_corrected_PIC.png", sig_list=orthoDB_sig_list ,log_possible=False, svg=svg_bool)
