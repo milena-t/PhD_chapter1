@@ -269,7 +269,7 @@ def plot_slopes(inclines,p_values,p_values_bh,return_dict,OG_sizes, sig_list ,x_
         p_val = p_values[orthogroup]
         p_cor = p_values_bh[orthogroup]
         if p_cor < 0.05:
-            print(f"\t\t-- {orthogroup} significant after FDR correction")
+            print(f"\t\t-- {orthogroup} significant after FDR correction: correlation coefficient {inclines[orthogroup]:.3f}")
             inclines_bh_cor_sig_list.append(inclines[orthogroup])
             OG_sizes_bh_cor_sig_list.append(OG_sizes[orthogroup])
             return_dict[orthogroup][-1] = "y"
@@ -427,7 +427,7 @@ if __name__ == "__main__":
             # gff.write_dict_to_file(TE_inclines, f"{data_dir}sig_OGs_vs_reps_inclines_pvalues.tsv", header=f"OG\tslope\tp-value\tsig_after_multiple_testing", separator="\t")
 
         ## do the individual repeat categories
-        if False:
+        if True:
             repeats_categories_dict = read_repeat_categories(repeat_categories_in_species)
 
             for repeat_category in repeats_categories_dict.keys():
