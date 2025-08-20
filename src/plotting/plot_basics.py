@@ -127,7 +127,10 @@ def plot_tree_manually(species_tree, ax_tree = None, add_leaf_label=False):
     return leaf_names
 
 
-def plot_gene_counts(native_annot_dir, species_tree, orthoDB_annot_dir="", orthoDB_filtered_annot_dir="", filename = "only_genome_sizes_14_species.png"):
+def plot_gene_counts(native_annot_dir, species_tree, orthoDB_annot_dir="", orthoDB_filtered_annot_dir="", filename = "only_genome_sizes_14_species.png", dark_mode=False):
+
+    if dark_mode:
+        plt.style.use('dark_background')
     """
     plot gene counts from annotations (or proteinfasta, but preferably annotation), with a species tree on the x-axis
     """
@@ -184,6 +187,8 @@ def plot_gene_counts(native_annot_dir, species_tree, orthoDB_annot_dir="", ortho
 
     plt.tight_layout()
 
+    if dark_mode:
+        filename = filename.replace(".png", "_darkmode.png")
     plt.savefig(filename, dpi = 300, transparent = True)# , bbox_inches='tight')
     print("Figure saved in the current working directory directory as: "+filename)
 
@@ -238,7 +243,10 @@ def get_lengths_list(fasta_filepath):
     return seq_lengths
 
 
-def plot_histogram_protein_lengths(native_path:str, orthoDB_path:str, third_path:str = "", species_name:str = "", no_bins = 20, max_length = 1000, filename = "protein_lengths_histogram.png"):
+def plot_histogram_protein_lengths(native_path:str, orthoDB_path:str, third_path:str = "", species_name:str = "", no_bins = 20, max_length = 1000, filename = "protein_lengths_histogram.png", dark_mode=False):
+
+    if dark_mode:
+        plt.style.use('dark_background')
     """
     plot a histogram of the length distribution of the proteins in the input fasta files
     """
@@ -267,12 +275,17 @@ def plot_histogram_protein_lengths(native_path:str, orthoDB_path:str, third_path
     plt.legend(fontsize = fs, loc='upper right')
     species_title = species_name.replace("_", ". ")
     plt.title(f"{species_title} protein length distribution")
-    
+
+    if dark_mode:
+        filename = filename.replace(".png", "_darkmode.png")
     plt.savefig(filename, dpi = 300, transparent = True)
     print(f"plot saved in the current working directory as: {filename}")
 
 
-def plot_all_species_protein_length_distribution(native_files:dict, orthoDB_files:dict, third_column_files:dict = {}, columns = 3, no_bins = 20, max_length = 1000, filename = "protein_lengths_histogram.png", legend_in_last = True):
+def plot_all_species_protein_length_distribution(native_files:dict, orthoDB_files:dict, third_column_files:dict = {}, columns = 3, no_bins = 20, max_length = 1000, filename = "protein_lengths_histogram.png", legend_in_last = True, dark_mode=False):
+
+    if dark_mode:
+        plt.style.use('dark_background')
     """
     plot a grid of histograms for all species. input is dictionaries with species names as keys and filepaths to aminoacid fasta files as values
     """
@@ -347,6 +360,8 @@ def plot_all_species_protein_length_distribution(native_files:dict, orthoDB_file
     # Adjust layout to prevent overlap
     plt.tight_layout(rect=[0, 0.05, 1, 1])
 
+    if dark_mode:
+        filename = filename.replace(".png", "_darkmode.png")
     plt.savefig(filename, dpi = 300, transparent = True)
     print(f"plot saved in current working directory as: {filename}")
 
@@ -359,9 +374,10 @@ if __name__ == "__main__":
     # output dir
     data = "/Users/miltr339/work/PhD_code/PhD_chapter1/data"
     # proteinfasta files dir
-    native_dir = "/Users/miltr339/work/native_proteinseqs"
-    orthoDB_dir = "/Users/miltr339/work/orthoDB_proteinseqs_TE_filtered"
+    native_dir = "/Users/milena/work/native_proteinseqs"
+    orthoDB_dir = "/Users/milena/work/orthoDB_proteinseqs_TE_filtered"
     
+    ## plot old Kaufmann annotation comparison
     if False:
 
         try:
@@ -453,7 +469,7 @@ if __name__ == "__main__":
     ## filepaths
     if True:
     
-        data = "/Users/miltr339/work/PhD_code/PhD_chapter1/data"
+        data = "/Users/milena/work/PhD_code/PhD_chapter1/data"
         native_files = {
             "A_obtectus" : f"{native_dir}/A_obtectus.faa",
             "A_verrucosus" : f"{native_dir}/A_verrucosus.faa",
@@ -493,14 +509,14 @@ if __name__ == "__main__":
         # for species in native_files.keys():
         #     plot_histogram_protein_lengths(native_files[species], orthoDB_files[species], species_name=species, filename = f"protein_lengths_histogram_{species}.png")
         
-        # plot_all_species_protein_length_distribution(native_files, orthoDB_files, filename=f"{data}/protein_lengths_histogram.png")
+        plot_all_species_protein_length_distribution(native_files, orthoDB_files, filename=f"{data}/protein_lengths_histogram.png", dark_mode=True)
         
         # plot individual species
-        plot_histogram_protein_lengths(native_path = native_files["T_castaneum"], orthoDB_path = orthoDB_files["T_castaneum"], species_name="T. castaneum", no_bins = 20, max_length = 1500, filename = f"{data}/Tcas_protein_lengths_histogram.png")
-        plot_histogram_protein_lengths(native_path = native_files["B_siliquastri"], orthoDB_path = orthoDB_files["B_siliquastri"], species_name="B. siliquastri", no_bins = 20, max_length = 1500, filename = f"{data}/Bsil_protein_lengths_histogram.png")
+        plot_histogram_protein_lengths(native_path = native_files["T_castaneum"], orthoDB_path = orthoDB_files["T_castaneum"], species_name="T. castaneum", no_bins = 20, max_length = 1500, filename = f"{data}/Tcas_protein_lengths_histogram.png", dark_mode=True)
+        plot_histogram_protein_lengths(native_path = native_files["B_siliquastri"], orthoDB_path = orthoDB_files["B_siliquastri"], species_name="B. siliquastri", no_bins = 20, max_length = 1500, filename = f"{data}/Bsil_protein_lengths_histogram.png", dark_mode=True)
 
     if False:
-        annot_com_dir = "/Users/miltr339/work/c_maculatus/annotation_comparison/superscaffolded_annotation"
+        annot_com_dir = "/Users/milena/work/c_maculatus/annotation_comparison/superscaffolded_annotation"
         comparison_files = {
             "Cmac_Lome_diverse" : f"{annot_com_dir}/Cmac_Lome_diverse_filtered.faa",
             "Cmac_Nigeria_simple" : f"{annot_com_dir}/Cmac_Lu_simple_filtered.faa",
@@ -517,4 +533,4 @@ if __name__ == "__main__":
             "Cmac_SI_diverse" : f"{orthoDB_dir}/C_maculatus_filtered_proteinfasta_TE_filtered.fa",
         }
         #plot_all_species_protein_length_distribution(native_files, orthoDB_files, third_column_files= comparison_files, columns=2, max_length=1500, filename=f"{data}/Lome_RNA_annot_comparison/protein_lengths_histogram.png")
-        plot_histogram_protein_lengths(native_path = native_files["Cmac_Lome_diverse"], orthoDB_path = orthoDB_files["Cmac_Lome_diverse"], third_path=comparison_files["Cmac_Lome_diverse"], species_name="C. maculatus (Lome RNA annotation)\n", no_bins = 20, max_length = 1500, filename = f"{data}/Lome_RNA_annot_comparison/Lome_only_protein_lengths_histogram.png")
+        plot_histogram_protein_lengths(native_path = native_files["Cmac_Lome_diverse"], orthoDB_path = orthoDB_files["Cmac_Lome_diverse"], third_path=comparison_files["Cmac_Lome_diverse"], species_name="C. maculatus (Lome RNA annotation)\n", no_bins = 20, max_length = 1500, filename = f"{data}/Lome_RNA_annot_comparison/Lome_only_protein_lengths_histogram.png", dark_mode=True)

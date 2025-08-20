@@ -18,7 +18,11 @@ def split_at_second_occurrence(s, char = "_"): # split the gene string at the se
         return species
 
 # plot the overlap of a single file with the filepath
-def plot_gene_overlap_hist(outfile_overlap, filename, reference_annotation, x_label = 'orthDB genes overlapping with one native gene', color = "#4d7298"):
+def plot_gene_overlap_hist(outfile_overlap, filename, reference_annotation, x_label = 'orthDB genes overlapping with one native gene', color = "#4d7298", dark_mode=False):
+
+    if dark_mode:
+        plt.style.use('dark_background')
+
     with open(outfile_overlap, 'r') as file:
         reader = csv.reader(file, delimiter='\t')
         no_overlap = [int(row[2]) for row in reader]  # Extract the second column (index 1)
@@ -50,11 +54,16 @@ def plot_gene_overlap_hist(outfile_overlap, filename, reference_annotation, x_la
     plt.title(f'{header_name} gene overlap {reference_annotation} ({no_genes} in ref.)', fontsize = fs)
 
     # filename = header_name+"_gene_overlap.png"
+    if dark_mode:
+        filename = filename.replace(".png", "_darkmode.png")
     plt.savefig(filename, dpi = 300, transparent = True)
     print(f"plot saved in the current working directory as: {filename}")
 
 
-def plot_all_species_gene_overlap(filenames_list, outfile_overlap_path, plot_filename = "gene_overlap_14_species_transcripts.png", x_label = "how many orthoDB genes overlap with the position of a single native gene (no. all genes)", cols = 3, color = "#4d7298"):
+def plot_all_species_gene_overlap(filenames_list, outfile_overlap_path, plot_filename = "gene_overlap_14_species_transcripts.png", x_label = "how many orthoDB genes overlap with the position of a single native gene (no. all genes)", cols = 3, color = "#4d7298", dark_mode=False):
+
+    if dark_mode:
+        plt.style.use('dark_background')
     # plot all species at once in a grid
     cols = cols
     rows = int(len(filenames_list)/cols) # +1
@@ -109,6 +118,8 @@ def plot_all_species_gene_overlap(filenames_list, outfile_overlap_path, plot_fil
 
     # Show the plot
     # plt.show()
+    if dark_mode:
+        plot_filename = plot_filename.replace(".png", "_darkmode.png")
     plt.savefig(plot_filename, dpi = 300, transparent = True)
     print(f"plot saved in current working directory as: {plot_filename}")
 
