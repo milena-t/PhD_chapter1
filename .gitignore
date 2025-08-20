@@ -12,6 +12,16 @@
 *transfer_files.sh
 
 
+## LaTeX
+
+*aux
+*log
+*nav
+*out
+*snm
+*synctex.gz
+*toc
+
 ### everything below here is the standard python gitignore
 
 # Byte-compiled / optimized / DLL files
