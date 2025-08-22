@@ -1,5 +1,7 @@
 # Uniform Genome annotations for comparative genomics
 
+------ This has the MIT license, but if you use my code it would be really nice of you would cite this repository or the associated publication (TODO add). Thank you! ------
+
 This is all the code that was used in the first chapter of my thesis where I create uniform de-novo genome annotations to investigate gene family evolution in coleoptera. I implement and evaluate a uniform pipeline and remove as much technical bias as possible. The important aspects are:
 
 * start with repeatmodeller and repeatmasker, even if the assembly is already masked
