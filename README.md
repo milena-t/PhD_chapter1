@@ -65,3 +65,9 @@ Maybe add the blast thing idea i had if it goes fast
 ## CAFE5: identify significantly rapidly evolving orthogroups
 
 ## DAVID gene family clustering
+
+## Genome characteristics correlations
+
+### Genome-wide
+
+### close to transcripts of interest
