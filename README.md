@@ -39,14 +39,29 @@ I do the standard QC ckecks and post-processing that is necessary to do gene fam
 
 Filter protein sequences that don't have correct start/stop codons: `bash_scripts/filter_bad_proteins.sh`.
 
-## Filter for repeats
+### Filter for repeats
 
 I do a blast search of all the proteins extracted above against the repeat families fround by repeatmodeller to identify which protein sequences are likely repeats that were misannotated: `bash_scripts/blast_repeat_families_against_proteins.sh`
 
-## Annotation evaluation
+### Annotation evaluation
 
-At this point I evaluate the annotation for several aspects, which is mainly facilitated by reading it into a data structure defined in `src/parse_gff.py`. This uses the third column of the gff to 
+At this point I evaluate the annotation for several aspects, which is mainly facilitated by reading it into a data structure defined in `src/parse_gff.py` (filtering done only to the protein sequences is not taken into account! I am not back-transforming these edits onto the annotation). This uses the third column of the gff to infer the type of feature, which in braker is mainly `gene` as the top feature, then `transcript` which is a child feature to `gene`, and `exon` (and `intron`) which is a child feature to `transcript`. Other annotation pipelines use other tags, and sometimes the meaning isn't quite clear, e.g. I am unsure if `mRNA`, `rRNA`, `tRNA` and others are sub-categories of what braker calls `transcript`. I assigned all unfamiliar feature categories in the most simple way (so assuming that they are subcategories of `transcript`), but this might miss some nuances I am unfamiliar with, see the source code for how exactly I assign each feature type. This also only covers the ones I encountered in the native annotations of the species included here, there are certainly others that I did not include, but adding them would be pretty easy.
 
-And I compare it to native annotations for the same assembly from NCBI
-* `plotting/compare_gene_positions_histograms.py`
-* 
+I compare my uniform annotations to native annotations for the same assembly from NCBI
+* `src/plotting/compare_gene_positions_histograms.py` (both annotations are based on the assembly, I check how the positions of annotated features overlap between both)
+* `src/plotting/plot_basics.py` (protein length histograms and number of transcripts)
+* `src/calculate_single_exon_stats.py` (make a file with single-exon stats that can be plotted in `plot_basics.py`)
+  
+## Orthogroup identification with orthofinder
+
+I run orthofinder (`bash_scripts/orthofinder.sh`) with the processed proteinfasta files and no tree.
+
+### Filter orthogroups
+
+### Orthofinder evaluation
+
+Maybe add the blast thing idea i had if it goes fast
+
+## CAFE5: identify significantly rapidly evolving orthogroups
+
+## DAVID gene family clustering
