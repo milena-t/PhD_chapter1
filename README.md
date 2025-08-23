@@ -14,6 +14,8 @@ This is all the code that was used in the first chapter of my thesis where I cre
 
 Use repeatmodeller and repeatmasker to re-mask all assemblies. There isn't really parameters to adjust, so just run as-is, `bash_scripts/repeatmasking.sh`. Keep track of the repeat families faster that repeatmodeller gives because it's necessary for filtering later.
 
+* TODO separate all the repeat annotation visualization into a separate tool? (implement non-overlap-filtering option for the histogram!)
+
 ## Genome annotation with BRAKER
 
 Use BRAKER3 with the orthoDB arthropoda dataset to uniformly annotate all genomes. Since I don't use RNAseq, technically BRAKER2 is run but I use the BRAKER3 docker container ([here](https://hub.docker.com/r/teambraker/braker3)). Since the Uppmax cluster doesn't allow docker containers/images, I used a singularity container to make a singularity image of the docker container (see `src/make_singularity_image_braker3`). I use the orthoDB Arthropoda proteinfasta provided by the BRAKER authors for evidence (v12 [here](https://bioinf.uni-greifswald.de/bioinf/partitioned_odb12/)). 
@@ -68,13 +70,21 @@ All filtering is included in the script that parses the CAFE5 input file from or
 
 ### Orthofinder evaluation
 
+I plot the number of gene families and the number of genes (assigned to gene families) in each species, `src/plotting/plot_orthofinder_results.py`. It has command line arguments, use `-h` flag for details. All data structures etc. for this and further repeat analyses based on `N0.tsv` are here: `src/parse_orthogroups.py`.
 
-
-TODO Maybe add the blast thing idea i had if it goes fast
+* TODO Maybe add the blast thing idea i had if it goes fast
 
 ## CAFE5: identify significantly rapidly evolving orthogroups
 
-## DAVID gene family clustering
+* TODO add the uppmax install tutorial link
+  
+I run CAFE 20 times to ensure convergence (since it's non-deterministic), and I count an OG as significant if it is significant in all runs (which is the case for most of them). `src/analyze_multiple_CAFE_runs.py`.
+
+## Functional inference
+
+To do some sort of functional inference for the significantly rapidly evolving orthogroups, I annotate them via their flybase member. I check all *D. melanogaster* transcripts from the uniform annotation for matches in the native annotation by sequence identity (not position overlap!), and of those I also note down the ones that have a flybase ID. I then use the flybase API to extract the gene name, and a functional summary (if those exist), and put all of that into a large table. `src/make_orthogroup_flybaseID_table.py`. I also calculate the correlation coefficient of each OG's gene family sizes with genome characteristics (see later) that are also included in the table. The complete table is this: `orthoDB_sig_OGs_flybase_IDs_with_group_function_only_one_OG_member_lm_repeat_correlation_lm_GS_correlation.tsv`
+
+### Orthogroup clustering with DAVID
 
 ## Genome characteristics correlations
 
