@@ -56,13 +56,21 @@ I compare my uniform annotations to native annotations for the same assembly fro
   
 ## Orthogroup identification with orthofinder
 
-I run orthofinder (`bash_scripts/orthofinder.sh`) with the processed proteinfasta files and no tree.
+I run orthofinder (`bash_scripts/orthofinder.sh`) with the processed proteinfasta files and no tree. foe everything from here, I use the hierarchical orthogroups (OGs) as output, `N0.tsv`, and not the ones in `Orthogroups.txt` and associated files! The latter is a deprecated file that sometimes contains duplicate IDs.
 
 ### Filter orthogroups
 
+Even after the very conservative filtering above, some repeats misannotated as genes can still persist, and they usually show up as orthogroups with an unusually high number of gene family members in some species. In my case, it was only two OGs, which had over 100 members in *A. obtectus*. After investigating the sequences with the NCBI conserved domain search, I found that they are transposases (including the *D. melanogaster* orthologs with flybase IDs of both OGs!). Therefore I recommend to also exclude orthogroups that are very large compared to the rest of the dataset, in my case when any gene family has more than 100 members, but the best threshold will likely vary between taxa.
+
+For CAFE5 analysis, I also exclude all OGs that are not present at the root of the tree, which in my case just means any that have no member in *D. melanogaster*. This is because CAFE5 will filter any non-root OGs anyways (see CAFE5 documentation for why), and therefore I don't need them for any downstream analysis anyways.
+
+All filtering is included in the script that parses the CAFE5 input file from orthofinder output: `src/make_CAFE_input_from_orthofinder.py`.
+
 ### Orthofinder evaluation
 
-Maybe add the blast thing idea i had if it goes fast
+
+
+TODO Maybe add the blast thing idea i had if it goes fast
 
 ## CAFE5: identify significantly rapidly evolving orthogroups
 
@@ -73,3 +81,5 @@ Maybe add the blast thing idea i had if it goes fast
 ### Genome-wide
 
 ### close to transcripts of interest
+
+TODO do a polynomial regression to get confidence intervals and see if the enrichment of some categories is significant
