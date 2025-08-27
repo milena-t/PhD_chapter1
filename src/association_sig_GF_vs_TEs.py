@@ -72,7 +72,7 @@ def make_cumulative_TE_table(orthogroups_path:str, n:int, species:str, repeats_a
 
     optionally: provide a sig_orthogroups list to not include all transcripts that are in orthogroups_path
     
-    if count_transcripts=True it only returns a list that includes all the transcripts that were included in the computtion
+    if count_transcripts=True it only returns a list that includes all the transcripts that were included in the computation
     """
     orthoDB_orthogroups = OGs.parse_orthogroups_dict(orthogroups_path, sig_orthogroups, species=species)
     all_transcript_IDs = get_sig_transcripts(orthoDB_orthogroups)
