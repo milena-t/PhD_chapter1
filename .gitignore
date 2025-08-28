@@ -5,7 +5,7 @@
 *.faa
 *.log
 *jpeg
-*html
+*.html
 # *.txt
 # *.svg
 
