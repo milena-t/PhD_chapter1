@@ -14,7 +14,7 @@ This is all the code that was used in the first chapter of my thesis where I cre
 
 Use repeatmodeller and repeatmasker to re-mask all assemblies. There isn't really parameters to adjust, so just run as-is, `bash_scripts/repeatmasking.sh`. Keep track of the repeat families faster that repeatmodeller gives because it's necessary for filtering later.
 
-* TODO separate all the repeat annotation visualization into a separate tool? (implement non-overlap-filtering option for the histogram!)
+If you want to visualize the repeatmasking, you can use my tool [ReVis](https://github.com/milena-t/ReVis)!
 
 ## Genome annotation with BRAKER
 
