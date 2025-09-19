@@ -72,11 +72,9 @@ All filtering is included in the script that parses the CAFE5 input file from or
 
 I plot the number of gene families and the number of genes (assigned to gene families) in each species, `src/plotting/plot_orthofinder_results.py`. It has command line arguments, use `-h` flag for details. All data structures etc. for this and further repeat analyses based on `N0.tsv` are here: `src/parse_orthogroups.py`.
 
-* TODO Maybe add the blast thing idea i had if it goes fast
-
 ## CAFE5: identify significantly rapidly evolving orthogroups
 
-* TODO add the uppmax install tutorial link
+CAFE5 is not available on uppmax, and the install is a little weird, so the uppmax people have provided a nice [installation tutorial](https://hackmd.io/@pmitev/CAFE5_UPPMAX).
   
 I run CAFE 20 times to ensure convergence (since it's non-deterministic), and I count an OG as significant if it is significant in all runs (which is the case for most of them). `src/analyze_multiple_CAFE_runs.py`.
 
@@ -90,8 +88,20 @@ I use the gene classification function of [DAVID](https://davidbioinformatics.ni
 
 ## Genome characteristics correlations
 
+I wanted to investigate whether there are orthogroups where the gene family size is significantly correlated genome characteristics like the genome size and the genome-wide repeat content. 
+
 ### Genome-wide
 
+#### spearman correlation calculations
+
+I calculate the spearman correlation coefficient of every orthogroup, where the data points are pairs of gene family size and [genome size | repeat content] in all species. I chose the spearman correlation over linear regression or pearson correlation because the data includes many orthogroups where the residuals of a linear regression are not normal (I tried) and often the association between the gene family size and specific genome characteristics is not linear, which can be especially problematic when there are several gene families where the orthogroup in question has 0 members.
+
+#### phylogenetically independent contrasts (PIC)
+
+It is important to consider that all the species datapoints in an orthogroup are not independent because of the differing degrees of relatedness between them. This can be solved by calculating the correlation between PICs instead of the raw data (Felsenstein 1985). I couldn't find a python implementation of it, and the algorithm is not difficult to implement when the trees are handled with ete3, so I am using my own implementation `src/compute_PIC.py`. I tested it against the `R` implementation (`ape` package with associated test examples) and I get the same results. 
+
 ### close to transcripts of interest
+
+
 
 TODO do a polynomial regression to get confidence intervals and see if the enrichment of some categories is significant
