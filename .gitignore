@@ -5,9 +5,9 @@
 *.faa
 *.log
 *jpeg
-*.html
-*/*html
-*/*/*html
+**.html
+
+
 # *.txt
 # *.svg
 
