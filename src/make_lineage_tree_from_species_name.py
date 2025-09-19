@@ -1,6 +1,7 @@
 import requests
 import xml.etree.ElementTree as ET
 from ete3 import NCBITaxa, Tree
+import sys
 
 accession_nos = ["GCA_000355655.1","GCA_000390285.2","GCA_000500325.2","GCA_000648695.2","GCA_000699045.2","GCA_001412225.1","GCA_002938485.2","GCA_003013835.2","GCA_004193795.1","GCA_008802855.1","GCA_011009095.1","GCA_014462685.1","GCA_015345945.1","GCA_020466585.2","GCA_020466635.2","GCA_027724725.1","GCA_027725215.1","GCA_029955315.1","GCA_963669975.1"]
 
@@ -206,8 +207,20 @@ if True:
 
 if __name__ == "__main__":
     
-    data = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/"
-    species_names = ["Acanthoscelides obtectus", "Asbolus verrucosus", "Bruchidius siliquastri", "Callosobruchus chinensis", "Callosobruchus maculatus", "Coccinella septempunctata", "Dendroctonus ponderosae", "Ignelater luminosus", "Photinus pyralis", "Rhynchophorus ferrugineus", "Tenebrio molitor", "Tribolium castaneum", "Zophobas morio"] 
+    if len(sys.argv) == 1:
+        species_names = ["Acanthoscelides obtectus", "Asbolus verrucosus", "Bruchidius siliquastri", "Callosobruchus chinensis", "Callosobruchus maculatus", "Coccinella septempunctata", "Dendroctonus ponderosae", "Ignelater luminosus", "Photinus pyralis", "Rhynchophorus ferrugineus", "Tenebrio molitor", "Tribolium castaneum", "Zophobas morio"] 
+        data = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/"
+    elif len(sys.argv) == 2:
+        species_names = sys.argv[1].strip().replace("_", " ").split(",")
+        data = "./"
+    else:
+        print(f"useage: python3 make_lineage_tree_from_species_name.py Acanthoscelides_obtectus,Bruchidius_siliquastri,Callosobruchus_chinensis,Callosobruchus_maculatus")
+        print(f"you have given the following command line arguments:")
+        for arg in sys.argv[1:]:
+            print(f"\t* {arg}")
+        raise RuntimeError(f"2 arguments expected, you have given {len(sys.argv)}")
+
+
     print(len(species_names))
 
     root = TreeNode("root", 1, species_names)
@@ -234,7 +247,7 @@ if __name__ == "__main__":
 
     # save the tree as newick tree to a file, and include the taxid feature in each leaf
     ete_tree.write(outfile=f"{data}lineage_tree_with_taxid.newick",features=["taxid", "path_score"])
-
+    print(f"tree saved as: {data}lineage_tree_with_taxid.newick\nvisualize with phylo.io or similar")
 
 #################################################
 ############# plot lineage tree #################
