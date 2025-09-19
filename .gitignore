@@ -6,6 +6,8 @@
 *.log
 *jpeg
 *.html
+*/*html
+*/*/*html
 # *.txt
 # *.svg
 
