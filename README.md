@@ -96,12 +96,16 @@ I wanted to investigate whether there are orthogroups where the gene family size
 
 I calculate the spearman correlation coefficient of every orthogroup, where the data points are pairs of gene family size and [genome size | repeat content] in all species. I chose the spearman correlation over linear regression or pearson correlation because the data includes many orthogroups where the residuals of a linear regression are not normal (I tried) and often the association between the gene family size and specific genome characteristics is not linear, which can be especially problematic when there are several gene families where the orthogroup in question has 0 members.
 
+I also apply Benjamini-Hochberg correction for multiple testing.
+
 #### phylogenetically independent contrasts (PIC)
 
 It is important to consider that all the species datapoints in an orthogroup are not independent because of the differing degrees of relatedness between them. This can be solved by calculating the correlation between PICs instead of the raw data (Felsenstein 1985). I couldn't find a python implementation of it, and the algorithm is not difficult to implement when the trees are handled with ete3, so I am using my own implementation `src/compute_PIC.py`. I tested it against the `R` implementation (`ape` package with associated test examples) and I get the same results. 
 
 ### close to transcripts of interest
 
+Since the genome wide repeat content is not associated with the size of rapidly evolving gene families, I wanted to zoom in and investigate this association in more detail, because often TEs facilitate gene duplication by being in proximity to a gene, and not through their genome-wide presence. I am therefore looking at the 10kbp up and downstream regions of all genes that are part of significantly expanding gene families compared to a background of all (CAFE-included) genes to see if there are TE categories that are enriched in the surroundings of expanding genes compared to the background. 
 
+This is also implemented in [ReVis](https://github.com/milena-t/ReVis), see documentation there for more details.
 
-TODO do a polynomial regression to get confidence intervals and see if the enrichment of some categories is significant
+TODO try a polynomial regression to get confidence intervals and see if the enrichment of some categories is significant
