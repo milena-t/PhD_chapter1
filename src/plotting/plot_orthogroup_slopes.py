@@ -153,8 +153,8 @@ def calculate_OG_spearman(GF_sizes_dict:dict, exp_dict:dict, tree_path:str, spec
 
 def get_plot_values_spearman(GF_sizes_dict, species_list, exp_dict, sig_list, tree_path):
     """
-    calculate fitted linear regression for each significant orthogroup.
-    exp_dict is the dictionary with the x-axis variables, like genome size or repeat content
+    calculate spearman correlation for each significant orthogroup.
+    exp_dict is the dictionary with the x-axis variables (genome characteristics), like genome size or repeat content
     returns a dictionary with { orthogroupID : incline }
     !! includes FDR multiple testing correction !!
     """
