@@ -222,68 +222,101 @@ def get_OG_sizes_by_species(orthoDB_orthogroups:dict, orthoDB_sig_dict:dict, nat
     print(f"outfile written to: {outfile_path}")
     
     
-
+def get_species_in_OG_dict(OG_dict:dict) -> list:
+    """
+    get the list of all species included in the orthofinder dict
+    """
+    all_species = []
+    for OG_id, GF_dict in OG_dict.items():
+        species = list(GF_dict.keys())
+        all_species.extend(species)
+    all_species = list(set(all_species))
+    return(all_species)
 
 
 
 
 if __name__ == "__main__":
     
-    repeats_dir = "/Users/milena/work/repeatmasking/repeat_gffs/"
-    repeats_out = {
-        "A_obtectus" : f"{repeats_dir}A_obtectus_assembly_genomic.fna.out",
-        "A_verrucosus" : f"{repeats_dir}A_verrucosus_assembly_genomic.fna.out",
-        "B_siliquastri" : f"{repeats_dir}B_siliquastri_assembly_genomic.fna.out",
-        "C_analis" : f"{repeats_dir}C_analis_assembly_genomic.fna.out",
-        "C_chinensis" : f"{repeats_dir}C_chinensis_assembly_genomic.fna.out",
-        "C_maculatus" : f"{repeats_dir}C_maculatus_assembly_genomic.fna.out",
-        "C_septempunctata" : f"{repeats_dir}C_septempunctata_assembly_genomic.fna.out",
-        "D_melanogaster" : f"{repeats_dir}D_melanogaster_assembly_genomic.fna.out",
-        "D_ponderosae" : f"{repeats_dir}D_ponderosae_assembly_genomic.fna.out",
-        "I_luminosus" : f"{repeats_dir}I_luminosus_assembly_genomic.fna.out",
-        "P_pyralis" : f"{repeats_dir}P_pyralis_assembly_genomic.fna.out",
-        "R_ferrugineus" : f"{repeats_dir}R_ferrugineus_assembly_genomic.fna.out",
-        "T_castaneum" : f"{repeats_dir}T_castaneum_assembly_genomic.fna.out",
-        "T_molitor" : f"{repeats_dir}T_molitor_assembly_genomic.fna.out",
-        "Z_morio" : f"{repeats_dir}Z_morio_assembly_genomic.fna.out",
-    }
+    if False:
+        repeats_dir = "/Users/milena/work/repeatmasking/repeat_gffs/"
+        repeats_out = {
+            "A_obtectus" : f"{repeats_dir}A_obtectus_assembly_genomic.fna.out",
+            "A_verrucosus" : f"{repeats_dir}A_verrucosus_assembly_genomic.fna.out",
+            "B_siliquastri" : f"{repeats_dir}B_siliquastri_assembly_genomic.fna.out",
+            "C_analis" : f"{repeats_dir}C_analis_assembly_genomic.fna.out",
+            "C_chinensis" : f"{repeats_dir}C_chinensis_assembly_genomic.fna.out",
+            "C_maculatus" : f"{repeats_dir}C_maculatus_assembly_genomic.fna.out",
+            "C_septempunctata" : f"{repeats_dir}C_septempunctata_assembly_genomic.fna.out",
+            "D_melanogaster" : f"{repeats_dir}D_melanogaster_assembly_genomic.fna.out",
+            "D_ponderosae" : f"{repeats_dir}D_ponderosae_assembly_genomic.fna.out",
+            "I_luminosus" : f"{repeats_dir}I_luminosus_assembly_genomic.fna.out",
+            "P_pyralis" : f"{repeats_dir}P_pyralis_assembly_genomic.fna.out",
+            "R_ferrugineus" : f"{repeats_dir}R_ferrugineus_assembly_genomic.fna.out",
+            "T_castaneum" : f"{repeats_dir}T_castaneum_assembly_genomic.fna.out",
+            "T_molitor" : f"{repeats_dir}T_molitor_assembly_genomic.fna.out",
+            "Z_morio" : f"{repeats_dir}Z_morio_assembly_genomic.fna.out",
+        }
 
-    orthoDB_annot_dir = "/Users/milena/work/orthoDB_annotations/"
-    orthoDB_annotations = {
-        "A_obtectus" : f"{orthoDB_annot_dir}A_obtectus_orthoDB_filtered.gff",
-        "A_verrucosus" : f"{orthoDB_annot_dir}A_verrucosus_orthoDB_filtered.gff",
-        "B_siliquastri" : f"{orthoDB_annot_dir}B_siliquastri_orthoDB_filtered.gff",
-        "C_analis" : f"{orthoDB_annot_dir}C_analis_orthoDB_filtered.gff",
-        "C_chinensis" : f"{orthoDB_annot_dir}C_chinensis_orthoDB_filtered.gff",
-        "C_maculatus" : f"{orthoDB_annot_dir}C_maculatus_orthoDB_filtered.gff",
-        "C_septempunctata" : f"{orthoDB_annot_dir}C_septempunctata_s_orthoDB_filtered.gff",
-        "D_melanogaster" : f"{orthoDB_annot_dir}D_melanogaster_orthoDB_filtered.gff",
-        "D_ponderosae" : f"{orthoDB_annot_dir}D_ponderosae_orthoDB_filtered.gff",
-        "I_luminosus" : f"{orthoDB_annot_dir}I_luminosus_orthoDB_filtered.gff",
-        "P_pyralis" : f"{orthoDB_annot_dir}P_pyralis_orthoDB_filtered.gff",
-        "R_ferrugineus" : f"{orthoDB_annot_dir}R_ferrugineus_orthoDB_filtered.gff",
-        "T_castaneum_s" : f"{orthoDB_annot_dir}T_castaneum_s_orthoDB_filtered.gff",
-        "T_molitor" : f"{orthoDB_annot_dir}T_molitor_orthoDB_filtered.gff",
-        "Z_morio" : f"{orthoDB_annot_dir}Z_morio_orthoDB_filtered.gff",
-    }
+        orthoDB_annot_dir = "/Users/milena/work/orthoDB_annotations/"
+        orthoDB_annotations = {
+            "A_obtectus" : f"{orthoDB_annot_dir}A_obtectus_orthoDB_filtered.gff",
+            "A_verrucosus" : f"{orthoDB_annot_dir}A_verrucosus_orthoDB_filtered.gff",
+            "B_siliquastri" : f"{orthoDB_annot_dir}B_siliquastri_orthoDB_filtered.gff",
+            "C_analis" : f"{orthoDB_annot_dir}C_analis_orthoDB_filtered.gff",
+            "C_chinensis" : f"{orthoDB_annot_dir}C_chinensis_orthoDB_filtered.gff",
+            "C_maculatus" : f"{orthoDB_annot_dir}C_maculatus_orthoDB_filtered.gff",
+            "C_septempunctata" : f"{orthoDB_annot_dir}C_septempunctata_s_orthoDB_filtered.gff",
+            "D_melanogaster" : f"{orthoDB_annot_dir}D_melanogaster_orthoDB_filtered.gff",
+            "D_ponderosae" : f"{orthoDB_annot_dir}D_ponderosae_orthoDB_filtered.gff",
+            "I_luminosus" : f"{orthoDB_annot_dir}I_luminosus_orthoDB_filtered.gff",
+            "P_pyralis" : f"{orthoDB_annot_dir}P_pyralis_orthoDB_filtered.gff",
+            "R_ferrugineus" : f"{orthoDB_annot_dir}R_ferrugineus_orthoDB_filtered.gff",
+            "T_castaneum_s" : f"{orthoDB_annot_dir}T_castaneum_s_orthoDB_filtered.gff",
+            "T_molitor" : f"{orthoDB_annot_dir}T_molitor_orthoDB_filtered.gff",
+            "Z_morio" : f"{orthoDB_annot_dir}Z_morio_orthoDB_filtered.gff",
+        }
 
-    orthogroups_native_filepath = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_native/N0.tsv"
-    orthogroups_orthoDB_filepath = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_uniform/N0.tsv"
-    sig_native = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_native_Base_Family_results.txt"
-    sig_orthoDB = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_uniform_Base_Family_results.txt"
+        orthogroups_native_filepath = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_native/N0.tsv"
+        orthogroups_orthoDB_filepath = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_uniform/N0.tsv"
+        sig_native = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_native_Base_Family_results.txt"
+        sig_orthoDB = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_uniform_Base_Family_results.txt"
 
-    print("orthoDB : ")
-    sig_orthoDB_list, all_orthogroups_list = get_sig_orthogroups(sig_orthoDB)
-    orthoDB_orthogroups = parse_orthogroups_dict(orthogroups_orthoDB_filepath)
-    print(f"{len(sig_orthoDB_list)} significant orthogroups in CAFE output")
-    orthoDB_orthogroups_sig_only = parse_orthogroups_dict(orthogroups_orthoDB_filepath, sig_orthoDB_list)
-    # print(f"{len(orthoDB_orthogroups)} orthogroups in total, {len(orthoDB_orthogroups_sig_only)} left after filtering for only CAFE-significant ones")
+        print("orthoDB : ")
+        sig_orthoDB_list, all_orthogroups_list = get_sig_orthogroups(sig_orthoDB)
+        orthoDB_orthogroups = parse_orthogroups_dict(orthogroups_orthoDB_filepath)
+        print(f"{len(sig_orthoDB_list)} significant orthogroups in CAFE output")
+        orthoDB_orthogroups_sig_only = parse_orthogroups_dict(orthogroups_orthoDB_filepath, sig_orthoDB_list)
+        # print(f"{len(orthoDB_orthogroups)} orthogroups in total, {len(orthoDB_orthogroups_sig_only)} left after filtering for only CAFE-significant ones")
 
-    print("\nnative :")
-    sig_native_list, all_orthogroups_list = get_sig_orthogroups(sig_native)
-    native_orthogroups = parse_orthogroups_dict(orthogroups_native_filepath)
-    native_orthogroups_sig_only = parse_orthogroups_dict(orthogroups_native_filepath, sig_native_list)
+        print("\nnative :")
+        sig_native_list, all_orthogroups_list = get_sig_orthogroups(sig_native)
+        native_orthogroups = parse_orthogroups_dict(orthogroups_native_filepath)
+        native_orthogroups_sig_only = parse_orthogroups_dict(orthogroups_native_filepath, sig_native_list)
 
-    print("\ncompute_sizes")
-    print(type(orthoDB_orthogroups))
-    get_OG_sizes_by_species(orthoDB_orthogroups, orthoDB_orthogroups_sig_only, native_orthogroups, native_orthogroups_sig_only)
+        print("\ncompute_sizes")
+        print(type(orthoDB_orthogroups))
+        get_OG_sizes_by_species(orthoDB_orthogroups, orthoDB_orthogroups_sig_only, native_orthogroups, native_orthogroups_sig_only)
+
+    if True:
+        #orthogroups in bruchini and Tcas and Dmel to analyze species and lineage specific genes
+        OG_path = "/Users/miltr339/work/orphan_genes/N0.tsv"
+
+        OG_dict = parse_orthogroups_dict(OG_path)
+        OG_sizes = get_GF_sizes(OG_dict)
+        species_list = get_species_in_OG_dict(OG_sizes)
+        print(OG_sizes["N0.HOG0000000"])
+        
+        num_orphan_transcripts = { species : 0 for species in species_list}
+        num_orphan_orthogroups = { species : 0 for species in species_list}
+        for species in species_list:
+            for OG_id, GF_dict in OG_sizes.items():
+                species_in_OG = list(GF_dict.keys())
+                if len(species_in_OG) == 1:
+                    GF_species = species_in_OG[0]
+                    if GF_species == species:
+                        num_orphan_orthogroups[species] += 1
+                        num_orphan_transcripts[species] += GF_dict[GF_species]
+        print(num_orphan_transcripts)
+        print(num_orphan_orthogroups)
+
