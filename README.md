@@ -107,5 +107,3 @@ It is important to consider that all the species datapoints in an orthogroup are
 Since the genome wide repeat content is not associated with the size of rapidly evolving gene families, I wanted to zoom in and investigate this association in more detail, because often TEs facilitate gene duplication by being in proximity to a gene, and not through their genome-wide presence. I am therefore looking at the 10kbp up and downstream regions of all genes that are part of significantly expanding gene families compared to a background of all (CAFE-included) genes to see if there are TE categories that are enriched in the surroundings of expanding genes compared to the background. 
 
 This is also implemented in [ReVis](https://github.com/milena-t/ReVis), see documentation there for more details.
-
-TODO try a polynomial regression to get confidence intervals and see if the enrichment of some categories is significant
