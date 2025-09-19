@@ -86,7 +86,7 @@ To do some sort of functional inference for the significantly rapidly evolving o
 
 ### Orthogroup clustering with DAVID
 
-I use the gene classification function of (DAVID)[https://davidbioinformatics.nih.gov/gene2gene.jsp], to cluster all the orthogroups by their flybase gene IDs. This results in more than 30 clusters, with some flybase IDs being present in more than one cluster and some being unplaced in any cluster. I then proceeded to look through all the clusters and functionally annotate them by identifying functional themes based on the flybase annotations.
+I use the gene classification function of [DAVID](https://davidbioinformatics.nih.gov/gene2gene.jsp), to cluster all the orthogroups by their flybase gene IDs. This results in more than 30 clusters, with some flybase IDs being present in more than one cluster and some being unplaced in any cluster. I then proceeded to look through all the clusters and functionally annotate them by identifying functional themes based on the flybase annotations.
 
 ## Genome characteristics correlations
 
