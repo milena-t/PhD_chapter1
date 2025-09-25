@@ -8,9 +8,9 @@
 
 module load bioinfo-tools augustus/3.3.3-CGP Biopython/1.73-foss-2019a
 
-ANNOT_DIRS=/proj/naiss2023-6-65/Milena/annotation_pipeline/only_orthodb_annotation
+ANNOT_DIRS=/proj/naiss2023-6-65/Milena/annotation_pipeline/Kaufmann2023_updated_RNAseq_annotation/Cmac_not_superscaffolded
 
-for ANNOT_DIR in $(echo $ANNOT_DIRS/*) # add species names to only do select species, e.g D_pond
+for ANNOT_DIR in $(echo $ANNOT_DIRS/) # add species names to only do select species, e.g D_pond
 do 
     cd $ANNOT_DIR
     ANNOT_PROTEINS=isoform_filtered_proteins.faa
@@ -19,7 +19,7 @@ do
     SPECIES="${ANNOT_DIR#$ANNOT_DIRS/}"
     echo $SPECIES
     
-    python3 src/filter_bad_proteins.py $ANNOT_PROTEINS $FILTERED_PROTEINS
+    python3 /proj/naiss2023-6-65/Milena/annotation_pipeline/filter_bad_proteins.py $ANNOT_PROTEINS $FILTERED_PROTEINS
 
     # add the species name to the protein fasta headers to be able to tell the difference in orthofinder later
     sed -i "s/>/>${SPECIES}_/g" $FILTERED_PROTEINS
