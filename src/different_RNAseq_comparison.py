@@ -9,12 +9,14 @@ import numpy as np
 
 
 def filepaths_SE_stats():
+    #username = "miltr339"
+    username = "milena"
     SE_stats_dict = {
-        "Lome_RNA" : "/Users/miltr339/work/PhD_code/PhD_chapter1/data/Lome_RNA_annot_comparison/Lome_single_exon_stats.txt",
-        "Nigeria_RNA" : "/Users/miltr339/work/PhD_code/PhD_chapter1/data/Lome_RNA_annot_comparison/Lu_single_exon_stats.txt",
-        "SI_RNA" : "/Users/miltr339/work/PhD_code/PhD_chapter1/data/Lome_RNA_annot_comparison/SI_single_exon_stats.txt",
-        "Kaufmann_native" : "/Users/miltr339/work/PhD_code/PhD_chapter1/data/Lome_RNA_annot_comparison/Kaufmann_nonsuperscaffoleded.txt",
-        "Lu_native" : "/Users/miltr339/work/PhD_code/PhD_chapter1/data/Lome_RNA_annot_comparison/Lu_native.txt",
+        "Lome_RNA" : f"/Users/{username}/work/PhD_code/PhD_chapter1/data/Lome_RNA_annot_comparison/Lome_single_exon_stats.txt",
+        "Nigeria_RNA" : f"/Users/{username}/work/PhD_code/PhD_chapter1/data/Lome_RNA_annot_comparison/Lu_single_exon_stats.txt",
+        "SI_RNA" : f"/Users/{username}/work/PhD_code/PhD_chapter1/data/Lome_RNA_annot_comparison/SI_single_exon_stats.txt",
+        "Kaufmann_native" : f"/Users/{username}/work/PhD_code/PhD_chapter1/data/Lome_RNA_annot_comparison/Kaufmann_nonsuperscaffoleded.txt",
+        "Lu_native" : f"/Users/{username}/work/PhD_code/PhD_chapter1/data/Lome_RNA_annot_comparison/Lu_native.txt",
     }
     return SE_stats_dict
 
@@ -187,6 +189,7 @@ if __name__ == "__main__":
     
     SE_stats_paths_dict = filepaths_SE_stats()
     data = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/Lome_RNA_annot_comparison/"
+    data = "/Users/milena/work/PhD_code/PhD_chapter1/data/Lome_RNA_annot_comparison/"
 
     numbers = {}
     for annotation, path in SE_stats_paths_dict.items():
