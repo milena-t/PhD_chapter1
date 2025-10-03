@@ -1,4 +1,3 @@
-[milenatr@rackham3 annotation_pipeline]$ cat braker3_singularity_with_RNAseq_in_SNIC_TMP.sh 
 #!/bin/bash -l
 
 # example run (without RNAseq)

@@ -128,12 +128,11 @@ def plot_tree_manually(species_tree, ax_tree = None, add_leaf_label=False):
 
 
 def plot_gene_counts(native_annot_dir, species_tree, orthoDB_annot_dir="", orthoDB_filtered_annot_dir="", filename = "only_genome_sizes_14_species.png", dark_mode=False):
-
-    if dark_mode:
-        plt.style.use('dark_background')
     """
     plot gene counts from annotations (or proteinfasta, but preferably annotation), with a species tree on the x-axis
     """
+    if dark_mode:
+        plt.style.use('dark_background')
     
     species_names = gff.make_species_order_from_tree(species_tree)
     
@@ -366,6 +365,60 @@ def plot_all_species_protein_length_distribution(native_files:dict, orthoDB_file
     print(f"plot saved in current working directory as: {filename}")
 
 
+def plot_TE_filtering(filter_stats, species_tree, filename = "TE_filtering_stats.png", dark_mode=False):
+    """
+    plot protein counts before and after filtering the TE-hits
+    """
+    if dark_mode:
+        plt.style.use('dark_background')
+    
+    species_names = gff.make_species_order_from_tree(species_tree)
+    
+    fs = 20 # set font size
+
+    fig, ax_data = plt.subplots(1, 1, figsize=(10, 12))
+    
+    # plot tree manually with leaves pointing upwards
+    species_names_unsorted = plot_tree_manually(species_tree)
+    # get species order from plotted tree
+    species_coords_sorted = sorted(list(species_names_unsorted.keys()))
+    species_names = [species_names_unsorted[species_coord] for species_coord in species_coords_sorted]
+
+    ylab="Number of proteins"
+    # get a list of lists with [native, orthoDB] number of gene families per species
+
+    legend_labels = []
+    ncol_legend = 0
+    lw = 3
+
+    before_list = [filter_stats[species][0] for species in species_names]
+    ymax = max(before_list)*1.01
+    ax_data.plot(species_names, before_list, label = "before filtering", color = "#6B56C8", linewidth = lw) # light blue
+    
+    after_list = [filter_stats[species][1] for species in species_names]
+    ymin = min(after_list)*0.95
+    ax_data.plot(species_names, after_list, label = "after filtering", color = "#1C143E", linewidth = lw) # dark blue
+
+    ax_data.set_ylabel(ylab, fontsize = fs)
+    ax_data.set_xticklabels([species.replace("_", ". ") for species in species_names], rotation=90, fontsize=fs)
+    
+    legend = ax_data.legend(fontsize = fs*0.8, loc="upper left")
+    plt.title("number of proteins before and after \nfiltering out ones with \nhigh seq. ident to repeat families", fontsize = fs*1.1)
+
+    # set grid only for X axis ticks 
+    ax_data.grid(True)
+    ax_data.yaxis.grid(False)
+    
+    ax_data.set_ylim(ymin,ymax)
+    ax_data.tick_params(axis='y', labelsize=fs)
+
+    plt.tight_layout()
+
+    if dark_mode:
+        filename = filename.replace(".png", "_darkmode.png")
+    plt.savefig(filename, dpi = 300, transparent = True)# , bbox_inches='tight')
+    print("Figure saved in the current working directory directory as: "+filename)
+
 
 if __name__ == "__main__":
 
@@ -376,6 +429,7 @@ if __name__ == "__main__":
     # proteinfasta files dir
     native_dir = "/Users/milena/work/native_proteinseqs"
     orthoDB_dir = "/Users/milena/work/orthoDB_proteinseqs_TE_filtered"
+    tree = "/Users/miltr339/Box Sync/code/annotation_pipeline/annotation_scripts_ordered/14_species_orthofinder_tree.nw"
     
     ## plot old Kaufmann annotation comparison
     if False:
@@ -467,7 +521,7 @@ if __name__ == "__main__":
     
     ### plot protein length histograms
     ## filepaths
-    if True:
+    if False:
     
         data = "/Users/milena/work/PhD_code/PhD_chapter1/data"
         native_files = {
@@ -534,3 +588,11 @@ if __name__ == "__main__":
         }
         #plot_all_species_protein_length_distribution(native_files, orthoDB_files, third_column_files= comparison_files, columns=2, max_length=1500, filename=f"{data}/Lome_RNA_annot_comparison/protein_lengths_histogram.png")
         plot_histogram_protein_lengths(native_path = native_files["Cmac_Lome_diverse"], orthoDB_path = orthoDB_files["Cmac_Lome_diverse"], third_path=comparison_files["Cmac_Lome_diverse"], species_name="C. maculatus (Lome RNA annotation)\n", no_bins = 20, max_length = 1500, filename = f"{data}/Lome_RNA_annot_comparison/Lome_only_protein_lengths_histogram.png", dark_mode=True)
+
+
+    if True:
+        # data from filtering pasted here so that I don't loose it
+        filter_stats = {'A_obtectus': [29689, 28317, 1372], 'A_verrucosus': [23817, 23753, 64], 'B_siliquastri': [14999, 14804, 195], 'C_analis': [25927, 25273, 654], 'C_chinensis': [25373, 24736, 637], 'C_maculatus': [35319, 34188, 1131], 'C_septempunctata': [19848, 19843, 5], 'D_melanogaster': [14809, 14805, 4], 'D_ponderosae': [16657, 16656, 1], 'I_luminosus': [28964, 28960, 4], 'P_pyralis': [27199, 27181, 18], 'R_ferrugineus': [20416, 20413, 3], 'T_castaneum': [17591, 17318, 273], 'T_molitor': [19332, 19217, 115], 'Z_morio': [29865, 29559, 306]}
+        # columns=["before_filtering", "after_filtering", "num_filtered"]
+        outdir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data"
+        plot_TE_filtering(filter_stats=filter_stats, species_tree=tree, filename=f"{outdir}/TE_filtering_stats.png")

@@ -23,7 +23,7 @@ W_DIR=$(pwd)
 
 # ANNOT_DIRS=/proj/naiss2023-6-65/Milena/annotation_pipeline/Cmac_Kaufmann_2023_comparison/RNA*
 # ANNOT_DIRS=/proj/naiss2023-6-65/Milena/gene_family_analysis/native_annotations_gff/*gff
-ANNOT_DIRS=/proj/naiss2023-6-65/Milena/annotation_pipeline/Cmac_Lome_superscaffolded_comparison/Cmac_*/Cmac_*/braker/braker.gtf
+ANNOT_DIRS=/proj/naiss2023-6-65/Milena/annotation_pipeline/Kaufmann2023_updated_RNAseq_annotation/Cmac_not_superscaffolded/Cmac_Kaufmann2023/braker/braker.gtf
 
 for ANNOT_GTF in $(echo $ANNOT_DIRS)
 do 
