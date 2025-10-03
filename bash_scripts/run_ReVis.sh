@@ -2,6 +2,8 @@
 
 ## Run ReVis in transcript surroundings mode (https://github.com/milena-t/ReVis)
 
+## TODO check the CAFE5 input file to see what difference it makes!! 
+
 # python3 /Users/miltr339/work/PhD_code/ReVis/src/ReVis/ReVis_transcript_surroundings.py \
 #     --compute_tables \
 #     --out_dir /Users/miltr339/work/PhD_code/PhD_chapter1/data/repeats_tables \
