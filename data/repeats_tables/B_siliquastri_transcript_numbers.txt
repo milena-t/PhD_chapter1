@@ -1,0 +1,2 @@
+number of sig. transcripts: 311
+number of all transcripts: 13744
