@@ -214,7 +214,7 @@ def read_repeat_categories(path:str):
 
 
 
-def plot_slopes(inclines,p_values,p_values_bh,return_dict,OG_sizes, sig_list ,x_label, filename = "sig_OGs_inclines.png", color_category = "orthoDB", percentile = 99, log10_GF=False, log2_GF=False, log_possible=True, svg = False, dark_mode=False):
+def plot_slopes(inclines,p_values,p_values_bh,return_dict,OG_sizes, sig_list ,x_label, filename = "sig_OGs_inclines.png", color_category = "orthoDB", percentile = 99, log10_GF=False, log2_GF=False, log_possible=True, svg = False, dark_mode=False, norm_coeffs = []):
 
     ### PLOT 
 
@@ -289,9 +289,18 @@ def plot_slopes(inclines,p_values,p_values_bh,return_dict,OG_sizes, sig_list ,x_
     ax.scatter(OG_sizes_unsig_list, inclines_unsig_list, color = colors[f"{color_category}_unsignificant"], s=30, marker = "x", label = "unsignificant")# with marker="o" use facecolors = "none" to make an un-filled circle
     ax.scatter(OG_sizes_sig_list, inclines_sig_list, color = colors[color_category], s=75, label = "significant")
     ax.scatter(OG_sizes_bh_cor_sig_list, inclines_bh_cor_sig_list, color = colors[f"{color_category}_multiple_testing_sig"], s=75, marker="v", label = "B.H. corrected")
-
     ax.set_ylim(-1.1,1.1)
     ax.axhline(y=0.0, linewidth=2, color='#C5C5C5', linestyle="--")
+
+    if len(norm_coeffs) == 2:
+        x = np.arange(-1.1,1.1, 0.001)
+        mean_cor = norm_coeffs[0]
+        std_cor = norm_coeffs[1]
+        try:
+            max_OG_size = max(max(OG_sizes_unsig_list), max(OG_sizes_sig_list), max(OG_sizes_bh_cor_sig_list)) 
+        except:
+            max_OG_size = max(max(OG_sizes_unsig_list), max(OG_sizes_sig_list)) 
+        ax.plot(scipy.stats.norm.pdf(x, mean_cor, std_cor)*max_OG_size, x, linewidth=2, color='#C5C5C5')#, linestyle="--")
 
     ylab = f"correlation coefficients of individual orthogroups \n(only {len(sig_list)} significant orthogroups shown)"
     ax.set_ylabel(ylab, fontsize = fs)
@@ -312,9 +321,14 @@ def plot_slopes(inclines,p_values,p_values_bh,return_dict,OG_sizes, sig_list ,x_
     filename = filename.split(".png")[0]
     filename = f"{filename}_vs_OG_size"
     if sig_list==[]:
-        filename = f"{filename}_{percentile}th_percentile_colors.png"
+        filename = f"{filename}_{percentile}th_percentile_colors"
     else:
-        filename = f"{filename}_sig_OGs_colors.png"
+        filename = f"{filename}_sig_OGs_colors"
+    if len(norm_coeffs) == 2:
+        filename = f"{filename}_with_normal_distribution.png"
+    else:
+        filename = f"{filename}.png"
+    
 
     if svg:
         filename = filename.replace(".png", ".svg")
@@ -327,6 +341,13 @@ def plot_slopes(inclines,p_values,p_values_bh,return_dict,OG_sizes, sig_list ,x_
     
     return return_dict
 
+
+def calculate_list_CI(values_list:list, cl = 0.95):
+    """
+    calculate 95% confidence interval of a list of float values
+    """
+    ci = scipy.stats.t.interval(cl, df=len(values_list)-1, loc=np.mean(values_list), scale=np.std(values_list, ddof=1) / np.sqrt(len(values_list)))
+    return(ci)
 
 
 
@@ -399,18 +420,18 @@ if __name__ == "__main__":
         print(f"\n\torthoDB")
         # orthoDB_sig_list, orthoDB_cafe_list = OGs.get_sig_orthogroups(sig_orthoDB)
         orthoDB_sig_list, orthoDB_cafe_list = CAFE.get_overlap_OG_sig_list(CAFE_runs_dir)
-        
+
         ## write lists to file for other stuff
-        if True:
+        if False:
             overlap_sig_OGS_path = "/Users/milena/work/PhD_code/PhD_chapter1/data/CAFE_convergence/overlap_sig_OGS.txt"
-            orthoDB_sig_list = ",".join(orthoDB_sig_list)
+            orthoDB_sig_string = ",".join(orthoDB_sig_list)
             with open(overlap_sig_OGS_path, "w") as overlap_sig_OGS:
-                overlap_sig_OGS.write(orthoDB_sig_list)
+                overlap_sig_OGS.write(orthoDB_sig_string)
             print(f"file written: {overlap_sig_OGS_path}")
             overlap_all_OGS_path = "/Users/milena/work/PhD_code/PhD_chapter1/data/CAFE_convergence/overlap_all_OGS.txt"
-            orthoDB_cafe_list = ",".join(orthoDB_cafe_list)
+            orthoDB_cafe_string = ",".join(orthoDB_cafe_list)
             with open(overlap_all_OGS_path, "w") as overlap_all_OGS:
-                overlap_all_OGS.write(orthoDB_sig_list)
+                overlap_all_OGS.write(orthoDB_sig_string)
             print(f"file written: {overlap_all_OGS_path}")
 
         print(f"{len(orthoDB_sig_list)} significant orthogroups out of {len(orthoDB_cafe_list)} in total")
@@ -420,35 +441,37 @@ if __name__ == "__main__":
     if True:
 
         svg_bool = False
-        darkmode_bool = True
+        darkmode_bool = False
 
         species_names.remove("D_melanogaster")
 
         if True:
             print(f"\n\t\t * Genome size")
-            ## linear regression
-            # inclines,intercepts,p_values,p_values_BH,std_errs,return_dict,OG_sizes,included_OGs,log_possible = get_plot_values_linreg(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=genome_sizes_dict, sig_list=orthoDB_sig_list, tree_path=tree)
-            # print(f"{len(included_OGs)} (of {len(orthoDB_sig_list)}) orthogroups included because the LR residuals are not normally distributed")
             ## spearman correlation
             coefficients,p_values,p_values_BH,OG_sizes,return_dict = get_plot_values_spearman(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=genome_sizes_dict, sig_list=orthoDB_sig_list, tree_path=tree)
-            mean_coeff = mean(list(coefficients.values()))
-            print(f"\t\tmean correlaion coefficient: {mean_coeff:.2f}")
-            GS_inclines = plot_slopes(coefficients,p_values,p_values_BH,return_dict,OG_sizes, x_label = "Genome size in Mb",  filename = f"{data_dir}correlations/sig_OGs_vs_GS_coefficients_bh_corrected_PIC.png", sig_list=orthoDB_sig_list ,log_possible=False, svg=svg_bool, dark_mode=darkmode_bool)
+            list_coefficients = list(coefficients.values())
+            mean_coeff = np.average(list_coefficients)
+            std_coeff = np.std(list_coefficients)
+            norm_coeffs = [mean_coeff,std_coeff]
+            lower_CI, upper_CI = calculate_list_CI(list_coefficients)
+            print(f"\t\tmean correlaion coefficient: {mean_coeff:.2f}, with standard deviation {std_coeff:.2f}\n\t\t95% confidence interval from {lower_CI:.2f} to {upper_CI:.2f}")
+            GS_inclines = plot_slopes(coefficients,p_values,p_values_BH,return_dict,OG_sizes, x_label = "Genome size in Mb",  filename = f"{data_dir}correlations/test_sig_OGs_vs_GS_coefficients_bh_corrected_PIC.png", sig_list=orthoDB_sig_list ,log_possible=False, svg=svg_bool, dark_mode=darkmode_bool, norm_coeffs = norm_coeffs)
             # gff.write_dict_to_file(GS_inclines, f"{data_dir}sig_OGs_vs_GS_inclines_pvalues.tsv", header=f"OG\tslope\tp-value\tsig_after_multiple_testing", separator="\t")
 
             print(f"\n\t\t * repeat content")
-            ## linear regression
-            # inclines,intercepts,p_values,p_values_BH,std_errs,return_dict,OG_sizes,included_OGs,log_possible = get_plot_values_linreg(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, sig_list=orthoDB_sig_list, tree_path=tree)
-            # print(f"{len(included_OGs)} (of {len(orthoDB_sig_list)}) orthogroups included because the LR residuals are not normally distributed")
             ## spearman correlation
             coefficients,p_values,p_values_BH,OG_sizes,return_dict = get_plot_values_spearman(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, sig_list=orthoDB_sig_list, tree_path=tree)
-            mean_coeff = mean(list(coefficients.values()))
-            print(f"\t\tmean correlaion coefficient: {mean_coeff:.2f}")
-            TE_inclines = plot_slopes(coefficients,p_values,p_values_BH,return_dict,OG_sizes, x_label = "Repeat content in percent",  filename = f"{data_dir}correlations/sig_OGs_vs_reps_coefficients_bh_corrected_PIC.png", sig_list=orthoDB_sig_list ,log_possible=False, svg=svg_bool, dark_mode=darkmode_bool)
+            list_coefficients = list(coefficients.values())
+            mean_coeff = np.average(list_coefficients)
+            std_coeff = np.std(list_coefficients)
+            norm_coeffs = [mean_coeff,std_coeff]
+            lower_CI, upper_CI = calculate_list_CI(list_coefficients)
+            print(f"\t\tmean correlaion coefficient: {mean_coeff:.2f}, with standard deviation {std_coeff:.2f}\n\t\t95% confidence interval {lower_CI:.2f} to {upper_CI:.2f}")
+            TE_inclines = plot_slopes(coefficients,p_values,p_values_BH,return_dict,OG_sizes, x_label = "Repeat content in percent",  filename = f"{data_dir}correlations/test_sig_OGs_vs_reps_coefficients_bh_corrected_PIC.png", sig_list=orthoDB_sig_list ,log_possible=False, svg=svg_bool, dark_mode=darkmode_bool, norm_coeffs = norm_coeffs)
             # gff.write_dict_to_file(TE_inclines, f"{data_dir}sig_OGs_vs_reps_inclines_pvalues.tsv", header=f"OG\tslope\tp-value\tsig_after_multiple_testing", separator="\t")
 
         ## do the individual repeat categories
-        if True:
+        if False:
             repeats_categories_dict = read_repeat_categories(repeat_categories_in_species)
 
             for repeat_category in repeats_categories_dict.keys():
