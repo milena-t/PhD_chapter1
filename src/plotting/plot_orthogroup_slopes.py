@@ -155,7 +155,7 @@ def get_plot_values_spearman(GF_sizes_dict, species_list, exp_dict, sig_list, tr
     """
     calculate spearman correlation for each significant orthogroup.
     exp_dict is the dictionary with the x-axis variables (genome characteristics), like genome size or repeat content
-    returns a dictionary with { orthogroupID : incline }
+    returns a dictionary with { orthogroupID : correlation_coefficient }
     !! includes FDR multiple testing correction !!
     """
 
@@ -184,7 +184,7 @@ def get_plot_values_spearman(GF_sizes_dict, species_list, exp_dict, sig_list, tr
     for i, orthogroup in enumerate(sig_list):
             p_values_BH[orthogroup] = p_values_bh[i]
 
-    return coefficients,p_values,p_values_BH,coefficients,OG_sizes,return_dict
+    return coefficients,p_values,p_values_BH,OG_sizes,return_dict
 
 
 
@@ -416,7 +416,7 @@ if __name__ == "__main__":
             # inclines,intercepts,p_values,p_values_BH,std_errs,return_dict,OG_sizes,included_OGs,log_possible = get_plot_values_linreg(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=genome_sizes_dict, sig_list=orthoDB_sig_list, tree_path=tree)
             # print(f"{len(included_OGs)} (of {len(orthoDB_sig_list)}) orthogroups included because the LR residuals are not normally distributed")
             ## spearman correlation
-            coefficients,p_values,p_values_BH,coefficients,OG_sizes,return_dict = get_plot_values_spearman(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=genome_sizes_dict, sig_list=orthoDB_sig_list, tree_path=tree)
+            coefficients,p_values,p_values_BH,OG_sizes,return_dict = get_plot_values_spearman(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=genome_sizes_dict, sig_list=orthoDB_sig_list, tree_path=tree)
             mean_coeff = mean(list(coefficients.values()))
             print(f"\t\tmean correlaion coefficient: {mean_coeff:.2f}")
             GS_inclines = plot_slopes(coefficients,p_values,p_values_BH,return_dict,OG_sizes, x_label = "Genome size in Mb",  filename = f"{data_dir}correlations/sig_OGs_vs_GS_coefficients_bh_corrected_PIC.png", sig_list=orthoDB_sig_list ,log_possible=False, svg=svg_bool, dark_mode=darkmode_bool)
@@ -427,7 +427,7 @@ if __name__ == "__main__":
             # inclines,intercepts,p_values,p_values_BH,std_errs,return_dict,OG_sizes,included_OGs,log_possible = get_plot_values_linreg(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, sig_list=orthoDB_sig_list, tree_path=tree)
             # print(f"{len(included_OGs)} (of {len(orthoDB_sig_list)}) orthogroups included because the LR residuals are not normally distributed")
             ## spearman correlation
-            coefficients,p_values,p_values_BH,coefficients,OG_sizes,return_dict = get_plot_values_spearman(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, sig_list=orthoDB_sig_list, tree_path=tree)
+            coefficients,p_values,p_values_BH,OG_sizes,return_dict = get_plot_values_spearman(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, sig_list=orthoDB_sig_list, tree_path=tree)
             mean_coeff = mean(list(coefficients.values()))
             print(f"\t\tmean correlaion coefficient: {mean_coeff:.2f}")
             TE_inclines = plot_slopes(coefficients,p_values,p_values_BH,return_dict,OG_sizes, x_label = "Repeat content in percent",  filename = f"{data_dir}correlations/sig_OGs_vs_reps_coefficients_bh_corrected_PIC.png", sig_list=orthoDB_sig_list ,log_possible=False, svg=svg_bool, dark_mode=darkmode_bool)
@@ -441,7 +441,7 @@ if __name__ == "__main__":
                 repeat_percentages = repeats_categories_dict[repeat_category]
                 print(f"\n\t\t * repeat category: {repeat_category}")
                 
-                coefficients,p_values,p_values_BH,coefficients,OG_sizes,return_dict = get_plot_values_spearman(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, sig_list=orthoDB_sig_list, tree_path=tree)
+                coefficients,p_values,p_values_BH,OG_sizes,return_dict = get_plot_values_spearman(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, sig_list=orthoDB_sig_list, tree_path=tree)
                 mean_coeff = mean(list(coefficients.values()))
                 print(f"\t\tmean correlaion coefficient: {mean_coeff:.2f}")
                 
