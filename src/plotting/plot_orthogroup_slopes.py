@@ -399,6 +399,20 @@ if __name__ == "__main__":
         print(f"\n\torthoDB")
         # orthoDB_sig_list, orthoDB_cafe_list = OGs.get_sig_orthogroups(sig_orthoDB)
         orthoDB_sig_list, orthoDB_cafe_list = CAFE.get_overlap_OG_sig_list(CAFE_runs_dir)
+        
+        ## write lists to file for other stuff
+        if True:
+            overlap_sig_OGS_path = "/Users/milena/work/PhD_code/PhD_chapter1/data/CAFE_convergence/overlap_sig_OGS.txt"
+            orthoDB_sig_list = ",".join(orthoDB_sig_list)
+            with open(overlap_sig_OGS_path, "w") as overlap_sig_OGS:
+                overlap_sig_OGS.write(orthoDB_sig_list)
+            print(f"file written: {overlap_sig_OGS_path}")
+            overlap_all_OGS_path = "/Users/milena/work/PhD_code/PhD_chapter1/data/CAFE_convergence/overlap_all_OGS.txt"
+            orthoDB_cafe_list = ",".join(orthoDB_cafe_list)
+            with open(overlap_all_OGS_path, "w") as overlap_all_OGS:
+                overlap_all_OGS.write(orthoDB_sig_list)
+            print(f"file written: {overlap_all_OGS_path}")
+
         print(f"{len(orthoDB_sig_list)} significant orthogroups out of {len(orthoDB_cafe_list)} in total")
         orthoDB_dict_lists = OGs.parse_orthogroups_dict(orthogroups_orthoDB_filepath, orthoDB_cafe_list)
         orthoDB_dict = OGs.get_GF_sizes(orthoDB_dict_lists)
