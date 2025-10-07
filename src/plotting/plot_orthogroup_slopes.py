@@ -240,6 +240,7 @@ def plot_slopes(inclines,p_values,p_values_bh,return_dict,OG_sizes, sig_list ,x_
 
     ### PLOT parameters
     fs = 22 # set font size
+    legend_fs = fs
     
     fig = plt.figure(figsize=(10,8))
     ax = fig.add_subplot(1, 1, 1)
@@ -286,25 +287,42 @@ def plot_slopes(inclines,p_values,p_values_bh,return_dict,OG_sizes, sig_list ,x_
             OG_sizes_unsig_list.append(OG_sizes[orthogroup])
             return_dict[orthogroup][-1] = "n"
         
-    ax.scatter(OG_sizes_unsig_list, inclines_unsig_list, color = colors[f"{color_category}_unsignificant"], s=30, marker = "x", label = "unsignificant")# with marker="o" use facecolors = "none" to make an un-filled circle
-    ax.scatter(OG_sizes_sig_list, inclines_sig_list, color = colors[color_category], s=75, label = "significant")
-    ax.scatter(OG_sizes_bh_cor_sig_list, inclines_bh_cor_sig_list, color = colors[f"{color_category}_multiple_testing_sig"], s=75, marker="v", label = "B.H. corrected")
-    ax.set_ylim(-1.1,1.1)
-    ax.axhline(y=0.0, linewidth=2, color='#C5C5C5', linestyle="--")
+    ax.scatter(inclines_unsig_list, OG_sizes_unsig_list, color = colors[f"{color_category}_unsignificant"], s=30, marker = "x", label = "unsignificant")# with marker="o" use facecolors = "none" to make an un-filled circle
+    ax.scatter(inclines_sig_list, OG_sizes_sig_list, color = colors[color_category], s=75, label = "significant")
+    ax.scatter(inclines_bh_cor_sig_list, OG_sizes_bh_cor_sig_list, color = colors[f"{color_category}_multiple_testing_sig"], s=75, marker="v", label = "B.H. corrected")
+    ax.set_xlim(-1.1,1.1)
+    ax.axvline(x=0.0, linewidth=2, color='#C5C5C5', linestyle="--")
 
-    if len(norm_coeffs) == 2:
-        x = np.arange(-1.1,1.1, 0.001)
-        mean_cor = norm_coeffs[0]
-        std_cor = norm_coeffs[1]
+    if len(norm_coeffs) == 4:
+        pdf_ax = ax.twinx()
+        pdf_ax.set_ylabel('normal distribution pdf', color = colors["native"], fontsize = fs)
+        pdf_ax.tick_params(axis ='y', labelcolor = colors["native"], labelsize = fs) 
+
+        lwd = 1.5 #linewidth
+        pdf_x = np.arange(-1.1,1.1, 0.001)
+        mean_cor,std_cor,lower_CI,upper_CI = norm_coeffs
         try:
             max_OG_size = max(max(OG_sizes_unsig_list), max(OG_sizes_sig_list), max(OG_sizes_bh_cor_sig_list)) 
         except:
             max_OG_size = max(max(OG_sizes_unsig_list), max(OG_sizes_sig_list)) 
-        ax.plot(scipy.stats.norm.pdf(x, mean_cor, std_cor)*max_OG_size, x, linewidth=2, color='#C5C5C5')#, linestyle="--")
 
-    ylab = f"correlation coefficients of individual orthogroups \n(only {len(sig_list)} significant orthogroups shown)"
-    ax.set_ylabel(ylab, fontsize = fs)
-    ax.set_xlabel("orthogroup size", fontsize = fs)
+        pdf_y = scipy.stats.norm.pdf(pdf_x, mean_cor, std_cor)
+        pdf_ax.plot(pdf_x,pdf_y, linewidth=lwd, color=colors["native"], label = f"pdf mean: {mean_cor:.3f}")#, linestyle="--")
+        pdf_ax.axvline(x=lower_CI, linewidth=lwd, color=colors["native"], linestyle=":", label = f"95% CI [{lower_CI:.3f}, {upper_CI:.3f}]")
+        pdf_ax.axvline(x=upper_CI, linewidth=lwd, color=colors["native"], linestyle=":")
+        pdf_ax.set(yticklabels=[])
+
+        plt.axvspan(lower_CI, upper_CI, color=colors["native"], alpha=0.3)
+        ax.set_ylim(-0.1,max_OG_size*1.25)
+        pdf_ax.set_ylim(-0.1,max(pdf_y)*1.25)
+        legend_fs = fs*0.7
+    elif len(norm_coeffs) != 0:
+        raise RuntimeError(f"norm_coeffs has to have four elements: [mean,std,lower_CI,upper_CI], you have: \n{norm_coeffs}")
+
+    xlab = f"correlation coefficients of individual orthogroups \n(only {len(sig_list)} significant orthogroups shown)"
+    ax.set_xlabel(xlab, fontsize = fs)
+    ax.set_ylabel("orthogroup size", fontsize = fs, color = colors[color_category])
+    ax.tick_params(axis ='y', labelcolor = colors[color_category], labelsize = fs) 
     
     title_ = x_label.split(" in")[0]
     if log_possible:
@@ -316,7 +334,8 @@ def plot_slopes(inclines,p_values,p_values_bh,return_dict,OG_sizes, sig_list ,x_
     else:
         title = f"spearman correlation of\n {title_} vs. Gene family size"
     plt.title(title, fontsize=fs*1.2)
-    ax.legend(fontsize = fs, loc='lower right', title_fontsize = fs)
+    ax.legend(fontsize = legend_fs, loc='upper left', title_fontsize = legend_fs, title = "individual OG\nsignificance")
+    pdf_ax.legend(fontsize = legend_fs, loc='upper right', title_fontsize = fs)
 
     filename = filename.split(".png")[0]
     filename = f"{filename}_vs_OG_size"
@@ -324,7 +343,7 @@ def plot_slopes(inclines,p_values,p_values_bh,return_dict,OG_sizes, sig_list ,x_
         filename = f"{filename}_{percentile}th_percentile_colors"
     else:
         filename = f"{filename}_sig_OGs_colors"
-    if len(norm_coeffs) == 2:
+    if len(norm_coeffs) == 4:
         filename = f"{filename}_with_normal_distribution.png"
     else:
         filename = f"{filename}.png"
@@ -342,12 +361,25 @@ def plot_slopes(inclines,p_values,p_values_bh,return_dict,OG_sizes, sig_list ,x_
     return return_dict
 
 
-def calculate_list_CI(values_list:list, cl = 0.95):
+def calculate_list_CI(coefficients:dict, cl = 0.95):
     """
     calculate 95% confidence interval of a list of float values
     """
-    ci = scipy.stats.t.interval(cl, df=len(values_list)-1, loc=np.mean(values_list), scale=np.std(values_list, ddof=1) / np.sqrt(len(values_list)))
-    return(ci)
+    values_list = list(coefficients.values())
+    mean_coeff = np.mean(values_list)
+    std_coeff = np.std(values_list)
+            
+    # Sample statistics
+    sem = scipy.stats.sem(values_list)  # Standard Error of the Mean
+    confidence = cl
+    n = len(values_list)
+    df = n - 1  # degrees of freedom
+    lower_CI, upper_CI = scipy.stats.t.interval(confidence, df, loc=mean_coeff, scale=sem)
+    norm_coeffs = [mean_coeff,std_coeff, lower_CI, upper_CI]
+
+    print(f"\t\tmean correlation coefficient: {mean_coeff:.3f}, standard deviation {std_coeff:.3f}, 95% confidence interval: [{lower_CI:.3f}, {upper_CI:.3f}]")
+    # ci = scipy.stats.t.interval(cl, df=len(values_list)-1, loc=np.mean(values_list), scale=np.std(values_list, ddof=1) / np.sqrt(len(values_list)))
+    return(norm_coeffs)
 
 
 
@@ -449,24 +481,16 @@ if __name__ == "__main__":
             print(f"\n\t\t * Genome size")
             ## spearman correlation
             coefficients,p_values,p_values_BH,OG_sizes,return_dict = get_plot_values_spearman(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=genome_sizes_dict, sig_list=orthoDB_sig_list, tree_path=tree)
-            list_coefficients = list(coefficients.values())
-            mean_coeff = np.average(list_coefficients)
-            std_coeff = np.std(list_coefficients)
-            norm_coeffs = [mean_coeff,std_coeff]
-            lower_CI, upper_CI = calculate_list_CI(list_coefficients)
-            print(f"\t\tmean correlaion coefficient: {mean_coeff:.2f}, with standard deviation {std_coeff:.2f}\n\t\t95% confidence interval from {lower_CI:.3f} to {upper_CI:.3f}")
+
+            norm_coeffs = calculate_list_CI(coefficients=coefficients, cl = 0.95)
+
             GS_inclines = plot_slopes(coefficients,p_values,p_values_BH,return_dict,OG_sizes, x_label = "Genome size in Mb",  filename = f"{data_dir}correlations/sig_OGs_vs_GS_coefficients_bh_corrected_PIC.png", sig_list=orthoDB_sig_list ,log_possible=False, svg=svg_bool, dark_mode=darkmode_bool, norm_coeffs = norm_coeffs)
             # gff.write_dict_to_file(GS_inclines, f"{data_dir}sig_OGs_vs_GS_inclines_pvalues.tsv", header=f"OG\tslope\tp-value\tsig_after_multiple_testing", separator="\t")
 
             print(f"\n\t\t * repeat content")
             ## spearman correlation
             coefficients,p_values,p_values_BH,OG_sizes,return_dict = get_plot_values_spearman(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, sig_list=orthoDB_sig_list, tree_path=tree)
-            list_coefficients = list(coefficients.values())
-            mean_coeff = np.average(list_coefficients)
-            std_coeff = np.std(list_coefficients)
-            norm_coeffs = [mean_coeff,std_coeff]
-            lower_CI, upper_CI = calculate_list_CI(list_coefficients)
-            print(f"\t\tmean correlaion coefficient: {mean_coeff:.2f}, with standard deviation {std_coeff:.2f}\n\t\t95% confidence interval {lower_CI:.3f} to {upper_CI:.3f}")
+            norm_coeffs = calculate_list_CI(coefficients=coefficients, cl = 0.95)
             TE_inclines = plot_slopes(coefficients,p_values,p_values_BH,return_dict,OG_sizes, x_label = "Repeat content in percent",  filename = f"{data_dir}correlations/sig_OGs_vs_reps_coefficients_bh_corrected_PIC.png", sig_list=orthoDB_sig_list ,log_possible=False, svg=svg_bool, dark_mode=darkmode_bool, norm_coeffs = norm_coeffs)
             # gff.write_dict_to_file(TE_inclines, f"{data_dir}sig_OGs_vs_reps_inclines_pvalues.tsv", header=f"OG\tslope\tp-value\tsig_after_multiple_testing", separator="\t")
 
