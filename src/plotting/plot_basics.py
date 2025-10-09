@@ -587,7 +587,7 @@ if __name__ == "__main__":
             "Cmac_SI_diverse" : f"{orthoDB_dir}/C_maculatus_filtered_proteinfasta_TE_filtered.fa",
         }
         #plot_all_species_protein_length_distribution(native_files, orthoDB_files, third_column_files= comparison_files, columns=2, max_length=1500, filename=f"{data}/Lome_RNA_annot_comparison/protein_lengths_histogram.png")
-        plot_histogram_protein_lengths(native_path = native_files["Cmac_Lome_diverse"], orthoDB_path = orthoDB_files["Cmac_Lome_diverse"], third_path=comparison_files["Cmac_Lome_diverse"], species_name="C. maculatus (Lome RNA annotation)\n", no_bins = 20, max_length = 1500, filename = f"{data}/Lome_RNA_annot_comparison/Lome_only_protein_lengths_histogram.png", dark_mode=True)
+        plot_histogram_protein_lengths(native_path = native_files["Cmac_Lome_diverse"], orthoDB_path = orthoDB_files["Cmac_Lome_diverse"], third_path=comparison_files["Cmac_Lome_diverse"], species_name="C. maculatus (Lome RNA annotation)\n", no_bins = 20, max_length = 1500, filename = f"{data}/Lome_RNA_annot_comparison/Lome_only_protein_lengths_histogram.png", dark_mode=False)
 
 
     if True:
