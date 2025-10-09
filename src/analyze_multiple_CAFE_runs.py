@@ -21,10 +21,16 @@ def CAFE_output_paths(in_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/
     if in_dir[-1] == "/":
         in_dir = in_dir[:-1]
     runs_list = [] 
-    for run in os.listdir(in_dir):
-        name = f"{in_dir}/{run}/Base_family_results.txt"
-        runs_list.append(name)
-    
+    try:
+        for run in os.listdir(in_dir):
+            name = f"{in_dir}/{run}/Base_family_results.txt"
+            runs_list.append(name)
+    except:
+        in_dir = "/Users/milena/work/PhD_code/PhD_chapter1/data/CAFE_convergence/runs_to_test_convergence"
+        for run in os.listdir(in_dir):
+            name = f"{in_dir}/{run}/Base_family_results.txt"
+            runs_list.append(name)
+
     return runs_list
 
 
