@@ -18,10 +18,10 @@ from collections import Counter
 
 
 def filepaths():
-    orthogroups_orthoDB_filepath = "/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/orthofinder_uniform/N0.tsv"
-    out_dir = "/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/"
-    tree = "/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_only_species_names.nw"
-    DAVID_path = "/Users/milena/work/PhD_chapter1_code/PhD_chapter1/data/functional_annot_eval/functional_table_per_OG.tsv"
+    orthogroups_orthoDB_filepath = "/Users/milena/work/PhD_code/PhD_chapter1/data/orthofinder_uniform/N0.tsv"
+    out_dir = "/Users/milena/work/PhD_code/PhD_chapter1/data/"
+    tree = "/Users/milena/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_only_species_names.nw"
+    DAVID_path = "/Users/milena/work/PhD_code/PhD_chapter1/data/functional_annot_eval/functional_table_per_OG.tsv"
     return out_dir,orthogroups_orthoDB_filepath,tree, DAVID_path
 
 def filepaths_work():
@@ -404,13 +404,14 @@ def parse_func_table_for_protein_name(summary_table_path:str):
     return out_dict
 
 
-def make_functional_summary_bar(functional_dict:dict, summary_table:str, plot_name = "functional_summary.png", verbose = True, transparent_bg = True, svg=False):
+def make_functional_summary_bar(functional_dict:dict, summary_table:str, orthogroups_path = "", plot_name = "functional_summary.png", verbose = True, transparent_bg = True, svg=False):
 
     ## get sig OGs from CAFE:
     cafe_paths = multi_CAFE_analysis.CAFE_output_paths()
     cafe_SIG_OGS, unsig_list = multi_CAFE_analysis.get_overlap_OG_sig_list(cafe_paths)
     of_interest_list = []
     category_count_dict = {}
+    category_OG_dict = {}
     for category, subcategories in functional_dict.items():
         category_list = []
         for subcategory, sublist in subcategories.items():
@@ -431,7 +432,9 @@ def make_functional_summary_bar(functional_dict:dict, summary_table:str, plot_na
             ## add to counting lists        
             category_list.extend(sublist)
             of_interest_list.extend(sublist)
+
         category_count_dict[category] = len(category_list)
+        category_OG_dict[category] = category_list
         # cat_list_dedup = list(set(category_list))
 
         # print(f"{category} : {len(category_list)} elements, {len(cat_list_dedup)} deduplicated")
@@ -449,20 +452,60 @@ def make_functional_summary_bar(functional_dict:dict, summary_table:str, plot_na
     category_count_dict["Uncharacterized protein"] = len(unchar_annot_list)
     category_count_dict["No functional annotation"] = len(no_annot_list)
     
-    if verbose:
-        sum_cat = 0
+    transcript_count_dict = {}
+    # make the second bar with the proportions of transcript numbers as opposed to orthogroup numbers
+    if orthogroups_path != "":
+        orthoDB_dict_lists = OGs.parse_orthogroups_dict(orthogroups_path)
+        orthogroup_sizes = OGs.get_orthogroup_sizes(orthoDB_dict_lists)
+        # make specific functional categories
+        for category, orthogroup_list in category_OG_dict.items():
+            count_transcripts = 0
+            for orthogroup_id in orthogroup_list:
+                count_transcripts += orthogroup_sizes[orthogroup_id]
+            transcript_count_dict[category] = count_transcripts
+        # make the other categories
+        other_cats = {
+            "Other annotation" : yes_annot_list,
+            "Uncharacterized protein" : unchar_annot_list,
+            "No functional annotation" : no_annot_list,
+        }
+        for category, orthogroup_list in other_cats.items():
+            count_transcripts = 0
+            for orthogroup_id in orthogroup_list:
+                count_transcripts += orthogroup_sizes[orthogroup_id]
+            transcript_count_dict[category] = count_transcripts
+        # fix the "other annotation" values so that it doesn't contain the specific functional categories above
+        of_interest_transcript_num = 0
+        # for i, orthogroup_ID in enumerate(of_interest_list):
+        for i, orthogroup_ID in enumerate(of_interest_list):
+            num_transcripts = orthogroup_sizes[orthogroup_ID]
+            # print(f"{i} : \t{orthogroup_ID} : {num_transcripts}")
+            of_interest_transcript_num += num_transcripts
+        transcript_count_dict["Other annotation"] = transcript_count_dict["Other annotation"] - of_interest_transcript_num
+
+    if transcript_count_dict == 0:
+        sum_cat_OG = 0
         for cat,count in category_count_dict.items():
             print(f"{count}\t --> {cat}")
-            sum_cat+=count
-        print(f"{sum_cat}\t --> all")
-    
+            sum_cat_OG+=count
+        print(f"{sum_cat_OG}\t --> all")
+    else:
+        sum_cat_OG = 0
+        sum_cat_trans = 0
+        print(f"OG / transcripts \t --> category")
+        for category in category_count_dict.keys():
+            count_OG = category_count_dict[category]
+            count_trans = transcript_count_dict[category]
+            print(f"{count_OG} / {count_trans}\t --> {category}")
+            sum_cat_OG+=count_OG
+            sum_cat_trans+=count_trans
+        print(f"{sum_cat_OG} / {sum_cat_trans}\t --> all")     
+
     ### PLOT
     
-    fig = plt.figure(figsize=(15,5)) # (width,height)
+    fig = plt.figure(figsize=(20,5)) # (width,height)
     ax = fig.add_subplot(1, 1, 1) 
     fs = 22
-    
-    width = 1
     bottom = 0
 
     colors_dict = {
@@ -476,17 +519,39 @@ def make_functional_summary_bar(functional_dict:dict, summary_table:str, plot_na
         "Uncharacterized protein" : "#95A0B2",
         "No functional annotation" : "#B8B8B8",
         } 
-    for cat_name, num_OGs in category_count_dict.items():
-        p = ax.barh(0.55, num_OGs, height=width, label=cat_name, left=bottom, color = colors_dict[cat_name])
-        bottom += num_OGs
+    if transcript_count_dict == 0:
+        width = 1
+        for cat_name, num_OGs in category_count_dict.items():
+            p = ax.barh(0.55, num_OGs, height=width, label=cat_name, left=bottom, color = colors_dict[cat_name])
+            bottom += num_OGs
 
-    xlab=f"{sum_cat} CAFE-significant orthogroups"
-    ax.set_xlabel(xlab, fontsize = fs)
-    ax.set(yticklabels=[])
+        xlab=f"{sum_cat_OG} CAFE-significant orthogroups"
+        ax.set_xlabel(xlab, fontsize = fs)
+        ax.set(yticklabels=[])
 
-    ax.tick_params(axis='x', labelsize=fs)
-    ax.set_ylim(0,1.6)
-    plt.legend(loc = "upper center", fontsize = fs*0.75, ncols = 3)
+        ax.tick_params(axis='x', labelsize=fs)
+        ax.set_ylim(0,1.6)
+        ax.set(yticklabels=[])
+        plt.legend(loc = "upper center", fontsize = fs*0.75, ncols = 3)
+    else: 
+        width = 0.95
+        bottom = [0,0]
+        for cat_name in category_count_dict.keys():
+            cat_perc = 100* category_count_dict[cat_name]/sum_cat_OG
+            trans_perc = 100* transcript_count_dict[cat_name]/sum_cat_trans
+            p = ax.barh(["Orthogroups","Transcripts"], [cat_perc,trans_perc], height=width, label=cat_name, left=bottom, color = colors_dict[cat_name])
+            bottom[0] += cat_perc
+            bottom[1] += trans_perc
+        ax.xaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x < 1 else f'{int(x)}%'))
+
+        xlab=f"percentage of {sum_cat_OG} CAFE-significant orthogroups or {sum_cat_trans} transcripts"
+        ax.set_xlabel(xlab, fontsize = fs)
+
+        ax.tick_params(axis='x', labelsize=fs)
+        ax.tick_params(axis='y', labelsize=fs)
+        ax.set_ylim(-0.6,3)
+        plt.legend(loc = "upper center", fontsize = fs*0.9, ncols = 3)
+
     plt.title(label = "Functional categories in significantly rapidly evolving orthogroups", fontsize = fs)
 
     plt.tight_layout()
@@ -502,8 +567,8 @@ def make_functional_summary_bar(functional_dict:dict, summary_table:str, plot_na
 
 if __name__ == "__main__":
     
-    # out_dir,orthogroups_orthoDB_filepath,tree_path,DAVID_path = filepaths()
-    out_dir,orthogroups_orthoDB_filepath,tree_path,DAVID_path = filepaths_work()
+    out_dir,orthogroups_orthoDB_filepath,tree_path,DAVID_path = filepaths()
+    # out_dir,orthogroups_orthoDB_filepath,tree_path,DAVID_path = filepaths_work()
     OG_lists_dict = orthogroups_lists()
 
     ##  IMPORT SVG TO HTML --> makes it so the html file has no external figure dependencies and can be sent by email
@@ -559,7 +624,7 @@ if __name__ == "__main__":
     username = "milena"
     functional_summary_table_path = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/functional_annot_eval/full_functional_annot_table.tsv"
     out_dir = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/functional_annot_eval/new_eval/"
-    make_functional_summary_bar(functional_categories_dict, summary_table=functional_summary_table_path, plot_name = f"{out_dir}functional_summary.png")
+    make_functional_summary_bar(functional_categories_dict, summary_table=functional_summary_table_path, orthogroups_path=orthogroups_orthoDB_filepath, plot_name = f"{out_dir}functional_summary.png")
 
 ### individual gene family sizes for all the functions
 
