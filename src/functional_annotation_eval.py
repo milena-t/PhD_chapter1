@@ -409,7 +409,7 @@ def make_functional_summary_bar(functional_dict:dict, summary_table:str, plot_na
     ## get sig OGs from CAFE:
     cafe_paths = multi_CAFE_analysis.CAFE_output_paths()
     cafe_SIG_OGS, unsig_list = multi_CAFE_analysis.get_overlap_OG_sig_list(cafe_paths)
-    all_list = []
+    of_interest_list = []
     category_count_dict = {}
     for category, subcategories in functional_dict.items():
         category_list = []
@@ -430,16 +430,24 @@ def make_functional_summary_bar(functional_dict:dict, summary_table:str, plot_na
                     sublist.remove(item)
             ## add to counting lists        
             category_list.extend(sublist)
-            all_list.extend(sublist)
+            of_interest_list.extend(sublist)
         category_count_dict[category] = len(category_list)
         # cat_list_dedup = list(set(category_list))
 
         # print(f"{category} : {len(category_list)} elements, {len(cat_list_dedup)} deduplicated")
 
     all_annot_dict = parse_func_table_for_protein_name(summary_table)
-    yes_annot_list = [OG_id for OG_id,name in all_annot_dict.items() if name != "None" and name != "No_flybase_match"]
-    category_count_dict["No functional annotation"] = len(all_annot_dict) - len(yes_annot_list)
-    category_count_dict["Other annotation"] = len(yes_annot_list) - len(all_list)
+    no_annot_list = [OG_id for OG_id,name in all_annot_dict.items() if "None"  in name or "No_flybase_match" in name]
+    unchar_annot_list = [OG_id for OG_id,name in all_annot_dict.items() if "uncharacterized protein" in name]
+    yes_annot_list = [OG_id for OG_id,name in all_annot_dict.items() if "None" not in name and "No_flybase_match" not in name and "uncharacterized protein" not in name]
+    # print(f"{len(all_annot_dict)} \t --> annotations in total")
+    # print(f"{len(no_annot_list)} + {len(unchar_annot_list)} = {len(no_annot_list) + len(unchar_annot_list)} --> not annotated / uncharacterized")
+    # print(f"{len(yes_annot_list)} \t --> yes annotated")
+    # print(f"{len(no_annot_list)} + {len(unchar_annot_list)} + {len(yes_annot_list)} = {len(no_annot_list) + len(unchar_annot_list) + len(yes_annot_list)}")
+
+    category_count_dict["Other annotation"] = len(yes_annot_list) - len(of_interest_list)
+    category_count_dict["Uncharacterized protein"] = len(unchar_annot_list)
+    category_count_dict["No functional annotation"] = len(no_annot_list)
     
     if verbose:
         sum_cat = 0
@@ -456,12 +464,29 @@ def make_functional_summary_bar(functional_dict:dict, summary_table:str, plot_na
     
     width = 1
     bottom = 0
+
+    colors_dict = {
+        "Chemosensory" : "#cd6339",
+        "Pheromone synthesis" : "#9b63ca",
+        "Detoxification" : "#9fac38",
+        "Fluorescence in Fireflies" : "#ca5967",
+        "Sexual reproduction and immunity" : "#4aac83",
+        "Chitin development" : "#c55d93",
+        "Other annotation" : "#708cc9",
+        "Uncharacterized protein" : "#888d4a", 
+        "No functional annotation" : "#c1c1c1",
+        } 
     for cat_name, num_OGs in category_count_dict.items():
-        p = ax.barh(1, num_OGs, width, label=cat_name, left=bottom)
+        p = ax.barh(0.55, num_OGs, height=width, label=cat_name, left=bottom, color = colors_dict[cat_name])
         bottom += num_OGs
 
-    ax.tick_params(axis='y', labelsize=fs)
+    xlab=f"{sum_cat} CAFE-significant orthogroup"
+    ax.set_xlabel(xlab, fontsize = fs)
+    ax.set(yticklabels=[])
+
     ax.tick_params(axis='x', labelsize=fs)
+    ax.set_ylim(0,1.5)
+    plt.legend(loc = "upper center", fontsize = fs*0.65, ncols = 3)
 
     plt.tight_layout()
 
@@ -514,20 +539,20 @@ if __name__ == "__main__":
             "Cluster 3: lipid metabolic process" : OG_lists_dict["Gene Group 3"],
             "Cluster 18: aldehyde oxidase" : OG_lists_dict["Gene Group 18"],
         },
-        "Fluorescence": {
-            "Acyl-CoA synthesis related" : ["N0.HOG0000284","N0.HOG0000397"],
-            "Acyl-CoA synthetase" : ["N0.HOG0000613"]
-        },
+        "Chitin development" : {
+            "Cluster 11: Adenosine deaminase-related growth factor" : OG_lists_dict["Gene Group 11"],
+            "Cluster 15: chitin-related" : OG_lists_dict["Gene Group 15"],
+            "Cluster 24: Cuticular protein" : OG_lists_dict["Gene Group 24"],
+        }, 
         "Sexual reproduction and immunity": {
             "Cluster 8: immunity and reproduction" : OG_lists_dict["Gene Group 8"],
             "Cluster 9: sexual reproduction" :  OG_lists_dict["Gene Group 9"],
             "Serpin (protease inhibitor in immune response, \nalso patterning during embryogenesis)" : ["N0.HOG0000541"],
         },
-        "Chitin development" : {
-            "Cluster 11: Adenosine deaminase-related growth factor" : OG_lists_dict["Gene Group 11"],
-            "Cluster 15: chitin-related" : OG_lists_dict["Gene Group 15"],
-            "Cluster 24: Cuticular protein" : OG_lists_dict["Gene Group 24"],
-        },      
+        "Fluorescence in Fireflies": {
+            "Acyl-CoA synthesis related" : ["N0.HOG0000284","N0.HOG0000397"],
+            "Acyl-CoA synthetase" : ["N0.HOG0000613"]
+        },     
     }
 
     functional_summary_table_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/full_functional_annot_table.tsv"
