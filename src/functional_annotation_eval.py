@@ -466,27 +466,28 @@ def make_functional_summary_bar(functional_dict:dict, summary_table:str, plot_na
     bottom = 0
 
     colors_dict = {
-        "Chemosensory" : "#cd6339",
-        "Pheromone synthesis" : "#9b63ca",
-        "Detoxification" : "#9fac38",
-        "Fluorescence in Fireflies" : "#ca5967",
-        "Sexual reproduction and immunity" : "#4aac83",
-        "Chitin development" : "#c55d93",
-        "Other annotation" : "#708cc9",
-        "Uncharacterized protein" : "#888d4a", 
-        "No functional annotation" : "#c1c1c1",
+        "Chemosensory" : "#418F7A",
+        "Pheromone synthesis" : "#3B3561",
+        "Detoxification" : "#118AB2",
+        "Sexual reproduction and immunity" : "#073B4C", #60C1A7",# "#FFD166",
+        "Chitin development" : "#883065",# "#9F2441", # "#EF476F",
+        "Fluorescence in Fireflies" : "#3E64A3",# "#2B4570",
+        "Other annotation" : "#7D97B3",
+        "Uncharacterized protein" : "#95A0B2",
+        "No functional annotation" : "#B8B8B8",
         } 
     for cat_name, num_OGs in category_count_dict.items():
         p = ax.barh(0.55, num_OGs, height=width, label=cat_name, left=bottom, color = colors_dict[cat_name])
         bottom += num_OGs
 
-    xlab=f"{sum_cat} CAFE-significant orthogroup"
+    xlab=f"{sum_cat} CAFE-significant orthogroups"
     ax.set_xlabel(xlab, fontsize = fs)
     ax.set(yticklabels=[])
 
     ax.tick_params(axis='x', labelsize=fs)
     ax.set_ylim(0,1.5)
     plt.legend(loc = "upper center", fontsize = fs*0.65, ncols = 3)
+    plt.title(label = "Functional categories in significantly rapidly evolving orthogroups", fontsize = fs)
 
     plt.tight_layout()
 
