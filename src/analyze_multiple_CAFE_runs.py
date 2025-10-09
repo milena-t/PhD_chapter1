@@ -68,6 +68,7 @@ def count_OG_occurence(cafe_outputs_list:str):
 def get_overlap_OG_sig_list(cafe_outputs_list):
     """
     get a list of orthogroups that are significant in all runs
+    also returns a list of unsignificant orthogroups! mind return variables
     """
     if type(cafe_outputs_list) != list:
         # if the output is not a list yet
