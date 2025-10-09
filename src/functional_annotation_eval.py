@@ -485,8 +485,8 @@ def make_functional_summary_bar(functional_dict:dict, summary_table:str, plot_na
     ax.set(yticklabels=[])
 
     ax.tick_params(axis='x', labelsize=fs)
-    ax.set_ylim(0,1.5)
-    plt.legend(loc = "upper center", fontsize = fs*0.65, ncols = 3)
+    ax.set_ylim(0,1.6)
+    plt.legend(loc = "upper center", fontsize = fs*0.75, ncols = 3)
     plt.title(label = "Functional categories in significantly rapidly evolving orthogroups", fontsize = fs)
 
     plt.tight_layout()
@@ -555,9 +555,10 @@ if __name__ == "__main__":
             "Acyl-CoA synthetase" : ["N0.HOG0000613"]
         },     
     }
-
-    functional_summary_table_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/full_functional_annot_table.tsv"
-    out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/new_eval/"
+    
+    username = "milena"
+    functional_summary_table_path = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/functional_annot_eval/full_functional_annot_table.tsv"
+    out_dir = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/functional_annot_eval/new_eval/"
     make_functional_summary_bar(functional_categories_dict, summary_table=functional_summary_table_path, plot_name = f"{out_dir}functional_summary.png")
 
 ### individual gene family sizes for all the functions
