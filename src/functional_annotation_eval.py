@@ -6,6 +6,7 @@ import plot_basics as my_plotting
 import parse_orthogroups as OGs
 import plotting.plot_significant_orthogroups_from_CAFE as plot_OG
 import make_orthogroup_flybaseID_table as parse_DAVID
+import analyze_multiple_CAFE_runs as multi_CAFE_analysis
 from matplotlib.ticker import FuncFormatter
 import matplotlib.pyplot as plt
 import numpy as np
@@ -390,6 +391,89 @@ def plot_selected_OGs_vs_GS(orthogroups_path:str, OG_IDs:list[list[str]], colors
 
 
 
+def parse_func_table_for_protein_name(summary_table_path:str):
+    """
+    parse the summary table to be a dict of { orthogroup : protein_name } to be able to judge which orthogroups have some sort of functional annotation
+    """
+    out_dict = {}
+    with open(summary_table_path, "r") as summary_table:
+        lines = summary_table.readlines()
+        for line in lines[1:]: # skip header line
+            line_parse = line.strip().split("\t")
+            out_dict[line_parse[0]] = line_parse[8]
+    return out_dict
+
+
+def make_functional_summary_bar(functional_dict:dict, summary_table:str, plot_name = "functional_summary.png", verbose = True, transparent_bg = True, svg=False):
+
+    ## get sig OGs from CAFE:
+    cafe_paths = multi_CAFE_analysis.CAFE_output_paths()
+    cafe_SIG_OGS, unsig_list = multi_CAFE_analysis.get_overlap_OG_sig_list(cafe_paths)
+    all_list = []
+    category_count_dict = {}
+    for category, subcategories in functional_dict.items():
+        category_list = []
+        for subcategory, sublist in subcategories.items():
+            ## remove duplicates
+            dups = [item for item in sublist if item in category_list]
+            if len(dups)>0:
+                if verbose:
+                    print(f"{dups} is/are duplicate and removed")
+                for dup in dups:
+                    sublist.remove(dup)
+            ## remove non overlapping CAFE all sig
+            non_sig = [item for item in sublist if item not in cafe_SIG_OGS]
+            if len(non_sig)>0:
+                if verbose:
+                    print(f"{non_sig} not in all cafe runs significant and removed")
+                for item in non_sig:
+                    sublist.remove(item)
+            ## add to counting lists        
+            category_list.extend(sublist)
+            all_list.extend(sublist)
+        category_count_dict[category] = len(category_list)
+        # cat_list_dedup = list(set(category_list))
+
+        # print(f"{category} : {len(category_list)} elements, {len(cat_list_dedup)} deduplicated")
+
+    all_annot_dict = parse_func_table_for_protein_name(summary_table)
+    yes_annot_list = [OG_id for OG_id,name in all_annot_dict.items() if name != "None" and name != "No_flybase_match"]
+    category_count_dict["No functional annotation"] = len(all_annot_dict) - len(yes_annot_list)
+    category_count_dict["Other annotation"] = len(yes_annot_list) - len(all_list)
+    
+    if verbose:
+        sum_cat = 0
+        for cat,count in category_count_dict.items():
+            print(f"{count}\t --> {cat}")
+            sum_cat+=count
+        print(f"{sum_cat}\t --> all")
+    
+    ### PLOT
+    
+    fig = plt.figure(figsize=(15,5)) # (width,height)
+    ax = fig.add_subplot(1, 1, 1) 
+    fs = 22
+    
+    width = 1
+    bottom = 0
+    for cat_name, num_OGs in category_count_dict.items():
+        p = ax.barh(1, num_OGs, width, label=cat_name, left=bottom)
+        bottom += num_OGs
+
+    ax.tick_params(axis='y', labelsize=fs)
+    ax.tick_params(axis='x', labelsize=fs)
+
+    plt.tight_layout()
+
+    if svg:
+        plot_name = plot_name.replace(".png", ".svg")
+        plt.savefig(plot_name, transparent = transparent_bg)
+    else:
+        plt.savefig(plot_name, dpi = 300, transparent = transparent_bg)
+    print("Figure saved in the current working directory directory as: "+plot_name)
+
+
+
 if __name__ == "__main__":
     
     # out_dir,orthogroups_orthoDB_filepath,tree_path,DAVID_path = filepaths()
@@ -403,7 +487,54 @@ if __name__ == "__main__":
         #html_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/correlations/correlations.html"
         inline_svgs_in_html(html_path=html_path)
 
-### new versions with updated research
+
+
+## overall functional proportions
+    
+    # remember that some are overlapping! do list(set()) for top-level categories to keep the numbers right
+    functional_categories_dict = {
+        "Chemosensory" : {
+            "Cluster 30: pheromone binding": OG_lists_dict["Gene Group 30"],
+            "Cluster 7: odorant binding": OG_lists_dict["Gene Group 7"],
+            "Cluster 20: transmembrane transport in antennae": OG_lists_dict["Gene Group 20"],
+            "Olfactory receptor activity": ["N0.HOG0001100", "N0.HOG0003058", "N0.HOG0000415"],
+            "Ionotropic receptors": [ "N0.HOG0000555", "N0.HOG0000885", "N0.HOG0001100", "N0.HOG0004409"],
+        },
+        "Pheromone synthesis" : {
+            "Cytochrome P450: Monooxygenases" : ["N0.HOG0000027", "N0.HOG0000095", "N0.HOG0000140", "N0.HOG0000204", "N0.HOG0000492", "N0.HOG0001077", "N0.HOG0001134"],
+            "Reductase: alcohol dehydrogenase" : ["N0.HOG0000089"],
+            "Cluster 4: Esterase and mating behavior" : OG_lists_dict["Gene Group 4"],
+            "Juvenile hormone regulation" : ["N0.HOG0000142", "N0.HOG0000468", "N0.HOG0001652"],
+            "cuticular hydrocarbons: fatty acid synthesis" : ["N0.HOG0000276","N0.HOG0000560", "N0.HOG0000890", "N0.HOG0000915"],
+        },
+        "Detoxification": {
+            "Cytochrome P450" : OG_lists_dict["Gene Group 1"],
+            "Glutathione S transferase" : ["N0.HOG0000101", "N0.HOG0000399"],
+            "Carboxylesterase" : ["N0.HOG0000120", "N0.HOG0000141", "N0.HOG0000365", "N0.HOG0000378", "N0.HOG0007183"],
+            "Cluster 3: lipid metabolic process" : OG_lists_dict["Gene Group 3"],
+            "Cluster 18: aldehyde oxidase" : OG_lists_dict["Gene Group 18"],
+        },
+        "Fluorescence": {
+            "Acyl-CoA synthesis related" : ["N0.HOG0000284","N0.HOG0000397"],
+            "Acyl-CoA synthetase" : ["N0.HOG0000613"]
+        },
+        "Sexual reproduction and immunity": {
+            "Cluster 8: immunity and reproduction" : OG_lists_dict["Gene Group 8"],
+            "Cluster 9: sexual reproduction" :  OG_lists_dict["Gene Group 9"],
+            "Serpin (protease inhibitor in immune response, \nalso patterning during embryogenesis)" : ["N0.HOG0000541"],
+        },
+        "Chitin development" : {
+            "Cluster 11: Adenosine deaminase-related growth factor" : OG_lists_dict["Gene Group 11"],
+            "Cluster 15: chitin-related" : OG_lists_dict["Gene Group 15"],
+            "Cluster 24: Cuticular protein" : OG_lists_dict["Gene Group 24"],
+        },      
+    }
+
+    functional_summary_table_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/full_functional_annot_table.tsv"
+    out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/new_eval/"
+    make_functional_summary_bar(functional_categories_dict, summary_table=functional_summary_table_path, plot_name = f"{out_dir}functional_summary.png")
+
+### individual gene family sizes for all the functions
 
     ## CHEMICAL COMMUNICATION
 
@@ -438,7 +569,7 @@ if __name__ == "__main__":
             transparent_bg=True, svg = False, ymax_set=99, fs = 25)
 
     # --> OLFACTORY RECEPTORS
-    if True:
+    if False:
         cols_list = [
             "#b9cf74",
             "#A3C149",
