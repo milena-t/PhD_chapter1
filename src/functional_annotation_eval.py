@@ -4,8 +4,7 @@ Plot some stuff to evaluate the functional annotation of the gene groups
 
 import plot_basics as my_plotting
 import parse_orthogroups as OGs
-import plotting.plot_significant_orthogroups_from_CAFE as plot_OG
-import make_orthogroup_flybaseID_table as parse_DAVID
+from os.path import isfile
 import analyze_multiple_CAFE_runs as multi_CAFE_analysis
 from matplotlib.ticker import FuncFormatter
 import matplotlib.pyplot as plt
@@ -22,14 +21,15 @@ def filepaths():
     out_dir = "/Users/milena/work/PhD_code/PhD_chapter1/data/"
     tree = "/Users/milena/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_only_species_names.nw"
     DAVID_path = "/Users/milena/work/PhD_code/PhD_chapter1/data/functional_annot_eval/functional_table_per_OG.tsv"
-    return out_dir,orthogroups_orthoDB_filepath,tree, DAVID_path
 
-def filepaths_work():
-    orthogroups_orthoDB_filepath = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_uniform/N0.tsv"
-    out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/"
-    tree = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_only_species_names.nw"
-    DAVID_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/functional_table_per_OG.tsv"
-    return out_dir,orthogroups_orthoDB_filepath,tree, DAVID_path
+    if isfile(orthogroups_orthoDB_filepath):
+        return out_dir,orthogroups_orthoDB_filepath,tree, DAVID_path
+    else:
+        orthogroups_orthoDB_filepath = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_uniform/N0.tsv"
+        out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/"
+        tree = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_only_species_names.nw"
+        DAVID_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/functional_table_per_OG.tsv"
+        return out_dir,orthogroups_orthoDB_filepath,tree, DAVID_path
 
 def orthogroups_lists():
     out_dict_old_single_CAFE_run = {
@@ -568,7 +568,6 @@ def make_functional_summary_bar(functional_dict:dict, summary_table:str, orthogr
 if __name__ == "__main__":
     
     out_dir,orthogroups_orthoDB_filepath,tree_path,DAVID_path = filepaths()
-    # out_dir,orthogroups_orthoDB_filepath,tree_path,DAVID_path = filepaths_work()
     OG_lists_dict = orthogroups_lists()
 
     ##  IMPORT SVG TO HTML --> makes it so the html file has no external figure dependencies and can be sent by email
@@ -621,7 +620,9 @@ if __name__ == "__main__":
         },     
     }
     
-    username = "milena"
+    #username = "milena"
+    #username = "miltr339"
+    username = orthogroups_orthoDB_filepath.split("/")[2]
     functional_summary_table_path = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/functional_annot_eval/full_functional_annot_table.tsv"
     out_dir = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/functional_annot_eval/new_eval/"
     make_functional_summary_bar(functional_categories_dict, summary_table=functional_summary_table_path, orthogroups_path=orthogroups_orthoDB_filepath, plot_name = f"{out_dir}functional_summary.png")
