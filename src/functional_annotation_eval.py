@@ -550,6 +550,7 @@ def make_functional_summary_bar(functional_dict:dict, summary_table:str, orthogr
         ax.tick_params(axis='x', labelsize=fs)
         ax.tick_params(axis='y', labelsize=fs)
         ax.set_ylim(-0.6,3)
+        ax.set_xlim(0,100)
         plt.legend(loc = "upper center", fontsize = fs*0.9, ncols = 3)
 
     plt.title(label = "Functional categories in significantly rapidly evolving orthogroups", fontsize = fs)
