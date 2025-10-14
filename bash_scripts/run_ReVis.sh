@@ -20,29 +20,29 @@ U_NAME=miltr339
 #     --GF_size_percentile 90 \
 #     --verbose
 
-python3 /Users/${U_NAME}/work/PhD_code/ReVis/src/ReVis/ReVis_transcript_surroundings.py \
-    --compute_tables_from_list \
-    --out_dir /Users/${U_NAME}/work/PhD_code/PhD_chapter1/data/repeats_tables \
-    --masker_outfile /Users/${U_NAME}/work/repeatmasking/repeat_gffs/C_maculatus_superscaffolded_masking.ori.out \
-    --annotation_gff /Users/${U_NAME}/work/orthoDB_annotations/C_maculatus_superscaffolded_annotation_isoform_filtered.gff \
-    --all_list /Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_convergence/overlap_all_transcripts_C_maculatus.txt \
-    --sig_list /Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_convergence/overlap_sig_transcripts_C_maculatus.txt \
-    --species_name C_maculatus \
-    --bp 10000 \
-    --GF_size_percentile 90 \
-    --verbose
-
 # python3 /Users/${U_NAME}/work/PhD_code/ReVis/src/ReVis/ReVis_transcript_surroundings.py \
-#     --compute_tables \
+#     --compute_tables_from_list \
 #     --out_dir /Users/${U_NAME}/work/PhD_code/PhD_chapter1/data/repeats_tables \
-#     --masker_outfile /Users/${U_NAME}/work/repeatmasking/repeat_gffs/A_obtectus_assembly_genomic.fna.out \
-#     --annotation_gff /Users/${U_NAME}/work/orthoDB_annotations/A_obtectus_orthoDB_filtered.gff \
-#     --orthogroups $OF_RES \
-#     --CAFE5_results $CAFE_RES \
-#     --species_name A_obtectus \
+#     --masker_outfile /Users/${U_NAME}/work/repeatmasking/repeat_gffs/C_maculatus_superscaffolded_masking.ori.out \
+#     --annotation_gff /Users/${U_NAME}/work/orthoDB_annotations/C_maculatus_superscaffolded_annotation_isoform_filtered.gff \
+#     --all_list /Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_convergence/overlap_all_transcripts_C_maculatus.txt \
+#     --sig_list /Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_convergence/overlap_sig_transcripts_C_maculatus.txt \
+#     --species_name C_maculatus \
 #     --bp 10000 \
 #     --GF_size_percentile 90 \
 #     --verbose
+
+python3 /Users/${U_NAME}/work/PhD_code/ReVis/src/ReVis/ReVis_transcript_surroundings.py \
+    --compute_tables_from_list \
+    --out_dir /Users/${U_NAME}/work/PhD_code/PhD_chapter1/data/repeats_tables \
+    --masker_outfile /Users/${U_NAME}/work/repeatmasking/repeat_gffs/A_obtectus_masking.ori.out \
+    --annotation_gff /Users/${U_NAME}/work/orthoDB_annotations/A_obtectus_braker_isoform_filtered.gff \
+    --all_list /Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_convergence/overlap_all_transcripts_A_obtectus.txt \
+    --sig_list /Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_convergence/overlap_sig_transcripts_A_obtectus.txt \
+    --species_name A_obtectus \
+    --bp 10000 \
+    --GF_size_percentile 90 \
+    --verbose
 
 # python3 /Users/${U_NAME}/work/PhD_code/ReVis/src/ReVis/ReVis.py \
 #     --masker_outfile /Users/${U_NAME}/work/repeatmasking/repeat_gffs/C_maculatus_superscaffolded_masking.ori.out \
