@@ -246,7 +246,7 @@ def get_species_list_from_OG(OGs_path:str, species_suffix:str = "_filtered_prote
     return species_list
 
 
-def get_transcripts_list(path_OG_list:str, species_name:str, path_OG_dict:str) -> str:
+def get_transcripts_list(path_OG_list:str, species_name:str, path_OG_dict:str, size_filter_sig_OGs = False) -> str:
     """
     get a list of all transcripts in the list in path_OG_list and parse it into a new single-line csv file
     the file is for the transcript IDs in the species the specified species_name
@@ -258,18 +258,29 @@ def get_transcripts_list(path_OG_list:str, species_name:str, path_OG_dict:str) -
         out_basename = ".".join(path_OG_list.split(".")[:-1])
         out_path = f"{out_basename}_transcripts_{species_name}.txt"
 
-    transcripts_list = []
-    species_OGS_dict = parse_orthogroups_dict(filepath=path_OG_dict, species=species_name)
+    # read OGs list
     OG_list = []
     with open(path_OG_list, "r") as file_OG_list:
         lines_OG_list = file_OG_list.readlines()
         if len(lines_OG_list) != 1:
             raise RuntimeError(f"orthogroups list file {path_OG_list} has more than one line! it is supposed to be a csv file (no space) with a list of all OGs in a single line")
         OG_list = lines_OG_list[0].strip().split(",")
+    
+    # read transcripts
+    transcripts_list = []
+    if size_filter_sig_OGs:
+        species_OGS_dict = parse_orthogroups_dict(filepath=path_OG_dict, species=species_name, sig_list=OG_list)
+        # for the significant/foreground OGs, only actually include the ones that are expanding in the species of interest, not generally significant
+        species_OGS_dict = filter_sig_OGs_by_size(species_OGS_dict, q=0, verbose=True)
+    else:
+        species_OGS_dict = parse_orthogroups_dict(filepath=path_OG_dict, species=species_name)
 
     for OG_id in OG_list:
-        OG_transcripts = [transcript[:-2] for transcript in species_OGS_dict[OG_id] if transcript[-2:] == "_1"]
-        transcripts_list.extend(OG_transcripts)
+        try:
+            OG_transcripts = [transcript[:-2] for transcript in species_OGS_dict[OG_id] if transcript[-2:] == "_1"]
+            transcripts_list.extend(OG_transcripts)
+        except:
+            pass
 
     transcripts_line = ",".join(transcripts_list)
     with open(out_path, "w") as outfile:
@@ -277,6 +288,39 @@ def get_transcripts_list(path_OG_list:str, species_name:str, path_OG_dict:str) -
 
     print(f"file saved to {out_path}")
     return out_path
+
+def filter_sig_OGs_by_size(orthoDB_orthogroups:dict, q:int = 90, verbose=False):
+    """
+    return a dict orthogroups, where the GF size in the species is above the q'th percentile
+    orthoDB_orthogroups already contains only transcripts of one species!
+    if q=0, set min gf size to 1
+    """
+    GF_sizes_species = {}
+    sizes = []
+    for OG_id, transcripts_list in orthoDB_orthogroups.items():
+        if transcripts_list == [""]:
+            GF_sizes_species[OG_id] = 0
+        else:    
+            GF_sizes_species[OG_id] = len(transcripts_list)
+        sizes.append(len(transcripts_list))
+
+    OGs_filtered = {}
+    if q>0:
+        ## calculate size threshold
+        sizes = np.array(sizes)
+        percentile_size = np.percentile(sizes, q = q)
+        if verbose:
+            print(f" ---> \tmax gene family: {max(sizes)} \n\tmin gene family: {min(sizes)}\n--> {q}th percentile : {percentile_size}")
+    else:
+        percentile_size = 1 # so a size of at least two
+
+    for OG_id, size in GF_sizes_species.items():
+        if size > percentile_size:
+            OGs_filtered[OG_id]= orthoDB_orthogroups[OG_id]
+    if verbose:
+        print(f"\tbefore filtering: {len(orthoDB_orthogroups)} --> after filtering: {len(OGs_filtered)}")
+
+    return OGs_filtered
 
 
 if __name__ == "__main__":
@@ -376,4 +420,4 @@ if __name__ == "__main__":
         for species in species_list:
             print(f" *  {species}")
             get_transcripts_list(overlap_all, species_name=species, path_OG_dict=orthogroups_orthoDB_filepath)
-            get_transcripts_list(overlap_sig, species_name=species, path_OG_dict=orthogroups_orthoDB_filepath)
+            get_transcripts_list(overlap_sig, species_name=species, path_OG_dict=orthogroups_orthoDB_filepath, size_filter_sig_OGs=True)
