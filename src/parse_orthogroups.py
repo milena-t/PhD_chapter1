@@ -234,6 +234,49 @@ def get_species_in_OG_dict(OG_dict:dict) -> list:
     return(all_species)
 
 
+def get_species_list_from_OG(OGs_path:str, species_suffix:str = "_filtered_proteinfasta_TE_filtered") -> list:
+    """
+    get a list of all species in the orthofinder run by parsing the header. 
+    I gave the proteinfasta files the above defined suffix "_filtered_proteinfasta_TE_filtered" so I use that to sort it out
+    """
+    with open(OGs_path, "r") as OGs_file:
+        OGs_lines = OGs_file.readlines()
+        OGs_header = OGs_lines[0].strip().split("\t")
+        species_list = [species.replace(species_suffix, "") for species in OGs_header if species_suffix in species]
+    return species_list
+
+
+def get_transcripts_list(path_OG_list:str, species_name:str, path_OG_dict:str) -> str:
+    """
+    get a list of all transcripts in the list in path_OG_list and parse it into a new single-line csv file
+    the file is for the transcript IDs in the species the specified species_name
+    """
+    # parse outfile name
+    if "OGS" in path_OG_list.split("/")[-1]:
+        out_path = path_OG_list.replace("OGS", f"transcripts_{species_name}")
+    else:
+        out_basename = ".".join(path_OG_list.split(".")[:-1])
+        out_path = f"{out_basename}_transcripts_{species_name}.txt"
+
+    transcripts_list = []
+    species_OGS_dict = parse_orthogroups_dict(filepath=path_OG_dict, species=species_name)
+    OG_list = []
+    with open(path_OG_list, "r") as file_OG_list:
+        lines_OG_list = file_OG_list.readlines()
+        if len(lines_OG_list) != 1:
+            raise RuntimeError(f"orthogroups list file {path_OG_list} has more than one line! it is supposed to be a csv file (no space) with a list of all OGs in a single line")
+        OG_list = lines_OG_list[0].strip().split(",")
+
+    for OG_id in OG_list:
+        OG_transcripts = [transcript[:-2] for transcript in species_OGS_dict[OG_id] if transcript[-2:] == "_1"]
+        transcripts_list.extend(OG_transcripts)
+
+    transcripts_line = ",".join(transcripts_list)
+    with open(out_path, "w") as outfile:
+        outfile.write(transcripts_line)
+
+    print(f"file saved to {out_path}")
+    return out_path
 
 
 if __name__ == "__main__":
@@ -298,7 +341,7 @@ if __name__ == "__main__":
         print(type(orthoDB_orthogroups))
         get_OG_sizes_by_species(orthoDB_orthogroups, orthoDB_orthogroups_sig_only, native_orthogroups, native_orthogroups_sig_only)
 
-    if True:
+    if False:
         #orthogroups in bruchini and Tcas and Dmel to analyze species and lineage specific genes
         OG_path = "/Users/miltr339/work/orphan_genes/N0.tsv"
 
@@ -320,3 +363,17 @@ if __name__ == "__main__":
         print(num_orphan_transcripts)
         print(num_orphan_orthogroups)
 
+    if True:
+        ## get the transcripts lists
+        orthogroups_orthoDB_filepath = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_uniform/N0.tsv"
+        lists_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_convergence/"
+        overlap_all = f"{lists_dir}overlap_all_OGS.txt"
+        overlap_sig = f"{lists_dir}overlap_sig_OGS.txt"
+
+
+        species_list = get_species_list_from_OG(OGs_path=orthogroups_orthoDB_filepath)
+        
+        for species in species_list:
+            print(f" *  {species}")
+            get_transcripts_list(overlap_all, species_name=species, path_OG_dict=orthogroups_orthoDB_filepath)
+            get_transcripts_list(overlap_sig, species_name=species, path_OG_dict=orthogroups_orthoDB_filepath)
