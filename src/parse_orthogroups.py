@@ -317,6 +317,7 @@ def filter_sig_OGs_by_size(orthoDB_orthogroups:dict, q:int = 90, verbose=False):
     for OG_id, size in GF_sizes_species.items():
         if size > percentile_size:
             OGs_filtered[OG_id]= orthoDB_orthogroups[OG_id]
+    
     if verbose:
         print(f"\tbefore filtering: {len(orthoDB_orthogroups)} --> after filtering: {len(OGs_filtered)}")
 
