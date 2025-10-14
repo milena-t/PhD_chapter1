@@ -1,2 +1,2 @@
 number of sig. transcripts: 857
-number of all transcripts: 857
+number of all transcripts: 8421
