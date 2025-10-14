@@ -67,7 +67,7 @@ U_NAME=miltr339
 #     --plot
 
 REP_TABLES=/Users/miltr339/work/PhD_code/PhD_chapter1/data/repeats_tables
-SPECIES=A_obtectus
+SPECIES=C_maculatus
 
 python3 /Users/${U_NAME}/work/PhD_code/ReVis/src/ReVis/ReVis_transcript_surroundings.py \
     --plot \
