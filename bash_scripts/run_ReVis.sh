@@ -20,17 +20,17 @@ U_NAME=miltr339
 #     --GF_size_percentile 90 \
 #     --verbose
 
-python3 /Users/${U_NAME}/work/PhD_code/ReVis/src/ReVis/ReVis_transcript_surroundings.py \
-    --compute_tables_from_list \
-    --out_dir /Users/${U_NAME}/work/PhD_code/PhD_chapter1/data/repeats_tables \
-    --masker_outfile /Users/${U_NAME}/work/repeatmasking/repeat_gffs/C_maculatus_superscaffolded_masking.ori.out \
-    --annotation_gff /Users/${U_NAME}/work/orthoDB_annotations/C_maculatus_superscaffolded_annotation_isoform_filtered.gff \
-    --all_list /Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_convergence/overlap_all_transcripts_C_maculatus.txt \
-    --sig_list /Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_convergence/overlap_sig_transcripts_C_maculatus.txt \
-    --species_name C_maculatus \
-    --bp 10000 \
-    --GF_size_percentile 90 \
-    --verbose
+# python3 /Users/${U_NAME}/work/PhD_code/ReVis/src/ReVis/ReVis_transcript_surroundings.py \
+#     --compute_tables_from_list \
+#     --out_dir /Users/${U_NAME}/work/PhD_code/PhD_chapter1/data/repeats_tables \
+#     --masker_outfile /Users/${U_NAME}/work/repeatmasking/repeat_gffs/C_maculatus_superscaffolded_masking.ori.out \
+#     --annotation_gff /Users/${U_NAME}/work/orthoDB_annotations/C_maculatus_superscaffolded_annotation_isoform_filtered.gff \
+#     --all_list /Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_convergence/overlap_all_transcripts_C_maculatus.txt \
+#     --sig_list /Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_convergence/overlap_sig_transcripts_C_maculatus.txt \
+#     --species_name C_maculatus \
+#     --bp 10000 \
+#     --GF_size_percentile 90 \
+#     --verbose
 
 # python3 /Users/${U_NAME}/work/PhD_code/ReVis/src/ReVis/ReVis_transcript_surroundings.py \
 #     --compute_tables_from_list \
@@ -65,3 +65,17 @@ python3 /Users/${U_NAME}/work/PhD_code/ReVis/src/ReVis/ReVis_transcript_surround
 #     --plot_overlap_filtered \
 #     --verbose \
 #     --plot
+
+REP_TABLES=/Users/miltr339/work/PhD_code/PhD_chapter1/data/repeats_tables
+SPECIES=A_obtectus
+
+python3 /Users/${U_NAME}/work/PhD_code/ReVis/src/ReVis/ReVis_transcript_surroundings.py \
+    --plot \
+    --out_dir /Users/${U_NAME}/work/PhD_code/PhD_chapter1/data/repeats_tables \
+    --all_before_table ${REP_TABLES}/${SPECIES}_cumulative_repeats_before_all_transcripts.txt \
+    --sig_before_table ${REP_TABLES}/${SPECIES}_cumulative_repeats_before_sig_transcripts_90th_GF_size_percentile.txt \
+    --all_after_table ${REP_TABLES}/${SPECIES}_cumulative_repeats_after_all_transcripts.txt \
+    --sig_after_table ${REP_TABLES}/${SPECIES}_cumulative_repeats_after_sig_transcripts_90th_GF_size_percentile.txt \
+    --num_transcripts ${REP_TABLES}/${SPECIES}_transcript_numbers.txt \
+    --species_name $SPECIES \
+    --verbose

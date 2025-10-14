@@ -1,2 +1,2 @@
-number of sig. transcripts: 1302
-number of all transcripts: 32530
+number of sig. transcripts: 1521
+number of all transcripts: 10376
