@@ -454,16 +454,16 @@ if __name__ == "__main__":
         orthoDB_sig_list, orthoDB_cafe_list = CAFE.get_overlap_OG_sig_list(CAFE_runs_dir)
 
         ## write lists to file for other stuff
-        if False:
-            overlap_sig_OGS_path = "/Users/milena/work/PhD_code/PhD_chapter1/data/CAFE_convergence/overlap_sig_OGS.txt"
+        if True:
+            overlap_sig_OGS_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_convergence/overlap_sig_OGS.txt"
             orthoDB_sig_string = ",".join(orthoDB_sig_list)
             with open(overlap_sig_OGS_path, "w") as overlap_sig_OGS:
                 overlap_sig_OGS.write(orthoDB_sig_string)
             print(f"file written: {overlap_sig_OGS_path}")
-            overlap_all_OGS_path = "/Users/milena/work/PhD_code/PhD_chapter1/data/CAFE_convergence/overlap_all_OGS.txt"
-            orthoDB_cafe_string = ",".join(orthoDB_cafe_list)
+            overlap_all_OGS_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_convergence/overlap_all_OGS.txt"
+            orthoDB_all_string = ",".join(orthoDB_cafe_list)
             with open(overlap_all_OGS_path, "w") as overlap_all_OGS:
-                overlap_all_OGS.write(orthoDB_sig_string)
+                overlap_all_OGS.write(orthoDB_all_string)
             print(f"file written: {overlap_all_OGS_path}")
 
         print(f"{len(orthoDB_sig_list)} significant orthogroups out of {len(orthoDB_cafe_list)} in total")
