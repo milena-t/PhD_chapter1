@@ -316,6 +316,7 @@ def plot_slopes(inclines,p_values,p_values_bh,return_dict,OG_sizes, sig_list ,x_
         ax.set_ylim(-0.1,max_OG_size*1.25)
         pdf_ax.set_ylim(-0.1,max(pdf_y)*1.25)
         legend_fs = fs*0.7
+        pdf_ax.legend(fontsize = legend_fs, loc='upper right', title_fontsize = fs)
     elif len(norm_coeffs) != 0:
         raise RuntimeError(f"norm_coeffs has to have four elements: [mean,std,lower_CI,upper_CI], you have: \n{norm_coeffs}")
 
@@ -335,7 +336,6 @@ def plot_slopes(inclines,p_values,p_values_bh,return_dict,OG_sizes, sig_list ,x_
         title = f"spearman correlation of\n {title_} vs. Gene family size"
     plt.title(title, fontsize=fs*1.2)
     ax.legend(fontsize = legend_fs, loc='upper left', title_fontsize = legend_fs, title = "individual OG\nsignificance")
-    pdf_ax.legend(fontsize = legend_fs, loc='upper right', title_fontsize = fs)
 
     filename = filename.split(".png")[0]
     filename = f"{filename}_vs_OG_size"
@@ -495,7 +495,7 @@ if __name__ == "__main__":
             # gff.write_dict_to_file(TE_inclines, f"{data_dir}sig_OGs_vs_reps_inclines_pvalues.tsv", header=f"OG\tslope\tp-value\tsig_after_multiple_testing", separator="\t")
 
         ## do the individual repeat categories
-        if False:
+        if True:
             repeats_categories_dict = read_repeat_categories(repeat_categories_in_species)
 
             for repeat_category in repeats_categories_dict.keys():
@@ -508,7 +508,8 @@ if __name__ == "__main__":
                 
                 repeat_category_filename = repeat_category.replace(" ", "_")
                 repeat_category_filename = repeat_category_filename.replace(".","")
-                TE_inclines = plot_slopes(coefficients,p_values,p_values_BH,return_dict,OG_sizes, x_label = f"{repeat_category} content in percent",  filename = f"{data_dir}correlations/sig_OGs_vs_{repeat_category_filename}_coefficients_bh_corrected_PIC.png", sig_list=orthoDB_sig_list ,log_possible=False, svg=svg_bool, dark_mode=darkmode_bool)
+                norm_coeffs = calculate_list_CI(coefficients=coefficients, cl = 0.95)
+                TE_inclines = plot_slopes(coefficients,p_values,p_values_BH,return_dict,OG_sizes, x_label = f"{repeat_category} content in percent",  filename = f"{data_dir}correlations/sig_OGs_vs_{repeat_category_filename}_coefficients_bh_corrected_PIC.png", sig_list=orthoDB_sig_list ,log_possible=False, svg=svg_bool, dark_mode=darkmode_bool, norm_coeffs = norm_coeffs)
 
 
         ## last column of the sig_OGs_[...]_pvalues.tsv lists has one of three:
