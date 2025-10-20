@@ -294,11 +294,12 @@ def plot_all_species_protein_length_distribution(native_files:dict, orthoDB_file
         fig, axes = plt.subplots(rows, cols, figsize=(12, 15)) # for more than three rows
     else:
         fig, axes = plt.subplots(rows, cols, figsize=(15, 10)) # for more than three rows
-    fs = 28
+    fs = 22
 
     colors = {
         "orthoDB" : "#F2933A",
-        "native" : "#b82946",
+        "native" : "#4d7298", # uniform_unfiltered blue
+        # "native" : "#b82946", # native red
         "third" : "#9C4C32",
     }
 
@@ -340,9 +341,11 @@ def plot_all_species_protein_length_distribution(native_files:dict, orthoDB_file
         labels = [] 
         if third_column_files == {}:
             handles.append(mpatches.Patch(color=colors["native"]))
-            labels.append("native")
+            # labels.append("native")
+            labels.append("no uniform\nrepeat masking")
             handles.append(mpatches.Patch(color=colors["orthoDB"]))
-            labels.append("uniform")
+            # labels.append("uniform")
+            labels.append("with uniform\nrepeat masking")
         if third_column_files != {}:
             handles.append(mpatches.Patch(color=colors["native"]))
             labels.append("native (Kaufmann)")
@@ -350,7 +353,7 @@ def plot_all_species_protein_length_distribution(native_files:dict, orthoDB_file
             labels.append("uniform (no RNAseq)")
             handles.append(mpatches.Patch(color=colors["third"]))
             labels.append("different RNA populations")
-        axes[row, col].legend(handles, labels, fontsize = fs, loc='center', title_fontsize = fs)
+        axes[row, col].legend(handles, labels, fontsize = fs*0.75, loc='center', title_fontsize = fs)
             
     
     # Set a single x-axis label for all subplots
@@ -427,8 +430,8 @@ if __name__ == "__main__":
     # output dir
     data = "/Users/miltr339/work/PhD_code/PhD_chapter1/data"
     # proteinfasta files dir
-    native_dir = "/Users/milena/work/native_proteinseqs"
-    orthoDB_dir = "/Users/milena/work/orthoDB_proteinseqs_TE_filtered"
+    native_dir = "/Users/miltr339/work/native_proteinseqs"
+    orthoDB_dir = "/Users/miltr339/work/orthoDB_proteinseqs_TE_filtered"
     tree = "/Users/miltr339/Box Sync/code/annotation_pipeline/annotation_scripts_ordered/14_species_orthofinder_tree.nw"
     
     ## plot old Kaufmann annotation comparison
@@ -521,9 +524,9 @@ if __name__ == "__main__":
     
     ### plot protein length histograms
     ## filepaths
-    if False:
+    if True:
     
-        data = "/Users/milena/work/PhD_code/PhD_chapter1/data"
+        data = "/Users/miltr339/work/PhD_code/PhD_chapter1/data"
         native_files = {
             "A_obtectus" : f"{native_dir}/A_obtectus.faa",
             "A_verrucosus" : f"{native_dir}/A_verrucosus.faa",
@@ -557,17 +560,37 @@ if __name__ == "__main__":
             "T_castaneum" : f"{orthoDB_dir}/T_castaneum_filtered_proteinfasta_TE_filtered.fa",
             "T_molitor" : f"{orthoDB_dir}/T_molitor_filtered_proteinfasta_TE_filtered.fa",
             "Z_morio" : f"{orthoDB_dir}/Z_morio_filtered_proteinfasta_TE_filtered.fa",
+        }   
+
+        unfiltered_path = "/Users/miltr339/work/orthoDB_proteinseqs"
+        orthoDB_files_unfiltered = {
+            "A_obtectus" : f"{unfiltered_path}/A_obtectus_filtered_proteinfasta.fa",
+            "A_verrucosus" : f"{unfiltered_path}/A_verrucosus_filtered_proteinfasta.fa",
+            "B_siliquastri" : f"{unfiltered_path}/B_siliquastri_filtered_proteinfasta.fa",
+            "C_chinensis" : f"{unfiltered_path}/C_chinensis_filtered_proteinfasta.fa",
+            "C_maculatus" : f"{unfiltered_path}/C_maculatus_filtered_proteinfasta.fa",
+            "C_septempunctata" : f"{unfiltered_path}/C_septempunctata_filtered_proteinfasta.fa",
+            "D_melanogaster" : f"{unfiltered_path}/D_melanogaster_filtered_proteinfasta.fa",
+            "D_ponderosae" : f"{unfiltered_path}/D_ponderosae_filtered_proteinfasta.fa",
+            "I_luminosus" : f"{unfiltered_path}/I_luminosus_filtered_proteinfasta.fa",
+            "P_pyralis" : f"{unfiltered_path}/P_pyralis_filtered_proteinfasta.fa",
+            "R_ferrugineus" : f"{unfiltered_path}/R_ferrugineus_filtered_proteinfasta.fa",
+            "T_castaneum" : f"{unfiltered_path}/T_castaneum_filtered_proteinfasta.fa",
+            "T_molitor" : f"{unfiltered_path}/T_molitor_filtered_proteinfasta.fa",
+            "Z_morio" : f"{unfiltered_path}/Z_morio_filtered_proteinfasta.fa",
         }
 
         # get individual plots for all species
         # for species in native_files.keys():
         #     plot_histogram_protein_lengths(native_files[species], orthoDB_files[species], species_name=species, filename = f"protein_lengths_histogram_{species}.png")
         
-        plot_all_species_protein_length_distribution(native_files, orthoDB_files, filename=f"{data}/protein_lengths_histogram.png", dark_mode=True)
+        # plot_all_species_protein_length_distribution(native_files, orthoDB_files, filename=f"{data}/protein_lengths_histogram.png", dark_mode=False)
+        plot_all_species_protein_length_distribution(orthoDB_files_unfiltered, orthoDB_files, filename=f"{data}/protein_lengths_histogram_no_repeatfilter.png", dark_mode=False)
         
         # plot individual species
-        plot_histogram_protein_lengths(native_path = native_files["T_castaneum"], orthoDB_path = orthoDB_files["T_castaneum"], species_name="T. castaneum", no_bins = 20, max_length = 1500, filename = f"{data}/Tcas_protein_lengths_histogram.png", dark_mode=True)
-        plot_histogram_protein_lengths(native_path = native_files["B_siliquastri"], orthoDB_path = orthoDB_files["B_siliquastri"], species_name="B. siliquastri", no_bins = 20, max_length = 1500, filename = f"{data}/Bsil_protein_lengths_histogram.png", dark_mode=True)
+        if False:
+            plot_histogram_protein_lengths(native_path = native_files["T_castaneum"], orthoDB_path = orthoDB_files["T_castaneum"], species_name="T. castaneum", no_bins = 20, max_length = 1500, filename = f"{data}/Tcas_protein_lengths_histogram.png", dark_mode=True)
+            plot_histogram_protein_lengths(native_path = native_files["B_siliquastri"], orthoDB_path = orthoDB_files["B_siliquastri"], species_name="B. siliquastri", no_bins = 20, max_length = 1500, filename = f"{data}/Bsil_protein_lengths_histogram.png", dark_mode=True)
 
     if False:
         annot_com_dir = "/Users/milena/work/c_maculatus/annotation_comparison/superscaffolded_annotation"
@@ -590,7 +613,7 @@ if __name__ == "__main__":
         plot_histogram_protein_lengths(native_path = native_files["Cmac_Lome_diverse"], orthoDB_path = orthoDB_files["Cmac_Lome_diverse"], third_path=comparison_files["Cmac_Lome_diverse"], species_name="C. maculatus (Lome RNA annotation)\n", no_bins = 20, max_length = 1500, filename = f"{data}/Lome_RNA_annot_comparison/Lome_only_protein_lengths_histogram.png", dark_mode=False)
 
 
-    if True:
+    if False:
         # data from filtering pasted here so that I don't loose it
         filter_stats = {'A_obtectus': [29689, 28317, 1372], 'A_verrucosus': [23817, 23753, 64], 'B_siliquastri': [14999, 14804, 195], 'C_analis': [25927, 25273, 654], 'C_chinensis': [25373, 24736, 637], 'C_maculatus': [35319, 34188, 1131], 'C_septempunctata': [19848, 19843, 5], 'D_melanogaster': [14809, 14805, 4], 'D_ponderosae': [16657, 16656, 1], 'I_luminosus': [28964, 28960, 4], 'P_pyralis': [27199, 27181, 18], 'R_ferrugineus': [20416, 20413, 3], 'T_castaneum': [17591, 17318, 273], 'T_molitor': [19332, 19217, 115], 'Z_morio': [29865, 29559, 306]}
         # columns=["before_filtering", "after_filtering", "num_filtered"]
