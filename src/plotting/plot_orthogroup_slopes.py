@@ -295,7 +295,7 @@ def plot_slopes(inclines,p_values,p_values_bh,return_dict,OG_sizes, sig_list ,x_
 
     if len(norm_coeffs) == 4:
         pdf_ax = ax.twinx()
-        pdf_ax.set_ylabel('normal distribution pdf', color = colors["native"], fontsize = fs)
+        pdf_ax.set_ylabel('normal distribution\nbased on mean and sd', color = colors["native"], fontsize = fs)
         pdf_ax.tick_params(axis ='y', labelcolor = colors["native"], labelsize = fs) 
 
         lwd = 1.5 #linewidth
@@ -307,8 +307,8 @@ def plot_slopes(inclines,p_values,p_values_bh,return_dict,OG_sizes, sig_list ,x_
             max_OG_size = max(max(OG_sizes_unsig_list), max(OG_sizes_sig_list)) 
 
         pdf_y = scipy.stats.norm.pdf(pdf_x, mean_cor, std_cor)
-        pdf_ax.plot(pdf_x,pdf_y, linewidth=lwd, color=colors["native"], label = f"pdf mean: {mean_cor:.3f}")#, linestyle="--")
-        pdf_ax.axvline(x=lower_CI, linewidth=lwd, color=colors["native"], linestyle=":", label = f"95% CI [{lower_CI:.3f}, {upper_CI:.3f}]")
+        pdf_ax.plot(pdf_x,pdf_y, linewidth=lwd, color=colors["native"], label = f"mean: {mean_cor:.3f}")#, linestyle="--")
+        pdf_ax.axvline(x=lower_CI, linewidth=lwd, color=colors["native"], linestyle=":", label = f"95% standard error \nof the mean [{lower_CI:.3f}, {upper_CI:.3f}]")
         pdf_ax.axvline(x=upper_CI, linewidth=lwd, color=colors["native"], linestyle=":")
         pdf_ax.set(yticklabels=[])
 
