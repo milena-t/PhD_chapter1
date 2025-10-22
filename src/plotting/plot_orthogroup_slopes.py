@@ -452,15 +452,15 @@ if __name__ == "__main__":
         print(f"\n\torthoDB")
         # orthoDB_sig_list, orthoDB_cafe_list = OGs.get_sig_orthogroups(sig_orthoDB)
         orthoDB_sig_list, orthoDB_cafe_list = CAFE.get_overlap_OG_sig_list(CAFE_runs_dir)
-
+        username = "milena" # "miltr339"
         ## write lists to file for other stuff
         if True:
-            overlap_sig_OGS_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_convergence/overlap_sig_OGS.txt"
+            overlap_sig_OGS_path = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/CAFE_convergence/overlap_sig_OGS.txt"
             orthoDB_sig_string = ",".join(orthoDB_sig_list)
             with open(overlap_sig_OGS_path, "w") as overlap_sig_OGS:
                 overlap_sig_OGS.write(orthoDB_sig_string)
             print(f"file written: {overlap_sig_OGS_path}")
-            overlap_all_OGS_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_convergence/overlap_all_OGS.txt"
+            overlap_all_OGS_path = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/CAFE_convergence/overlap_all_OGS.txt"
             orthoDB_all_string = ",".join(orthoDB_cafe_list)
             with open(overlap_all_OGS_path, "w") as overlap_all_OGS:
                 overlap_all_OGS.write(orthoDB_all_string)
