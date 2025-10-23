@@ -453,7 +453,7 @@ if __name__ == "__main__":
         print(f"\n\torthoDB")
         # orthoDB_sig_list, orthoDB_cafe_list = OGs.get_sig_orthogroups(sig_orthoDB)
         orthoDB_sig_list, orthoDB_cafe_list = CAFE.get_overlap_OG_sig_list(CAFE_runs_dir)
-        username = "milena" # "miltr339"
+        username = "miltr339" # "miltr339"
         ## write lists to file for other stuff
         if True:
             overlap_sig_OGS_path = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/CAFE_convergence/overlap_sig_OGS.txt"
