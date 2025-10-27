@@ -636,8 +636,8 @@ def plot_wilcoxon_vs_rep_association_by_category(rep_abundances, wilcoxon_result
         repeat_category_title = repeat_category.replace("_"," ")
         if len(absent_species) == len(species_list):
             axes[row, col].axis('off')
-            axes[row, col].set_title(f'{repeat_category_title} absent\nin all species', fontsize = fs*0.75)
-            # axes[row, col].set_title(f'')
+            # axes[row, col].set_title(f'{repeat_category_title} absent\nin all species', fontsize = fs*0.75)
+            axes[row, col].text(0,0.5,f'{repeat_category_title} absent\nin all species', fontsize = fs*0.75)
             idx_reduced += 1
             print(f"\tin position {row+1},{col+1}: \t{repeat_category_title} -->  (missing in all species)")
             # continue
