@@ -325,7 +325,7 @@ def plot_all_species_protein_length_distribution(native_files:dict, orthoDB_file
             axes[row, col].hist([native_lengths, orthoDB_lengths], bins=no_bins, histtype="bar", color = [colors["native"], colors["orthoDB"]])
         else:
             axes[row, col].hist([native_lengths, orthoDB_lengths, third_lengths], bins=no_bins, histtype="bar", color = [colors["native"], colors["orthoDB"], colors["third"]])
-        axes[row, col].set_title(f'{species_name}', fontsize = fs)
+        axes[row, col].set_title(f'{species_name}', fontsize = fs*0.85)
         axes[row, col].set_xlabel('')
         axes[row, col].set_ylabel('')
         axes[row, col].tick_params(axis='x', labelsize=fs*0.8)
