@@ -452,8 +452,10 @@ def plot_wilcoxon_vs_rep_association_by_species(rep_abundances, wilcoxon_results
     rows = int(len(types_list)/cols)  +1
     if rows>2:
         fig, axes = plt.subplots(rows, cols, figsize=(12, 15)) # for more than three rows
+        mid_row = int(rows/2)
     else:
         fig, axes = plt.subplots(rows, cols, figsize=(15, 10)) # for more than three rows
+        mid_row = 0
     fs = 22
     pointsize = 100
 
@@ -513,7 +515,10 @@ def plot_wilcoxon_vs_rep_association_by_species(rep_abundances, wilcoxon_results
         axes[row, col].scatter(after_test_statistic, category_genome_content, color = colors_list, s=pointsize, marker="v")
         axes[row, col].set_title(f'{species_name}', fontsize = fs)
         axes[row, col].set_xlabel('')
-        axes[row, col].set_ylabel('')
+        if col == 0 and row == mid_row:
+            axes[row, col].set_ylabel('whole genome abundance of repeat category', fontsize = fs)
+        else:
+            axes[row, col].set_ylabel('')
         if len(category_genome_content) ==0:
             continue
         if max(category_genome_content) <5 : 
@@ -574,8 +579,10 @@ def plot_wilcoxon_vs_rep_association_by_category(rep_abundances, wilcoxon_result
     rows = int(len(types_list)/cols)  +1
     if rows>2:
         fig, axes = plt.subplots(rows, cols, figsize=(12, 15)) # for more than three rows
+        mid_row = int(rows/2)
     else:
         fig, axes = plt.subplots(rows, cols, figsize=(15, 10)) # for more than three rows
+        mid_row = 0
     fs = 22
     pointsize = 100
 
@@ -644,12 +651,15 @@ def plot_wilcoxon_vs_rep_association_by_category(rep_abundances, wilcoxon_result
             # Plot histogram on the corresponding subplot axis
             axes[row, col].scatter(before_test_statistic, category_genome_content, color = colors_list, s=pointsize)
             axes[row, col].scatter(after_test_statistic, category_genome_content, color = colors_list, s=pointsize, marker="v")
-            axes[row, col].set_title(f'{repeat_category_title}', fontsize = fs)
+            axes[row, col].set_title(f'{repeat_category_title}', fontsize = fs*0.85)
             axes[row, col].set_xlabel('')
-            axes[row, col].set_ylabel('')
+            if col == 0 and row == mid_row:
+                axes[row, col].set_ylabel('whole genome abundance', fontsize = fs)
+            else:
+                axes[row, col].set_ylabel('')
             if len(category_genome_content) ==0:
                 continue
-            if max(category_genome_content) <5 : 
+            if max(category_genome_content) <9 : 
                 axes[row, col].yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 100 else f'{x:.2}%'))
             else:
                 axes[row, col].yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 100 else f'{int(x)}%'))
