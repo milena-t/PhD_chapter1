@@ -482,6 +482,7 @@ def plot_wilcoxon_vs_rep_association_by_species(rep_abundances, wilcoxon_results
     # for idx, repeat_category in enumerate(types_list): 
     for idx, species in enumerate(species_list): 
         
+        species_name = species.replace("_", ". ")
         category_genome_content = [] # rep_abundances[species][type_association[repeat_category]] for species in species_list
         before_test_statistic = [] # wilcoxon_results[species][repeat_category][1] for species in species_list
         after_test_statistic = [] # wilcoxon_results[species][repeat_category][3] for species in species_list
@@ -501,13 +502,16 @@ def plot_wilcoxon_vs_rep_association_by_species(rep_abundances, wilcoxon_results
         # Calculate row and column indices for the current subplot
         row = idx // cols
         col = idx % cols
-    
-        print(f"\tin position {row+1},{col+1}: \t{species} -->  (missing {len(absent_rep_cat)} repeat categories: {absent_rep_cat} )")
+
+        if len(absent_rep_cat)>0:
+            print(f"\tin position {row+1},{col+1}: \t{species_name} -->  (missing {len(absent_rep_cat)} repeat categories: {absent_rep_cat} )")
+        else:
+            print(f"\tin position {row+1},{col+1}: \t{species_name}")
 
         # Plot histogram on the corresponding subplot axis
         axes[row, col].scatter(before_test_statistic, category_genome_content, color = colors_list, s=pointsize)
         axes[row, col].scatter(after_test_statistic, category_genome_content, color = colors_list, s=pointsize, marker="v")
-        axes[row, col].set_title(f'{species}', fontsize = fs)
+        axes[row, col].set_title(f'{species_name}', fontsize = fs)
         axes[row, col].set_xlabel('')
         axes[row, col].set_ylabel('')
         if len(category_genome_content) ==0:
@@ -598,6 +602,7 @@ def plot_wilcoxon_vs_rep_association_by_category(rep_abundances, wilcoxon_result
     }
 
     # for idx, repeat_category in enumerate(types_list): 
+    idx_reduced = 0
     for idx, repeat_category in enumerate(types_list): 
         
         category_genome_content = [] # rep_abundances[species][type_association[repeat_category]] for species in species_list
@@ -614,35 +619,50 @@ def plot_wilcoxon_vs_rep_association_by_category(rep_abundances, wilcoxon_result
             else:
                 absent_species.append(species)
 
+
         if len(category_genome_content) != len(before_test_statistic) or len(before_test_statistic) != len(after_test_statistic):
             raise RuntimeError(f"{repeat_category} data lengths don't match!\n\t --> category_genome_content : {len(category_genome_content)}\n\t --> before_test_statistic : {len(before_test_statistic)}\n\t --> after_test_statistic : {len(after_test_statistic)}")
         # Calculate row and column indices for the current subplot
         row = idx // cols
         col = idx % cols
-    
-        print(f"\tin position {row+1},{col+1}: \t{repeat_category} -->  (missing in {len(absent_species)} species: {absent_species} )")
 
-        # Plot histogram on the corresponding subplot axis
-        axes[row, col].scatter(before_test_statistic, category_genome_content, color = colors_list, s=pointsize)
-        axes[row, col].scatter(after_test_statistic, category_genome_content, color = colors_list, s=pointsize, marker="v")
-        axes[row, col].set_title(f'{repeat_category}', fontsize = fs)
-        axes[row, col].set_xlabel('')
-        axes[row, col].set_ylabel('')
-        if len(category_genome_content) ==0:
-            continue
-        if max(category_genome_content) <5 : 
-            axes[row, col].yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 100 else f'{x:.2}%'))
+        repeat_category_title = repeat_category.replace("_"," ")
+        if len(absent_species) == len(species_list):
+            axes[row, col].axis('off')
+            axes[row, col].set_title(f'{repeat_category_title} absent\nin all species', fontsize = fs*0.75)
+            # axes[row, col].set_title(f'')
+            idx_reduced += 1
+            print(f"\tin position {row+1},{col+1}: \t{repeat_category_title} -->  (missing in all species)")
+            # continue
         else:
-            axes[row, col].yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 100 else f'{int(x)}%'))
-        axes[row, col].tick_params(axis='x', labelsize=fs*0.8)
-        axes[row, col].tick_params(axis='y', labelsize=fs*0.8)
+
+            if len(absent_species)>0:
+                print(f"\tin position {row+1},{col+1}: \t{repeat_category_title} -->  (missing in {len(absent_species)} species: {absent_species} )")
+            else:
+                print(f"\tin position {row+1},{col+1}: \t{repeat_category_title}")
+
+            # Plot histogram on the corresponding subplot axis
+            axes[row, col].scatter(before_test_statistic, category_genome_content, color = colors_list, s=pointsize)
+            axes[row, col].scatter(after_test_statistic, category_genome_content, color = colors_list, s=pointsize, marker="v")
+            axes[row, col].set_title(f'{repeat_category_title}', fontsize = fs)
+            axes[row, col].set_xlabel('')
+            axes[row, col].set_ylabel('')
+            if len(category_genome_content) ==0:
+                continue
+            if max(category_genome_content) <5 : 
+                axes[row, col].yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 100 else f'{x:.2}%'))
+            else:
+                axes[row, col].yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 100 else f'{int(x)}%'))
+            axes[row, col].tick_params(axis='x', labelsize=fs*0.8)
+            axes[row, col].tick_params(axis='y', labelsize=fs*0.8)
     
     # add legend to last plot square
     if legend_in_last == True:
         # plot marker type
-        idx_max = len(types_list)
+        idx_max = len(types_list)#  - idx_reduced
         row = idx_max // cols
         col = idx_max % cols
+        print(f"\tin position {row+1},{col+1}: \tlegend")
         axes[row, col].axis('off')
         axes[row, col].set_title(f'')
         axes[row, col].scatter([-1], [-1], color='black', label = "before transcript", s=pointsize)
@@ -651,14 +671,11 @@ def plot_wilcoxon_vs_rep_association_by_category(rep_abundances, wilcoxon_result
         axes[row, col].set_ylim(0, 0.1)
         axes[row, col].legend(fontsize = fs*0.75, loc='center', title_fontsize = fs)
         ## empty last plots
-        col+=1
-        axes[row, col].axis('off')
-        axes[row, col].set_title(f'')
-        ## empty last plots
-        col+=1
-        axes[row, col].axis('off')
-        axes[row, col].set_title(f'')
-
+        for i in range(columns-col-1):
+            # print(i)
+            col+=1
+            axes[row, col].axis('off')
+            axes[row, col].set_title(f'')
     
     # Set a single x-axis label for all subplots
     x_label = f"Wilcoxon test effect size"
