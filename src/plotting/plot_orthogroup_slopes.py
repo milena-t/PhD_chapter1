@@ -486,14 +486,14 @@ if __name__ == "__main__":
             norm_coeffs = calculate_list_CI(coefficients=coefficients, cl = 0.95)
 
             GS_inclines = plot_slopes(coefficients,p_values,p_values_BH,return_dict,OG_sizes, x_label = "Genome size in Mb",  filename = f"{data_dir}correlations/sig_OGs_vs_GS_coefficients_bh_corrected_PIC.png", sig_list=orthoDB_sig_list ,log_possible=False, svg=svg_bool, dark_mode=darkmode_bool, norm_coeffs = norm_coeffs)
-            # gff.write_dict_to_file(GS_inclines, f"{data_dir}sig_OGs_vs_GS_inclines_pvalues.tsv", header=f"OG\tslope\tp-value\tsig_after_multiple_testing", separator="\t")
+            gff.write_dict_to_file(GS_inclines, f"{data_dir}sig_OGs_vs_GS_correlations_pvalues.tsv", header=f"OG\tcorrelation_coeff\tp-value\tsig_after_multiple_testing", separator="\t")
 
             print(f"\n\t\t * repeat content")
             ## spearman correlation
             coefficients,p_values,p_values_BH,OG_sizes,return_dict = get_plot_values_spearman(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, sig_list=orthoDB_sig_list, tree_path=tree)
             norm_coeffs = calculate_list_CI(coefficients=coefficients, cl = 0.95)
             TE_inclines = plot_slopes(coefficients,p_values,p_values_BH,return_dict,OG_sizes, x_label = "Repeat content in percent",  filename = f"{data_dir}correlations/sig_OGs_vs_reps_coefficients_bh_corrected_PIC.png", sig_list=orthoDB_sig_list ,log_possible=False, svg=svg_bool, dark_mode=darkmode_bool, norm_coeffs = norm_coeffs)
-            # gff.write_dict_to_file(TE_inclines, f"{data_dir}sig_OGs_vs_reps_inclines_pvalues.tsv", header=f"OG\tslope\tp-value\tsig_after_multiple_testing", separator="\t")
+            gff.write_dict_to_file(TE_inclines, f"{data_dir}sig_OGs_vs_reps_correlations_pvalues.tsv", header=f"OG\tcorrelation_coeff\tp-value\tsig_after_multiple_testing", separator="\t")
 
         ## do the individual repeat categories
         if True:
