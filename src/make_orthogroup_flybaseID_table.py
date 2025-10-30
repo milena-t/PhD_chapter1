@@ -147,6 +147,9 @@ def make_table_with_flybase_functions(orthogroup_dict_species, drosophila_gff_pa
 
     outfile_name = f"{outfile_path}/{outfile_name}"
     with open(outfile_name, "w") as outfile:
+
+        #write start comment line
+        # outfile.write(f"## Orthogroups where the uniform-annotation Dmel member has a blast hit with a native-annotation Dmel member which is used for functional inference via the flybase ID\n##(orthogroups with no blast hit are listed at the end of the table with no annotations)")
         
         # write headers according to input files
         if orthogroups_dict_all =={} and david_gene_groups == {} and david_functions == {}:
@@ -443,7 +446,7 @@ def read_slopes_table(table_path:str):
     """
     read table output from plot_slopes() in src/plotting/plot_orthogroup_slopes.py
     into a dictionary 
-    { orthogroup_ID : [ slope ,  p-value ] }
+    { orthogroup_ID : [ correlation_coeff , slope ,  p-value ] }
     """
     table_dict = {}
     with open(table_path, "r") as table_file:
@@ -489,7 +492,10 @@ def add_cols_to_flybase_table(flybase_table_path:str, slopes_table_path:str, col
             
             flyblase_list = flyblase_line.strip().split("\t")
             OG_id = flyblase_list[0]
-            slopes = slopes_table_dict[OG_id]
+            try:
+                slopes = slopes_table_dict[OG_id]
+            except:
+                slopes = ["1","1","n"]
 
             flybase_insert = flyblase_list[:insert_index] + slopes + flyblase_list[insert_index:]
             flybase_insert_line = "\t".join(flybase_insert)
@@ -569,7 +575,7 @@ if __name__ == "__main__":
         blastp -query /Users/milena/work/PhD_code/PhD_chapter1/src/Dmel_transcripts_from_sig_OGs.fasta -db /Users/milena/work/native_proteinseqs/D_melanogaster.faa -out /Users/milena/work/PhD_code/PhD_chapter1/data/Dmel_oDB_vs_nat.out -outfmt 6 -num_threads 5 -evalue 1e-10
         """
 
-        if False:
+        if True:
             # blast_outfile = "/Users/miltr339/work/PhD_code/Dmel_oDB_vs_nat.out"
             blast_outfile = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/Dmel_oDB_vs_nat.out"
             blast_out_dict = parse_blast_outfile(blast_outfile, query_fasta=f"/Users/{username}/work/PhD_code/PhD_chapter1/src/Dmel_transcripts_from_sig_OGs.fasta")
