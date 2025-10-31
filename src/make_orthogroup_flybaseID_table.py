@@ -200,7 +200,7 @@ def make_table_with_flybase_functions(orthogroup_dict_species, drosophila_gff_pa
                 if orthogroups_dict_all =={} and david_gene_groups =={} and david_functions == {}:
                     outfile_string = f"{OG_id}\t{transcript}\t{flybase}\t{flybase_summary}\n"
                 elif orthogroups_dict_all !={} and david_gene_groups =={} and david_functions == {}:
-                    outfile_string = f"{OG_id}\t{transcript}\t{flybase}\t{flybase_summary}\t{cafe_p}\t{GF_size}\n"
+                    outfile_string = f"{OG_id}\t{transcript}\t{flybase}\t{flybase_summary}\t{GF_size}\n"
                 elif orthogroups_dict_all !={} and david_gene_groups !={}:
                     outfile_string = f"{OG_id}\t{gene_group}\t{group_function}\t{gene_name}\t{GF_size}\t{transcript}\t{flybase}\t{flybase_summary}\n"
                     
