@@ -432,8 +432,11 @@ def filter_flybase_table_to_single_OG(flybase_table_path:str, min_delta_GF=0):
         for line in lines[1:]:
             line_list = line.strip().split("\t")
             orthogroup = line_list[0]
-            deltaGF = int(line_list[19])
-            if orthogroup != current_OG and deltaGF>min_delta_GF:
+            # for i,element in enumerate(line_list):
+            #     print(f"{i} : \t{element}")
+            # raise RuntimeError
+            deltaGF = int(line_list[18])
+            if orthogroup != current_OG and deltaGF>=min_delta_GF:
                 outfile.write(line)
                 current_OG = orthogroup
             else:
@@ -518,7 +521,8 @@ if __name__ == "__main__":
     david_gene_groups_path = f"/Users/{username}/Box Sync/thesis writing/Milena chapter1/Sig OG Flybase IDs/DAVID-FunctionalClustering_FBgenes.txt"
     david_gene_groups_path_home = f"/Users/{username}/Box Sync/thesis writing/Milena chapter1/Sig OG Flybase IDs/DAVID-FunctionalClustering_FBgenes.txt"
     tree_path = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_only_species_names.nw"
-    flybase_table_path = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/orthoDB_sig_OGs_flybase_IDs_with_group_function.tsv"
+    # flybase_table_path = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/orthoDB_sig_OGs_flybase_IDs_with_group_function.tsv"
+    flybase_table_path = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/orthoDB_anyCAFE_run_sig_OGs_flybase_IDs_with_group_function.tsv"
     # flybase_table_path_one_OG_member = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthoDB_sig_OGs_flybase_IDs_with_group_function_only_one_OG_member.tsv"
     GF_vs_rep_slopes = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/sig_OGs_vs_reps_correlations_pvalues.tsv"
     GF_vs_GS_slopes = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/sig_OGs_vs_GS_correlations_pvalues.tsv"
