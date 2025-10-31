@@ -398,6 +398,7 @@ def parse_func_table_for_protein_name(summary_table_path:str):
     out_dict = {}
     with open(summary_table_path, "r") as summary_table:
         lines = summary_table.readlines()
+        print(len(lines))
         for line in lines[1:]: # skip header line
             line_parse = line.strip().split("\t")
             out_dict[line_parse[0]] = line_parse[9]
@@ -415,6 +416,9 @@ def make_functional_summary_bar(functional_dict:dict, summary_table:str, orthogr
     of_interest_list = []
     category_count_dict = {}
     category_OG_dict = {}
+
+    # go through input orthogroups dict that are split by function and remove duplicates and nonsignificant ones
+    # should all be mostly ok but because I sorted them manually some stuff may have slipped thorugh the cracks
     for category, subcategories in functional_dict.items():
         category_list = []
         for subcategory, sublist in subcategories.items():
@@ -439,10 +443,15 @@ def make_functional_summary_bar(functional_dict:dict, summary_table:str, orthogr
         category_count_dict[category] = len(category_list)
         category_OG_dict[category] = category_list
         # cat_list_dedup = list(set(category_list))
-
         # print(f"{category} : {len(category_list)} elements, {len(cat_list_dedup)} deduplicated")
 
+    # get individual gene names for each orthogroup
     all_annot_dict = parse_func_table_for_protein_name(summary_table)
+    # all_annot_dict_unfiltered = parse_func_table_for_protein_name(summary_table)
+    # all_annot_dict = { orthogroup : annotation for orthogroup,annotation in all_annot_dict_unfiltered.items() if orthogroup in cafe_SIG_OGS}
+    # assert len(all_annot_dict) == len(cafe_SIG_OGS)
+
+    # sort out different kinds of non-functional annotations
     no_annot_list = [OG_id for OG_id,name in all_annot_dict.items() if "None"  in name or "No_flybase_match" in name]
     unchar_annot_list = [OG_id for OG_id,name in all_annot_dict.items() if "uncharacterized protein" in name]
     yes_annot_list = [OG_id for OG_id,name in all_annot_dict.items() if "None" not in name and "No_flybase_match" not in name and "uncharacterized protein" not in name]
@@ -450,7 +459,7 @@ def make_functional_summary_bar(functional_dict:dict, summary_table:str, orthogr
     print(f"{len(no_annot_list)} + {len(unchar_annot_list)} = {len(no_annot_list) + len(unchar_annot_list)} --> not annotated / uncharacterized")
     print(f"{len(yes_annot_list)} \t --> yes annotated")
     print(f"{len(no_annot_list)} + {len(unchar_annot_list)} + {len(yes_annot_list)} = {len(no_annot_list) + len(unchar_annot_list) + len(yes_annot_list)}")
-
+    # make counts for plotting
     category_count_dict["Other annotation"] = len(yes_annot_list) - len(of_interest_list)
     category_count_dict["Uncharacterized protein"] = len(unchar_annot_list)
     category_count_dict["No functional annotation"] = len(no_annot_list)
