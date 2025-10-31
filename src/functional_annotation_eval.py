@@ -89,26 +89,32 @@ def plot_selected_OGs(orthogroups_path:str, OG_IDs:list[list[str]], colors:list,
         raise RuntimeError(f"\t --> list with orthogroup IDs lists and list with labels do not have the same length!")
     elif len(colors) != len(labels):
         raise RuntimeError(f"\t --> list with colors and list with labels do not have the same length!")
-
+    
     ymax = 0
+    print(f"functional category : OGs / transcripts")
     for i,OG_IDs_list in enumerate(OG_IDs):
         
+        # plot for legend
         ax.plot(0, 0, color = colors[i], alpha = 1, linewidth =2, label = labels[i], linestyle = linestyles_list[i]) 
         OGs_of_interest_dict = {OG_id : orthoDB_dict[OG_id] for OG_id in OG_IDs_list}
 
         for orthogroup in OG_IDs_list:
             gene_family_members = []
+            count_transcripts = 0
             for species in species_names:
                 try:
-                    gene_family_members.append(OGs_of_interest_dict[orthogroup][species])
+                    num_GF_members = OGs_of_interest_dict[orthogroup][species]
                 except:
-                    gene_family_members.append(0)
+                    num_GF_members = 0
+                gene_family_members.append(num_GF_members)
+                count_transcripts += num_GF_members
         
             if max(gene_family_members) > ymax:
                 ymax = max(gene_family_members)
 
+            # actually plot lines
             ax.plot(species_names, gene_family_members, color = colors[i], alpha = 1, linewidth =2, linestyle = linestyles_list[i]) # originally 0.8
-
+        print(f"{labels[i]} : \t{len(OG_IDs_list)} / {count_transcripts}")
 
     ax.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x < 0  else f'{int(x)}'))
 
@@ -594,52 +600,53 @@ if __name__ == "__main__":
 
 ## overall functional proportions
     
-    # remember that some are overlapping! do list(set()) for top-level categories to keep the numbers right
-    functional_categories_dict = {
-        "Chemosensory" : {
-            "Cluster 30: pheromone binding": OG_lists_dict["Gene Group 30"],
-            "Cluster 7: odorant binding": OG_lists_dict["Gene Group 7"],
-            "Cluster 20: transmembrane transport in antennae": OG_lists_dict["Gene Group 20"],
-            "Olfactory receptor activity": ["N0.HOG0001100", "N0.HOG0003058", "N0.HOG0000415"],
-            "Ionotropic receptors": [ "N0.HOG0000555", "N0.HOG0000885", "N0.HOG0001100", "N0.HOG0004409"],
-        },
-        "Pheromone synthesis" : {
-            "Cytochrome P450: Monooxygenases" : ["N0.HOG0000027", "N0.HOG0000095", "N0.HOG0000140", "N0.HOG0000204", "N0.HOG0000492", "N0.HOG0001077", "N0.HOG0001134"],
-            "Reductase: alcohol dehydrogenase" : ["N0.HOG0000089"],
-            "Cluster 4: Esterase and mating behavior" : OG_lists_dict["Gene Group 4"],
-            "Juvenile hormone regulation" : ["N0.HOG0000142", "N0.HOG0000468", "N0.HOG0001652"],
-            "cuticular hydrocarbons: fatty acid synthesis" : ["N0.HOG0000276","N0.HOG0000560", "N0.HOG0000890", "N0.HOG0000915"],
-        },
-        "Detoxification": {
-            "Cytochrome P450" : OG_lists_dict["Gene Group 1"],
-            "Glutathione S transferase" : ["N0.HOG0000101", "N0.HOG0000399"],
-            "Carboxylesterase" : ["N0.HOG0000120", "N0.HOG0000141", "N0.HOG0000365", "N0.HOG0000378", "N0.HOG0007183"],
-            "Cluster 3: lipid metabolic process" : OG_lists_dict["Gene Group 3"],
-            "Cluster 18: aldehyde oxidase" : OG_lists_dict["Gene Group 18"],
-        },
-        "Chitin development" : {
-            "Cluster 11: Adenosine deaminase-related growth factor" : OG_lists_dict["Gene Group 11"],
-            "Cluster 15: chitin-related" : OG_lists_dict["Gene Group 15"],
-            "Cluster 24: Cuticular protein" : OG_lists_dict["Gene Group 24"],
-        }, 
-        "Sexual reproduction and immunity": {
-            "Cluster 8: immunity and reproduction" : OG_lists_dict["Gene Group 8"],
-            "Cluster 9: sexual reproduction" :  OG_lists_dict["Gene Group 9"],
-            "Serpin (protease inhibitor in immune response, \nalso patterning during embryogenesis)" : ["N0.HOG0000541"],
-        },
-        "Fluorescence in Fireflies": {
-            "Acyl-CoA synthesis related" : ["N0.HOG0000284","N0.HOG0000397"],
-            "Acyl-CoA synthetase" : ["N0.HOG0000613"]
-        },     
-    }
-    
-    #username = "milena"
-    #username = "miltr339"
-    username = orthogroups_orthoDB_filepath.split("/")[2]
-    functional_summary_table_path = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/orthoDB_anyCAFE_run_sig_OGs_flybase_IDs_with_group_function_only_one_OG_member_correlation_repeat_correlation_correlation_GS_correlation.tsv"
-    # functional_summary_table_path = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/functional_annot_eval/full_functional_annot_table.tsv"
-    out_dir = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/functional_annot_eval/new_eval/"
-    make_functional_summary_bar(functional_categories_dict, summary_table=functional_summary_table_path, orthogroups_path=orthogroups_orthoDB_filepath, plot_name = f"{out_dir}functional_summary.png")
+    if False:
+        # remember that some are overlapping! do list(set()) for top-level categories to keep the numbers right
+        functional_categories_dict = {
+            "Chemosensory" : {
+                "Cluster 30: pheromone binding": OG_lists_dict["Gene Group 30"],
+                "Cluster 7: odorant binding": OG_lists_dict["Gene Group 7"],
+                "Cluster 20: transmembrane transport in antennae": OG_lists_dict["Gene Group 20"],
+                "Olfactory receptor activity": ["N0.HOG0001100", "N0.HOG0003058", "N0.HOG0000415"],
+                "Ionotropic receptors": [ "N0.HOG0000555", "N0.HOG0000885", "N0.HOG0001100", "N0.HOG0004409"],
+            },
+            "Pheromone synthesis" : {
+                "Cytochrome P450: Monooxygenases" : ["N0.HOG0000027", "N0.HOG0000095", "N0.HOG0000140", "N0.HOG0000204", "N0.HOG0000492", "N0.HOG0001077", "N0.HOG0001134"],
+                "Reductase: alcohol dehydrogenase" : ["N0.HOG0000089"],
+                "Cluster 4: Esterase and mating behavior" : OG_lists_dict["Gene Group 4"],
+                "Juvenile hormone regulation" : ["N0.HOG0000142", "N0.HOG0000468", "N0.HOG0001652"],
+                "cuticular hydrocarbons: fatty acid synthesis" : ["N0.HOG0000276","N0.HOG0000560", "N0.HOG0000890", "N0.HOG0000915"],
+            },
+            "Detoxification": {
+                "Cytochrome P450" : OG_lists_dict["Gene Group 1"],
+                "Glutathione S transferase" : ["N0.HOG0000101", "N0.HOG0000399"],
+                "Carboxylesterase" : ["N0.HOG0000120", "N0.HOG0000141", "N0.HOG0000365", "N0.HOG0000378", "N0.HOG0007183"],
+                "Cluster 3: lipid metabolic process" : OG_lists_dict["Gene Group 3"],
+                "Cluster 18: aldehyde oxidase" : OG_lists_dict["Gene Group 18"],
+            },
+            "Chitin development" : {
+                "Cluster 11: Adenosine deaminase-related growth factor" : OG_lists_dict["Gene Group 11"],
+                "Cluster 15: chitin-related" : OG_lists_dict["Gene Group 15"],
+                "Cluster 24: Cuticular protein" : OG_lists_dict["Gene Group 24"],
+            }, 
+            "Sexual reproduction and immunity": {
+                "Cluster 8: immunity and reproduction" : OG_lists_dict["Gene Group 8"],
+                "Cluster 9: sexual reproduction" :  OG_lists_dict["Gene Group 9"],
+                "Serpin (protease inhibitor in immune response, \nalso patterning during embryogenesis)" : ["N0.HOG0000541"],
+            },
+            "Fluorescence in Fireflies": {
+                "Acyl-CoA synthesis related" : ["N0.HOG0000284","N0.HOG0000397"],
+                "Acyl-CoA synthetase" : ["N0.HOG0000613"]
+            },     
+        }
+        
+        #username = "milena"
+        #username = "miltr339"
+        username = orthogroups_orthoDB_filepath.split("/")[2]
+        functional_summary_table_path = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/orthoDB_anyCAFE_run_sig_OGs_flybase_IDs_with_group_function_only_one_OG_member_correlation_repeat_correlation_correlation_GS_correlation.tsv"
+        # functional_summary_table_path = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/functional_annot_eval/full_functional_annot_table.tsv"
+        out_dir = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/functional_annot_eval/new_eval/"
+        make_functional_summary_bar(functional_categories_dict, summary_table=functional_summary_table_path, orthogroups_path=orthogroups_orthoDB_filepath, plot_name = f"{out_dir}functional_summary.png")
 
 ### individual gene family sizes for all the functions
 
@@ -676,7 +683,7 @@ if __name__ == "__main__":
             transparent_bg=True, svg = False, ymax_set=99, fs = 25)
 
     # --> OLFACTORY RECEPTORS
-    if False:
+    if True:
         cols_list = [
             "#b9cf74",
             "#A3C149",
