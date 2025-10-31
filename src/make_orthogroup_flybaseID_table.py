@@ -612,7 +612,7 @@ if __name__ == "__main__":
         
     if True:
 
-        if False:
+        if True:
             flybase_table_path_one_OG_member = filter_flybase_table_to_single_OG(flybase_table_path)
             flybase_table_path_continue = flybase_table_path_one_OG_member
         else:
