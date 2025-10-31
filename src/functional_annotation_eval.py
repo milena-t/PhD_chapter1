@@ -400,7 +400,10 @@ def parse_func_table_for_protein_name(summary_table_path:str):
         lines = summary_table.readlines()
         for line in lines[1:]: # skip header line
             line_parse = line.strip().split("\t")
-            out_dict[line_parse[0]] = line_parse[8]
+            out_dict[line_parse[0]] = line_parse[9]
+            # for i, element in enumerate(line_parse):
+            #     print(f"{i} :\t {element}")
+            # raise RuntimeError("break here test")
     return out_dict
 
 
@@ -443,10 +446,10 @@ def make_functional_summary_bar(functional_dict:dict, summary_table:str, orthogr
     no_annot_list = [OG_id for OG_id,name in all_annot_dict.items() if "None"  in name or "No_flybase_match" in name]
     unchar_annot_list = [OG_id for OG_id,name in all_annot_dict.items() if "uncharacterized protein" in name]
     yes_annot_list = [OG_id for OG_id,name in all_annot_dict.items() if "None" not in name and "No_flybase_match" not in name and "uncharacterized protein" not in name]
-    # print(f"{len(all_annot_dict)} \t --> annotations in total")
-    # print(f"{len(no_annot_list)} + {len(unchar_annot_list)} = {len(no_annot_list) + len(unchar_annot_list)} --> not annotated / uncharacterized")
-    # print(f"{len(yes_annot_list)} \t --> yes annotated")
-    # print(f"{len(no_annot_list)} + {len(unchar_annot_list)} + {len(yes_annot_list)} = {len(no_annot_list) + len(unchar_annot_list) + len(yes_annot_list)}")
+    print(f"{len(all_annot_dict)} \t --> annotations in total")
+    print(f"{len(no_annot_list)} + {len(unchar_annot_list)} = {len(no_annot_list) + len(unchar_annot_list)} --> not annotated / uncharacterized")
+    print(f"{len(yes_annot_list)} \t --> yes annotated")
+    print(f"{len(no_annot_list)} + {len(unchar_annot_list)} + {len(yes_annot_list)} = {len(no_annot_list) + len(unchar_annot_list) + len(yes_annot_list)}")
 
     category_count_dict["Other annotation"] = len(yes_annot_list) - len(of_interest_list)
     category_count_dict["Uncharacterized protein"] = len(unchar_annot_list)
@@ -624,7 +627,8 @@ if __name__ == "__main__":
     #username = "milena"
     #username = "miltr339"
     username = orthogroups_orthoDB_filepath.split("/")[2]
-    functional_summary_table_path = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/functional_annot_eval/full_functional_annot_table.tsv"
+    functional_summary_table_path = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/orthoDB_anyCAFE_run_sig_OGs_flybase_IDs_with_group_function_only_one_OG_member_correlation_repeat_correlation_correlation_GS_correlation.tsv"
+    # functional_summary_table_path = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/functional_annot_eval/full_functional_annot_table.tsv"
     out_dir = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/functional_annot_eval/new_eval/"
     make_functional_summary_bar(functional_categories_dict, summary_table=functional_summary_table_path, orthogroups_path=orthogroups_orthoDB_filepath, plot_name = f"{out_dir}functional_summary.png")
 
