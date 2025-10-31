@@ -185,7 +185,7 @@ def make_table_with_flybase_functions(orthogroup_dict_species, drosophila_gff_pa
                 delta_GF = int(max(GF_size)) - int(min(GF_size))
                 GF_size = [str(size) for size in GF_size]
                 GF_size = "\t".join(GF_size) + f"\t{delta_GF}"
-            
+
             if len(transcripts_list) == 0:
                 # if the orthoDB drosopila protein didn't have a match in the native annotation 
                 # and therefore has no functional annotation, so set all the stuff manually
@@ -304,7 +304,7 @@ def make_proteinfasta_from_orthogroup(orthogroups_dict, proteinfasta_reference, 
     return filtered_fasta
 
 
-def parse_blast_outfile(blast_filepath, query_fasta:str = "", min_seq_ident = 90):
+def parse_blast_outfile(blast_filepath, query_fasta:str = "", min_seq_ident = 90, sig_OGs_list = []):
     """
     makes a dictionary with only transcript IDs like:
     {
@@ -322,6 +322,8 @@ def parse_blast_outfile(blast_filepath, query_fasta:str = "", min_seq_ident = 90
             
             orthoDB_query = line[0]
             OG_id = orthoDB_query.split("_")[-1]
+            if len(sig_OGs_list) >0 and OG_id not in sig_OGs_list:
+                continue
             native_ref = line[1]
             native_trans_ID = native_ref.replace("D_melanogaster_", "")
             #native_trans_ID = native_trans_ID[:-2] #remove tailing "_1"
@@ -412,7 +414,7 @@ def parse_david_group_functions(david_gene_groups_filepath:str):
 
 def filter_flybase_table_to_single_OG(flybase_table_path:str, min_delta_GF=0):
     """
-    The table contains all drosophila member or every orthogroup, but that is often redundant
+    The table contains all drosophila members or every orthogroup, but that is often redundant
     This function filters the table to contain only one drosophila representative of every OG
     """
     infile_basename = flybase_table_path.split(".tsv")[0]
@@ -428,9 +430,9 @@ def filter_flybase_table_to_single_OG(flybase_table_path:str, min_delta_GF=0):
         outfile.write(lines[0])
         current_OG = ""
         for line in lines[1:]:
-            line_list = line.split("\t")
+            line_list = line.strip().split("\t")
             orthogroup = line_list[0]
-            deltaGF = int(line_list[18])
+            deltaGF = int(line_list[19])
             if orthogroup != current_OG and deltaGF>min_delta_GF:
                 outfile.write(line)
                 current_OG = orthogroup
@@ -495,6 +497,7 @@ def add_cols_to_flybase_table(flybase_table_path:str, slopes_table_path:str, col
             try:
                 slopes = slopes_table_dict[OG_id]
             except:
+                print(f"correlation not calculated for {OG_id}")
                 slopes = ["1","1","n"]
 
             flybase_insert = flyblase_list[:insert_index] + slopes + flyblase_list[insert_index:]
@@ -548,9 +551,10 @@ if __name__ == "__main__":
     if True:
         print(f"\n\torthoDB")
         orthoDB_single_run_sig_list, orthoDB_all_list =OGs.get_sig_orthogroups(f"{CAFE_runs_dir}/run1/Base_family_results.txt")
+        # get orthodb sig list of orthogorups significant in all CAFE runs
         orthoDB_sig_list, orthoDB_all_list = CAFE.get_overlap_OG_sig_list(CAFE_runs_dir)
         # get union sig list of all OGs that are significant in at least one run
-        orthoDB_sig_list = CAFE.get_union_sig_list(CAFE_runs_dir)
+        # orthoDB_sig_list = CAFE.get_union_sig_list(CAFE_runs_dir)
 
         
         orthoDB_sig_OGs_dict = OGs.parse_orthogroups_dict(orthogroups_orthoDB, sig_list = orthoDB_sig_list, species="D_melanogaster")
@@ -565,8 +569,8 @@ if __name__ == "__main__":
             print(len(orthoDB_sig_all_species))
             print(len(large_OG_IDs))
         
-        # make_proteinfasta_from_orthogroup(orthoDB_sig_OGs_dict, orthoDB_proteinseqs["D_melanogaster"], orthogroups_to_include=large_OG_IDs, outfile_name = f"/Users/{username}/work/PhD_code/PhD_chapter1/src/Dmel_transcripts_from_sig_OGs.fasta")
-
+        make_proteinfasta_from_orthogroup(orthoDB_sig_OGs_dict, orthoDB_proteinseqs["D_melanogaster"], orthogroups_to_include=large_OG_IDs, outfile_name = f"/Users/{username}/work/PhD_code/PhD_chapter1/src/Dmel_transcripts_from_sig_OGs.fasta")
+        proteinfasta_path = f"/Users/{username}/work/PhD_code/PhD_chapter1/src/Dmel_transcripts_from_sig_OGs.fasta"
         # blast the orthoDB proteins against the native ones
         """
         BLASTp search of the above created proteins against the native Dmel annotation to get the flybase IDs
@@ -575,10 +579,10 @@ if __name__ == "__main__":
         blastp -query /Users/milena/work/PhD_code/PhD_chapter1/src/Dmel_transcripts_from_sig_OGs.fasta -db /Users/milena/work/native_proteinseqs/D_melanogaster.faa -out /Users/milena/work/PhD_code/PhD_chapter1/data/Dmel_oDB_vs_nat.out -outfmt 6 -num_threads 5 -evalue 1e-10
         """
 
-        if True:
+        if False:
             # blast_outfile = "/Users/miltr339/work/PhD_code/Dmel_oDB_vs_nat.out"
             blast_outfile = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/Dmel_oDB_vs_nat.out"
-            blast_out_dict = parse_blast_outfile(blast_outfile, query_fasta=f"/Users/{username}/work/PhD_code/PhD_chapter1/src/Dmel_transcripts_from_sig_OGs.fasta")
+            blast_out_dict = parse_blast_outfile(blast_outfile, query_fasta=proteinfasta_path, sig_OGs_list=orthoDB_sig_list)
 
             # for key, value in blast_out_dict.items():
             #     print(f"{key} :  {value}")
