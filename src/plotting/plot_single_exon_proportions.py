@@ -278,14 +278,21 @@ def plot_single_exon_no_species_specific_three_annot(native_numbers, orthodb_num
     if len(orthodb_numbers) == 0 and len(orthoDB_unmasked_numbers) == 0:
         width = 0.35 # (this is a fraction of the standardized 1 unit of space between axis ticks)
         aspect_ratio = 17 / 12 # nice for a presentation
+        ymax_factor = 1.25
+    elif (len(orthodb_numbers) == 0 and len(orthoDB_unmasked_numbers) > 0) or (len(orthodb_numbers) > 0 and len(orthoDB_unmasked_numbers) == 0):
+        width = 0.33 
+        aspect_ratio = 21 / 12 
+        ymax_factor = 1.25
     elif len(orthodb_numbers) > 0 and len(orthoDB_unmasked_numbers) > 0:
         width = 0.22
         fs = fs*1.15 
         aspect_ratio = 24 / 12
+        ymax_factor = 1.25
     else:
         width = 0.175
         fs = fs*0.9 # a smaller fontsize is nicer for the longer figure since it needs to be shown larger overall anyways
         aspect_ratio = 27 / 12
+        ymax_factor = 1.25
 
     height_pixels = 2000  # Height in pixels
     width_pixels = int(height_pixels * aspect_ratio)  # Width in pixels
@@ -314,10 +321,10 @@ def plot_single_exon_no_species_specific_three_annot(native_numbers, orthodb_num
     hatching = ["//", "" ]
 
 
-    if len(orthodb_numbers)>0 and len(orthoDB_unmasked_numbers) == 0:
+    if (len(orthodb_numbers)>0 and len(orthoDB_unmasked_numbers) == 0) or (len(orthodb_numbers) == 0 and len(orthoDB_unmasked_numbers) > 0):
         category = " (native)"
         x_subtr = width/2
-    if len(orthodb_numbers)>0 and len(orthoDB_unmasked_numbers) > 0:
+    elif len(orthodb_numbers)>0 and len(orthoDB_unmasked_numbers) > 0:
         category = " (native)"
         x_subtr = width # 2*width
     else:
@@ -353,7 +360,9 @@ def plot_single_exon_no_species_specific_three_annot(native_numbers, orthodb_num
             orthodb_rects1_top = ax.bar(x, multi_exon_genes, width, bottom=single_exon_genes, label='all genes (uniform)', color= color[1], hatch=hatching[1])  
 
         plt.rcParams.update({'hatch.color': hatch_color})
-        ymax = max(num_total_genes.values())*1.25
+        if len(orthoDB_unmasked_numbers)== 0:
+            ymax_factor = 1.6
+        ymax = max(num_total_genes.values())*ymax_factor
     
     
     #### plot orthoDB filtered annotation ####
@@ -371,7 +380,7 @@ def plot_single_exon_no_species_specific_three_annot(native_numbers, orthodb_num
         orthodb_rects1_base = ax.bar(x + x_subtr, single_exon_genes, width, label='proportion of which are single-exon', color= color[0], hatch=hatching[0])            
         orthodb_rects1_top = ax.bar(x + x_subtr, multi_exon_genes, width, bottom=single_exon_genes, label='all genes (uniform no remasking)', color= color[1], hatch=hatching[1])  
         plt.rcParams.update({'hatch.color': hatch_color})
-        ymax = max(num_total_genes.values())*1.25
+        ymax = max(num_total_genes.values())*ymax_factor
 
 
     #### set up labels and stuff ####
@@ -396,14 +405,21 @@ def plot_single_exon_no_species_specific_three_annot(native_numbers, orthodb_num
     # Legend with custom order
     handles, labels = ax.get_legend_handles_labels()
 
-    new_order = [1,3,5]
-    handles = [handles[idx] for idx in new_order]
-    labels = [labels[idx] for idx in new_order]
-    handles.append(dashed_handle)
-    labels.append(dashed_label)
-    new_order = [0,2,1,3]
-    handles = [handles[idx] for idx in new_order]
-    labels = [labels[idx] for idx in new_order]
+    if len(orthodb_numbers)>0 and len(orthoDB_unmasked_numbers)>0:
+        new_order = [1,3,5]
+        handles = [handles[idx] for idx in new_order]
+        labels = [labels[idx] for idx in new_order]
+        handles.append(dashed_handle)
+        labels.append(dashed_label)
+        new_order = [0,2,1,3]
+        handles = [handles[idx] for idx in new_order]
+        labels = [labels[idx] for idx in new_order]
+    else:
+        new_order = [1,3]
+        handles = [handles[idx] for idx in new_order]
+        labels = [labels[idx] for idx in new_order]
+        handles.append(dashed_handle)
+        labels.append(dashed_label)
 
     ax.legend(handles, labels, fontsize=fs, ncol=2, loc='upper center')
 
@@ -421,8 +437,12 @@ def plot_single_exon_no_species_specific_three_annot(native_numbers, orthodb_num
 if __name__ == '__main__':
 
     ## calculate all the numbers from input data
-
-    species_names = make_species_order_from_tree("/Users/miltr339/Box Sync/code/annotation_pipeline/annotation_scripts_ordered/14_species_orthofinder_tree.nw")
+    try:
+        tree_path = "/Users/milena/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_only_species_names.nw"
+        species_names = make_species_order_from_tree(tree_path)
+    except:
+        tree_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_only_species_names.nw"
+        species_names = make_species_order_from_tree(tree_path)
 
     # from quast results for all assemblies
     L50_values = {
@@ -586,4 +606,10 @@ if __name__ == '__main__':
         
 
         data = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/"
-        plot_single_exon_no_species_specific_three_annot(native_numbers, orthodb_numbers = orthodb_numbers, orthoDB_unmasked_numbers = orthodb_unmasked_numbers, species_names = species_names, filename = f"{data}single_exon_Genes_14_species_3_annotations.png", L50_values = L50_values)
+        
+        ### plot all three annotations
+        # plot_single_exon_no_species_specific_three_annot(native_numbers, orthodb_numbers = orthodb_numbers, orthoDB_unmasked_numbers = orthodb_unmasked_numbers, species_names = species_names, filename = f"{data}single_exon_Genes_14_species_3_annotations.png", L50_values = L50_values)
+        
+        ### plot native and one other 
+        plot_single_exon_no_species_specific_three_annot(native_numbers, orthoDB_unmasked_numbers = orthodb_unmasked_numbers, species_names = species_names, filename = f"{data}single_exon_Genes_14_species_2_annotations_no_uniform.png", L50_values = L50_values)
+        plot_single_exon_no_species_specific_three_annot(native_numbers, orthodb_numbers = orthodb_numbers, species_names = species_names, filename = f"{data}single_exon_Genes_14_species_2_annotations.png", L50_values = L50_values)
