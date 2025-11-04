@@ -243,7 +243,7 @@ def get_lengths_list(fasta_filepath):
     return seq_lengths
 
 
-def plot_histogram_protein_lengths(native_path:str, orthoDB_path:str, third_path:str = "", species_name:str = "", no_bins = 20, max_length = 1000, filename = "protein_lengths_histogram.png", dark_mode=False):
+def plot_histogram_protein_lengths(native_path:str, orthoDB_path:str = "", third_path:str = "", species_name:str = "", no_bins = 20, max_length = 1000, filename = "protein_lengths_histogram.png", dark_mode=False, title = "", transcriptome_labels = False):
 
     if dark_mode:
         plt.style.use('dark_background')
@@ -251,7 +251,8 @@ def plot_histogram_protein_lengths(native_path:str, orthoDB_path:str, third_path
     plot a histogram of the length distribution of the proteins in the input fasta files
     """
     native_lengths = [length for length in get_lengths_list(native_path) if length < max_length]
-    orthoDB_lengths = [length for length in get_lengths_list(orthoDB_path) if length < max_length]
+    if orthoDB_path != "":
+        orthoDB_lengths = [length for length in get_lengths_list(orthoDB_path) if length < max_length]
 
     fig, ax = plt.subplots(1,1, figsize=(15, 12))
     fs = 35
@@ -263,8 +264,15 @@ def plot_histogram_protein_lengths(native_path:str, orthoDB_path:str, third_path
         "third" : "#9C4C32",
     }
 
-    if third_path == "":
-        plt.hist([native_lengths, orthoDB_lengths], bins=no_bins, histtype="bar", color = [colors["native"], colors["orthoDB"]], label=["native", "uniform"])
+    if orthoDB_path == "":
+        plt.hist(native_lengths, bins=no_bins, histtype="bar", color = [colors["native"]])
+
+    elif third_path == "" and orthoDB_path != "":
+        if transcriptome_labels:
+            plt.hist([native_lengths, orthoDB_lengths], bins=no_bins, histtype="bar", color = [colors["native"], colors["orthoDB"]], label=["transcriptome", "annotation"])
+            # ax.set_yscale('log')
+        else:
+            plt.hist([native_lengths, orthoDB_lengths], bins=no_bins, histtype="bar", color = [colors["native"], colors["orthoDB"]], label=["native", "uniform"])
     else:
         third_lengths = [length for length in get_lengths_list(third_path) if length < max_length]
         plt.hist([native_lengths, orthoDB_lengths, third_lengths], bins=no_bins, histtype="bar", color = [colors["native"], colors["orthoDB"], colors["third"]], label=["native", "uniform", "Lome RNA"])
@@ -272,8 +280,12 @@ def plot_histogram_protein_lengths(native_path:str, orthoDB_path:str, third_path
     ax.tick_params(axis='both', labelsize=fs)
     plt.xlabel(f"protein length (Aminoacids, up to {max_length})", fontsize = fs)
     plt.ylabel("", fontsize = fs)
-    plt.legend(fontsize = fs, loc='upper right')
-    species_title = species_name.replace("_", ". ")
+    if orthoDB_path !="": 
+        plt.legend(fontsize = fs, loc='upper right')
+    if title == "":
+        species_title = species_name.replace("_", ". ")
+    else:
+        species_title = title
     plt.title(f"{species_title} protein length distribution")
 
     if dark_mode:
@@ -801,8 +813,10 @@ if __name__ == "__main__":
 
     
     ### plot protein length histograms
+    ## all species
+
     ## filepaths
-    if False:
+    if True:
     
         data = "/Users/miltr339/work/PhD_code/PhD_chapter1/data"
         native_files = {
@@ -857,7 +871,8 @@ if __name__ == "__main__":
             "T_molitor" : f"{unfiltered_path}/T_molitor_filtered_proteinfasta.fa",
             "Z_morio" : f"{unfiltered_path}/Z_morio_filtered_proteinfasta.fa",
         }
-
+    # plot
+    if False:
         # get individual plots for all species
         # for species in native_files.keys():
         #     plot_histogram_protein_lengths(native_files[species], orthoDB_files[species], species_name=species, filename = f"protein_lengths_histogram_{species}.png")
@@ -870,7 +885,9 @@ if __name__ == "__main__":
             plot_histogram_protein_lengths(native_path = native_files["T_castaneum"], orthoDB_path = orthoDB_files["T_castaneum"], species_name="T. castaneum", no_bins = 20, max_length = 1500, filename = f"{data}/Tcas_protein_lengths_histogram.png", dark_mode=True)
             plot_histogram_protein_lengths(native_path = native_files["B_siliquastri"], orthoDB_path = orthoDB_files["B_siliquastri"], species_name="B. siliquastri", no_bins = 20, max_length = 1500, filename = f"{data}/Bsil_protein_lengths_histogram.png", dark_mode=True)
 
-    if False:
+    ## cmac annotation comparison
+    # paths
+    if True:
         annot_com_dir = "/Users/milena/work/c_maculatus/annotation_comparison/superscaffolded_annotation"
         comparison_files = {
             "Cmac_Lome_diverse" : f"{annot_com_dir}/Cmac_Lome_diverse_filtered.faa",
@@ -887,8 +904,17 @@ if __name__ == "__main__":
             "Cmac_Nigeria_simple" : f"{orthoDB_dir}/C_maculatus_filtered_proteinfasta_TE_filtered.fa",
             "Cmac_SI_diverse" : f"{orthoDB_dir}/C_maculatus_filtered_proteinfasta_TE_filtered.fa",
         }
+    # plot
+    if False:
         #plot_all_species_protein_length_distribution(native_files, orthoDB_files, third_column_files= comparison_files, columns=2, max_length=1500, filename=f"{data}/Lome_RNA_annot_comparison/protein_lengths_histogram.png")
         plot_histogram_protein_lengths(native_path = native_files["Cmac_Lome_diverse"], orthoDB_path = orthoDB_files["Cmac_Lome_diverse"], third_path=comparison_files["Cmac_Lome_diverse"], species_name="C. maculatus (Lome RNA annotation)\n", no_bins = 20, max_length = 1500, filename = f"{data}/Lome_RNA_annot_comparison/Lome_only_protein_lengths_histogram.png", dark_mode=False)
+
+    ## cmac transcriptome
+    if True:
+        plot_path = "/Users/miltr339/work/PhD_code/PhD_chapter4/plots/"
+        transcriptome_path = "/Users/miltr339/work/c_maculatus/LOME_larval_transcriptome/TE_filtered_95_perc_identity_clustered_transcriptome_proteinseq.fasta"
+        # plot_histogram_protein_lengths(native_path = "/Users/miltr339/work/c_maculatus/LOME_larval_transcriptome/TE_filtered_95_perc_identity_clustered_transcriptome_proteinseq.fasta", species_name="C. maculatus", no_bins = 20, max_length = 1500, filename = f"{plot_path}/C_maculatus_larval_transcriptome.png", dark_mode=False)
+        plot_histogram_protein_lengths(native_path = transcriptome_path, orthoDB_path = native_files["Cmac_Lome_diverse"], species_name="C. maculatus", no_bins = 20, max_length = 500, filename = f"{plot_path}/C_maculatus_larval_transcriptome_with_annot_comp.png", dark_mode=False, transcriptome_labels=True)
 
 
     if False:
@@ -898,7 +924,7 @@ if __name__ == "__main__":
         outdir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data"
         plot_TE_filtering(filter_stats=filter_stats, species_tree=tree, filename=f"{outdir}/TE_filtering_stats.png")
 
-    if True:
+    if False:
         import plot_repeats_whole_genome_stats as wg_reps
         # plot the genome wide repeat abundance for each category against the p-value of the wilcoxon test to see if genome wide more abundant transcripts are more significant
         wilcoxon_results = {
