@@ -275,7 +275,10 @@ def plot_histogram_protein_lengths(native_path:str, orthoDB_path:str = "", third
             plt.hist([native_lengths, orthoDB_lengths], bins=no_bins, histtype="bar", color = [colors["native"], colors["orthoDB"]], label=["native", "uniform"])
     else:
         third_lengths = [length for length in get_lengths_list(third_path) if length < max_length]
-        plt.hist([native_lengths, orthoDB_lengths, third_lengths], bins=no_bins, histtype="bar", color = [colors["native"], colors["orthoDB"], colors["third"]], label=["native", "uniform", "Lome RNA"])
+        if transcriptome_labels:
+            plt.hist([native_lengths, orthoDB_lengths, third_lengths], bins=no_bins, histtype="bar", color = [colors["native"], colors["orthoDB"], colors["third"]], label=["our transcriptome", "SI transcriptome", "genome annotation"])
+        else:
+            plt.hist([native_lengths, orthoDB_lengths, third_lengths], bins=no_bins, histtype="bar", color = [colors["native"], colors["orthoDB"], colors["third"]], label=["native", "uniform", "Lome RNA"])
     
     ax.tick_params(axis='both', labelsize=fs)
     plt.xlabel(f"protein length (Aminoacids, up to {max_length})", fontsize = fs)
@@ -912,10 +915,11 @@ if __name__ == "__main__":
     ## cmac transcriptome
     if True:
         plot_path = "/Users/miltr339/work/PhD_code/PhD_chapter4/plots/"
-        transcriptome_path = "/Users/miltr339/work/c_maculatus/LOME_larval_transcriptome/TE_filtered_95_perc_identity_clustered_transcriptome_proteinseq.fasta"
+        our_transcriptome_path = "/Users/miltr339/work/c_maculatus/LOME_larval_transcriptome/TE_filtered_95_perc_identity_clustered_transcriptome_proteinseq.fasta"
+        SI_transciptome_path = "/Users/miltr339/work/c_maculatus/LOME_larval_transcriptome/SI_transcriptome/GEUF01_proteinseq.fasta"
         # plot_histogram_protein_lengths(native_path = "/Users/miltr339/work/c_maculatus/LOME_larval_transcriptome/TE_filtered_95_perc_identity_clustered_transcriptome_proteinseq.fasta", species_name="C. maculatus", no_bins = 20, max_length = 1500, filename = f"{plot_path}/C_maculatus_larval_transcriptome.png", dark_mode=False)
-        plot_histogram_protein_lengths(native_path = transcriptome_path, orthoDB_path = native_files["Cmac_Lome_diverse"], species_name="C. maculatus", no_bins = 20, max_length = 500, filename = f"{plot_path}/C_maculatus_larval_transcriptome_with_annot_comp.png", dark_mode=False, transcriptome_labels=True)
-
+        # "our transcriptome", "SI transcriptome", "genome annotation"
+        plot_histogram_protein_lengths(native_path =our_transcriptome_path, orthoDB_path=SI_transciptome_path, third_path = native_files["Cmac_Lome_diverse"], species_name="C. maculatus", no_bins = 20, max_length = 500, filename = f"{plot_path}/C_maculatus_larval_transcriptome_with_SI_transcriptome_and_annot_comp.png", dark_mode=False, transcriptome_labels=True)
 
     if False:
         # data from filtering pasted here so that I don't loose it
