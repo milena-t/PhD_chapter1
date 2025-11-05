@@ -7,8 +7,8 @@ summary of statistical models from polynomial regression for repeat class: rRNA
 Dep. Variable:                      y   R-squared:                       0.097
 Model:                            WLS   Adj. R-squared:                  0.097
 Method:                 Least Squares   F-statistic:                     359.7
-Date:                Mon, 27 Oct 2025   Prob (F-statistic):          7.10e-222
-Time:                        18:23:12   Log-Likelihood:                 20638.
+Date:                Wed, 05 Nov 2025   Prob (F-statistic):          7.10e-222
+Time:                        13:59:54   Log-Likelihood:                 20638.
 No. Observations:               10000   AIC:                        -4.127e+04
 Df Residuals:                    9996   BIC:                        -4.124e+04
 Df Model:                           3                                         
@@ -40,8 +40,8 @@ strong multicollinearity or other numerical problems.
 Dep. Variable:                      y   R-squared:                       0.373
 Model:                            WLS   Adj. R-squared:                  0.373
 Method:                 Least Squares   F-statistic:                     1986.
-Date:                Mon, 27 Oct 2025   Prob (F-statistic):               0.00
-Time:                        18:23:12   Log-Likelihood:                 34238.
+Date:                Wed, 05 Nov 2025   Prob (F-statistic):               0.00
+Time:                        13:59:54   Log-Likelihood:                 34238.
 No. Observations:               10000   AIC:                        -6.847e+04
 Df Residuals:                    9996   BIC:                        -6.844e+04
 Df Model:                           3                                         
@@ -73,8 +73,8 @@ strong multicollinearity or other numerical problems.
 Dep. Variable:                      y   R-squared:                       0.030
 Model:                            WLS   Adj. R-squared:                  0.029
 Method:                 Least Squares   F-statistic:                     102.3
-Date:                Mon, 27 Oct 2025   Prob (F-statistic):           3.25e-65
-Time:                        18:23:12   Log-Likelihood:                 23319.
+Date:                Wed, 05 Nov 2025   Prob (F-statistic):           3.25e-65
+Time:                        13:59:54   Log-Likelihood:                 23319.
 No. Observations:               10000   AIC:                        -4.663e+04
 Df Residuals:                    9996   BIC:                        -4.660e+04
 Df Model:                           3                                         
@@ -106,8 +106,8 @@ strong multicollinearity or other numerical problems.
 Dep. Variable:                      y   R-squared:                       0.229
 Model:                            WLS   Adj. R-squared:                  0.229
 Method:                 Least Squares   F-statistic:                     992.1
-Date:                Mon, 27 Oct 2025   Prob (F-statistic):               0.00
-Time:                        18:23:12   Log-Likelihood:                 34638.
+Date:                Wed, 05 Nov 2025   Prob (F-statistic):               0.00
+Time:                        13:59:54   Log-Likelihood:                 34638.
 No. Observations:               10000   AIC:                        -6.927e+04
 Df Residuals:                    9996   BIC:                        -6.924e+04
 Df Model:                           3                                         

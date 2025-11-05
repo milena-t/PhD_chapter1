@@ -7,8 +7,8 @@ summary of statistical models from polynomial regression for repeat class: SINE?
 Dep. Variable:                      y   R-squared:                         nan
 Model:                            WLS   Adj. R-squared:                    nan
 Method:                 Least Squares   F-statistic:                       nan
-Date:                Mon, 27 Oct 2025   Prob (F-statistic):                nan
-Time:                        15:40:35   Log-Likelihood:                    inf
+Date:                Wed, 05 Nov 2025   Prob (F-statistic):                nan
+Time:                        13:56:29   Log-Likelihood:                    inf
 No. Observations:               10000   AIC:                              -inf
 Df Residuals:                    9996   BIC:                              -inf
 Df Model:                           3                                         
@@ -40,8 +40,8 @@ strong multicollinearity or other numerical problems.
 Dep. Variable:                      y   R-squared:                      -0.003
 Model:                            WLS   Adj. R-squared:                 -0.004
 Method:                 Least Squares   F-statistic:                    -10.70
-Date:                Mon, 27 Oct 2025   Prob (F-statistic):               1.00
-Time:                        15:40:35   Log-Likelihood:                 44006.
+Date:                Wed, 05 Nov 2025   Prob (F-statistic):               1.00
+Time:                        13:56:29   Log-Likelihood:                 44006.
 No. Observations:               10000   AIC:                        -8.800e+04
 Df Residuals:                    9996   BIC:                        -8.797e+04
 Df Model:                           3                                         
@@ -73,8 +73,8 @@ strong multicollinearity or other numerical problems.
 Dep. Variable:                      y   R-squared:                         nan
 Model:                            WLS   Adj. R-squared:                    nan
 Method:                 Least Squares   F-statistic:                       nan
-Date:                Mon, 27 Oct 2025   Prob (F-statistic):                nan
-Time:                        15:40:35   Log-Likelihood:                    inf
+Date:                Wed, 05 Nov 2025   Prob (F-statistic):                nan
+Time:                        13:56:29   Log-Likelihood:                    inf
 No. Observations:               10000   AIC:                              -inf
 Df Residuals:                    9996   BIC:                              -inf
 Df Model:                           3                                         
@@ -106,8 +106,8 @@ strong multicollinearity or other numerical problems.
 Dep. Variable:                      y   R-squared:                       0.020
 Model:                            WLS   Adj. R-squared:                  0.020
 Method:                 Least Squares   F-statistic:                     69.31
-Date:                Mon, 27 Oct 2025   Prob (F-statistic):           2.34e-44
-Time:                        15:40:35   Log-Likelihood:                 40760.
+Date:                Wed, 05 Nov 2025   Prob (F-statistic):           2.34e-44
+Time:                        13:56:29   Log-Likelihood:                 40760.
 No. Observations:               10000   AIC:                        -8.151e+04
 Df Residuals:                    9996   BIC:                        -8.148e+04
 Df Model:                           3                                         
