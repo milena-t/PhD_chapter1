@@ -18,7 +18,7 @@ If you want to visualize the repeatmasking, you can use my tool [ReVis](https://
 
 ## Genome annotation with BRAKER
 
-Use BRAKER3 with the orthoDB arthropoda dataset to uniformly annotate all genomes. Since I don't use RNAseq, technically BRAKER2 is run but I use the BRAKER3 docker container ([here](https://hub.docker.com/r/teambraker/braker3)). Since the Uppmax cluster doesn't allow docker containers/images, I used a singularity container to make a singularity image of the docker container (see `src/make_singularity_image_braker3`). I use the orthoDB Arthropoda proteinfasta provided by the BRAKER authors for evidence (v12 [here](https://bioinf.uni-greifswald.de/bioinf/partitioned_odb12/)). 
+Use BRAKER3 with the orthoDB arthropoda dataset to uniformly annotate all genomes. Since I don't use RNAseq, technically BRAKER2 is run but I use the BRAKER3 docker container ([here](https://hub.docker.com/r/teambraker/braker3)). Since the Uppmax cluster doesn't allow docker containers/images, I used a docker container to run singularity to make a singularity image of the docker container (see `src/make_singularity_image_braker3`). I use the orthoDB Arthropoda proteinfasta provided by the BRAKER authors for evidence (v12 [here](https://bioinf.uni-greifswald.de/bioinf/partitioned_odb12/)). 
 
 ### Running BRAKER
 
