@@ -42,6 +42,7 @@ do
         --sig_after_table ${REP_TABLES}/${SPECIES}_cumulative_repeats_after_sig_transcripts_90th_GF_size_percentile.txt \
         --num_transcripts ${REP_TABLES}/${SPECIES}_transcript_numbers.txt \
         --species_name $SPECIES \
+        --polreg_fourier_denoise \
         --verbose
 done
 ##
