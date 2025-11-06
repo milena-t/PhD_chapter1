@@ -68,15 +68,14 @@ def plot_single_exon_no_species_specific_three_annot(numbers, filename = ""):
     # fontsize scales with the dpi somehow which i have to do extra because i change the aspect ratio manually below
     fs = 45 # 37 originally
     
-    
     width = 0.2 # (this is a fraction of the standardized 1 unit of space between axis ticks)
     aspect_ratio = 20 / 12 # nice for a presentation
-
 
     height_pixels = 2000  # Height in pixels
     width_pixels = int(height_pixels * aspect_ratio)  # Width in pixels
     fig = plt.figure(figsize=(width_pixels / 100, height_pixels / 100), dpi=100)
     ax = fig.add_subplot(111)
+    ax2 = ax.twinx()
 
     colors = {
         "RNAseq" : "#9C4C32", # "#21295C",
@@ -88,7 +87,6 @@ def plot_single_exon_no_species_specific_three_annot(numbers, filename = ""):
 
     hatch_color = '#ffffff' # '#E2D4CA' #kind of eggshell white
     plt.rcParams['hatch.color'] = hatch_color
-
 
     #### plot native annotation ####
 
@@ -120,17 +118,6 @@ def plot_single_exon_no_species_specific_three_annot(numbers, filename = ""):
             x[i]-width, height + 5, label, ha="center", va="bottom", fontsize=fs*0.8, color= color[i]
         )
 
-    # single and multi exon average length
-    ax2 = ax.twinx()
-    ax2.set_ylim(bottom=0, top=y_max_genes*1.3)
-    ax2.set_ylabel('average transcript length', color = colors["ME_length"], fontsize = fs)
-    ax2.tick_params(axis ='y', labelcolor = colors["ME_length"], labelsize = fs) 
-    ax2.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x < 1 or x>max(ME_transcript_len)*1.1 else f'{x / 1e3:.0f} kbp'))
-
-    narrow=0.5 # make the bars a little more narrow
-    SE_transcript_length = ax2.bar(x, SE_transcript_len, width= width*narrow, label='avg. single-exon cds length', color=colors["SE_length"], hatch=hatching["no"])
-    ME_transcript_length = ax2.bar(x+width*narrow, ME_transcript_len, width= width*narrow, label='avg. multi-exon cds length', color=colors["ME_length"], hatch=hatching["no"])
-
     #### set up labels and stuff ####
     
     ax.set_ylabel('Number of genes', fontsize=fs+4)
@@ -141,7 +128,27 @@ def plot_single_exon_no_species_specific_three_annot(numbers, filename = ""):
     xtick_labels = [species.replace("_", " ") for species in annotation_names]
     x_rotation=0
     ax.set_xticklabels(xtick_labels, rotation=x_rotation, fontsize=fs)
-    ax.set_yticklabels([f'{int(tick)/1e3:.0f}k' for tick in ax.get_yticks()], fontsize=fs)
+    # yticks = ax.get_yticks()
+    # print(yticks)
+
+    ymax = max(transcript_numbers)
+    ymax = ymax*1.3
+    ax.set_ylim(0, int(ymax))
+    yticks = list(ax.get_yticklabels())
+    print(yticks)
+    # ax.set_yticklabels([f'{tick/1e3:.0f}k' for tick in yticks], fontsize=fs)
+    ax.set_yticklabels(yticks, fontsize=fs)
+    ax.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x < 1 else f'{x / 1e3:.0f} k'))
+
+    # single and multi exon average length
+    ax2.set_ylim(bottom=0, top=y_max_genes*1.3)
+    ax2.set_ylabel('average transcript length', color = colors["ME_length"], fontsize = fs)
+    ax2.tick_params(axis ='y', labelcolor = colors["ME_length"], labelsize = fs) 
+    ax2.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x < 1 or x>max(ME_transcript_len)*1.1 else f'{x / 1e3:.0f} kbp'))
+
+    narrow=0.5 # make the bars a little more narrow
+    SE_transcript_length = ax2.bar(x, SE_transcript_len, width= width*narrow, label='avg. single-exon cds length', color=colors["SE_length"], hatch=hatching["no"])
+    ME_transcript_length = ax2.bar(x+width*narrow, ME_transcript_len, width= width*narrow, label='avg. multi-exon cds length', color=colors["ME_length"], hatch=hatching["no"])
 
     # make custom legend patch for the dashed bars
     plt.rcParams.update({'hatch.color': "#3f3832ff"})
@@ -171,11 +178,6 @@ def plot_single_exon_no_species_specific_three_annot(numbers, filename = ""):
     # labels = [labels[idx] for idx in new_order]
 
     ax.legend(handles, labels, fontsize=fs, ncol=2, loc='upper center')
-
-    # add space at the top of the plot for the legend
-    ymax = max(transcript_numbers)
-    ymax = ymax*1.3
-    ax.set_ylim(0, int(ymax))
     ax.set_xlim(-0.5, len(xtick_labels)-0.5)
 
     plt.tight_layout()
