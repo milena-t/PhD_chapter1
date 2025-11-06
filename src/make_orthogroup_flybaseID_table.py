@@ -11,8 +11,8 @@ from tqdm import tqdm
 import plot_basics as my_plotting
 
 
-def filepaths_native():
-    native_annot_dir = "/Users/miltr339/work/native_annotations/all_native_annot/"
+def filepaths_native(username = "milena"):
+    native_annot_dir = f"/Users/{username}/work/native_annotations/all_native_annot/"
     native_annotations = {
         "A_obtectus" : f"{native_annot_dir}A_obtectus_annotation_isoform_filtered.gff",
         "A_verrucosus" : f"{native_annot_dir}A_verrucosus_annotation_isoform_filtered.gff",
@@ -31,7 +31,7 @@ def filepaths_native():
         "Z_morio" : f"{native_annot_dir}Z_morio_annotation_isoform_filtered.gff",
     }
     
-    native_proteinseqs_dir = "/Users/miltr339/work/native_proteinseqs/"
+    native_proteinseqs_dir = f"/Users/{username}/work/native_proteinseqs/"
     native_proteinseqs={
         "A_obtectus" : f"{native_proteinseqs_dir}A_obtectus.faa",
         "A_verrucosus" : f"{native_proteinseqs_dir}A_verrucosus.faa",
@@ -57,8 +57,8 @@ def filepaths_native():
 
     return native_annotations,orthogroups_native,sig_native,native_proteinseqs
 
-def filepaths_orthoDB():
-    orthoDB_annot_dir = "/Users/milena/work/orthoDB_annotations/"
+def filepaths_orthoDB(username = "milena"):
+    orthoDB_annot_dir = f"/Users/{username}/work/orthoDB_annotations/"
     orthoDB_annotations = {
         "A_obtectus" : f"{orthoDB_annot_dir}A_obtectus_braker_isoform_filtered.gff",
         "A_verrucosus" : f"{orthoDB_annot_dir}A_verrucosus_braker_isoform_filtered.gff",
@@ -77,7 +77,7 @@ def filepaths_orthoDB():
         "Z_morio" : f"{orthoDB_annot_dir}Z_morio_braker_isoform_filtered.gff",
     }
 
-    orthoDB_proteinseqs_dir = "/Users/milena/work/orthoDB_proteinseqs_TE_filtered/"
+    orthoDB_proteinseqs_dir = f"/Users/{username}/work/orthoDB_proteinseqs_TE_filtered/"
     orthoDB_proteinseqs = {
         "A_obtectus" : f"{orthoDB_proteinseqs_dir}A_obtectus_filtered_proteinfasta_TE_filtered.fa",
         "A_verrucosus" : f"{orthoDB_proteinseqs_dir}A_verrucosus_filtered_proteinfasta_TE_filtered.fa",
@@ -100,13 +100,13 @@ def filepaths_orthoDB():
     # orthogroups_orthoDB = "/Users/milena/work/orthofinder/orthoDB_uniform_masking_orthogroups/N0.tsv"
     # sig_orthoDB = "/Users/miltr339/Box Sync/code/CAFE/orthoDB_TE_filtered_Base_family_results.txt"
     
-    orthogroups_orthoDB = "/Users/milena/work/PhD_code/PhD_chapter1/data/orthofinder_uniform/N0.tsv"
-    sig_orthoDB = "/Users/milena/work/PhD_code/PhD_chapter1/data/CAFE_uniform_Base_Family_results.txt"
+    orthogroups_orthoDB = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/orthofinder_uniform/N0.tsv"#  "/Users/milena/work/PhD_code/PhD_chapter1/data/orthofinder_uniform/N0.tsv"
+    sig_orthoDB = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/CAFE_uniform_Base_Family_results.txt"
 
     return orthoDB_annotations, orthogroups_orthoDB, sig_orthoDB, orthoDB_proteinseqs
 
 
-def make_table_with_flybase_functions(orthogroup_dict_species, drosophila_gff_path, outfile_name:str = "native_sig_OGs_flybase_IDs.tsv", OGs_list = [], orthogroups_dict_all = {}, CAFE_results_path = "", get_gene_functions_from_API = True, david_gene_groups = {}, david_functions = {}, species_tree = "", outfile_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data"):
+def make_table_with_flybase_functions(orthogroup_dict_species, drosophila_gff_path, outfile_name:str = "native_sig_OGs_flybase_IDs.tsv", OGs_list = [], orthogroups_dict_all = {}, get_gene_functions_from_API = True, david_gene_groups = {}, david_functions = {}, species_tree = "", outfile_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data"):
     """
     get all the flybase IDs from the orthogroups_dict from the native drosophila annotation. 
     orthogroups_dict_species = OGs.parse_orthogroups_dict(..., species = species) so that there is no nested dict, but it's only transcript IDs from one species in a list
@@ -124,10 +124,6 @@ def make_table_with_flybase_functions(orthogroup_dict_species, drosophila_gff_pa
     not_found_sig_IDs = []
     unassigned_FB_IDs = [] # count IDs not in DAVID analysis if that is included
     # print(f"{len(drosophila_attributes_dict)} transcripts in drosophila")
-
-    CAFE_results = {}
-    if CAFE_results_path != "":
-        CAFE_results = OGs.parse_CAFE_output(CAFE_results_path)
 
     if orthogroups_dict_all != {}:
         OGs_all_list = list(orthogroups_dict_all.keys())
@@ -151,19 +147,22 @@ def make_table_with_flybase_functions(orthogroup_dict_species, drosophila_gff_pa
 
     outfile_name = f"{outfile_path}/{outfile_name}"
     with open(outfile_name, "w") as outfile:
+
+        #write start comment line
+        # outfile.write(f"## Orthogroups where the uniform-annotation Dmel member has a blast hit with a native-annotation Dmel member which is used for functional inference via the flybase ID\n##(orthogroups with no blast hit are listed at the end of the table with no annotations)")
         
         # write headers according to input files
         if orthogroups_dict_all =={} and david_gene_groups == {} and david_functions == {}:
-            outfile.write("Orthogroup_ID\tCAFE_p-value\ttranscript_ID_native\tFlybase\tFlybase_summary\n")
+            outfile.write("Orthogroup_ID\ttranscript_ID_native\tFlybase\tFlybase_summary\n")
         elif orthogroups_dict_all !={} and david_gene_groups == {} and david_functions == {}:
             species_header = "\t".join([f"{species}" for species in species_list])
-            outfile.write(f"Orthogroup_ID\tCAFE_p-value\ttranscript_ID_native\tFlybase_ID\tCluster_function\t{species_header}\tmax_delta_GF\tFlybase_summary\n")
+            outfile.write(f"Orthogroup_ID\ttranscript_ID_native\tFlybase_ID\tCluster_function\t{species_header}\tmax_delta_GF\tFlybase_summary\n")
         elif orthogroups_dict_all !={} and david_gene_groups != {} and david_functions == {}:
             species_header = "\t".join([f"{species}" for species in species_list])
-            outfile.write(f"Orthogroup_ID\tCAFE_p-value\tGF_Cluster\tGene_Name\tCluster_function\t{species_header}\tmax_delta_GF\ttranscript_ID_native\tFlybase\tFlybase_summary\n")
+            outfile.write(f"Orthogroup_ID\tGF_Cluster\tGene_Name\tCluster_function\t{species_header}\tmax_delta_GF\ttranscript_ID_native\tFlybase\tFlybase_summary\n")
         elif orthogroups_dict_all !={} and david_gene_groups != {} and david_functions != {}:
             species_header = "\t".join([f"{species}" for species in species_list])
-            outfile.write(f"Orthogroup_ID\tCAFE_p-value\tGF_ClustertGene_Group\tCluster_function\tGene_Name\t{species_header}\tmax_delta_GF\ttranscript_ID_native\tFlybase\tFlybase_summary\n")
+            outfile.write(f"Orthogroup_ID\tGF_ClustertGene_Group\tCluster_function\tGene_Name\t{species_header}\tmax_delta_GF\ttranscript_ID_native\tFlybase\tFlybase_summary\n")
 
 
         for OG_id, transcripts_list in tqdm(orthogroup_dict_species.items()):
@@ -186,7 +185,7 @@ def make_table_with_flybase_functions(orthogroup_dict_species, drosophila_gff_pa
                 delta_GF = int(max(GF_size)) - int(min(GF_size))
                 GF_size = [str(size) for size in GF_size]
                 GF_size = "\t".join(GF_size) + f"\t{delta_GF}"
-            
+
             if len(transcripts_list) == 0:
                 # if the orthoDB drosopila protein didn't have a match in the native annotation 
                 # and therefore has no functional annotation, so set all the stuff manually
@@ -196,18 +195,14 @@ def make_table_with_flybase_functions(orthogroup_dict_species, drosophila_gff_pa
                 transcript = "No_flybase_transcript_match"
                 flybase = "None"
                 flybase_summary = "None"
-                try:
-                    cafe_p = CAFE_results[OG_id]
-                except:
-                    cafe_p = "None"
                 
                 outfile_string = f"{OG_id}\n"
                 if orthogroups_dict_all =={} and david_gene_groups =={} and david_functions == {}:
-                    outfile_string = f"{OG_id}\t{cafe_p}\t{transcript}\t{flybase}\t{flybase_summary}\n"
+                    outfile_string = f"{OG_id}\t{transcript}\t{flybase}\t{flybase_summary}\n"
                 elif orthogroups_dict_all !={} and david_gene_groups =={} and david_functions == {}:
-                    outfile_string = f"{OG_id}\t{cafe_p}\t{transcript}\t{flybase}\t{flybase_summary}\t{cafe_p}\t{GF_size}\n"
+                    outfile_string = f"{OG_id}\t{transcript}\t{flybase}\t{flybase_summary}\t{GF_size}\n"
                 elif orthogroups_dict_all !={} and david_gene_groups !={}:
-                    outfile_string = f"{OG_id}\t{cafe_p}\t{gene_group}\t{group_function}\t{gene_name}\t{GF_size}\t{transcript}\t{flybase}\t{flybase_summary}\n"
+                    outfile_string = f"{OG_id}\t{gene_group}\t{group_function}\t{gene_name}\t{GF_size}\t{transcript}\t{flybase}\t{flybase_summary}\n"
                     
                 outfile.write(f"{outfile_string}")
 
@@ -242,16 +237,11 @@ def make_table_with_flybase_functions(orthogroup_dict_species, drosophila_gff_pa
                     else:
                         flybase_summary = "None"
 
-                    try:
-                        cafe_p = CAFE_results[OG_id]
-                    except:
-                        cafe_p = "None"
-
                     # Orthogroup_ID transcript_ID_native Flybase Flybase_summary CAFE_p-value max_delta_GF
                     if orthogroups_dict_all =={} and david_gene_groups =={} and david_functions == {}:
-                        outfile_string = f"{OG_id}\t{cafe_p}\t{transcript}\t{flybase}\t{flybase_summary}\n"
+                        outfile_string = f"{OG_id}\t{transcript}\t{flybase}\t{flybase_summary}\n"
                     elif orthogroups_dict_all !={} and david_gene_groups =={} and david_functions == {}:
-                        outfile_string = f"{OG_id}\t{cafe_p}\t{transcript}\t{flybase}\t{flybase_summary}\t{GF_size}\n"
+                        outfile_string = f"{OG_id}\t{transcript}\t{flybase}\t{flybase_summary}\t{GF_size}\n"
                     elif orthogroups_dict_all !={} and david_gene_groups !={}:
                         gene_groups_list = []
                         try:
@@ -274,14 +264,14 @@ def make_table_with_flybase_functions(orthogroup_dict_species, drosophila_gff_pa
                         else:
                             group_function = "None"
                         # Orthogroup_ID Gene_Group Gene_Name {species_header} transcript_ID_native Flybase Flybase_summary CAFE_p-value max_delta_GF 
-                        outfile_string = f"{OG_id}\t{cafe_p}\t{gene_group}\t{group_function}\t{gene_name}\t{GF_size}\t{transcript}\t{flybase}\t{flybase_summary}\n"
+                        outfile_string = f"{OG_id}\t{gene_group}\t{group_function}\t{gene_name}\t{GF_size}\t{transcript}\t{flybase}\t{flybase_summary}\n"
                     outfile.write(f"{outfile_string}")
     
     if len(unassigned_FB_IDs):
         print(f"{len(unassigned_FB_IDs)} Flybase Gene IDs in the orthogroups were not found in David")
     print(f"flybase IDs written to {outfile_name} in the data directory.")
     
-    return not_found_sig_IDs
+    return not_found_sig_IDs, outfile_name
         
 
 def make_proteinfasta_from_orthogroup(orthogroups_dict, proteinfasta_reference, orthogroups_to_include:list=[], outfile_name = "Dmel_transcripts_from_sig_OGs.fasta", species = "D_melanogaster"):
@@ -314,7 +304,7 @@ def make_proteinfasta_from_orthogroup(orthogroups_dict, proteinfasta_reference, 
     return filtered_fasta
 
 
-def parse_blast_outfile(blast_filepath, query_fasta:str = "", min_seq_ident = 90):
+def parse_blast_outfile(blast_filepath, query_fasta:str = "", min_seq_ident = 90, sig_OGs_list = []):
     """
     makes a dictionary with only transcript IDs like:
     {
@@ -332,6 +322,8 @@ def parse_blast_outfile(blast_filepath, query_fasta:str = "", min_seq_ident = 90
             
             orthoDB_query = line[0]
             OG_id = orthoDB_query.split("_")[-1]
+            if len(sig_OGs_list) >0 and OG_id not in sig_OGs_list:
+                continue
             native_ref = line[1]
             native_trans_ID = native_ref.replace("D_melanogaster_", "")
             #native_trans_ID = native_trans_ID[:-2] #remove tailing "_1"
@@ -422,7 +414,7 @@ def parse_david_group_functions(david_gene_groups_filepath:str):
 
 def filter_flybase_table_to_single_OG(flybase_table_path:str, min_delta_GF=0):
     """
-    The table contains all drosophila member or every orthogroup, but that is often redundant
+    The table contains all drosophila members or every orthogroup, but that is often redundant
     This function filters the table to contain only one drosophila representative of every OG
     """
     infile_basename = flybase_table_path.split(".tsv")[0]
@@ -438,10 +430,13 @@ def filter_flybase_table_to_single_OG(flybase_table_path:str, min_delta_GF=0):
         outfile.write(lines[0])
         current_OG = ""
         for line in lines[1:]:
-            line_list = line.split("\t")
+            line_list = line.strip().split("\t")
             orthogroup = line_list[0]
+            # for i,element in enumerate(line_list):
+            #     print(f"{i} : \t{element}")
+            # raise RuntimeError
             deltaGF = int(line_list[18])
-            if orthogroup != current_OG and deltaGF>min_delta_GF:
+            if orthogroup != current_OG and deltaGF>=min_delta_GF:
                 outfile.write(line)
                 current_OG = orthogroup
             else:
@@ -456,7 +451,7 @@ def read_slopes_table(table_path:str):
     """
     read table output from plot_slopes() in src/plotting/plot_orthogroup_slopes.py
     into a dictionary 
-    { orthogroup_ID : [ slope ,  p-value ] }
+    { orthogroup_ID : [ correlation_coeff , slope ,  p-value ] }
     """
     table_dict = {}
     with open(table_path, "r") as table_file:
@@ -480,7 +475,7 @@ def add_cols_to_flybase_table(flybase_table_path:str, slopes_table_path:str, col
     slopes_headers = [f"{col_name_prefix}_{header}" for header in slopes_headers]
 
     outfile_name = flybase_table_path[:-4]
-    outfile_name = f"{outfile_name}_lm_{col_name_prefix}.tsv"
+    outfile_name = f"{outfile_name}_correlation_{col_name_prefix}.tsv"
 
     with open(flybase_table_path, "r") as flybase_table, open(outfile_name, "w") as outfile:
         flybase_lines = flybase_table.readlines()
@@ -502,7 +497,11 @@ def add_cols_to_flybase_table(flybase_table_path:str, slopes_table_path:str, col
             
             flyblase_list = flyblase_line.strip().split("\t")
             OG_id = flyblase_list[0]
-            slopes = slopes_table_dict[OG_id]
+            try:
+                slopes = slopes_table_dict[OG_id]
+            except:
+                print(f"correlation not calculated for {OG_id}")
+                slopes = ["1","1","n"]
 
             flybase_insert = flyblase_list[:insert_index] + slopes + flyblase_list[insert_index:]
             flybase_insert_line = "\t".join(flybase_insert)
@@ -515,18 +514,20 @@ def add_cols_to_flybase_table(flybase_table_path:str, slopes_table_path:str, col
 
 if __name__ == "__main__":
 
-    orthoDB_annotations, orthogroups_orthoDB, sig_orthoDB, orthoDB_proteinseqs = filepaths_orthoDB()
-    native_annotations, orthogroups_native, sig_native, native_proteinseqs = filepaths_native()
-    dmel_unfiltered_annot = "/Users/miltr339/work/native_annotations/d_melanogaster_NOT_isoform_filtered.gff"    
-    david_gene_groups_path = "/Users/milena/Box Sync/thesis writing/Milena chapter1/Sig OG Flybase IDs/DAVID-FunctionalClustering_FBgenes.txt"
-    david_gene_groups_path_home = "/Users/milena/Box Sync/thesis writing/Milena chapter1/Sig OG Flybase IDs/DAVID-FunctionalClustering_FBgenes.txt"
-    tree_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_only_species_names.nw"
-    flybase_table_path = "/Users/milena/work/PhD_code/PhD_chapter1/data/orthoDB_sig_OGs_flybase_IDs_with_group_function.tsv"
+    username = "miltr339"
+    orthoDB_annotations, orthogroups_orthoDB, sig_orthoDB, orthoDB_proteinseqs = filepaths_orthoDB(username=username)
+    native_annotations, orthogroups_native, sig_native, native_proteinseqs = filepaths_native(username=username)
+    dmel_unfiltered_annot = f"/Users/{username}/work/native_annotations/d_melanogaster_NOT_isoform_filtered.gff"    
+    david_gene_groups_path = f"/Users/{username}/Box Sync/thesis writing/Milena chapter1/Sig OG Flybase IDs/DAVID-FunctionalClustering_FBgenes.txt"
+    david_gene_groups_path_home = f"/Users/{username}/Box Sync/thesis writing/Milena chapter1/Sig OG Flybase IDs/DAVID-FunctionalClustering_FBgenes.txt"
+    tree_path = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_only_species_names.nw"
+    # flybase_table_path = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/orthoDB_sig_OGs_flybase_IDs_with_group_function.tsv"
+    flybase_table_path = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/orthoDB_anyCAFE_run_sig_OGs_flybase_IDs_with_group_function.tsv"
     # flybase_table_path_one_OG_member = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthoDB_sig_OGs_flybase_IDs_with_group_function_only_one_OG_member.tsv"
-    GF_vs_rep_slopes = "/Users/milena/work/PhD_code/PhD_chapter1/data/sig_OGs_vs_reps_inclines_pvalues.tsv"
-    GF_vs_GS_slopes = "/Users/milena/work/PhD_code/PhD_chapter1/data/sig_OGs_vs_GS_inclines_pvalues.tsv"
+    GF_vs_rep_slopes = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/sig_OGs_vs_reps_correlations_pvalues.tsv"
+    GF_vs_GS_slopes = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/sig_OGs_vs_GS_correlations_pvalues.tsv"
 
-    CAFE_runs_dir = "/Users/milena/work/PhD_code/PhD_chapter1/data/CAFE_convergence/runs_to_test_convergence"
+    CAFE_runs_dir = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/CAFE_convergence/runs_to_test_convergence"
 
     ## Get stuff from native with functional annotations
     if False:
@@ -554,15 +555,16 @@ if __name__ == "__main__":
     if True:
         print(f"\n\torthoDB")
         orthoDB_single_run_sig_list, orthoDB_all_list =OGs.get_sig_orthogroups(f"{CAFE_runs_dir}/run1/Base_family_results.txt")
+        # get orthodb sig list of orthogorups significant in all CAFE runs
         orthoDB_sig_list, orthoDB_all_list = CAFE.get_overlap_OG_sig_list(CAFE_runs_dir)
         # get union sig list of all OGs that are significant in at least one run
-        orthoDB_sig_list = CAFE.get_union_sig_list(CAFE_runs_dir)
+        # orthoDB_sig_list = CAFE.get_union_sig_list(CAFE_runs_dir)
 
         
         orthoDB_sig_OGs_dict = OGs.parse_orthogroups_dict(orthogroups_orthoDB, sig_list = orthoDB_sig_list, species="D_melanogaster")
-        if len(orthoDB_sig_list) != len(orthoDB_sig_OGs_dict):
-            print(f"{len(orthoDB_sig_list)} significant orthogroups : {orthoDB_sig_list[0:5]}...")
-            print(f"{len(orthoDB_sig_OGs_dict)} orthogroups in sig dict")
+        assert len(orthoDB_sig_list) == len(orthoDB_sig_OGs_dict)
+        # print(f"{len(orthoDB_sig_list)} significant orthogroups : {orthoDB_sig_list[0:5]}...")
+        # print(f"{len(orthoDB_sig_OGs_dict)} orthogroups in sig dict")
 
         orthoDB_sig_all_species = OGs.parse_orthogroups_dict(orthogroups_orthoDB, sig_list = orthoDB_sig_list)
         orthoDB_large_OGs = OGs.get_orthogroup_sizes(orthoDB_sig_all_species, q=0)
@@ -571,8 +573,8 @@ if __name__ == "__main__":
             print(len(orthoDB_sig_all_species))
             print(len(large_OG_IDs))
         
-        # make_proteinfasta_from_orthogroup(orthoDB_sig_OGs_dict, orthoDB_proteinseqs["D_melanogaster"], orthogroups_to_include=large_OG_IDs)
-
+        make_proteinfasta_from_orthogroup(orthoDB_sig_OGs_dict, orthoDB_proteinseqs["D_melanogaster"], orthogroups_to_include=large_OG_IDs, outfile_name = f"/Users/{username}/work/PhD_code/PhD_chapter1/src/Dmel_transcripts_from_sig_OGs.fasta")
+        proteinfasta_path = f"/Users/{username}/work/PhD_code/PhD_chapter1/src/Dmel_transcripts_from_sig_OGs.fasta"
         # blast the orthoDB proteins against the native ones
         """
         BLASTp search of the above created proteins against the native Dmel annotation to get the flybase IDs
@@ -580,10 +582,11 @@ if __name__ == "__main__":
         makeblastdb -in D_melanogaster.faa -dbtype prot     # native annotation for reference db
         blastp -query /Users/milena/work/PhD_code/PhD_chapter1/src/Dmel_transcripts_from_sig_OGs.fasta -db /Users/milena/work/native_proteinseqs/D_melanogaster.faa -out /Users/milena/work/PhD_code/PhD_chapter1/data/Dmel_oDB_vs_nat.out -outfmt 6 -num_threads 5 -evalue 1e-10
         """
-        if True:
+
+        if False:
             # blast_outfile = "/Users/miltr339/work/PhD_code/Dmel_oDB_vs_nat.out"
-            blast_outfile = "/Users/milena/work/PhD_code/PhD_chapter1/data/Dmel_oDB_vs_nat.out"
-            blast_out_dict = parse_blast_outfile(blast_outfile, query_fasta="/Users/milena/work/PhD_code/PhD_chapter1/src/Dmel_transcripts_from_sig_OGs.fasta")
+            blast_outfile = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/Dmel_oDB_vs_nat.out"
+            blast_out_dict = parse_blast_outfile(blast_outfile, query_fasta=proteinfasta_path, sig_OGs_list=orthoDB_sig_list)
 
             # for key, value in blast_out_dict.items():
             #     print(f"{key} :  {value}")
@@ -597,30 +600,34 @@ if __name__ == "__main__":
             david_gene_groups_function = parse_david_group_functions(david_gene_groups_path)
             # david_gene_groups_function = {}
 
-            tree_path = "/Users/milena/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_only_species_names.nw"
-            dmel_unfiltered_annot = "/Users/milena/work/native_annotations/d_melanogaster_NOT_isoform_filtered.gff" 
-            not_found_transcripts = make_table_with_flybase_functions(
+            tree_path = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_only_species_names.nw"
+            dmel_unfiltered_annot = f"/Users/{username}/work/native_annotations/d_melanogaster_NOT_isoform_filtered.gff" 
+            not_found_transcripts, flybase_table_path = make_table_with_flybase_functions(
                 orthogroup_dict_species = blast_out_dict, 
                 drosophila_gff_path = dmel_unfiltered_annot, 
                 outfile_name = "orthoDB_anyCAFE_run_sig_OGs_flybase_IDs_with_group_function.tsv", 
                 orthogroups_dict_all = orthoDB_sig_all_species, 
-                CAFE_results_path = sig_orthoDB, 
+                # CAFE_results_path = sig_orthoDB, 
                 get_gene_functions_from_API=True,
                 david_gene_groups = david_gene_groups_dict, 
                 david_functions = david_gene_groups_function, 
                 species_tree = tree_path,
-                outfile_path = "/Users/milena/work/PhD_code/PhD_chapter1/data"
+                outfile_path = f"/Users/{username}/work/PhD_code/PhD_chapter1/data"
             )
 
             if len(not_found_transcripts)>0:
                 print(f"{len(not_found_transcripts)} (of {num_transcripts}) transcripts from orthoDB not found in annotation: {not_found_transcripts}")
         
-    if False:
+    if True:
 
-        flybase_table_path_one_OG_member = filter_flybase_table_to_single_OG(flybase_table_path)
+        if True:
+            flybase_table_path_one_OG_member = filter_flybase_table_to_single_OG(flybase_table_path)
+            flybase_table_path_continue = flybase_table_path_one_OG_member
+        else:
+            flybase_table_path_continue = flybase_table_path
 
         TE_only_outfile = add_cols_to_flybase_table(
-            flybase_table_path = flybase_table_path_one_OG_member, 
+            flybase_table_path = flybase_table_path_continue, 
             slopes_table_path = GF_vs_rep_slopes, 
             col_name_prefix = "repeat_correlation", 
             insert_after_named_col = "Gene_Name")

@@ -1,0 +1,133 @@
+Species: T. molitor 
+summary of statistical models from polynomial regression for repeat class: Unknown
+
+############## before transcript foreground model
+                            WLS Regression Results                            
+==============================================================================
+Dep. Variable:                      y   R-squared:                      -0.347
+Model:                            WLS   Adj. R-squared:                 -0.347
+Method:                 Least Squares   F-statistic:                    -858.2
+Date:                Wed, 05 Nov 2025   Prob (F-statistic):               1.00
+Time:                        13:59:27   Log-Likelihood:                -27469.
+No. Observations:               10000   AIC:                         5.495e+04
+Df Residuals:                    9996   BIC:                         5.498e+04
+Df Model:                           3                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const       3.736e-05   1.57e-07    237.966      0.000    3.71e-05    3.77e-05
+x1            -0.0311      0.000   -237.966      0.000      -0.031      -0.031
+x2         -1.057e-05   7.09e-08   -149.032      0.000   -1.07e-05   -1.04e-05
+x3         -1.372e-09    1.2e-11   -114.460      0.000    -1.4e-09   -1.35e-09
+x4         -6.035e-14   6.34e-16    -95.182      0.000   -6.16e-14   -5.91e-14
+==============================================================================
+Omnibus:                     2077.530   Durbin-Watson:                   0.001
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):             4116.984
+Skew:                           1.252   Prob(JB):                         0.00
+Kurtosis:                       4.901   Cond. No.                     1.67e+16
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+[2] The condition number is large, 1.67e+16. This might indicate that there are
+strong multicollinearity or other numerical problems.
+
+
+############## before transcript background model
+                            WLS Regression Results                            
+==============================================================================
+Dep. Variable:                      y   R-squared:                       0.851
+Model:                            WLS   Adj. R-squared:                  0.851
+Method:                 Least Squares   F-statistic:                 1.902e+04
+Date:                Wed, 05 Nov 2025   Prob (F-statistic):               0.00
+Time:                        13:59:27   Log-Likelihood:                -17310.
+No. Observations:               10000   AIC:                         3.463e+04
+Df Residuals:                    9996   BIC:                         3.466e+04
+Df Model:                           3                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const       2.402e-05   5.68e-08    422.872      0.000    2.39e-05    2.41e-05
+x1            -0.0200   4.73e-05   -422.872      0.000      -0.020      -0.020
+x2         -6.314e-06   2.57e-08   -246.037      0.000   -6.36e-06   -6.26e-06
+x3         -7.981e-10   4.34e-12   -183.989      0.000   -8.07e-10    -7.9e-10
+x4         -3.471e-14    2.3e-16   -151.232      0.000   -3.52e-14   -3.43e-14
+==============================================================================
+Omnibus:                     1406.995   Durbin-Watson:                   0.001
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):             2124.186
+Skew:                           1.020   Prob(JB):                         0.00
+Kurtosis:                       3.967   Cond. No.                     1.67e+16
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+[2] The condition number is large, 1.67e+16. This might indicate that there are
+strong multicollinearity or other numerical problems.
+
+
+############## after transcript foreground model
+                            WLS Regression Results                            
+==============================================================================
+Dep. Variable:                      y   R-squared:                      -0.177
+Model:                            WLS   Adj. R-squared:                 -0.177
+Method:                 Least Squares   F-statistic:                    -500.6
+Date:                Wed, 05 Nov 2025   Prob (F-statistic):               1.00
+Time:                        13:59:27   Log-Likelihood:                -27293.
+No. Observations:               10000   AIC:                         5.459e+04
+Df Residuals:                    9996   BIC:                         5.462e+04
+Df Model:                           3                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const       4.246e-05   1.54e-07    275.509      0.000    4.22e-05    4.28e-05
+x1             0.0354      0.000    275.509      0.000       0.035       0.036
+x2         -1.283e-05   6.96e-08   -184.244      0.000    -1.3e-05   -1.27e-05
+x3          1.728e-09   1.18e-11    146.774      0.000     1.7e-09    1.75e-09
+x4         -7.775e-14   6.23e-16   -124.800      0.000    -7.9e-14   -7.65e-14
+==============================================================================
+Omnibus:                     2084.938   Durbin-Watson:                   0.001
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):             3961.945
+Skew:                           1.284   Prob(JB):                         0.00
+Kurtosis:                       4.706   Cond. No.                     1.67e+16
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+[2] The condition number is large, 1.67e+16. This might indicate that there are
+strong multicollinearity or other numerical problems.
+
+
+############## after transcript background model
+                            WLS Regression Results                            
+==============================================================================
+Dep. Variable:                      y   R-squared:                       0.823
+Model:                            WLS   Adj. R-squared:                  0.823
+Method:                 Least Squares   F-statistic:                 1.546e+04
+Date:                Wed, 05 Nov 2025   Prob (F-statistic):               0.00
+Time:                        13:59:27   Log-Likelihood:                -17908.
+No. Observations:               10000   AIC:                         3.582e+04
+Df Residuals:                    9996   BIC:                         3.585e+04
+Df Model:                           3                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+const       2.489e-05   6.02e-08    413.462      0.000    2.48e-05     2.5e-05
+x1             0.0208   5.02e-05    413.462      0.000       0.021       0.021
+x2         -6.724e-06   2.72e-08   -246.874      0.000   -6.78e-06   -6.67e-06
+x3          8.678e-10    4.6e-12    188.453      0.000    8.59e-10    8.77e-10
+x4         -3.843e-14   2.44e-16   -157.703      0.000   -3.89e-14    -3.8e-14
+==============================================================================
+Omnibus:                     1115.222   Durbin-Watson:                   0.001
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):             1541.041
+Skew:                           0.892   Prob(JB):                         0.00
+Kurtosis:                       3.720   Cond. No.                     1.67e+16
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+[2] The condition number is large, 1.67e+16. This might indicate that there are
+strong multicollinearity or other numerical problems.

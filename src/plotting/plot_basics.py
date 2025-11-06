@@ -9,6 +9,7 @@ import subprocess as sp
 import os
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
+from matplotlib.ticker import FuncFormatter
 import parse_gff as gff 
 # import src.parse_gff as gff 
 from Bio import SeqIO, Phylo
@@ -242,7 +243,7 @@ def get_lengths_list(fasta_filepath):
     return seq_lengths
 
 
-def plot_histogram_protein_lengths(native_path:str, orthoDB_path:str, third_path:str = "", species_name:str = "", no_bins = 20, max_length = 1000, filename = "protein_lengths_histogram.png", dark_mode=False):
+def plot_histogram_protein_lengths(native_path:str, orthoDB_path:str = "", third_path:str = "", species_name:str = "", no_bins = 20, max_length = 1000, filename = "protein_lengths_histogram.png", dark_mode=False, title = "", transcriptome_labels = False):
 
     if dark_mode:
         plt.style.use('dark_background')
@@ -250,7 +251,8 @@ def plot_histogram_protein_lengths(native_path:str, orthoDB_path:str, third_path
     plot a histogram of the length distribution of the proteins in the input fasta files
     """
     native_lengths = [length for length in get_lengths_list(native_path) if length < max_length]
-    orthoDB_lengths = [length for length in get_lengths_list(orthoDB_path) if length < max_length]
+    if orthoDB_path != "":
+        orthoDB_lengths = [length for length in get_lengths_list(orthoDB_path) if length < max_length]
 
     fig, ax = plt.subplots(1,1, figsize=(15, 12))
     fs = 35
@@ -262,17 +264,31 @@ def plot_histogram_protein_lengths(native_path:str, orthoDB_path:str, third_path
         "third" : "#9C4C32",
     }
 
-    if third_path == "":
-        plt.hist([native_lengths, orthoDB_lengths], bins=no_bins, histtype="bar", color = [colors["native"], colors["orthoDB"]], label=["native", "uniform"])
+    if orthoDB_path == "":
+        plt.hist(native_lengths, bins=no_bins, histtype="bar", color = [colors["native"]])
+
+    elif third_path == "" and orthoDB_path != "":
+        if transcriptome_labels:
+            plt.hist([native_lengths, orthoDB_lengths], bins=no_bins, histtype="bar", color = [colors["native"], colors["orthoDB"]], label=["transcriptome", "annotation"])
+            # ax.set_yscale('log')
+        else:
+            plt.hist([native_lengths, orthoDB_lengths], bins=no_bins, histtype="bar", color = [colors["native"], colors["orthoDB"]], label=["native", "uniform"])
     else:
         third_lengths = [length for length in get_lengths_list(third_path) if length < max_length]
-        plt.hist([native_lengths, orthoDB_lengths, third_lengths], bins=no_bins, histtype="bar", color = [colors["native"], colors["orthoDB"], colors["third"]], label=["native", "uniform", "Lome RNA"])
+        if transcriptome_labels:
+            plt.hist([native_lengths, orthoDB_lengths, third_lengths], bins=no_bins, histtype="bar", color = [colors["native"], colors["orthoDB"], colors["third"]], label=["our transcriptome", "SI transcriptome", "genome annotation"])
+        else:
+            plt.hist([native_lengths, orthoDB_lengths, third_lengths], bins=no_bins, histtype="bar", color = [colors["native"], colors["orthoDB"], colors["third"]], label=["native", "uniform", "Lome RNA"])
     
     ax.tick_params(axis='both', labelsize=fs)
     plt.xlabel(f"protein length (Aminoacids, up to {max_length})", fontsize = fs)
     plt.ylabel("", fontsize = fs)
-    plt.legend(fontsize = fs, loc='upper right')
-    species_title = species_name.replace("_", ". ")
+    if orthoDB_path !="": 
+        plt.legend(fontsize = fs, loc='upper right')
+    if title == "":
+        species_title = species_name.replace("_", ". ")
+    else:
+        species_title = title
     plt.title(f"{species_title} protein length distribution")
 
     if dark_mode:
@@ -324,7 +340,7 @@ def plot_all_species_protein_length_distribution(native_files:dict, orthoDB_file
             axes[row, col].hist([native_lengths, orthoDB_lengths], bins=no_bins, histtype="bar", color = [colors["native"], colors["orthoDB"]])
         else:
             axes[row, col].hist([native_lengths, orthoDB_lengths, third_lengths], bins=no_bins, histtype="bar", color = [colors["native"], colors["orthoDB"], colors["third"]])
-        axes[row, col].set_title(f'{species_name}', fontsize = fs)
+        axes[row, col].set_title(f'{species_name}', fontsize = fs*0.85)
         axes[row, col].set_xlabel('')
         axes[row, col].set_ylabel('')
         axes[row, col].tick_params(axis='x', labelsize=fs*0.8)
@@ -421,6 +437,283 @@ def plot_TE_filtering(filter_stats, species_tree, filename = "TE_filtering_stats
         filename = filename.replace(".png", "_darkmode.png")
     plt.savefig(filename, dpi = 300, transparent = True)# , bbox_inches='tight')
     print("Figure saved in the current working directory directory as: "+filename)
+
+
+def read_wilcoxon_test_results(test_path:str):
+    """
+    read path into dict of cat : [pvalue_before	test_statistic_before	pvalue_after	test_statistic_after]
+    """
+    out_dict = {}
+    with open(test_path, "r") as test_res:
+        test_lines = test_res.readlines()
+        for line in test_lines:
+            if line[0] == "#":
+                continue
+            if "rep_class" in line:
+                continue
+            line_parse = line.strip().split("\t")
+            out_dict[line_parse[0]] = [float(number) for number in line_parse[1:]]
+    return(out_dict)
+
+
+
+def plot_wilcoxon_vs_rep_association_by_species(rep_abundances, wilcoxon_results, type_association, columns = 3, legend_in_last = True, filename = "plot_wilcoxon_rep_content_association.png"):
+    """
+    plot the association of repeat abundances and wilcoxon-significant enrichment for each repeat category
+    """
+    cols = columns
+    types_list = list(type_association.keys())
+    species_list = list(rep_abundances.keys())
+    rows = int(len(types_list)/cols)  +1
+    if rows>2:
+        fig, axes = plt.subplots(rows, cols, figsize=(12, 15)) # for more than three rows
+        mid_row = int(rows/2)
+    else:
+        fig, axes = plt.subplots(rows, cols, figsize=(15, 10)) # for more than three rows
+        mid_row = 0
+    fs = 22
+    pointsize = 100
+
+    colors = {
+        'Unknown' : "#C1C1C1" , # light grey
+        # orange
+        'DNA' : "#FF9000" , # Princeton orange
+        # green
+        'LTR' : "#6E8448" , # reseda green
+        'RC' : "#8EA861" , # asparagus 
+        # red
+        'tRNA' : "#C14953" , # bittersweet shimmer
+        'rRNA' : "#D0767E" , # old rose
+        'snRNA' : "#7A2A30" , # wine
+        'sRNA' : "#7A2A30" , # wine
+        # blue 
+        'LINE' : "#3476AD" , # UCLA blue
+        'SINE': "#72A8D5" , # ruddy blue
+        # '' : "#2A618D" , #lapis lazuli
+        # dark red-brown
+        'Low_complexity' : "#3A3335" , # Jet 
+        'Satellite' : "#564D4F" , #Wenge 
+        'Simple_repeat' : "#827376" , #Taupe gray
+    }
+
+    # for idx, repeat_category in enumerate(types_list): 
+    for idx, species in enumerate(species_list): 
+        
+        species_name = species.replace("_", ". ")
+        category_genome_content = [] # rep_abundances[species][type_association[repeat_category]] for species in species_list
+        before_test_statistic = [] # wilcoxon_results[species][repeat_category][1] for species in species_list
+        after_test_statistic = [] # wilcoxon_results[species][repeat_category][3] for species in species_list
+        absent_rep_cat = []
+        colors_list = []
+        for repeat_category in types_list:
+            if repeat_category in wilcoxon_results[species]:
+                category_genome_content.append(rep_abundances[species][type_association[repeat_category]])
+                before_test_statistic.append(wilcoxon_results[species][repeat_category][1])
+                after_test_statistic.append(wilcoxon_results[species][repeat_category][3])
+                colors_list.append(colors[repeat_category])
+            else:
+                absent_rep_cat.append(repeat_category)
+
+        if len(category_genome_content) != len(before_test_statistic) or len(before_test_statistic) != len(after_test_statistic):
+            raise RuntimeError(f"{repeat_category} data lengths don't match!\n\t --> category_genome_content : {len(category_genome_content)}\n\t --> before_test_statistic : {len(before_test_statistic)}\n\t --> after_test_statistic : {len(after_test_statistic)}")
+        # Calculate row and column indices for the current subplot
+        row = idx // cols
+        col = idx % cols
+
+        if len(absent_rep_cat)>0:
+            print(f"\tin position {row+1},{col+1}: \t{species_name} -->  (missing {len(absent_rep_cat)} repeat categories: {absent_rep_cat} )")
+        else:
+            print(f"\tin position {row+1},{col+1}: \t{species_name}")
+
+        # Plot histogram on the corresponding subplot axis
+        axes[row, col].scatter(before_test_statistic, category_genome_content, color = colors_list, s=pointsize)
+        axes[row, col].scatter(after_test_statistic, category_genome_content, color = colors_list, s=pointsize, marker="v")
+        axes[row, col].set_title(f'{species_name}', fontsize = fs)
+        axes[row, col].set_xlabel('')
+        if col == 0 and row == mid_row:
+            axes[row, col].set_ylabel('whole genome abundance of repeat category', fontsize = fs)
+        else:
+            axes[row, col].set_ylabel('')
+        if len(category_genome_content) ==0:
+            continue
+        if max(category_genome_content) <5 : 
+            axes[row, col].yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 100 else f'{x:.3}%'))
+        else:
+            axes[row, col].yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 100 else f'{int(x)}%'))
+        axes[row, col].tick_params(axis='x', labelsize=fs*0.8)
+        axes[row, col].tick_params(axis='y', labelsize=fs*0.8)
+    
+    # add legend to last plot square
+    if legend_in_last == True:
+        # plot marker type
+        idx_max = len(types_list)
+        row = idx_max // cols
+        col = idx_max % cols
+        axes[row, col].axis('off')
+        axes[row, col].set_title(f'')
+        axes[row, col].scatter([-1], [-1], color='black', label = "before transcript", s=pointsize)
+        axes[row, col].scatter([-1], [-1], color='black', label = "after transcript", s=pointsize, marker="v")
+        axes[row, col].set_xlim(0, 0.1)
+        axes[row, col].set_ylim(0, 0.1)
+        axes[row, col].legend(fontsize = fs*0.75, loc='center', title_fontsize = fs)
+        # plot category colors
+        col+=1
+        axes[row, col].axis('off')
+        axes[row, col].set_title(f'')
+        for repeat_category in types_list:
+            axes[row, col].scatter([-1], [-1], color=colors[repeat_category], label = repeat_category, s=pointsize)
+        axes[row, col].set_xlim(0, 0.1)
+        axes[row, col].set_ylim(0, 0.1)
+        axes[row, col].legend(fontsize = fs*0.75, loc='center', title_fontsize = fs, ncols = 2)
+
+        ## empty last plot
+        col+=1
+        axes[row, col].axis('off')
+        axes[row, col].set_title(f'')
+
+    
+    # Set a single x-axis label for all subplots
+    x_label = f"Wilcoxon test effect size"
+    fig.text(0.5, 0.04, x_label, ha='center', va='center', fontsize=fs)
+    # Adjust layout to prevent overlap
+    plt.tight_layout(rect=[0, 0.05, 1, 1])
+
+    plt.savefig(filename, dpi = 300, transparent = True)
+    print(f"plot saved in current working directory as: {filename}")
+
+
+
+
+def plot_wilcoxon_vs_rep_association_by_category(rep_abundances, wilcoxon_results, type_association, columns = 3, legend_in_last = True, filename = "plot_wilcoxon_rep_content_association.png"):
+    """
+    plot the association of repeat abundances and wilcoxon-significant enrichment for each repeat category
+    """
+    cols = columns
+    types_list = list(type_association.keys())
+    species_list = list(rep_abundances.keys())
+    rows = int(len(types_list)/cols)  +1
+    if rows>2:
+        fig, axes = plt.subplots(rows, cols, figsize=(12, 15)) # for more than three rows
+        mid_row = int(rows/2)
+    else:
+        fig, axes = plt.subplots(rows, cols, figsize=(15, 10)) # for more than three rows
+        mid_row = 0
+    fs = 22
+    pointsize = 100
+
+    colors = {
+        'Unknown' : "#C1C1C1" , # light grey
+        # orange
+        'DNA' : "#FF9000" , # Princeton orange
+        # green
+        'LTR' : "#6E8448" , # reseda green
+        'RC' : "#8EA861" , # asparagus 
+        # red
+        'tRNA' : "#C14953" , # bittersweet shimmer
+        'rRNA' : "#D0767E" , # old rose
+        'snRNA' : "#7A2A30" , # wine
+        'sRNA' : "#7A2A30" , # wine
+        # blue 
+        'LINE' : "#3476AD" , # UCLA blue
+        'SINE': "#72A8D5" , # ruddy blue
+        # '' : "#2A618D" , #lapis lazuli
+        # dark red-brown
+        'Low_complexity' : "#3A3335" , # Jet 
+        'Satellite' : "#564D4F" , #Wenge 
+        'Simple_repeat' : "#827376" , #Taupe gray
+    }
+
+    # for idx, repeat_category in enumerate(types_list): 
+    idx_reduced = 0
+    for idx, repeat_category in enumerate(types_list): 
+        
+        category_genome_content = [] # rep_abundances[species][type_association[repeat_category]] for species in species_list
+        before_test_statistic = [] # wilcoxon_results[species][repeat_category][1] for species in species_list
+        after_test_statistic = [] # wilcoxon_results[species][repeat_category][3] for species in species_list
+        absent_species = []
+        colors_list = []
+        for species in species_list:
+            if repeat_category in wilcoxon_results[species]:
+                category_genome_content.append(rep_abundances[species][type_association[repeat_category]])
+                before_test_statistic.append(wilcoxon_results[species][repeat_category][1])
+                after_test_statistic.append(wilcoxon_results[species][repeat_category][3])
+                colors_list.append(colors[repeat_category])
+            else:
+                absent_species.append(species)
+
+
+        if len(category_genome_content) != len(before_test_statistic) or len(before_test_statistic) != len(after_test_statistic):
+            raise RuntimeError(f"{repeat_category} data lengths don't match!\n\t --> category_genome_content : {len(category_genome_content)}\n\t --> before_test_statistic : {len(before_test_statistic)}\n\t --> after_test_statistic : {len(after_test_statistic)}")
+        # Calculate row and column indices for the current subplot
+        row = idx // cols
+        col = idx % cols
+
+        repeat_category_title = repeat_category.replace("_"," ")
+        if len(absent_species) == len(species_list):
+            axes[row, col].axis('off')
+            # axes[row, col].set_title(f'{repeat_category_title} absent\nin all species', fontsize = fs*0.75)
+            axes[row, col].text(0,0.5,f'{repeat_category_title} absent\nin all species', fontsize = fs*0.75)
+            idx_reduced += 1
+            print(f"\tin position {row+1},{col+1}: \t{repeat_category_title} -->  (missing in all species)")
+            # continue
+        else:
+
+            if len(absent_species)>0:
+                print(f"\tin position {row+1},{col+1}: \t{repeat_category_title} -->  (missing in {len(absent_species)} species: {absent_species} )")
+            else:
+                print(f"\tin position {row+1},{col+1}: \t{repeat_category_title}")
+
+            # Plot histogram on the corresponding subplot axis
+            axes[row, col].scatter(before_test_statistic, category_genome_content, color = colors_list, s=pointsize)
+            axes[row, col].scatter(after_test_statistic, category_genome_content, color = colors_list, s=pointsize, marker="v")
+            axes[row, col].set_title(f'{repeat_category_title}', fontsize = fs*0.85)
+            axes[row, col].set_xlabel('')
+            if col == 0 and row == mid_row:
+                axes[row, col].set_ylabel('whole genome abundance', fontsize = fs)
+            else:
+                axes[row, col].set_ylabel('')
+            if len(category_genome_content) ==0:
+                continue
+            if max(category_genome_content) <9 : 
+                axes[row, col].yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 100 else f'{x:.2}%'))
+            else:
+                axes[row, col].yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 100 else f'{int(x)}%'))
+            axes[row, col].tick_params(axis='x', labelsize=fs*0.8)
+            axes[row, col].tick_params(axis='y', labelsize=fs*0.8)
+    
+    # add legend to last plot square
+    if legend_in_last == True:
+        # plot marker type
+        idx_max = len(types_list)#  - idx_reduced
+        row = idx_max // cols
+        col = idx_max % cols
+        print(f"\tin position {row+1},{col+1}: \tlegend")
+        axes[row, col].axis('off')
+        axes[row, col].set_title(f'')
+        axes[row, col].scatter([-1], [-1], color='black', label = "before transcript", s=pointsize)
+        axes[row, col].scatter([-1], [-1], color='black', label = "after transcript", s=pointsize, marker="v")
+        axes[row, col].set_xlim(0, 0.1)
+        axes[row, col].set_ylim(0, 0.1)
+        axes[row, col].legend(fontsize = fs*0.75, loc='center', title_fontsize = fs)
+        ## empty last plots
+        for i in range(columns-col-1):
+            # print(i)
+            col+=1
+            axes[row, col].axis('off')
+            axes[row, col].set_title(f'')
+    
+    # Set a single x-axis label for all subplots
+    x_label = f"Wilcoxon test effect size"
+    fig.text(0.5, 0.04, x_label, ha='center', va='center', fontsize=fs)
+    # Adjust layout to prevent overlap
+    plt.tight_layout(rect=[0, 0.05, 1, 1])
+
+    plt.savefig(filename, dpi = 300, transparent = True)
+    print(f"plot saved in current working directory as: {filename}")
+
+
+
+
 
 
 if __name__ == "__main__":
@@ -523,6 +816,8 @@ if __name__ == "__main__":
 
     
     ### plot protein length histograms
+    ## all species
+
     ## filepaths
     if True:
     
@@ -579,7 +874,8 @@ if __name__ == "__main__":
             "T_molitor" : f"{unfiltered_path}/T_molitor_filtered_proteinfasta.fa",
             "Z_morio" : f"{unfiltered_path}/Z_morio_filtered_proteinfasta.fa",
         }
-
+    # plot
+    if False:
         # get individual plots for all species
         # for species in native_files.keys():
         #     plot_histogram_protein_lengths(native_files[species], orthoDB_files[species], species_name=species, filename = f"protein_lengths_histogram_{species}.png")
@@ -592,7 +888,9 @@ if __name__ == "__main__":
             plot_histogram_protein_lengths(native_path = native_files["T_castaneum"], orthoDB_path = orthoDB_files["T_castaneum"], species_name="T. castaneum", no_bins = 20, max_length = 1500, filename = f"{data}/Tcas_protein_lengths_histogram.png", dark_mode=True)
             plot_histogram_protein_lengths(native_path = native_files["B_siliquastri"], orthoDB_path = orthoDB_files["B_siliquastri"], species_name="B. siliquastri", no_bins = 20, max_length = 1500, filename = f"{data}/Bsil_protein_lengths_histogram.png", dark_mode=True)
 
-    if False:
+    ## cmac annotation comparison
+    # paths
+    if True:
         annot_com_dir = "/Users/milena/work/c_maculatus/annotation_comparison/superscaffolded_annotation"
         comparison_files = {
             "Cmac_Lome_diverse" : f"{annot_com_dir}/Cmac_Lome_diverse_filtered.faa",
@@ -609,9 +907,19 @@ if __name__ == "__main__":
             "Cmac_Nigeria_simple" : f"{orthoDB_dir}/C_maculatus_filtered_proteinfasta_TE_filtered.fa",
             "Cmac_SI_diverse" : f"{orthoDB_dir}/C_maculatus_filtered_proteinfasta_TE_filtered.fa",
         }
+    # plot
+    if False:
         #plot_all_species_protein_length_distribution(native_files, orthoDB_files, third_column_files= comparison_files, columns=2, max_length=1500, filename=f"{data}/Lome_RNA_annot_comparison/protein_lengths_histogram.png")
         plot_histogram_protein_lengths(native_path = native_files["Cmac_Lome_diverse"], orthoDB_path = orthoDB_files["Cmac_Lome_diverse"], third_path=comparison_files["Cmac_Lome_diverse"], species_name="C. maculatus (Lome RNA annotation)\n", no_bins = 20, max_length = 1500, filename = f"{data}/Lome_RNA_annot_comparison/Lome_only_protein_lengths_histogram.png", dark_mode=False)
 
+    ## cmac transcriptome
+    if True:
+        plot_path = "/Users/miltr339/work/PhD_code/PhD_chapter4/plots/"
+        our_transcriptome_path = "/Users/miltr339/work/c_maculatus/LOME_larval_transcriptome/TE_filtered_95_perc_identity_clustered_transcriptome_proteinseq.fasta"
+        SI_transciptome_path = "/Users/miltr339/work/c_maculatus/LOME_larval_transcriptome/SI_transcriptome/GEUF01_proteinseq.fasta"
+        # plot_histogram_protein_lengths(native_path = "/Users/miltr339/work/c_maculatus/LOME_larval_transcriptome/TE_filtered_95_perc_identity_clustered_transcriptome_proteinseq.fasta", species_name="C. maculatus", no_bins = 20, max_length = 1500, filename = f"{plot_path}/C_maculatus_larval_transcriptome.png", dark_mode=False)
+        # "our transcriptome", "SI transcriptome", "genome annotation"
+        plot_histogram_protein_lengths(native_path =our_transcriptome_path, orthoDB_path=SI_transciptome_path, third_path = native_files["Cmac_Lome_diverse"], species_name="C. maculatus", no_bins = 20, max_length = 500, filename = f"{plot_path}/C_maculatus_larval_transcriptome_with_SI_transcriptome_and_annot_comp.png", dark_mode=False, transcriptome_labels=True)
 
     if False:
         # data from filtering pasted here so that I don't loose it
@@ -619,3 +927,56 @@ if __name__ == "__main__":
         # columns=["before_filtering", "after_filtering", "num_filtered"]
         outdir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data"
         plot_TE_filtering(filter_stats=filter_stats, species_tree=tree, filename=f"{outdir}/TE_filtering_stats.png")
+
+    if False:
+        import plot_repeats_whole_genome_stats as wg_reps
+        # plot the genome wide repeat abundance for each category against the p-value of the wilcoxon test to see if genome wide more abundant transcripts are more significant
+        wilcoxon_results = {
+        "A_obtectus" : "/Users/miltr339/work/PhD_code/ReVis/tests/A_obtectus_wilcoxon_test.txt",
+        "A_verrucosus" : "/Users/miltr339/work/PhD_code/ReVis/tests/A_verrucosus_wilcoxon_test.txt",
+        "B_siliquastri" : "/Users/miltr339/work/PhD_code/ReVis/tests/B_siliquastri_wilcoxon_test.txt",
+        "C_chinensis" : "/Users/miltr339/work/PhD_code/ReVis/tests/C_chinensis_wilcoxon_test.txt",
+        "C_maculatus" : "/Users/miltr339/work/PhD_code/ReVis/tests/C_maculatus_wilcoxon_test.txt",
+        "C_septempunctata" : "/Users/miltr339/work/PhD_code/ReVis/tests/C_septempunctata_wilcoxon_test.txt",
+        "D_ponderosae" : "/Users/miltr339/work/PhD_code/ReVis/tests/D_ponderosae_wilcoxon_test.txt",
+        "I_luminosus" : "/Users/miltr339/work/PhD_code/ReVis/tests/I_luminosus_wilcoxon_test.txt",
+        "P_pyralis" : "/Users/miltr339/work/PhD_code/ReVis/tests/P_pyralis_wilcoxon_test.txt",
+        "R_ferrugineus" : "/Users/miltr339/work/PhD_code/ReVis/tests/R_ferrugineus_wilcoxon_test.txt",
+        "T_castaneum" : "/Users/miltr339/work/PhD_code/ReVis/tests/T_castaneum_wilcoxon_test.txt",
+        "T_molitor" : "/Users/miltr339/work/PhD_code/ReVis/tests/T_molitor_wilcoxon_test.txt",
+        "Z_morio" : "/Users/miltr339/work/PhD_code/ReVis/tests/Z_morio_wilcoxon_test.txt",
+        }
+
+        ### TODO continue here
+        ### strings that label the repeats in each type
+        ## wilcoxon : tbl
+        type_association = {
+        "DNA" : "DNA transposons",
+        "LINE" : "LINEs",
+        "LTR" : "LTR elements",
+        "RC" : "Rolling-circles",
+        "SINE" : "SINEs",
+        "Satellite" : "Satellites",
+        "Simple_repeat" : "Simple repeats",
+        "Unknown" : "Unclassified",
+        "rRNA" : "Small RNA",
+        "tRNA" : "Small RNA",
+        "sRNA" : "Small RNA",
+        "Low_complexity" : "Low complexity",
+        }
+
+        tbl_dict = wg_reps.tbl_files_paths()
+        all_rep_abundances = {} 
+        all_wilcoxon_results = {}
+        for species in wilcoxon_results.keys():
+            species_reps = wg_reps.get_wg_repeats_stats_dict(tbl_filepath=tbl_dict[species], no_subcats=False)
+            all_rep_abundances[species] = species_reps
+            wilc_reps = read_wilcoxon_test_results(wilcoxon_results[species])
+            all_wilcoxon_results[species] = wilc_reps
+            # print(f"============== {species}")
+            # for rep, stats in wilc_reps.items():
+            #     print(f"\t{rep} : \t {stats}")
+        
+        out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/repeats_whole_genome_abundance"
+        plot_wilcoxon_vs_rep_association_by_species(all_rep_abundances, all_wilcoxon_results, type_association, columns = 3, filename=f"{out_dir}/wilcoxon_rep_content_association_by_species.png")
+        plot_wilcoxon_vs_rep_association_by_category(all_rep_abundances, all_wilcoxon_results, type_association, columns = 3, filename=f"{out_dir}/wilcoxon_rep_content_association_by_category.png")

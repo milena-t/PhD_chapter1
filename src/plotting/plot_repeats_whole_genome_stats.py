@@ -48,17 +48,25 @@ def get_repeat_content_tbl(tbl_path:str):
     return masked_percentage
 
 
-def get_wg_repeats_stats_dict(tbl_filepath:str):
+def get_wg_repeats_stats_dict(tbl_filepath:str, no_subcats = True):
     """
     use the .tbl output from repeatmasker to get whole-genome stats of repeat content
     outpuit format is a dictionary, { category : percentage }
+    by default, subcategories are not included 'no_subcats=True' but you can set false and include all subcategories 
+        (this will mean that the total percentage sums up to more than the genome wide repeat percentage)
     """
     repeat_content_dict:dict = {}
     with open(tbl_filepath, "r") as tbl_file:
         for line in tbl_file.readlines():
             if line[0].isspace():
-                continue
+                if no_subcats:
+                    continue
+                else:
+                    if line[0] == "\t":
+                        print(line)
             line_nospace = line.strip()
+            if len(line_nospace) <3:
+                continue
             if line_nospace[-1] == "%" and line_nospace[0:2] != "GC" and "Total interspersed repeats" not in line_nospace:  # get all lines with % in the last column but skip the one about GC content, this leaves only repeats
                 line_list = line_nospace.split("   ")
                 percentage = float(line_list[-1].split()[0])
@@ -89,29 +97,62 @@ def plot_wg_repeat_stats(repeat_stats_dict:dict[dict[str,float]], filename = "wh
     # Width of the bars
     width = 0.75
     
-
     colors = {
-        'Unclassified' : "#C1C1C1" , # light grey
+        'Unknown' : "#C1C1C1" , # light grey
         # orange
-        'DNA transposons' : "#FF9000" , # Princeton orange
+        'DNA' : "#FF9000" , # Princeton orange
         # green
-        'Retroelements' : "#6E8448" , # reseda green
-        'Rolling-circles' : "#8EA861" , # asparagus 
-        'Total interspersed repeats' : "#4D5C33", # dark moss green
-
+        'LTR' : "#6E8448" , # reseda green
+        'RC' : "#8EA861" , # asparagus 
         # red
         'tRNA' : "#C14953" , # bittersweet shimmer
         'rRNA' : "#D0767E" , # old rose
-        'Small RNA' : "#7A2A30" , # wine
+        'snRNA' : "#7A2A30" , # wine
+        'sRNA' : "#7A2A30" , # wine
         # blue 
         'LINE' : "#3476AD" , # UCLA blue
         'SINE': "#72A8D5" , # ruddy blue
         # '' : "#2A618D" , #lapis lazuli
         # dark red-brown
-        'Low complexity' : "#3A3335" , # Jet 
-        'Satellites' : "#564D4F" , #Wenge 
-        'Simple repeats' : "#96888B"# "#827376" , #Taupe gray
+        'Low_complexity' : "#3A3335" , # Jet 
+        'Satellite' : "#564D4F" , #Wenge 
+        'Simple_repeat' : "#827376" , #Taupe gray
     }
+    type_association = {
+         "DNA transposons" : "DNA",
+         "LINEs" : "LINE",
+         "LTR elements" : "LTR",
+         "Rolling-circles" : "RC",
+         "SINEs" : "SINE",
+         "Satellites" : "Satellite",
+         "Simple repeats" : "Simple_repeat",
+         "Unclassified" : "Unknown",
+         "Small RNA" : "sRNA",
+         "Low complexity" : "Low_complexity",
+        }
+    if False:
+        colors = {
+            'Unclassified' : "#C1C1C1" , # light grey
+            # orange
+            'DNA transposons' : "#FF9000" , # Princeton orange
+            # green
+            'Retroelements' : "#6E8448" , # reseda green
+            'Rolling-circles' : "#8EA861" , # asparagus 
+            'Total interspersed repeats' : "#4D5C33", # dark moss green
+
+            # red
+            'tRNA' : "#C14953" , # bittersweet shimmer
+            'rRNA' : "#D0767E" , # old rose
+            'Small RNA' : "#7A2A30" , # wine
+            # blue 
+            'LINE' : "#3476AD" , # UCLA blue
+            'SINE': "#72A8D5" , # ruddy blue
+            # '' : "#2A618D" , #lapis lazuli
+            # dark red-brown
+            'Low complexity' : "#3A3335" , # Jet 
+            'Satellites' : "#564D4F" , #Wenge 
+            'Simple repeats' : "#96888B"# "#827376" , #Taupe gray
+        }
 
     x_contig_coords = []
     x_contig_labels = []
@@ -146,27 +187,37 @@ def plot_wg_repeat_stats(repeat_stats_dict:dict[dict[str,float]], filename = "wh
             curr_base = 0
 
             for repeat_cat, percentage in curr_spec_repeats.items():
+                # if repeat_cat not in type_association and percentage>0:
+                #     raise RuntimeError(f"=====> {repeat_cat} with {percentage}% not plotted")
+                
+                if repeat_cat not in type_association:
+                    continue
                 all_categories.append(repeat_cat)
 
-                ax.bar(x_index, percentage, width=width, label=repeat_cat, bottom=curr_base, color = colors[repeat_cat])
-                curr_base += percentage
+                try:
+                    ax.bar(x_index, percentage, width=width, label=repeat_cat, bottom=curr_base, color = colors[type_association[repeat_cat]])
+                    curr_base += percentage
+                except:
+                    raise RuntimeError(f"orginal repeat category {repeat_cat} could not be associated with any key in {type_association.keys()}")
 
     x_contig_labels = [species.replace("_", ". ") for species in x_contig_labels]
     # ax.set_xticklabels(x_contig_labels, rotation=90, fontsize=fs)
     ax.set_xticks(x_contig_coords, x_contig_labels, rotation=90, fontsize=fs)
     ax.tick_params(axis='y', labelsize=fs)
     ax.tick_params(axis='x', labelsize=fs) 
-    ax.set_ylim(0, 95)
+    ax.set_ylim(0, 105)
     ax.set_xlim(-0.5, len(x_contig_coords)-0.5)
     ax.set_ylabel("repeat content", fontsize=fs+4, rotation = 90, labelpad = 30)
-    ax.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 80 and x<1 else f'{int(x)}%'))
+    ax.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 101 and x<1 else f'{int(x)}%'))
 
     # make legend patches and labels
     handles = []
     labels = [] 
 
     for category in sorted_categories[::-1]:# species_abundances[list(contig_lengths.keys())[0]][1]:
-        handles.append(mpatches.Patch(color=colors[category]))
+        if category not in type_association:
+            continue
+        handles.append(mpatches.Patch(color=colors[type_association[category]]))
         labels.append(category)
 
     ax.legend(handles, labels, fontsize = fs*0.8, loc='upper center', ncol=4)
@@ -187,10 +238,11 @@ if __name__ == "__main__":
     
     for species, tbl_path in tbl_files.items():
         print(f" --> {species}")
-        repeat_contents_stats[species] = get_wg_repeats_stats_dict(tbl_path)
-        print(repeat_contents_stats[species])
+        repeat_contents_stats_all = get_wg_repeats_stats_dict(tbl_path, no_subcats=False)
+        del repeat_contents_stats_all["Retroelements"] # remove because it's split up into subcategories that i want to separate
+        repeat_contents_stats[species] = repeat_contents_stats_all
     
-    plot_wg_repeat_stats(repeat_contents_stats, filename = f"{data}whole_genome_repeat_contents.png", tree_filepath = tree_filepath, plot_tree=False)
+    plot_wg_repeat_stats(repeat_contents_stats, filename = f"{data}whole_genome_repeat_contents_subcategories.png", tree_filepath = tree_filepath, plot_tree=False)
 
     ## TODO fix proportions for tree plotting
     # plot_wg_repeat_stats(repeat_contents_stats, filename = f"{data}whole_genome_repeat_contents_with_tree.png", tree_filepath = tree_filepath, plot_tree=True)

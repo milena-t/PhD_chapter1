@@ -287,7 +287,7 @@ def plot_slopes(inclines,p_values,p_values_bh,return_dict,OG_sizes, sig_list ,x_
             OG_sizes_unsig_list.append(OG_sizes[orthogroup])
             return_dict[orthogroup][-1] = "n"
         
-    ax.scatter(inclines_unsig_list, OG_sizes_unsig_list, color = colors[f"{color_category}_unsignificant"], s=30, marker = "x", label = "unsignificant")# with marker="o" use facecolors = "none" to make an un-filled circle
+    ax.scatter(inclines_unsig_list, OG_sizes_unsig_list, color = colors[f"{color_category}_unsignificant"], s=30, marker = "x", label = "nonsignificant")# with marker="o" use facecolors = "none" to make an un-filled circle
     ax.scatter(inclines_sig_list, OG_sizes_sig_list, color = colors[color_category], s=75, label = "significant")
     ax.scatter(inclines_bh_cor_sig_list, OG_sizes_bh_cor_sig_list, color = colors[f"{color_category}_multiple_testing_sig"], s=75, marker="v", label = "B.H. corrected")
     ax.set_xlim(-1.1,1.1)
@@ -295,7 +295,7 @@ def plot_slopes(inclines,p_values,p_values_bh,return_dict,OG_sizes, sig_list ,x_
 
     if len(norm_coeffs) == 4:
         pdf_ax = ax.twinx()
-        pdf_ax.set_ylabel('normal distribution\nbased on mean and sd', color = colors["native"], fontsize = fs)
+        pdf_ax.set_ylabel('normal distribution of '+r"$\rho$"+'\nbased on mean and sd', color = colors["native"], fontsize = fs)
         pdf_ax.tick_params(axis ='y', labelcolor = colors["native"], labelsize = fs) 
 
         lwd = 1.5 #linewidth
@@ -307,7 +307,7 @@ def plot_slopes(inclines,p_values,p_values_bh,return_dict,OG_sizes, sig_list ,x_
             max_OG_size = max(max(OG_sizes_unsig_list), max(OG_sizes_sig_list)) 
 
         pdf_y = scipy.stats.norm.pdf(pdf_x, mean_cor, std_cor)
-        pdf_ax.plot(pdf_x,pdf_y, linewidth=lwd, color=colors["native"], label = f"mean: {mean_cor:.3f}")#, linestyle="--")
+        pdf_ax.plot(pdf_x,pdf_y, linewidth=lwd, color=colors["native"], label = r"mean $\rho$"+f": {mean_cor:.3f}")#, linestyle="--")
         pdf_ax.axvline(x=lower_CI, linewidth=lwd, color=colors["native"], linestyle=":", label = f"95% standard error \nof the mean [{lower_CI:.3f}, {upper_CI:.3f}]")
         pdf_ax.axvline(x=upper_CI, linewidth=lwd, color=colors["native"], linestyle=":")
         pdf_ax.set(yticklabels=[])
@@ -320,12 +320,12 @@ def plot_slopes(inclines,p_values,p_values_bh,return_dict,OG_sizes, sig_list ,x_
     elif len(norm_coeffs) != 0:
         raise RuntimeError(f"norm_coeffs has to have four elements: [mean,std,lower_CI,upper_CI], you have: \n{norm_coeffs}")
 
-    xlab = f"correlation coefficients of individual orthogroups \n(only {len(sig_list)} significant orthogroups shown)"
+    title_ = x_label.split(" in")[0]
+    xlab = r"Spearman's $\rho$ of"+f" {title_} vs. Gene family size"
     ax.set_xlabel(xlab, fontsize = fs)
     ax.set_ylabel("orthogroup size", fontsize = fs, color = colors[color_category])
     ax.tick_params(axis ='y', labelcolor = colors[color_category], labelsize = fs) 
     
-    title_ = x_label.split(" in")[0]
     if log_possible:
         title_ = f"log2({title_})"
     if log10_GF:
@@ -333,7 +333,8 @@ def plot_slopes(inclines,p_values,p_values_bh,return_dict,OG_sizes, sig_list ,x_
     elif log2_GF:
         title = f"spearman correlation of\n {title_} vs. log2(Gene family size) "
     else:
-        title = f"spearman correlation of\n {title_} vs. Gene family size"
+        # title = f"spearman correlation of\n {title_} vs. Gene family size"
+        title = f"spearman correlation coefficients\nof {len(sig_list)} significant orthogroups"
     plt.title(title, fontsize=fs*1.2)
     ax.legend(fontsize = legend_fs, loc='upper left', title_fontsize = legend_fs, title = "individual OG\nsignificance")
 
@@ -452,7 +453,7 @@ if __name__ == "__main__":
         print(f"\n\torthoDB")
         # orthoDB_sig_list, orthoDB_cafe_list = OGs.get_sig_orthogroups(sig_orthoDB)
         orthoDB_sig_list, orthoDB_cafe_list = CAFE.get_overlap_OG_sig_list(CAFE_runs_dir)
-        username = "milena" # "miltr339"
+        username = "miltr339" # "miltr339"
         ## write lists to file for other stuff
         if True:
             overlap_sig_OGS_path = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/CAFE_convergence/overlap_sig_OGS.txt"
@@ -485,14 +486,14 @@ if __name__ == "__main__":
             norm_coeffs = calculate_list_CI(coefficients=coefficients, cl = 0.95)
 
             GS_inclines = plot_slopes(coefficients,p_values,p_values_BH,return_dict,OG_sizes, x_label = "Genome size in Mb",  filename = f"{data_dir}correlations/sig_OGs_vs_GS_coefficients_bh_corrected_PIC.png", sig_list=orthoDB_sig_list ,log_possible=False, svg=svg_bool, dark_mode=darkmode_bool, norm_coeffs = norm_coeffs)
-            # gff.write_dict_to_file(GS_inclines, f"{data_dir}sig_OGs_vs_GS_inclines_pvalues.tsv", header=f"OG\tslope\tp-value\tsig_after_multiple_testing", separator="\t")
+            gff.write_dict_to_file(GS_inclines, f"{data_dir}sig_OGs_vs_GS_correlations_pvalues.tsv", header=f"OG\tcorrelation_coeff\tp-value\tsig_after_multiple_testing", separator="\t")
 
             print(f"\n\t\t * repeat content")
             ## spearman correlation
             coefficients,p_values,p_values_BH,OG_sizes,return_dict = get_plot_values_spearman(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, sig_list=orthoDB_sig_list, tree_path=tree)
             norm_coeffs = calculate_list_CI(coefficients=coefficients, cl = 0.95)
             TE_inclines = plot_slopes(coefficients,p_values,p_values_BH,return_dict,OG_sizes, x_label = "Repeat content in percent",  filename = f"{data_dir}correlations/sig_OGs_vs_reps_coefficients_bh_corrected_PIC.png", sig_list=orthoDB_sig_list ,log_possible=False, svg=svg_bool, dark_mode=darkmode_bool, norm_coeffs = norm_coeffs)
-            # gff.write_dict_to_file(TE_inclines, f"{data_dir}sig_OGs_vs_reps_inclines_pvalues.tsv", header=f"OG\tslope\tp-value\tsig_after_multiple_testing", separator="\t")
+            gff.write_dict_to_file(TE_inclines, f"{data_dir}sig_OGs_vs_reps_correlations_pvalues.tsv", header=f"OG\tcorrelation_coeff\tp-value\tsig_after_multiple_testing", separator="\t")
 
         ## do the individual repeat categories
         if True:

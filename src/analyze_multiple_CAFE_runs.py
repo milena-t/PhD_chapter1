@@ -107,6 +107,35 @@ def plot_sig_OG_occurence_histogram(sig_counts_list:list[int], filename = ""):
     print("Figure saved in the current working directory directory as: "+filename)
 
 
+def make_CAFE_summary_table(run_paths_list:str, outfile_name:str):
+    """
+    make a summary table that contains all the p-values per orthogroup for all CAFE runs in one file for the publication
+    """
+    ## start_dict
+    out_dict = {}
+    with open(run_paths_list[0], "r") as init_dict_file:
+        lines = init_dict_file.readlines()
+        for line in lines[1:]:
+            orthogroup = line.strip().split("\t")[0]
+            out_dict[orthogroup] = []
+    
+    for CAFE_run_path in run_paths_list:
+        with open(CAFE_run_path, "r") as CAFE_run:
+            lines = CAFE_run.readlines()
+            for line in lines[1:]:
+                orthogroup, p_value, significant = line.strip().split("\t")
+                out_dict[orthogroup].append(p_value)
+                
+    with open(outfile_name, "w") as outfile:
+        for orthogroup, pval_list in out_dict.items():
+            pval_string = "\t".join(pval_list)
+            outfile_string = f"{orthogroup}\t{pval_string}\n"
+            outfile.write(outfile_string)
+    
+    print(f"CAFE summary file written to: {outfile_name}")
+    return outfile_name
+
+
 CAFE_runs_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_convergence/runs_to_test_convergence"
 
 
@@ -115,10 +144,13 @@ if __name__ == "__main__":
     out_data = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/CAFE_convergence"
     cafe_outputs_list = CAFE_output_paths(CAFE_runs_dir)
 
+    make_CAFE_summary_table(cafe_outputs_list, f"{out_data}/CAFE_summary_file.tsv")
     
     overlap_sig_OGs, all_OGs_list = get_overlap_OG_sig_list(cafe_outputs_list)
     print(f"{len(overlap_sig_OGs)} orthogroups significant out of {len(all_OGs_list)} in all {len(cafe_outputs_list)} CAFE runs")
-
+    overlap_sig_OGs.sort()
+    print(overlap_sig_OGs)
+    
     if False:
         ## plot gene family sizes
         orthogroups_orthoDB_filepath = "/Users/milena/work/PhD_code/PhD_chapter1/data/orthofinder_uniform/N0.tsv"
@@ -132,7 +164,7 @@ if __name__ == "__main__":
                                  title = f"Orthogroups that are significant in all {len(cafe_outputs_list)} CAFE5 runs", 
                                  svg = False)
 
-    if True:
+    if False:
         ## plot histogram of the number of runs that OGs are significant in
         sig_OG_counts, all_OGs = count_OG_occurence(cafe_outputs_list)
         sig_counts_list = list(sig_OG_counts.values())
