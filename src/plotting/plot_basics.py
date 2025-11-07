@@ -908,12 +908,12 @@ if __name__ == "__main__":
             "Cmac_SI_diverse" : f"{orthoDB_dir}/C_maculatus_filtered_proteinfasta_TE_filtered.fa",
         }
     # plot
-    if False:
+    if True:
         #plot_all_species_protein_length_distribution(native_files, orthoDB_files, third_column_files= comparison_files, columns=2, max_length=1500, filename=f"{data}/Lome_RNA_annot_comparison/protein_lengths_histogram.png")
         plot_histogram_protein_lengths(native_path = native_files["Cmac_Lome_diverse"], orthoDB_path = orthoDB_files["Cmac_Lome_diverse"], third_path=comparison_files["Cmac_Lome_diverse"], species_name="C. maculatus (Lome RNA annotation)\n", no_bins = 20, max_length = 1500, filename = f"{data}/Lome_RNA_annot_comparison/Lome_only_protein_lengths_histogram.png", dark_mode=False)
 
     ## cmac transcriptome
-    if True:
+    if False:
         plot_path = "/Users/miltr339/work/PhD_code/PhD_chapter4/plots/"
         our_transcriptome_path = "/Users/miltr339/work/c_maculatus/LOME_larval_transcriptome/TE_filtered_95_perc_identity_clustered_transcriptome_proteinseq.fasta"
         SI_transciptome_path = "/Users/miltr339/work/c_maculatus/LOME_larval_transcriptome/SI_transcriptome/GEUF01_proteinseq.fasta"
