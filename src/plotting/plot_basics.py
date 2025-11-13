@@ -13,6 +13,7 @@ from matplotlib.ticker import FuncFormatter
 import parse_gff as gff 
 # import src.parse_gff as gff 
 from Bio import SeqIO, Phylo, SeqUtils
+import numpy as np
 
 
 def get_gene_conuts_from_annot(species_names, files_dir):
@@ -380,6 +381,11 @@ def plot_all_species_seq_properties_distribution(native_files:dict, orthoDB_file
         # Plot histogram on the corresponding subplot axis
         if third_column_files == {}:
             axes[row, col].hist([native_lengths, orthoDB_lengths], bins=no_bins, histtype="bar", color = [colors["native"], colors["orthoDB"]])
+            if GC_content:
+                bottom, top = axes[row, col].get_ylim()
+                mean_nat = np.mean(native_lengths)
+                mean_odb = np.mean(orthoDB_lengths)
+                axes[row, col].vlines([mean_nat,mean_odb],bottom, top*1.2, linestyles = "dashed", color = [colors["native"], colors["orthoDB"]])
         else:
             axes[row, col].hist([native_lengths, orthoDB_lengths, third_lengths], bins=no_bins, histtype="bar", color = [colors["native"], colors["orthoDB"], colors["third"]])
         axes[row, col].set_title(f'{species_name}', fontsize = fs*0.85)
