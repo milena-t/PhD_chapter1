@@ -608,8 +608,8 @@ if __name__ == '__main__':
         data = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/"
         
         ### plot all three annotations
-        plot_single_exon_no_species_specific_three_annot(native_numbers, orthodb_numbers = orthodb_numbers, orthoDB_unmasked_numbers = orthodb_unmasked_numbers, species_names = species_names, filename = f"{data}single_exon_Genes_14_species_3_annotations.png", L50_values = L50_values)
+        # plot_single_exon_no_species_specific_three_annot(native_numbers, orthodb_numbers = orthodb_numbers, orthoDB_unmasked_numbers = orthodb_unmasked_numbers, species_names = species_names, filename = f"{data}single_exon_Genes_14_species_3_annotations.png", L50_values = L50_values)
         
         ### plot native and one other 
-        # plot_single_exon_no_species_specific_three_annot(native_numbers, orthoDB_unmasked_numbers = orthodb_unmasked_numbers, species_names = species_names, filename = f"{data}single_exon_Genes_14_species_2_annotations_no_uniform.png", L50_values = L50_values)
+        plot_single_exon_no_species_specific_three_annot(native_numbers, orthoDB_unmasked_numbers = orthodb_unmasked_numbers, species_names = species_names, filename = f"{data}single_exon_Genes_14_species_2_annotations_no_uniform.png", L50_values = L50_values)
         # plot_single_exon_no_species_specific_three_annot(native_numbers, orthodb_numbers = orthodb_numbers, species_names = species_names, filename = f"{data}single_exon_Genes_14_species_2_annotations.png", L50_values = L50_values)
