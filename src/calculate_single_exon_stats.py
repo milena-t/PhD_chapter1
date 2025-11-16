@@ -4,6 +4,7 @@
 This is just a wrapper script around print_single_exon_stats() in parse_gff.py to make automating it a little easier
 useage: 
 python3 calculate_single_exon_stats.py path/to/annotation.gff [True|False]
+True includes a list of the single-exon gene IDs in the output, False gives just the statistics
 """
 
 import parse_gff as gff

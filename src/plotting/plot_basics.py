@@ -12,7 +12,8 @@ import matplotlib.patches as mpatches
 from matplotlib.ticker import FuncFormatter
 import parse_gff as gff 
 # import src.parse_gff as gff 
-from Bio import SeqIO, Phylo
+from Bio import SeqIO, Phylo, SeqUtils
+import numpy as np
 
 
 def get_gene_conuts_from_annot(species_names, files_dir):
@@ -243,16 +244,36 @@ def get_lengths_list(fasta_filepath):
     return seq_lengths
 
 
-def plot_histogram_protein_lengths(native_path:str, orthoDB_path:str = "", third_path:str = "", species_name:str = "", no_bins = 20, max_length = 1000, filename = "protein_lengths_histogram.png", dark_mode=False, title = "", transcriptome_labels = False):
+def get_GC_content_list(fasta_filepath):
+    seq_GC = []
+    for record in SeqIO.parse(fasta_filepath, "fasta"):
+        sequence = record.seq
+        # seq_GC.append(SeqUtils.GC(sequence))
+        Cs = sequence.count("c")+sequence.count("C")
+        Gs = sequence.count("g")+sequence.count("G")
+        seq_length = float(len(sequence))*100
+        GCs = float(Cs + Gs)*100
+        seq_GC.append(GCs/seq_length)
+
+    return seq_GC
+
+
+def plot_histogram_protein_properties(native_path:str, orthoDB_path:str = "", third_path:str = "", species_name:str = "", no_bins = 20, max_length = 1000, filename = "protein_lengths_histogram.png", dark_mode=False, title = "", transcriptome_labels = False, GC_content = False):
 
     if dark_mode:
         plt.style.use('dark_background')
     """
     plot a histogram of the length distribution of the proteins in the input fasta files
     """
-    native_lengths = [length for length in get_lengths_list(native_path) if length < max_length]
+
+    if GC_content:
+        native_lengths = [GC_cont for GC_cont in get_GC_content_list(native_path)]
     if orthoDB_path != "":
-        orthoDB_lengths = [length for length in get_lengths_list(orthoDB_path) if length < max_length]
+        orthoDB_lengths = [GC_cont for GC_cont in get_GC_content_list(orthoDB_path)]
+    else: ## protein lengths
+        native_lengths = [length for length in get_lengths_list(native_path) if length < max_length]
+        if orthoDB_path != "":
+            orthoDB_lengths = [length for length in get_lengths_list(orthoDB_path) if length < max_length]
 
     fig, ax = plt.subplots(1,1, figsize=(15, 12))
     fs = 35
@@ -274,14 +295,20 @@ def plot_histogram_protein_lengths(native_path:str, orthoDB_path:str = "", third
         else:
             plt.hist([native_lengths, orthoDB_lengths], bins=no_bins, histtype="bar", color = [colors["native"], colors["orthoDB"]], label=["native", "uniform"])
     else:
-        third_lengths = [length for length in get_lengths_list(third_path) if length < max_length]
+        if GC_content:
+            third_lengths = [GC_cont for GC_cont in get_GC_content_list(third_path)]
+        else:
+            third_lengths = [length for length in get_lengths_list(third_path) if length < max_length]
         if transcriptome_labels:
             plt.hist([native_lengths, orthoDB_lengths, third_lengths], bins=no_bins, histtype="bar", color = [colors["native"], colors["orthoDB"], colors["third"]], label=["our transcriptome", "SI transcriptome", "genome annotation"])
         else:
             plt.hist([native_lengths, orthoDB_lengths, third_lengths], bins=no_bins, histtype="bar", color = [colors["native"], colors["orthoDB"], colors["third"]], label=["native", "uniform", "Lome RNA"])
     
     ax.tick_params(axis='both', labelsize=fs)
-    plt.xlabel(f"protein length (Aminoacids, up to {max_length})", fontsize = fs)
+    if GC_content:
+        plt.xlabel(f"GC content in percent", fontsize = fs)
+    else:
+        plt.xlabel(f"protein length (Aminoacids, up to {max_length})", fontsize = fs)
     plt.ylabel("", fontsize = fs)
     if orthoDB_path !="": 
         plt.legend(fontsize = fs, loc='upper right')
@@ -289,7 +316,10 @@ def plot_histogram_protein_lengths(native_path:str, orthoDB_path:str = "", third
         species_title = species_name.replace("_", ". ")
     else:
         species_title = title
-    plt.title(f"{species_title} protein length distribution")
+    if GC_content:
+        plt.title(f"{species_title} GC content distribution")
+    else:
+        plt.title(f"{species_title} protein length distribution")
 
     if dark_mode:
         filename = filename.replace(".png", "_darkmode.png")
@@ -297,7 +327,7 @@ def plot_histogram_protein_lengths(native_path:str, orthoDB_path:str = "", third
     print(f"plot saved in the current working directory as: {filename}")
 
 
-def plot_all_species_protein_length_distribution(native_files:dict, orthoDB_files:dict, third_column_files:dict = {}, columns = 3, no_bins = 20, max_length = 1000, filename = "protein_lengths_histogram.png", legend_in_last = True, dark_mode=False):
+def plot_all_species_seq_properties_distribution(native_files:dict, orthoDB_files:dict, third_column_files:dict = {}, columns = 3, no_bins = 20, max_length = 1000, filename = "protein_lengths_histogram.png", legend_in_last = True, dark_mode=False, GC_content = False):
 
     if dark_mode:
         plt.style.use('dark_background')
@@ -318,13 +348,26 @@ def plot_all_species_protein_length_distribution(native_files:dict, orthoDB_file
         # "native" : "#b82946", # native red
         "third" : "#9C4C32",
     }
+    if GC_content:
+        colors = {
+            "orthoDB" : "#F2933A",
+            # "native" : "#4d7298", # uniform_unfiltered blue
+            "native" : "#b82946", # native red
+            "third" : "#9C4C32",
+        }
 
     for idx, species in enumerate(native_files.keys()):
         
-        native_lengths = [length for length in get_lengths_list(native_files[species]) if length < max_length]
-        orthoDB_lengths = [length for length in get_lengths_list(orthoDB_files[species]) if length < max_length]
-        if third_column_files != {}:
-            third_lengths = [length for length in get_lengths_list(third_column_files[species]) if length < max_length]
+        if GC_content:
+            native_lengths = [GC_cont for GC_cont in get_GC_content_list(native_files[species])]
+            orthoDB_lengths = [GC_cont for GC_cont in get_GC_content_list(orthoDB_files[species])]
+            if third_column_files != {}:
+                third_lengths = [GC_cont for GC_cont in get_GC_content_list(third_column_files[species])]
+        else:
+            native_lengths = [length for length in get_lengths_list(native_files[species]) if length < max_length]
+            orthoDB_lengths = [length for length in get_lengths_list(orthoDB_files[species]) if length < max_length]
+            if third_column_files != {}:
+                third_lengths = [length for length in get_lengths_list(third_column_files[species]) if length < max_length]
         
         # Calculate row and column indices for the current subplot
         row = idx // cols
@@ -338,6 +381,11 @@ def plot_all_species_protein_length_distribution(native_files:dict, orthoDB_file
         # Plot histogram on the corresponding subplot axis
         if third_column_files == {}:
             axes[row, col].hist([native_lengths, orthoDB_lengths], bins=no_bins, histtype="bar", color = [colors["native"], colors["orthoDB"]])
+            if GC_content:
+                bottom, top = axes[row, col].get_ylim()
+                mean_nat = np.mean(native_lengths)
+                mean_odb = np.mean(orthoDB_lengths)
+                axes[row, col].vlines([mean_nat,mean_odb],bottom, top*1.2, linestyles = "dashed", color = [colors["native"], colors["orthoDB"]])
         else:
             axes[row, col].hist([native_lengths, orthoDB_lengths, third_lengths], bins=no_bins, histtype="bar", color = [colors["native"], colors["orthoDB"], colors["third"]])
         axes[row, col].set_title(f'{species_name}', fontsize = fs*0.85)
@@ -357,11 +405,13 @@ def plot_all_species_protein_length_distribution(native_files:dict, orthoDB_file
         labels = [] 
         if third_column_files == {}:
             handles.append(mpatches.Patch(color=colors["native"]))
-            # labels.append("native")
-            labels.append("no uniform\nrepeat masking")
             handles.append(mpatches.Patch(color=colors["orthoDB"]))
-            # labels.append("uniform")
-            labels.append("with uniform\nrepeat masking")
+            if GC_content:
+                labels.append("native")
+                labels.append("uniform")
+            else:
+                labels.append("no uniform\nrepeat masking")
+                labels.append("with uniform\nrepeat masking")
         if third_column_files != {}:
             handles.append(mpatches.Patch(color=colors["native"]))
             labels.append("native (Kaufmann)")
@@ -373,7 +423,10 @@ def plot_all_species_protein_length_distribution(native_files:dict, orthoDB_file
             
     
     # Set a single x-axis label for all subplots
-    x_label = f"protein length (Aminoacids, up to {max_length})"
+    if GC_content:
+        x_label = f"GC content in percent"
+    else:
+        x_label = f"protein length (Aminoacids, up to {max_length})"
     fig.text(0.5, 0.04, x_label, ha='center', va='center', fontsize=fs)
     # Adjust layout to prevent overlap
     plt.tight_layout(rect=[0, 0.05, 1, 1])
@@ -725,6 +778,7 @@ if __name__ == "__main__":
     # proteinfasta files dir
     native_dir = "/Users/miltr339/work/native_proteinseqs"
     orthoDB_dir = "/Users/miltr339/work/orthoDB_proteinseqs_TE_filtered"
+    orthoDB_dir_nucleotides = ""
     tree = "/Users/miltr339/Box Sync/code/annotation_pipeline/annotation_scripts_ordered/14_species_orthofinder_tree.nw"
     
     ## plot old Kaufmann annotation comparison
@@ -874,23 +928,61 @@ if __name__ == "__main__":
             "T_molitor" : f"{unfiltered_path}/T_molitor_filtered_proteinfasta.fa",
             "Z_morio" : f"{unfiltered_path}/Z_morio_filtered_proteinfasta.fa",
         }
+
+        native_nuc_dir = "/Users/miltr339/work/native_nucleotides/"
+        native_nucleotides = {
+            "A_obtectus" : f"{native_nuc_dir}A_obtectus_transcripts.fna",
+            "A_verrucosus" : f"{native_nuc_dir}A_verrucosus_transcripts.fna",
+            "B_siliquastri" : f"{native_nuc_dir}B_siliquastri_transcripts.fna",
+            "C_chinensis" : f"{native_nuc_dir}C_chinensis_transcripts.fna",
+            "C_maculatus" : f"{native_nuc_dir}C_maculatus_transcripts.fna",
+            "C_septempunctata" : f"{native_nuc_dir}C_septempunctata_transcripts.fna",
+            "D_melanogaster" : f"{native_nuc_dir}D_melanogaster_transcripts.fna",
+            "D_ponderosae" : f"{native_nuc_dir}D_ponderosae_transcripts.fna",
+            "I_luminosus" : f"{native_nuc_dir}I_luminosus_transcripts.fna",
+            "P_pyralis" : f"{native_nuc_dir}P_pyralis_transcripts.fna",
+            "R_ferrugineus" : f"{native_nuc_dir}R_ferrugineus_transcripts.fna",
+            "T_castaneum" : f"{native_nuc_dir}T_castaneum_transcripts.fna",
+            "T_molitor" : f"{native_nuc_dir}T_molitor_transcripts.fna",
+            "Z_morio" : f"{native_nuc_dir}Z_morio_transcripts.fna",
+        }
+
+        orthoDB_nuc_dir = "/Users/miltr339/work/orthoDB_nucleotides/"
+        orthoDB_nucleotides = {
+            "A_obtectus" : f"{orthoDB_nuc_dir}A_obtectus_isoform_filtered_transcripts.fna",
+            "A_verrucosus" : f"{orthoDB_nuc_dir}A_verrucosus_isoform_filtered_transcripts.fna",
+            "B_siliquastri" : f"{orthoDB_nuc_dir}B_siliquastri_isoform_filtered_transcripts.fna",
+            "C_chinensis" : f"{orthoDB_nuc_dir}C_chinensis_isoform_filtered_transcripts.fna",
+            "C_maculatus" : f"{orthoDB_nuc_dir}C_maculatus_isoform_filtered_transcripts.fna",
+            "C_septempunctata" : f"{orthoDB_nuc_dir}C_septempunctata_isoform_filtered_transcripts.fna",
+            "D_melanogaster" : f"{orthoDB_nuc_dir}D_melanogaster_isoform_filtered_transcripts.fna",
+            "D_ponderosae" : f"{orthoDB_nuc_dir}D_ponderosae_isoform_filtered_transcripts.fna",
+            "I_luminosus" : f"{orthoDB_nuc_dir}I_luminosus_isoform_filtered_transcripts.fna",
+            "P_pyralis" : f"{orthoDB_nuc_dir}P_pyralis_isoform_filtered_transcripts.fna",
+            "R_ferrugineus" : f"{orthoDB_nuc_dir}R_ferrugineus_isoform_filtered_transcripts.fna",
+            "T_castaneum" : f"{orthoDB_nuc_dir}T_castaneum_isoform_filtered_transcripts.fna",
+            "T_molitor" : f"{orthoDB_nuc_dir}T_molitor_isoform_filtered_transcripts.fna",
+            "Z_morio" : f"{orthoDB_nuc_dir}Z_morio_isoform_filtered_transcripts.fna",
+        }
+    
     # plot
-    if False:
+    if True:
         # get individual plots for all species
         # for species in native_files.keys():
-        #     plot_histogram_protein_lengths(native_files[species], orthoDB_files[species], species_name=species, filename = f"protein_lengths_histogram_{species}.png")
+        #     plot_histogram_protein_properties(native_files[species], orthoDB_files[species], species_name=species, filename = f"protein_lengths_histogram_{species}.png")
         
-        # plot_all_species_protein_length_distribution(native_files, orthoDB_files, filename=f"{data}/protein_lengths_histogram.png", dark_mode=False)
-        plot_all_species_protein_length_distribution(orthoDB_files_unfiltered, orthoDB_files, filename=f"{data}/protein_lengths_histogram_no_repeatfilter.png", dark_mode=False)
+        # plot_all_species_seq_properties_distribution(native_files, orthoDB_files, filename=f"{data}/protein_lengths_histogram.png", dark_mode=False)
+        # plot_all_species_seq_properties_distribution(orthoDB_files_unfiltered, orthoDB_files, filename=f"{data}/protein_lengths_histogram_no_repeatfilter.png", dark_mode=False)
+        plot_all_species_seq_properties_distribution(native_nucleotides, orthoDB_nucleotides, filename=f"{data}/GC_content_histogram_no_repeatfilter.png", dark_mode=False, GC_content = True)
         
         # plot individual species
         if False:
-            plot_histogram_protein_lengths(native_path = native_files["T_castaneum"], orthoDB_path = orthoDB_files["T_castaneum"], species_name="T. castaneum", no_bins = 20, max_length = 1500, filename = f"{data}/Tcas_protein_lengths_histogram.png", dark_mode=True)
-            plot_histogram_protein_lengths(native_path = native_files["B_siliquastri"], orthoDB_path = orthoDB_files["B_siliquastri"], species_name="B. siliquastri", no_bins = 20, max_length = 1500, filename = f"{data}/Bsil_protein_lengths_histogram.png", dark_mode=True)
+            plot_histogram_protein_properties(native_path = native_files["T_castaneum"], orthoDB_path = orthoDB_files["T_castaneum"], species_name="T. castaneum", no_bins = 20, max_length = 1500, filename = f"{data}/Tcas_protein_lengths_histogram.png", dark_mode=True)
+            plot_histogram_protein_properties(native_path = native_files["B_siliquastri"], orthoDB_path = orthoDB_files["B_siliquastri"], species_name="B. siliquastri", no_bins = 20, max_length = 1500, filename = f"{data}/Bsil_protein_lengths_histogram.png", dark_mode=True)
 
     ## cmac annotation comparison
     # paths
-    if True:
+    if False:
         annot_com_dir = "/Users/milena/work/c_maculatus/annotation_comparison/superscaffolded_annotation"
         comparison_files = {
             "Cmac_Lome_diverse" : f"{annot_com_dir}/Cmac_Lome_diverse_filtered.faa",
@@ -908,18 +1000,17 @@ if __name__ == "__main__":
             "Cmac_SI_diverse" : f"{orthoDB_dir}/C_maculatus_filtered_proteinfasta_TE_filtered.fa",
         }
     # plot
-    if True:
         #plot_all_species_protein_length_distribution(native_files, orthoDB_files, third_column_files= comparison_files, columns=2, max_length=1500, filename=f"{data}/Lome_RNA_annot_comparison/protein_lengths_histogram.png")
-        plot_histogram_protein_lengths(native_path = native_files["Cmac_Lome_diverse"], orthoDB_path = orthoDB_files["Cmac_Lome_diverse"], third_path=comparison_files["Cmac_Lome_diverse"], species_name="C. maculatus (Lome RNA annotation)\n", no_bins = 20, max_length = 1500, filename = f"{data}/Lome_RNA_annot_comparison/Lome_only_protein_lengths_histogram.png", dark_mode=False)
+        plot_histogram_protein_properties(native_path = native_files["Cmac_Lome_diverse"], orthoDB_path = orthoDB_files["Cmac_Lome_diverse"], third_path=comparison_files["Cmac_Lome_diverse"], species_name="C. maculatus (Lome RNA annotation)\n", no_bins = 20, max_length = 1500, filename = f"{data}/Lome_RNA_annot_comparison/Lome_only_protein_lengths_histogram.png", dark_mode=False)
 
     ## cmac transcriptome
     if False:
         plot_path = "/Users/miltr339/work/PhD_code/PhD_chapter4/plots/"
         our_transcriptome_path = "/Users/miltr339/work/c_maculatus/LOME_larval_transcriptome/TE_filtered_95_perc_identity_clustered_transcriptome_proteinseq.fasta"
         SI_transciptome_path = "/Users/miltr339/work/c_maculatus/LOME_larval_transcriptome/SI_transcriptome/GEUF01_proteinseq.fasta"
-        # plot_histogram_protein_lengths(native_path = "/Users/miltr339/work/c_maculatus/LOME_larval_transcriptome/TE_filtered_95_perc_identity_clustered_transcriptome_proteinseq.fasta", species_name="C. maculatus", no_bins = 20, max_length = 1500, filename = f"{plot_path}/C_maculatus_larval_transcriptome.png", dark_mode=False)
+        # plot_histogram_protein_properties(native_path = "/Users/miltr339/work/c_maculatus/LOME_larval_transcriptome/TE_filtered_95_perc_identity_clustered_transcriptome_proteinseq.fasta", species_name="C. maculatus", no_bins = 20, max_length = 1500, filename = f"{plot_path}/C_maculatus_larval_transcriptome.png", dark_mode=False)
         # "our transcriptome", "SI transcriptome", "genome annotation"
-        plot_histogram_protein_lengths(native_path =our_transcriptome_path, orthoDB_path=SI_transciptome_path, third_path = native_files["Cmac_Lome_diverse"], species_name="C. maculatus", no_bins = 20, max_length = 500, filename = f"{plot_path}/C_maculatus_larval_transcriptome_with_SI_transcriptome_and_annot_comp.png", dark_mode=False, transcriptome_labels=True)
+        plot_histogram_protein_properties(native_path =our_transcriptome_path, orthoDB_path=SI_transciptome_path, third_path = native_files["Cmac_Lome_diverse"], species_name="C. maculatus", no_bins = 20, max_length = 500, filename = f"{plot_path}/C_maculatus_larval_transcriptome_with_SI_transcriptome_and_annot_comp.png", dark_mode=False, transcriptome_labels=True)
 
     if False:
         # data from filtering pasted here so that I don't loose it
