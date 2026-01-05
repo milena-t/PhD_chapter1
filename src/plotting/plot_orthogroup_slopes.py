@@ -16,116 +16,118 @@ import parse_orthogroups as OGs
 import compute_PIC as PIC
 
 
-### LINEAR REGRESSION
+### LINEAR REGRESSION --> OLD use spearman correlation below
 
-def calculate_OG_lin_reg(GF_sizes:dict, exp_dict:dict, tree_path:str, species_list:list, log10_GF=False, log2_GF=True):
-    """
-    Calculate the linear regression of an orthogroup, represented as a dictionary { species : gene family members }
-    I need the tree to calculate phylogenetically independent contrasts
-    """
-    
-    log_possible = True
+if False:
 
-    ## log-transform the GF sizes
-    if log10_GF:
-        GF_sizes_dict = {species : np.log10(GF_sizes[species]) if species in GF_sizes else 0 for species in species_list }
-    elif log2_GF:
-        GF_sizes_dict = {species : np.log2(GF_sizes[species]) if species in GF_sizes else 0 for species in species_list }
-    else:
-        GF_sizes_dict = {species : GF_sizes[species] if species in GF_sizes else 0 for species in species_list }
-    
-    # if any value is 0 the log doesn't work
-    if log10_GF or log2_GF:
-        if len([exp_val for exp_val in exp_dict.values() if exp_val== 0.0])>0:
-            # print(f"can't log the explanatory variable because one of the values is 0!")
-            log10_GF = False
-            log2_GF = False
-            log_possible=False
-
-    ## log transform explanatory variables
-    if log10_GF:
-        exp_dict = {species : np.log10(exp_dict[species]) if species in exp_dict else 0 for species in species_list }
-    elif log2_GF:
-        exp_dict = {species : np.log2(exp_dict[species]) if species in exp_dict else 0 for species in species_list }
-    else:
-        exp_dict = {species : exp_dict[species] if species in exp_dict else 0 for species in species_list }
-
-    ## calculate PICs
-    PICs_GF_sizes = PIC.calculate_PIC(tree_path=tree_path, trait_values=GF_sizes_dict)
-    x_axis_vec = PIC.calculate_PIC(tree_path=tree_path, trait_values=exp_dict)
-
-    ## linear regression
-    # abs(min(x_axis_vec)-max(x_axis_vec))
-    # print(f"{}")
-    result = scipy.stats.linregress(x_axis_vec, PICs_GF_sizes)
-    
-    return result,PICs_GF_sizes,x_axis_vec,log_possible
-
-
-def test_normality_of_residuals(result,PICs_GF_sizes,x_axis_vec):
-    """
-    test the normality of residuals from a linear regression created with scipy.stats.linregress
-    """
-    ## test normality of residuals
-    def predict(x):
-        pred_PIC = x*result.slope + result.intercept
-        return(pred_PIC)
-
-    residuals = [PICs_GF_sizes[i] - predict(x_axis_vec[i]) for i in range(len(x_axis_vec))]
-    stat, p_value = scipy.stats.shapiro(residuals)
-    
-    return stat,p_value
+    def calculate_OG_lin_reg(GF_sizes:dict, exp_dict:dict, tree_path:str, species_list:list, log10_GF=False, log2_GF=True):
+        """
+        Calculate the linear regression of an orthogroup, represented as a dictionary { species : gene family members }
+        I need the tree to calculate phylogenetically independent contrasts
+        """
         
+        log_possible = True
 
-def get_plot_values_linreg(GF_sizes_dict, species_list, exp_dict, sig_list, tree_path, log10_GF=False, log2_GF=True):
-    """
-    calculate fitted linear regression for each significant orthogroup.
-    exp_dict is the dictionary with the x-axis variables, like genome size or repeat content
-    returns a dictionary with { orthogroupID : incline }
-    !! includes FDR multiple testing correction !!
-    """
-
-    inclines = {}
-    intercepts = {}
-    p_values = {}
-    std_errs = {}
-    return_dict = {}
-    OG_sizes = {}
-
-    excluded_OGs = []
-    included_OGs = []
-    
-    # for orthogroup in tqdm(sig_list):
-    for orthogroup in sig_list:
-        
-        GF_sizes = GF_sizes_dict[orthogroup]
-
-        result,PICs_GF_sizes,x_axis_vec,log_possible = calculate_OG_lin_reg(GF_sizes = GF_sizes, exp_dict= exp_dict, tree_path = tree_path, species_list = species_list, log10_GF=log10_GF, log2_GF=log2_GF)
-        stat,p_value = test_normality_of_residuals(result,PICs_GF_sizes,x_axis_vec)
-        
-        ## if residuals not normal don't include this orthogroup in the analysis
-        if p_value < 0.05:
-            excluded_OGs.append(orthogroup)
+        ## log-transform the GF sizes
+        if log10_GF:
+            GF_sizes_dict = {species : np.log10(GF_sizes[species]) if species in GF_sizes else 0 for species in species_list }
+        elif log2_GF:
+            GF_sizes_dict = {species : np.log2(GF_sizes[species]) if species in GF_sizes else 0 for species in species_list }
         else:
-            included_OGs.append(orthogroup)
-
-            inclines[orthogroup] = result.slope
-            intercepts[orthogroup] = result.intercept
-            p_values[orthogroup] = result.pvalue
-            std_errs[orthogroup] = result.stderr
-            return_dict[orthogroup] = [result.slope, result.pvalue, "x"]
-
-            OG_sizes[orthogroup] = sum([GF_sizes[species] if species in GF_sizes else 0 for species in species_list ])
+            GF_sizes_dict = {species : GF_sizes[species] if species in GF_sizes else 0 for species in species_list }
         
-    ## DO multiple testing correction
-    p_values_list = [p_values[orthogroup] for orthogroup in included_OGs]
-    reject, p_values_bh, _, _ = multipletests(p_values_list, alpha=0.05, method='fdr_bh')
+        # if any value is 0 the log doesn't work
+        if log10_GF or log2_GF:
+            if len([exp_val for exp_val in exp_dict.values() if exp_val== 0.0])>0:
+                # print(f"can't log the explanatory variable because one of the values is 0!")
+                log10_GF = False
+                log2_GF = False
+                log_possible=False
 
-    p_values_BH = {}
-    for i, orthogroup in enumerate(included_OGs):
-            p_values_BH[orthogroup] = p_values_bh[i]
+        ## log transform explanatory variables
+        if log10_GF:
+            exp_dict = {species : np.log10(exp_dict[species]) if species in exp_dict else 0 for species in species_list }
+        elif log2_GF:
+            exp_dict = {species : np.log2(exp_dict[species]) if species in exp_dict else 0 for species in species_list }
+        else:
+            exp_dict = {species : exp_dict[species] if species in exp_dict else 0 for species in species_list }
 
-    return inclines,intercepts,p_values,p_values_BH,std_errs,return_dict,OG_sizes,included_OGs,log_possible
+        ## calculate PICs
+        PICs_GF_sizes = PIC.calculate_PIC(tree_path=tree_path, trait_values=GF_sizes_dict)
+        x_axis_vec = PIC.calculate_PIC(tree_path=tree_path, trait_values=exp_dict)
+
+        ## linear regression
+        # abs(min(x_axis_vec)-max(x_axis_vec))
+        # print(f"{}")
+        result = scipy.stats.linregress(x_axis_vec, PICs_GF_sizes)
+        
+        return result,PICs_GF_sizes,x_axis_vec,log_possible
+
+
+    def test_normality_of_residuals(result,PICs_GF_sizes,x_axis_vec):
+        """
+        test the normality of residuals from a linear regression created with scipy.stats.linregress
+        """
+        ## test normality of residuals
+        def predict(x):
+            pred_PIC = x*result.slope + result.intercept
+            return(pred_PIC)
+
+        residuals = [PICs_GF_sizes[i] - predict(x_axis_vec[i]) for i in range(len(x_axis_vec))]
+        stat, p_value = scipy.stats.shapiro(residuals)
+        
+        return stat,p_value
+            
+
+    def get_plot_values_linreg(GF_sizes_dict, species_list, exp_dict, sig_list, tree_path, log10_GF=False, log2_GF=True):
+        """
+        calculate fitted linear regression for each significant orthogroup.
+        exp_dict is the dictionary with the x-axis variables, like genome size or repeat content
+        returns a dictionary with { orthogroupID : incline }
+        !! includes FDR multiple testing correction !!
+        """
+
+        inclines = {}
+        intercepts = {}
+        p_values = {}
+        std_errs = {}
+        return_dict = {}
+        OG_sizes = {}
+
+        excluded_OGs = []
+        included_OGs = []
+        
+        # for orthogroup in tqdm(sig_list):
+        for orthogroup in sig_list:
+            
+            GF_sizes = GF_sizes_dict[orthogroup]
+
+            result,PICs_GF_sizes,x_axis_vec,log_possible = calculate_OG_lin_reg(GF_sizes = GF_sizes, exp_dict= exp_dict, tree_path = tree_path, species_list = species_list, log10_GF=log10_GF, log2_GF=log2_GF)
+            stat,p_value = test_normality_of_residuals(result,PICs_GF_sizes,x_axis_vec)
+            
+            ## if residuals not normal don't include this orthogroup in the analysis
+            if p_value < 0.05:
+                excluded_OGs.append(orthogroup)
+            else:
+                included_OGs.append(orthogroup)
+
+                inclines[orthogroup] = result.slope
+                intercepts[orthogroup] = result.intercept
+                p_values[orthogroup] = result.pvalue
+                std_errs[orthogroup] = result.stderr
+                return_dict[orthogroup] = [result.slope, result.pvalue, "x"]
+
+                OG_sizes[orthogroup] = sum([GF_sizes[species] if species in GF_sizes else 0 for species in species_list ])
+            
+        ## DO multiple testing correction
+        p_values_list = [p_values[orthogroup] for orthogroup in included_OGs]
+        reject, p_values_bh, _, _ = multipletests(p_values_list, alpha=0.05, method='fdr_bh')
+
+        p_values_BH = {}
+        for i, orthogroup in enumerate(included_OGs):
+                p_values_BH[orthogroup] = p_values_bh[i]
+
+        return inclines,intercepts,p_values,p_values_BH,std_errs,return_dict,OG_sizes,included_OGs,log_possible
 
 
 ### SPEARMAN CORRELATION
