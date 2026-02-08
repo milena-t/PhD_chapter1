@@ -1,8 +1,7 @@
 #!/bin/bash -l
-#SBATCH -A uppmax2025-2-148
-#SBATCH -p core
-#SBATCH -n 1
-#SBATCH -t 2:30:00
+#SBATCH -A uppmax2026-1-8
+#SBATCH -c 1
+#SBATCH -t 2:00:00
 #SBATCH -J filter_isoforms
 #SBATCH -o filter_isoforms_native.log
 #SBATCH --mail-type=ALL
@@ -10,7 +9,7 @@
 
 #filter gff files for the longest isoforms
 
-module load bioinfo-tools AGAT/1.3.2
+module load AGAT/1.4.1-GCCcore-13.3.0
 
 # ANNOT_GTF=/proj/naiss2023-6-65/Milena/annotation_pipeline/all_proteinrefs_annotation/annotation_species/C_maculatus/braker/braker.gtf
 # echo $ANNOT_GTF
