@@ -1,6 +1,6 @@
 # Uniform Genome annotations for comparative genomics
 
------- This has the MIT license, but if you use my code it would be really nice of you would cite this repository or the associated publication (https://doi.org/10.64898/2026.03.25.714136). Thank you! ------
+------ This has the MIT license, but if you use my code it would be really nice of you would cite this repository (https://doi.org/10.5281/zenodo.19451289) or the associated publication (https://doi.org/10.64898/2026.03.25.714136). Thank you! ------
 
 This is all the code that was used in the first chapter of my thesis where I create uniform de-novo genome annotations to investigate gene family evolution in coleoptera. I implement and evaluate a uniform pipeline and remove as much technical bias as possible. The important aspects are:
 
