@@ -67,8 +67,8 @@ def get_single_exon_genes(dir_path, species_list, write_to_file = False, outfile
 
         infile_dict = {}
         list_key = ""
-        num_key = ""
-        transcripts_num_key = ""
+        single_exon_key = ""
+        multi_exon_key = ""
         with open(infile_path, "r") as infile:
             dict_elements = infile.readlines()
             for species_line in dict_elements:
@@ -84,10 +84,10 @@ def get_single_exon_genes(dir_path, species_list, write_to_file = False, outfile
                 if "list" in key:
                     list_key = key
                 if "single exon transcripts" in key:
-                    num_key = key
+                    single_exon_key = key
                 #if "number of transcripts" in key:
-                if "gene features" in key:    
-                    transcripts_num_key = key
+                if "multi exon transcripts" in key:    
+                    multi_exon_key = key
                 
  
             if all_break:
@@ -104,16 +104,16 @@ def get_single_exon_genes(dir_path, species_list, write_to_file = False, outfile
             print(f"{species} single-exon list did not work with {list_key}")
         
         try:
-            num_single_exon_genes[species] = int(infile_dict[num_key][0])
+            num_single_exon_genes[species] = int(infile_dict[single_exon_key][0])
         except:
-            print(f"{species} single-exon number did not work with {num_key}")
+            print(f"{species} single-exon number did not work with {single_exon_key}")
 
         if include_total_gene_num:
             try:
-                num_transcripts[species] = int(infile_dict[transcripts_num_key][0])
+                num_transcripts[species] = int(infile_dict[multi_exon_key][0]) + num_single_exon_genes[species]
             except:
                 keys = list(infile_dict.keys())
-                print(f"{species} transcript number did not work with {transcripts_num_key}, available keys are: {keys}")
+                print(f"{species} transcript number did not work with {multi_exon_key}, available keys are: {keys}")
 
 
     if write_to_file:
@@ -273,7 +273,7 @@ def plot_single_exon_no_species_specific_three_annot(native_numbers, orthodb_num
     # figure proportions according to the data included (longer or shorter)
 
     # fontsize scales with the dpi somehow which i have to do extra because i change the aspect ratio manually below
-    fs = 35 # 37 originally
+    fs = 40 # 37 originally
     
     if len(orthodb_numbers) == 0 and len(orthoDB_unmasked_numbers) == 0:
         width = 0.35 # (this is a fraction of the standardized 1 unit of space between axis ticks)
@@ -353,15 +353,15 @@ def plot_single_exon_no_species_specific_three_annot(native_numbers, orthodb_num
         if len(orthoDB_unmasked_numbers) == 0:
             # total number of genes (with single-exons hatched)            
             orthodb_rects1_base = ax.bar(x + width/2, single_exon_genes, width, label='proportion of which are single-exon', color= color[0], hatch=hatching[0])            
-            orthodb_rects1_top = ax.bar(x + width/2, multi_exon_genes, width, bottom=single_exon_genes, label='all genes (uniform)', color= color[1], hatch=hatching[1])  
+            orthodb_rects1_top = ax.bar(x + width/2, multi_exon_genes, width, bottom=single_exon_genes, label='all genes (standardized)', color= color[1], hatch=hatching[1])  
         elif len(orthoDB_unmasked_numbers) > 0:
             # total number of genes (with single-exons hatched)            
             orthodb_rects1_base = ax.bar(x, single_exon_genes, width, label='proportion of which are single-exon', color= color[0], hatch=hatching[0])            
-            orthodb_rects1_top = ax.bar(x, multi_exon_genes, width, bottom=single_exon_genes, label='all genes (uniform)', color= color[1], hatch=hatching[1])  
+            orthodb_rects1_top = ax.bar(x, multi_exon_genes, width, bottom=single_exon_genes, label='all genes (standardized)', color= color[1], hatch=hatching[1])  
 
         plt.rcParams.update({'hatch.color': hatch_color})
         if len(orthoDB_unmasked_numbers)== 0:
-            ymax_factor = 1.6
+            ymax_factor = 1.8
         ymax = max(num_total_genes.values())*ymax_factor
     
     
@@ -378,7 +378,7 @@ def plot_single_exon_no_species_specific_three_annot(native_numbers, orthodb_num
         hatching = ["//", ""]
            
         orthodb_rects1_base = ax.bar(x + x_subtr, single_exon_genes, width, label='proportion of which are single-exon', color= color[0], hatch=hatching[0])            
-        orthodb_rects1_top = ax.bar(x + x_subtr, multi_exon_genes, width, bottom=single_exon_genes, label='all genes (uniform no remasking)', color= color[1], hatch=hatching[1])  
+        orthodb_rects1_top = ax.bar(x + x_subtr, multi_exon_genes, width, bottom=single_exon_genes, label='all genes (standardized no remasking)', color= color[1], hatch=hatching[1])  
         plt.rcParams.update({'hatch.color': hatch_color})
         ymax = max(num_total_genes.values())*ymax_factor
 
@@ -608,8 +608,8 @@ if __name__ == '__main__':
         data = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/"
         
         ### plot all three annotations
-        # plot_single_exon_no_species_specific_three_annot(native_numbers, orthodb_numbers = orthodb_numbers, orthoDB_unmasked_numbers = orthodb_unmasked_numbers, species_names = species_names, filename = f"{data}single_exon_Genes_14_species_3_annotations.png", L50_values = L50_values)
+        plot_single_exon_no_species_specific_three_annot(native_numbers, orthodb_numbers = orthodb_numbers, orthoDB_unmasked_numbers = orthodb_unmasked_numbers, species_names = species_names, filename = f"{data}single_exon_Genes_14_species_3_annotations.png", L50_values = L50_values)
         
         ### plot native and one other 
-        plot_single_exon_no_species_specific_three_annot(native_numbers, orthoDB_unmasked_numbers = orthodb_unmasked_numbers, species_names = species_names, filename = f"{data}single_exon_Genes_14_species_2_annotations_no_uniform.png", L50_values = L50_values)
+        # plot_single_exon_no_species_specific_three_annot(native_numbers, orthoDB_unmasked_numbers = orthodb_unmasked_numbers, species_names = species_names, filename = f"{data}single_exon_Genes_14_species_2_annotations_no_uniform.png", L50_values = L50_values)
         # plot_single_exon_no_species_specific_three_annot(native_numbers, orthodb_numbers = orthodb_numbers, species_names = species_names, filename = f"{data}single_exon_Genes_14_species_2_annotations.png", L50_values = L50_values)

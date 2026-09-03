@@ -29,6 +29,9 @@ if True:
         print("Invalid third argument. Please pass 'True' or 'False'.")
         sys.exit(1)
 
+    filename = orthodb_annot.split("/")[-1]
+    print(f"{filename}")
+
     gff.print_single_exon_stats(orthodb_annot, include_list=boolean_value) # include or exclude a list of all the single-exon IDs
 
     # write to stdout, so if you include the list a long list of gene IDs will be written to stdout
