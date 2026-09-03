@@ -267,6 +267,7 @@ def plot_single_exon_no_species_specific_three_annot(native_numbers, orthodb_num
 
     print(f" plotting for these {len(species_names)} species: \n{species_names}")
 
+    
     # X coordinates for the groups
     x = np.arange(len(species_names))
 
@@ -274,6 +275,7 @@ def plot_single_exon_no_species_specific_three_annot(native_numbers, orthodb_num
 
     # fontsize scales with the dpi somehow which i have to do extra because i change the aspect ratio manually below
     fs = 40 # 37 originally
+    plt.rcParams['text.usetex'] = True # use \textit{} for species names
     
     if len(orthodb_numbers) == 0 and len(orthoDB_unmasked_numbers) == 0:
         width = 0.35 # (this is a fraction of the standardized 1 unit of space between axis ticks)
@@ -307,7 +309,7 @@ def plot_single_exon_no_species_specific_three_annot(native_numbers, orthodb_num
     }
     hatch_color = '#ffffff' # '#E2D4CA' #kind of eggshell white
     plt.rcParams['hatch.color'] = hatch_color
-
+    plt.rcParams['hatch.linewidth'] = 2  # default is 1.0
 
     #### plot native annotation ####
 
@@ -388,12 +390,13 @@ def plot_single_exon_no_species_specific_three_annot(native_numbers, orthodb_num
     ax.set_ylabel('Number of genes', fontsize=fs+4)
     ax.set_title('Proportion of single-exon genes', fontsize=fs+4)
     ax.set_xticks(x)
+    xtick_labels = [species.replace("_", " ") for species in species_names]
     if len(L50_values) > 0:
         ax.set_xlabel('Species (L50 value of the assembly)', fontsize=fs+4)
-        xtick_labels = [species.replace("_", ". ")+f" ({L50_values[species]})" for species in species_names]
+        L50_values_ = {key.replace("_", " ") : value for key,value in L50_values.items()}
+        xtick_labels = [f"\\textit{{{species}}} ({L50_values_[species]})" for species in xtick_labels]
     else:
         ax.set_xlabel('', fontsize=fs+4)
-        xtick_labels = [species.replace("_", " ") for species in species_names]
     ax.set_xticklabels(xtick_labels, rotation=90, fontsize=fs)
     ax.set_yticklabels([f'{int(tick)/1e3:.0f}k' for tick in ax.get_yticks()], fontsize=fs)
 
