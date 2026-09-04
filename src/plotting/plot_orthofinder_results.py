@@ -59,7 +59,7 @@ The plot filenames are hardcoded into the end of the script!
     if not args.name_og1:
         args.name_og1 = "native" 
     if not args.name_og2:
-        args.name_og2 = "uniform" 
+        args.name_og2 = "standardized" 
     if not args.name_og3:
         args.name_og3 = "proteinseqs"
 
@@ -102,7 +102,8 @@ def get_species_counts(orthogroups_file, species_names):
     
     orthogroups_dict = read_hierarchical_orthogroups_file(orthogroups_file)
     print(str(len(orthogroups_dict))+" Orthogroups found")
-    print("Mean orthogroup size: "+ str(mean([len(og) for og in orthogroups_dict.values()])))
+    mean_size = mean([len(og) for og in orthogroups_dict.values()])
+    print(f"Mean orthogroup size: {mean_size:.3f}")
 
     # count number of gene families per species
     gf_deduplicated = {}
@@ -176,6 +177,8 @@ def get_gene_conuts_from_annot(species_names, files_dir):
         num_hits = sp.run(command2 , stdout = sp.PIPE, input=grep_out.stdout).stdout.decode("utf-8")
 
         gene_nums_dict[species_name] = int(num_hits.strip())
+        if gene_nums_dict[species_name] < 6000:
+            print(f"!!!!!! {species_name} read only {gene_nums_dict[species_name]} genes. output of '{command} | {command2}' ---> {num_hits}")
 
     return(gene_nums_dict)
 
@@ -229,12 +232,13 @@ def plot_general_annotation_comparisons(native = {}, orthoDB = {}, proteinseqs =
     # plot each column in the dataframe as a line in the same plot thorugh a for-loop
 
     # speciesnames = gff.make_species_order_from_tree(species_tree)
+    plt.rcParams['text.usetex'] = True # use \\textit{{{}}} for species names
     if tree:
-        fs = 17 # set font size
-        fig, (ax_data, ax_tree) = plt.subplots(2, 1, figsize=(10, 15), gridspec_kw={'height_ratios': [1, 3]}, constrained_layout=True)
+        fs = 21 # set font size
+        fig, (ax_data, ax_tree) = plt.subplots(2, 1, figsize=(10, 10), gridspec_kw={'height_ratios': [1, 1]}, constrained_layout=True)
         species_names_unsorted = my_plotting.plot_tree_manually(species_tree, ax_tree)
     else:
-        fs = 25
+        fs = 28
         fig, ax_data = plt.subplots(1, 1, figsize=(17, 12))
         species_names_unsorted = my_plotting.plot_tree_manually(species_tree)
     # get species order from plotted tree
@@ -308,7 +312,9 @@ def plot_general_annotation_comparisons(native = {}, orthoDB = {}, proteinseqs =
             plt.subplots_adjust(bottom=0.3)
 
         ax_data.set_ylabel(ylab, fontsize = fs)
-        ax_data.set_xticklabels([species.replace("_", ". ") for species in species_names], rotation=90, fontsize=fs)
+        xticks = [species.replace("_", ". ") for species in species_names]
+        xticks_species = [f"\\textit{{{species}}}" for species in xticks]
+        ax_data.set_xticklabels(xticks_species, rotation=90, fontsize=fs)
 
     if len(genome_size)>0 and len(native)>1:
         genome_size = [genome_size[species] for species in species_names]
