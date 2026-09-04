@@ -98,8 +98,9 @@ def read_whole_genome_stats(filepath):
 
 
 def plot_gene_counts(orthogroups_dict, sig_list, all_cafe_list, species_names, annotation = "native", filename = "significant_orthogroups_from_CAFE.png", transparent_bg=True, title = "", svg = False):
-    fs = 30 # set font size
+    fs = 35 # set font size
     # plot each column in the dataframe as a line in the same plot thorugh a for-loop
+    plt.rcParams['text.usetex'] = True # use \\textit{{{}}} for species names
     fig = plt.figure(figsize=(17,11))
     
     ax = fig.add_subplot(1, 1, 1)
@@ -157,7 +158,9 @@ def plot_gene_counts(orthogroups_dict, sig_list, all_cafe_list, species_names, a
     ax.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x < 0  else f'{int(x)}'))
 
     ax.set_ylabel(ylab, fontsize = fs)
-    plt.xticks(labels=[species.replace("_", ". ") for species in species_names], ticks=species_names, rotation = 90, fontsize = fs)
+    xticks=[species.replace("_", ". ") for species in species_names]
+    xticks_species = [f"\\textit{{{species}}}" for species in xticks]
+    plt.xticks(labels=xticks_species, ticks=species_names, rotation = 90, fontsize = fs)
     
     handles = []
     labels = [] 

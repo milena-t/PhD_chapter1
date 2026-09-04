@@ -462,6 +462,7 @@ def plot_all_species_values_barplot(all_values_native_dict, all_values_orthoDB_d
         aspect_ratio = 20 / 10
     height_pixels = 2000  # Height in pixels
     width_pixels = int(height_pixels * aspect_ratio)  # Width in pixels
+    plt.rcParams['text.usetex'] = True # use \textit{} for species names
     fig = plt.figure(figsize=(width_pixels / 100, height_pixels / 100), dpi=100)
     ax = fig.add_subplot(111)
 
@@ -507,19 +508,20 @@ def plot_all_species_values_barplot(all_values_native_dict, all_values_orthoDB_d
         bottom += transcript_numbers
     bottom = np.zeros(len(species_names_list))
     for transcript_category, transcript_numbers in values_orthoDB.items():
-        p = ax.bar(x + x_subtr, transcript_numbers, width, label=f"{transcript_category} (uniform)", color= colors_orthoDB[transcript_category], bottom=bottom)
+        p = ax.bar(x + x_subtr, transcript_numbers, width, label=f"{transcript_category} (standardized)", color= colors_orthoDB[transcript_category], bottom=bottom)
         bottom += transcript_numbers
 
     ax.set_ylim(0, 1.45)
     ax.set_xlim(-0.5, len(species_names_list)-0.5)
     xtick_labels = [species.replace("_", ". ") for species in species_names_list]
+    xtick_labels = [f"\\textit{{{species}}}" for species in xtick_labels]
     # print(f"x ticks:{x}\nx-tick labels: {xtick_labels}")
     ax.set_xticks(x)
     if len(species_names_list)>2:
         ax.set_xticklabels(xtick_labels, rotation=90, fontsize=fs)
     else:
         ax.set_xticklabels(xtick_labels, fontsize=fs)
-    ax.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 1 else f'{int(x*100)}%'))
+    ax.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 1 else f'{int(x*100)}\%'))
     ax.tick_params(axis='y', labelsize=fs)
     # plt.tight_layout()
     ax.set_ylabel(ylab, fontsize = fs)
@@ -682,7 +684,7 @@ if __name__ == "__main__":
         # print(processed_dict_exon)
     
     ## --> transcript features
-    if False:
+    if True:
         all_species_values_native = {}
         all_species_values_orthoDB = {}
         
@@ -776,7 +778,7 @@ if __name__ == "__main__":
         plot_all_species_values_barplot(all_values_native_dict=all_species_values_native, all_values_orthoDB_dict=all_species_values_orthoDB, species_names_list=tree_filepath, filename = f"{data_path}annotaion_overlaps_exon_level.png")
 
     ## --> Cmac annotation RNAseq comparison (transcript)
-    if True:
+    if False:
         data_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/Lome_RNA_annot_comparison/"
         overlap_transcript_path = "/Users/miltr339/work/c_maculatus/annotation_comparison/superscaffolded_annotation/position_overlap/"
         overlap_files_transcript = {
@@ -793,7 +795,7 @@ if __name__ == "__main__":
             "Lome_vs_Lu" : f"{overlap_transcript_path}Lome_vs_Lu_overlap_numbers_only_orthodb_query.txt",
             "Lome_vs_SI" : f"{overlap_transcript_path}Lome_vs_SI_overlap_numbers_only_orthodb_query.txt",
         }
-    if True:
+    if False:
         all_species_values_native = {}
         all_species_values_orthoDB = {}
         

@@ -8,9 +8,7 @@ from matplotlib.ticker import FuncFormatter
 import numpy as np
 
 
-def filepaths_SE_stats():
-    #username = "miltr339"
-    username = "milena"
+def filepaths_SE_stats(username = "miltr339"):
     SE_stats_dict = {
         "Lome_RNA" : f"/Users/{username}/work/PhD_code/PhD_chapter1/data/Lome_RNA_annot_comparison/Lome_single_exon_stats.txt",
         "Nigeria_RNA" : f"/Users/{username}/work/PhD_code/PhD_chapter1/data/Lome_RNA_annot_comparison/Lu_single_exon_stats.txt",
@@ -66,13 +64,14 @@ def plot_single_exon_no_species_specific_three_annot(numbers, filename = ""):
     # figure proportions according to the data included (longer or shorter)
 
     # fontsize scales with the dpi somehow which i have to do extra because i change the aspect ratio manually below
-    fs = 45 # 37 originally
+    fs = 55 # 37 originally
     
     width = 0.2 # (this is a fraction of the standardized 1 unit of space between axis ticks)
     aspect_ratio = 20 / 12 # nice for a presentation
 
     height_pixels = 2000  # Height in pixels
     width_pixels = int(height_pixels * aspect_ratio)  # Width in pixels
+    plt.rcParams['text.usetex'] = True # use \textit{} for species names
     fig = plt.figure(figsize=(width_pixels / 100, height_pixels / 100), dpi=100)
     ax = fig.add_subplot(111)
     ax2 = ax.twinx()
@@ -87,6 +86,7 @@ def plot_single_exon_no_species_specific_three_annot(numbers, filename = ""):
 
     hatch_color = '#ffffff' # '#E2D4CA' #kind of eggshell white
     plt.rcParams['hatch.color'] = hatch_color
+    plt.rcParams['hatch.linewidth'] = 2  # default is 1.0
 
     #### plot native annotation ####
 
@@ -107,7 +107,7 @@ def plot_single_exon_no_species_specific_three_annot(numbers, filename = ""):
 
     # total number of genes (with single-exons hatched)
     annotation_base = ax.bar(x - width, SE_numbers, width = width, label='proportion of which are single-exon', color= color, hatch=hatching["yes"])
-    annotation_top = ax.bar(x - width, ME_numbers, width = width, bottom=SE_numbers, label='all genes in uniform RNAseq annotation', color=color, hatch=hatching["no"])
+    annotation_top = ax.bar(x - width, ME_numbers, width = width, bottom=SE_numbers, label='all genes in standardized RNAseq annotation', color=color, hatch=hatching["no"])
 
     # Make some labels.
     labels = [f"{transcript_number}" for transcript_number in transcript_numbers]
@@ -120,11 +120,11 @@ def plot_single_exon_no_species_specific_three_annot(numbers, filename = ""):
 
     #### set up labels and stuff ####
     
-    ax.set_ylabel('Number of genes', fontsize=fs+4)
+    ax.set_ylabel('Number of genes', fontsize=fs)
     ax.set_title('Gene numbers and proportion of single-exon genes of \nsuperscaffolded assembly from the Lome population', fontsize=fs*1.3)
     ax.set_xticks(x)
 
-    ax.set_xlabel('', fontsize=fs+4)
+    ax.set_xlabel('', fontsize=fs)
     xtick_labels = [species.replace("_", " ") for species in annotation_names]
     x_rotation=0
     ax.set_xticklabels(xtick_labels, rotation=x_rotation, fontsize=fs)
@@ -132,7 +132,7 @@ def plot_single_exon_no_species_specific_three_annot(numbers, filename = ""):
     # print(yticks)
 
     ymax = max(transcript_numbers)
-    ymax = ymax*1.3
+    ymax = ymax*1.4
     ax.set_ylim(0, int(ymax))
     yticks = list(ax.get_yticklabels())
     print(yticks)
@@ -141,7 +141,7 @@ def plot_single_exon_no_species_specific_three_annot(numbers, filename = ""):
     ax.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x < 1 else f'{x / 1e3:.0f} k'))
 
     # single and multi exon average length
-    ax2.set_ylim(bottom=0, top=y_max_genes*1.3)
+    ax2.set_ylim(bottom=0, top=y_max_genes*1.5)
     ax2.set_ylabel('average transcript length', color = colors["ME_length"], fontsize = fs)
     ax2.tick_params(axis ='y', labelcolor = colors["ME_length"], labelsize = fs) 
     ax2.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x < 1 or x>max(ME_transcript_len)*1.1 else f'{x / 1e3:.0f} kbp'))
@@ -188,10 +188,9 @@ def plot_single_exon_no_species_specific_three_annot(numbers, filename = ""):
 
 
 if __name__ == "__main__":
-    
-    SE_stats_paths_dict = filepaths_SE_stats()
-    data = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/Lome_RNA_annot_comparison/"
-    data = "/Users/milena/work/PhD_code/PhD_chapter1/data/Lome_RNA_annot_comparison/"
+    username="miltr339"
+    SE_stats_paths_dict = filepaths_SE_stats(username=username)
+    data = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/Lome_RNA_annot_comparison/"
 
     numbers = {}
     for annotation, path in SE_stats_paths_dict.items():

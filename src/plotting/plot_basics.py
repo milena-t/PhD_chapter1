@@ -343,8 +343,10 @@ def plot_all_species_seq_properties_distribution(native_files:dict, orthoDB_file
     rows = int(len(native_files)/cols)  +1
     if rows>2:
         fig, axes = plt.subplots(rows, cols, figsize=(12, 15)) # for more than three rows
+        species_titles = True
     else:
         fig, axes = plt.subplots(rows, cols, figsize=(15, 10)) # for more than three rows
+        species_titles = False
     fs = 25
 
     colors = {
@@ -393,7 +395,10 @@ def plot_all_species_seq_properties_distribution(native_files:dict, orthoDB_file
                 axes[row, col].vlines([mean_nat,mean_odb],bottom, top*1.2, linestyles = "dashed", color = [colors["native"], colors["orthoDB"]])
         else:
             axes[row, col].hist([native_lengths, orthoDB_lengths, third_lengths], bins=no_bins, histtype="bar", color = [colors["native"], colors["orthoDB"], colors["third"]])
-        axes[row, col].set_title(f'\\textit{{{species_name}}}', fontsize = fs)
+        if species_titles:
+            axes[row, col].set_title(f'\\textit{{{species_name}}}', fontsize = fs)
+        else:
+            axes[row, col].set_title(f'{species_name}', fontsize = fs)
         axes[row, col].set_xlabel('')
         axes[row, col].set_ylabel('')
         axes[row, col].tick_params(axis='x', labelsize=fs*0.8)
@@ -430,6 +435,7 @@ def plot_all_species_seq_properties_distribution(native_files:dict, orthoDB_file
             labels.append("standardized (no RNAseq)")
             handles.append(mpatches.Patch(color=colors["third"]))
             labels.append("different RNA populations")
+            fs_leg_factor=1
         axes[row, col].legend(handles, labels, fontsize = fs*fs_leg_factor, loc='center', title_fontsize = fs)
             
     
@@ -977,7 +983,7 @@ if __name__ == "__main__":
         }
     
     # plot
-    if True:
+    if False:
         # get individual plots for all species
         # for species in native_files.keys():
         #     plot_histogram_protein_properties(native_files[species], orthoDB_files[species], species_name=species, filename = f"protein_lengths_histogram_{species}.png")
@@ -993,17 +999,17 @@ if __name__ == "__main__":
 
     ## cmac annotation comparison
     # paths
-    if False:
-        annot_com_dir = "/Users/milena/work/c_maculatus/annotation_comparison/superscaffolded_annotation"
+    if True:
+        annot_com_dir = "/Users/miltr339/work/c_maculatus/annotation_comparison/superscaffolded_annotation"
         comparison_files = {
             "Cmac_Lome_diverse" : f"{annot_com_dir}/Cmac_Lome_diverse_filtered.faa",
             "Cmac_Nigeria_simple" : f"{annot_com_dir}/Cmac_Lu_simple_filtered.faa",
             "Cmac_SI_diverse" : f"{annot_com_dir}/Cmac_SI_diverse_filtered.faa",
         }
         native_files = {
-            "Cmac_Lome_diverse" : f"{native_dir}/C_maculatus.faa",
-            "Cmac_Nigeria_simple" : f"{native_dir}/C_maculatus.faa",
-            "Cmac_SI_diverse" : f"{native_dir}/C_maculatus.faa",
+            "Cmac_Lome_diverse" : f"{native_dir}/C_maculatus_Kaufmann2023.faa",
+            "Cmac_Nigeria_simple" : f"{native_dir}/C_maculatus_Kaufmann2023.faa",
+            "Cmac_SI_diverse" : f"{native_dir}/C_maculatus_Kaufmann2023.faa",
         }
         orthoDB_files = {
             "Cmac_Lome_diverse" : f"{orthoDB_dir}/C_maculatus_filtered_proteinfasta_TE_filtered.fa",
@@ -1011,7 +1017,7 @@ if __name__ == "__main__":
             "Cmac_SI_diverse" : f"{orthoDB_dir}/C_maculatus_filtered_proteinfasta_TE_filtered.fa",
         }
     # plot
-        # plot_all_species_protein_length_distribution(native_files, orthoDB_files, third_column_files= comparison_files, columns=2, max_length=1500, filename=f"{data}/Lome_RNA_annot_comparison/protein_lengths_histogram.png")
+        plot_all_species_seq_properties_distribution(native_files, orthoDB_files, third_column_files= comparison_files, columns=2, max_length=1500, filename=f"{data}/Lome_RNA_annot_comparison/protein_lengths_histogram.png")
         # plot_histogram_protein_properties(native_path = native_files["Cmac_Lome_diverse"], orthoDB_path = orthoDB_files["Cmac_Lome_diverse"], third_path=comparison_files["Cmac_Lome_diverse"], species_name="C. maculatus (Lome RNA annotation)\n", no_bins = 20, max_length = 1500, filename = f"{data}/Lome_RNA_annot_comparison/Lome_only_protein_lengths_histogram.png", dark_mode=False)
 
     ## cmac transcriptome
