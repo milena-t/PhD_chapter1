@@ -310,7 +310,7 @@ def plot_means(orthoDB, whole_genome_stats, species_names, x_category = "", file
 
 
 if __name__ == "__main__":
-
+    # plt.rcParams['text.usetex'] = True # use \textit{} for species names
     try:
         tree = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_only_species_names.nw"
         species_names = gff.make_species_order_from_tree(tree)

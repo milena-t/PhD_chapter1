@@ -111,7 +111,7 @@ def plot_busco_stats(native_busco, orthoDB_busco = {}, species_names = [], outfi
 
 
     legend_columns = 2
-    fs = 50 # fontsize is scaled with the dpi somehow which i have to do extra because i change the aspect ratio manually below
+    fs = 55 # fontsize is scaled with the dpi somehow which i have to do extra because i change the aspect ratio manually below
 
     # set figure aspect ratio
     if long_figure:
@@ -121,6 +121,7 @@ def plot_busco_stats(native_busco, orthoDB_busco = {}, species_names = [], outfi
 
     height_pixels = 2000  # Height in pixels
     width_pixels = int(height_pixels * aspect_ratio)  # Width in pixels
+    plt.rcParams['text.usetex'] = True # use \textit{} for species names
     fig = plt.figure(figsize=(width_pixels / 100, height_pixels / 100), dpi=100, frameon = False)
     ax = fig.add_subplot(111)
 
@@ -138,7 +139,7 @@ def plot_busco_stats(native_busco, orthoDB_busco = {}, species_names = [], outfi
         bottom += busco_numbers
 
     if len(orthoDB_busco)>0:
-        annotation_label = " (uniform)"
+        annotation_label = " (standardized)"
         legend_columns = 4
 
         orthoDB_numbers = {
@@ -176,6 +177,7 @@ def plot_busco_stats(native_busco, orthoDB_busco = {}, species_names = [], outfi
     ax.set_xticks(x)
     ax.set_xlabel('', fontsize=fs+4)
     xtick_labels = [species.replace("_", ". ") for species in species_names]
+    xtick_labels = [f"\\textit{{{species}}}" for species in species_names]
     ax.set_xticklabels(xtick_labels, rotation=90, fontsize=fs)
     ax.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 100 else f'{int(x)}%'))
     ax.tick_params(axis='y', labelsize=fs)

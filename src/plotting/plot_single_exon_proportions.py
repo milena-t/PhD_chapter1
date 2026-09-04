@@ -274,7 +274,7 @@ def plot_single_exon_no_species_specific_three_annot(native_numbers, orthodb_num
     # figure proportions according to the data included (longer or shorter)
 
     # fontsize scales with the dpi somehow which i have to do extra because i change the aspect ratio manually below
-    fs = 40 # 37 originally
+    fs = 55 # 37 originally
     plt.rcParams['text.usetex'] = True # use \textit{} for species names
     
     if len(orthodb_numbers) == 0 and len(orthoDB_unmasked_numbers) == 0:
@@ -380,7 +380,7 @@ def plot_single_exon_no_species_specific_three_annot(native_numbers, orthodb_num
         hatching = ["//", ""]
            
         orthodb_rects1_base = ax.bar(x + x_subtr, single_exon_genes, width, label='proportion of which are single-exon', color= color[0], hatch=hatching[0])            
-        orthodb_rects1_top = ax.bar(x + x_subtr, multi_exon_genes, width, bottom=single_exon_genes, label='all genes (standardized no remasking)', color= color[1], hatch=hatching[1])  
+        orthodb_rects1_top = ax.bar(x + x_subtr, multi_exon_genes, width, bottom=single_exon_genes, label='all genes (standardized, \nno re-masking)', color= color[1], hatch=hatching[1])  
         plt.rcParams.update({'hatch.color': hatch_color})
         ymax = max(num_total_genes.values())*ymax_factor
 
@@ -403,7 +403,7 @@ def plot_single_exon_no_species_specific_three_annot(native_numbers, orthodb_num
     # make custom legend patch for the dashed bars
     plt.rcParams.update({'hatch.color': "#3f3832ff"})
     dashed_handle = mpatches.Patch(hatch = "//", alpha = 0.0)
-    dashed_label = "proportion of genes that are single-exon"
+    dashed_label = "proportion of genes \nthat are single-exon"
 
     # Legend with custom order
     handles, labels = ax.get_legend_handles_labels()

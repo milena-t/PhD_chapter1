@@ -334,18 +334,23 @@ def plot_all_species_seq_properties_distribution(native_files:dict, orthoDB_file
     """
     plot a grid of histograms for all species. input is dictionaries with species names as keys and filepaths to aminoacid fasta files as values
     """
+    plt.rcParams['text.usetex'] = True # use \\textit{{{}}} for species names
+    
+    plt.rcParams['text.latex.preamble'] = r'\usepackage{sfmath} \renewcommand{\familydefault}{\sfdefault}'
+    plt.rcParams['font.family'] = 'sans-serif'
+
     cols = columns
     rows = int(len(native_files)/cols)  +1
     if rows>2:
         fig, axes = plt.subplots(rows, cols, figsize=(12, 15)) # for more than three rows
     else:
         fig, axes = plt.subplots(rows, cols, figsize=(15, 10)) # for more than three rows
-    fs = 22
+    fs = 25
 
     colors = {
         "orthoDB" : "#F2933A",
-        "native" : "#4d7298", # uniform_unfiltered blue
-        # "native" : "#b82946", # native red
+        # "native" : "#4d7298", # uniform_unfiltered blue
+        "native" : "#b82946", # native red
         "third" : "#9C4C32",
     }
     if GC_content:
@@ -388,7 +393,7 @@ def plot_all_species_seq_properties_distribution(native_files:dict, orthoDB_file
                 axes[row, col].vlines([mean_nat,mean_odb],bottom, top*1.2, linestyles = "dashed", color = [colors["native"], colors["orthoDB"]])
         else:
             axes[row, col].hist([native_lengths, orthoDB_lengths, third_lengths], bins=no_bins, histtype="bar", color = [colors["native"], colors["orthoDB"], colors["third"]])
-        axes[row, col].set_title(f'{species_name}', fontsize = fs*0.85)
+        axes[row, col].set_title(f'\\textit{{{species_name}}}', fontsize = fs)
         axes[row, col].set_xlabel('')
         axes[row, col].set_ylabel('')
         axes[row, col].tick_params(axis='x', labelsize=fs*0.8)
@@ -408,18 +413,24 @@ def plot_all_species_seq_properties_distribution(native_files:dict, orthoDB_file
             handles.append(mpatches.Patch(color=colors["orthoDB"]))
             if GC_content:
                 labels.append("native")
-                labels.append("uniform")
+                labels.append("standardized")
             else:
-                labels.append("no uniform\nrepeat masking")
-                labels.append("with uniform\nrepeat masking")
+                if colors["native"] == "#b82946": # native red
+                    fs_leg_factor=1
+                    labels.append("native")
+                    labels.append("standardized")
+                else: # blue
+                    fs_leg_factor=0.75
+                    labels.append("no standardized\nrepeat masking")
+                    labels.append("with standardized\nrepeat masking")
         if third_column_files != {}:
             handles.append(mpatches.Patch(color=colors["native"]))
             labels.append("native (Kaufmann)")
             handles.append(mpatches.Patch(color=colors["orthoDB"]))
-            labels.append("uniform (no RNAseq)")
+            labels.append("standardized (no RNAseq)")
             handles.append(mpatches.Patch(color=colors["third"]))
             labels.append("different RNA populations")
-        axes[row, col].legend(handles, labels, fontsize = fs*0.75, loc='center', title_fontsize = fs)
+        axes[row, col].legend(handles, labels, fontsize = fs*fs_leg_factor, loc='center', title_fontsize = fs)
             
     
     # Set a single x-axis label for all subplots
@@ -971,9 +982,9 @@ if __name__ == "__main__":
         # for species in native_files.keys():
         #     plot_histogram_protein_properties(native_files[species], orthoDB_files[species], species_name=species, filename = f"protein_lengths_histogram_{species}.png")
         
-        # plot_all_species_seq_properties_distribution(native_files, orthoDB_files, filename=f"{data}/protein_lengths_histogram.png", dark_mode=False)
-        # plot_all_species_seq_properties_distribution(orthoDB_files_unfiltered, orthoDB_files, filename=f"{data}/protein_lengths_histogram_no_repeatfilter.png", dark_mode=False)
-        plot_all_species_seq_properties_distribution(native_nucleotides, orthoDB_nucleotides, filename=f"{data}/GC_content_histogram_no_repeatfilter.png", dark_mode=False, GC_content = True)
+        plot_all_species_seq_properties_distribution(native_files, orthoDB_files, filename=f"{data}/protein_lengths_histogram.png", dark_mode=False)
+        plot_all_species_seq_properties_distribution(orthoDB_files_unfiltered, orthoDB_files, filename=f"{data}/protein_lengths_histogram_no_repeatfilter.png", dark_mode=False)
+        # plot_all_species_seq_properties_distribution(native_nucleotides, orthoDB_nucleotides, filename=f"{data}/GC_content_histogram_no_repeatfilter.png", dark_mode=False, GC_content = True)
         
         # plot individual species
         if False:
@@ -1000,8 +1011,8 @@ if __name__ == "__main__":
             "Cmac_SI_diverse" : f"{orthoDB_dir}/C_maculatus_filtered_proteinfasta_TE_filtered.fa",
         }
     # plot
-        #plot_all_species_protein_length_distribution(native_files, orthoDB_files, third_column_files= comparison_files, columns=2, max_length=1500, filename=f"{data}/Lome_RNA_annot_comparison/protein_lengths_histogram.png")
-        plot_histogram_protein_properties(native_path = native_files["Cmac_Lome_diverse"], orthoDB_path = orthoDB_files["Cmac_Lome_diverse"], third_path=comparison_files["Cmac_Lome_diverse"], species_name="C. maculatus (Lome RNA annotation)\n", no_bins = 20, max_length = 1500, filename = f"{data}/Lome_RNA_annot_comparison/Lome_only_protein_lengths_histogram.png", dark_mode=False)
+        # plot_all_species_protein_length_distribution(native_files, orthoDB_files, third_column_files= comparison_files, columns=2, max_length=1500, filename=f"{data}/Lome_RNA_annot_comparison/protein_lengths_histogram.png")
+        # plot_histogram_protein_properties(native_path = native_files["Cmac_Lome_diverse"], orthoDB_path = orthoDB_files["Cmac_Lome_diverse"], third_path=comparison_files["Cmac_Lome_diverse"], species_name="C. maculatus (Lome RNA annotation)\n", no_bins = 20, max_length = 1500, filename = f"{data}/Lome_RNA_annot_comparison/Lome_only_protein_lengths_histogram.png", dark_mode=False)
 
     ## cmac transcriptome
     if False:
