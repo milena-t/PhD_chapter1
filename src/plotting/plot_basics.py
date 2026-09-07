@@ -328,7 +328,7 @@ def plot_histogram_protein_properties(native_path:str, orthoDB_path:str = "", th
     print(f"plot saved in the current working directory as: {filename}")
 
 
-def plot_all_species_seq_properties_distribution(native_files:dict, orthoDB_files:dict, third_column_files:dict = {}, columns = 3, no_bins = 20, max_length = 1000, filename = "protein_lengths_histogram.png", legend_in_last = True, dark_mode=False, GC_content = False, test_difference=True):
+def plot_all_species_seq_properties_distribution(native_files:dict, orthoDB_files:dict, third_column_files:dict = {}, columns = 3, no_bins = 20, max_length = 1000, filename = "protein_lengths_histogram.png", legend_in_last = True, dark_mode=False, GC_content = False, test_difference=False):
 
     if dark_mode:
         plt.style.use('dark_background')
@@ -343,17 +343,20 @@ def plot_all_species_seq_properties_distribution(native_files:dict, orthoDB_file
 
     colors = {
         "orthoDB" : "#F2933A",
-        # "native" : "#4d7298", # uniform_unfiltered blue
-        "native" : "#b82946", # native red
+        "native" : "#4d7298", # uniform_unfiltered blue
+        # "native" : "#b82946", # native red
         "third" : "#9C4C32",
     }
     if GC_content:
         colors = {
             "orthoDB" : "#F2933A",
-            # "native" : "#4d7298", # uniform_unfiltered blue
-            "native" : "#b82946", # native red
+            "native" : "#4d7298", # uniform_unfiltered blue
+            # "native" : "#b82946", # native red
             "third" : "#9C4C32",
         }
+        test_difference=False
+    if third_column_files != {}:
+        print(f"no pairwise Wasserstein difference computed when three annotations per species are included")
         test_difference=False
 
     cols = columns
@@ -365,6 +368,9 @@ def plot_all_species_seq_properties_distribution(native_files:dict, orthoDB_file
         fig, axes = plt.subplots(rows, cols, figsize=(15, 10)) # for more than three rows
         species_titles = False
     fs = 25
+
+    all_lengths_native = []
+    all_lengths_orthoDB = []
 
     for idx, species in enumerate(native_files.keys()):
         
@@ -413,9 +419,13 @@ def plot_all_species_seq_properties_distribution(native_files:dict, orthoDB_file
                 # see explanation: https://lilianweng.github.io/posts/2017-08-20-gan/#what-is-wasserstein-distance
                 WD_res = scipy.stats.wasserstein_distance(native_lengths, orthoDB_lengths)
                 # print(f"\tWasserstein distance: {WD_res}")
+                all_lengths_native.append(native_lengths)
+                all_lengths_orthoDB.append(orthoDB_lengths)
 
         
-        print(f"\tin position {row+1},{col+1}: \t{species_name}, WD={WD_res:.2f}")
+            print(f"\tin position {row+1},{col+1}: \t{species_name}, \tWD={WD_res:.2f}")
+        else:
+            print(f"\tin position {row+1},{col+1}: \t{species_name}")
 
 
         # Plot histogram on the corresponding subplot axis
@@ -438,8 +448,37 @@ def plot_all_species_seq_properties_distribution(native_files:dict, orthoDB_file
         axes[row, col].tick_params(axis='y', labelsize=fs*0.8)
         
         if test_difference:
-            axes[row, col].text(0.95, 0.95, f"WD={WD_res:.2f}", transform=axes[row, col].transAxes,fontsize=fs, fontweight='bold',ha='right', va='top')
+            axes[row, col].text(0.95, 0.95, f"WD={WD_res:.2f}", transform=axes[row, col].transAxes,fontsize=fs*0.85, fontweight='bold',ha='right', va='top')
     
+    if test_difference:
+        ## compute all pairwise distances 
+        def pairwise_distances(samples_lists):
+            done = []
+            distances_list = []
+            for i, list1 in enumerate(samples_lists):
+                for j, list2 in enumerate(samples_lists):
+                    if i==j:
+                        continue
+                    elif sorted([i,j]) in done: # don't do reciprocal
+                        continue
+                    else:
+                        done.append(sorted([i,j]))
+                    distances_list.append(scipy.stats.wasserstein_distance(list1, list2))
+            return distances_list
+
+        pairwise_WD_native = pairwise_distances(all_lengths_native)
+        pairwise_WD_orthoDB = pairwise_distances(all_lengths_orthoDB)
+        ## test mean and SD for both 
+        mean_native = np.mean(pairwise_WD_native)
+        sem_native = scipy.stats.sem(pairwise_WD_native)
+        mean_orthoDB = np.mean(pairwise_WD_orthoDB)
+        sem_orthoDB = scipy.stats.sem(pairwise_WD_orthoDB)
+    
+        print(f"\n mean pairwise Wasserstein distance between all species within native or standardized annotations:")
+        print(f"\t - native: mean {mean_native:.3f}, SEM: {sem_native:.3f}")
+        print(f"\t - orthoDB: mean {mean_orthoDB:.3f}, SEM: {sem_orthoDB:.3f}")
+        ## TODO even the standardized are still 
+
     # add legend to last plot square
     if legend_in_last == True:
         idx_max = len(native_files.keys())
@@ -1019,9 +1058,14 @@ if __name__ == "__main__":
     
     # plot
     if True:
-        ## plot all species in a grid
+        ## plot all species in a grid, 
+        # native/standard comparison
         # plot_all_species_seq_properties_distribution(native_files, orthoDB_files, filename=f"{data}/protein_lengths_histogram.png", dark_mode=False, test_difference=True)
+        
+        # change colors in the function to get the right legend labels etc. and not the ones for the native/standard comparison!
         plot_all_species_seq_properties_distribution(orthoDB_files_unfiltered, orthoDB_files, filename=f"{data}/protein_lengths_histogram_no_repeatfilter.png", dark_mode=False, test_difference=True)
+        
+        ## GC content distribution
         # plot_all_species_seq_properties_distribution(native_nucleotides, orthoDB_nucleotides, filename=f"{data}/GC_content_histogram_no_repeatfilter.png", dark_mode=False, GC_content = True)
         
         # plot individual species
