@@ -388,9 +388,9 @@ def plot_all_species_seq_properties_distribution(native_files:dict, orthoDB_file
             species_name = species.replace("_", " ")
 
         if test_difference:
-            print(f"================= {species_name} =================")
             ## test for a difference in distribution between the two lengths
             if False:
+                print(f"================= {species_name} =================")
                 # test candidate distributions:
                 # native_lengths
                 print(f"\t - native data distribution fit:")
@@ -1020,8 +1020,8 @@ if __name__ == "__main__":
     # plot
     if True:
         ## plot all species in a grid
-        plot_all_species_seq_properties_distribution(native_files, orthoDB_files, filename=f"{data}/protein_lengths_histogram.png", dark_mode=False, test_difference=True)
-        # plot_all_species_seq_properties_distribution(orthoDB_files_unfiltered, orthoDB_files, filename=f"{data}/protein_lengths_histogram_no_repeatfilter.png", dark_mode=False, test_difference=True)
+        # plot_all_species_seq_properties_distribution(native_files, orthoDB_files, filename=f"{data}/protein_lengths_histogram.png", dark_mode=False, test_difference=True)
+        plot_all_species_seq_properties_distribution(orthoDB_files_unfiltered, orthoDB_files, filename=f"{data}/protein_lengths_histogram_no_repeatfilter.png", dark_mode=False, test_difference=True)
         # plot_all_species_seq_properties_distribution(native_nucleotides, orthoDB_nucleotides, filename=f"{data}/GC_content_histogram_no_repeatfilter.png", dark_mode=False, GC_content = True)
         
         # plot individual species
