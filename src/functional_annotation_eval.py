@@ -557,12 +557,12 @@ def make_functional_summary_bar(functional_dict:dict, summary_table:str, orthogr
         for cat_name in category_count_dict.keys():
             cat_perc = 100* category_count_dict[cat_name]/sum_cat_OG
             trans_perc = 100* transcript_count_dict[cat_name]/sum_cat_trans
-            p = ax.barh(["Orthogroups","Transcripts"], [cat_perc,trans_perc], height=width, label=cat_name, left=bottom, color = colors_dict[cat_name])
+            p = ax.barh(["Orthogroups","Genes"], [cat_perc,trans_perc], height=width, label=cat_name, left=bottom, color = colors_dict[cat_name])
             bottom[0] += cat_perc
             bottom[1] += trans_perc
         ax.xaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x < 1 else f'{int(x)}%'))
 
-        xlab=f"percentage of {sum_cat_OG} CAFE-significant orthogroups or {sum_cat_trans} transcripts"
+        xlab=f"percentage of {sum_cat_OG} CAFE-significant orthogroups or {sum_cat_trans} genes"
         ax.set_xlabel(xlab, fontsize = fs)
 
         ax.tick_params(axis='x', labelsize=fs)
@@ -600,7 +600,7 @@ if __name__ == "__main__":
 
 ## overall functional proportions
     
-    if False:
+    if True:
         # remember that some are overlapping! do list(set()) for top-level categories to keep the numbers right
         functional_categories_dict = {
             "Chemosensory" : {
@@ -683,7 +683,7 @@ if __name__ == "__main__":
             transparent_bg=True, svg = False, ymax_set=99, fs = 25)
 
     # --> OLFACTORY RECEPTORS
-    if True:
+    if False:
         cols_list = [
             "#b9cf74",
             "#A3C149",

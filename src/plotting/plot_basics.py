@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.ticker import FuncFormatter
 import parse_gff as gff 
+import scipy
 # import src.parse_gff as gff 
 from Bio import SeqIO, Phylo, SeqUtils
 import numpy as np
@@ -327,7 +328,7 @@ def plot_histogram_protein_properties(native_path:str, orthoDB_path:str = "", th
     print(f"plot saved in the current working directory as: {filename}")
 
 
-def plot_all_species_seq_properties_distribution(native_files:dict, orthoDB_files:dict, third_column_files:dict = {}, columns = 3, no_bins = 20, max_length = 1000, filename = "protein_lengths_histogram.png", legend_in_last = True, dark_mode=False, GC_content = False):
+def plot_all_species_seq_properties_distribution(native_files:dict, orthoDB_files:dict, third_column_files:dict = {}, columns = 3, no_bins = 20, max_length = 1000, filename = "protein_lengths_histogram.png", legend_in_last = True, dark_mode=False, GC_content = False, test_difference=True):
 
     if dark_mode:
         plt.style.use('dark_background')
@@ -339,15 +340,6 @@ def plot_all_species_seq_properties_distribution(native_files:dict, orthoDB_file
     plt.rcParams['text.latex.preamble'] = r'\usepackage{sfmath} \renewcommand{\familydefault}{\sfdefault}'
     plt.rcParams['font.family'] = 'sans-serif'
 
-    cols = columns
-    rows = int(len(native_files)/cols)  +1
-    if rows>2:
-        fig, axes = plt.subplots(rows, cols, figsize=(12, 15)) # for more than three rows
-        species_titles = True
-    else:
-        fig, axes = plt.subplots(rows, cols, figsize=(15, 10)) # for more than three rows
-        species_titles = False
-    fs = 25
 
     colors = {
         "orthoDB" : "#F2933A",
@@ -362,6 +354,17 @@ def plot_all_species_seq_properties_distribution(native_files:dict, orthoDB_file
             "native" : "#b82946", # native red
             "third" : "#9C4C32",
         }
+        test_difference=False
+
+    cols = columns
+    rows = int(len(native_files)/cols)  +1
+    if rows>2:
+        fig, axes = plt.subplots(rows, cols, figsize=(12, 15)) # for more than three rows
+        species_titles = True
+    else:
+        fig, axes = plt.subplots(rows, cols, figsize=(15, 10)) # for more than three rows
+        species_titles = False
+    fs = 25
 
     for idx, species in enumerate(native_files.keys()):
         
@@ -383,7 +386,37 @@ def plot_all_species_seq_properties_distribution(native_files:dict, orthoDB_file
             species_name = species.replace("_", ". ")
         else:
             species_name = species.replace("_", " ")
-        print(f"\tin position {row+1},{col+1}: \t{species_name}")
+
+        if test_difference:
+            print(f"================= {species_name} =================")
+            ## test for a difference in distribution between the two lengths
+            if False:
+                # test candidate distributions:
+                # native_lengths
+                print(f"\t - native data distribution fit:")
+                native_lognorm =  scipy.stats.lognorm.fit(native_lengths)
+                native_gamma =  scipy.stats.gamma.fit(native_lengths)
+                native_weibull_min =  scipy.stats.weibull_min.fit(native_lengths)
+                print(f"\t\t lognorm: {native_lognorm}")
+                print(f"\t\t gamma: {native_gamma}")
+                print(f"\t\t weibull_min: {native_weibull_min}")
+                # orthoDB_lengths
+                print(f"\t - orthoDB data distribution fit:")
+                orthoDB_lognorm =  scipy.stats.lognorm.fit(orthoDB_lengths)
+                orthoDB_gamma =  scipy.stats.gamma.fit(orthoDB_lengths)
+                orthoDB_weibull_min =  scipy.stats.weibull_min.fit(orthoDB_lengths)
+                print(f"\t\t lognorm: {orthoDB_lognorm}")
+                print(f"\t\t gamma: {orthoDB_gamma}")
+                print(f"\t\t weibull_min: {orthoDB_weibull_min}")
+            if True:
+                # wasserstein distance, 
+                # see explanation: https://lilianweng.github.io/posts/2017-08-20-gan/#what-is-wasserstein-distance
+                WD_res = scipy.stats.wasserstein_distance(native_lengths, orthoDB_lengths)
+                # print(f"\tWasserstein distance: {WD_res}")
+
+        
+        print(f"\tin position {row+1},{col+1}: \t{species_name}, WD={WD_res:.2f}")
+
 
         # Plot histogram on the corresponding subplot axis
         if third_column_files == {}:
@@ -403,6 +436,9 @@ def plot_all_species_seq_properties_distribution(native_files:dict, orthoDB_file
         axes[row, col].set_ylabel('')
         axes[row, col].tick_params(axis='x', labelsize=fs*0.8)
         axes[row, col].tick_params(axis='y', labelsize=fs*0.8)
+        
+        if test_difference:
+            axes[row, col].text(0.95, 0.95, f"WD={WD_res:.2f}", transform=axes[row, col].transAxes,fontsize=fs, fontweight='bold',ha='right', va='top')
     
     # add legend to last plot square
     if legend_in_last == True:
@@ -438,7 +474,6 @@ def plot_all_species_seq_properties_distribution(native_files:dict, orthoDB_file
             fs_leg_factor=1
         axes[row, col].legend(handles, labels, fontsize = fs*fs_leg_factor, loc='center', title_fontsize = fs)
             
-    
     # Set a single x-axis label for all subplots
     if GC_content:
         x_label = f"GC content in percent"
@@ -983,13 +1018,10 @@ if __name__ == "__main__":
         }
     
     # plot
-    if False:
-        # get individual plots for all species
-        # for species in native_files.keys():
-        #     plot_histogram_protein_properties(native_files[species], orthoDB_files[species], species_name=species, filename = f"protein_lengths_histogram_{species}.png")
-        
-        plot_all_species_seq_properties_distribution(native_files, orthoDB_files, filename=f"{data}/protein_lengths_histogram.png", dark_mode=False)
-        plot_all_species_seq_properties_distribution(orthoDB_files_unfiltered, orthoDB_files, filename=f"{data}/protein_lengths_histogram_no_repeatfilter.png", dark_mode=False)
+    if True:
+        ## plot all species in a grid
+        plot_all_species_seq_properties_distribution(native_files, orthoDB_files, filename=f"{data}/protein_lengths_histogram.png", dark_mode=False, test_difference=True)
+        # plot_all_species_seq_properties_distribution(orthoDB_files_unfiltered, orthoDB_files, filename=f"{data}/protein_lengths_histogram_no_repeatfilter.png", dark_mode=False, test_difference=True)
         # plot_all_species_seq_properties_distribution(native_nucleotides, orthoDB_nucleotides, filename=f"{data}/GC_content_histogram_no_repeatfilter.png", dark_mode=False, GC_content = True)
         
         # plot individual species
@@ -999,7 +1031,7 @@ if __name__ == "__main__":
 
     ## cmac annotation comparison
     # paths
-    if True:
+    if False:
         annot_com_dir = "/Users/miltr339/work/c_maculatus/annotation_comparison/superscaffolded_annotation"
         comparison_files = {
             "Cmac_Lome_diverse" : f"{annot_com_dir}/Cmac_Lome_diverse_filtered.faa",

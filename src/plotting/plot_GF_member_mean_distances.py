@@ -8,7 +8,7 @@ import parse_gff as gff
 import parse_orthogroups as OGs
 from statistics import mean
 import matplotlib.pyplot as plt
-from matplotlib.ticker import FuncFormatter
+from matplotlib.ticker import FuncFormatter, MaxNLocator
 
 
 def filepaths_native():
@@ -65,7 +65,7 @@ def filepaths_orthoDB():
         "B_siliquastri" : f"{orthoDB_annot_dir}B_siliquastri_braker_isoform_filtered.gff",
         # "C_analis" : f"{orthoDB_annot_dir}C_analis_braker_isoform_filtered.gff",
         "C_chinensis" : f"{orthoDB_annot_dir}C_chinensis_braker_isoform_filtered.gff",
-        "C_maculatus" : f"{orthoDB_annot_dir}C_maculatus_superscaffolded_annotation_isoform_filtered.gff",
+        "C_maculatus" : f"{orthoDB_annot_dir}superscaffolded_C_maculatus_annotation_isoform_filtered.gff",
         "C_septempunctata" : f"{orthoDB_annot_dir}C_septempunctata_braker_isoform_filtered.gff",
         "D_melanogaster" : f"{orthoDB_annot_dir}D_melanogaster_braker_isoform_filtered.gff",
         "D_ponderosae" : f"{orthoDB_annot_dir}D_ponderosae_braker_isoform_filtered.gff",
@@ -254,8 +254,9 @@ def plot_all_OGs_transcript_distances(same_contig_proportion_all_species, GF_pos
     species_list = list(same_contig_proportions.keys())
     cols = columns
     rows = int(len(species_list)/cols)  +1
+    plt.rcParams['text.usetex'] = True # use \textit{} for species names
     fig, axes = plt.subplots(rows, cols, figsize=(12, 17))
-    fs = 18
+    fs = 21
 
     colors = {
         "significant": "#F2933A", # orange
@@ -292,9 +293,9 @@ def plot_all_OGs_transcript_distances(same_contig_proportion_all_species, GF_pos
                 N50_value = f'{N50_value / 1e6:.1f} Mb'
             else:
                 N50_value = f'{N50_value / 1e3:.0f} kb'
-            axes[row, col].set_title(f'{species_name} \n{percent}% of gene families \nL50: {L50_values[species]}, N50: {N50_value}', fontsize = fs)
+            axes[row, col].set_title(f'\\textit{{{species_name}}} \n{percent}\% of gene families \nL50: {L50_values[species]}, N50: {N50_value}', fontsize = fs)
         except:
-            axes[row, col].set_title(f'{species_name} ({percent}% of gene families)', fontsize = fs)
+            axes[row, col].set_title(f'\\textit{{{species_name}}} ({percent}\% of gene families)', fontsize = fs)
         axes[row, col].set_xlabel('')
         axes[row, col].set_ylabel('')
         
@@ -312,7 +313,8 @@ def plot_all_OGs_transcript_distances(same_contig_proportion_all_species, GF_pos
 
         axes[row, col].yaxis.set_major_formatter(FuncFormatter(y_function_formatter))
         # make integers and skip ticks that are in between integers
-        axes[row, col].xaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if str(x).split(".")[-1][0]!= "0" else f"{int(x)}"))
+        axes[row, col].xaxis.set_major_locator(MaxNLocator(integer=True))
+        # axes[row, col].xaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if str(x).split(".")[-1][0]!= "0" else f"{int(x)}"))
         axes[row, col].tick_params(axis='y', labelsize=fs)
         axes[row, col].tick_params(axis='x', labelsize=fs)
         print(f"\tin position {row+1},{col+1} ;  y scale: {y_scale}  --> {species_name}")
