@@ -82,13 +82,16 @@ def plot_wg_repeat_stats(repeat_stats_dict:dict[dict[str,float]], filename = "wh
     Take the nested dictionary of species names and repeat stats returned by get_wg_repeats_stats_dict and make it a stacked barplot with one bar per species
     """
 
+    plt.rcParams['text.usetex'] = True # use \\textit{{{}}} for species names
+    plt.rcParams['text.latex.preamble'] = r'\usepackage{sfmath} \renewcommand{\familydefault}{\sfdefault}'
+    plt.rcParams['font.family'] = 'sans-serif'
 
     if plot_tree:
-        fs = 17 # set font size
+        fs = 22 # set font size
         fig, (ax, ax_tree) = plt.subplots(2, 1,figsize=(10,15), gridspec_kw={'height_ratios': [2, 3]}, constrained_layout=True)
         species_names_unsorted = my_plotting.plot_tree_manually(tree_filepath, ax_tree)
     else:
-        fs = 32
+        fs = 38
         aspect_ratio = 26 / 16
         height_pixels = 1200  # Height in pixels
         width_pixels = int(height_pixels * aspect_ratio)  # Width in pixels
@@ -176,6 +179,7 @@ def plot_wg_repeat_stats(repeat_stats_dict:dict[dict[str,float]], filename = "wh
 
 
         for x_index, species in enumerate(species_names):
+            print(f"* {species}")
             sorted_categories = list(repeat_stats_dict[species].keys())
             try:
                 curr_spec_repeats = repeat_stats_dict[species]
@@ -183,24 +187,27 @@ def plot_wg_repeat_stats(repeat_stats_dict:dict[dict[str,float]], filename = "wh
                 raise RuntimeError(f"{species} not found in input dictionary: \n{repeat_stats_dict}")
 
             x_contig_coords.append(x_index)
-            x_contig_labels.append(species)
+            x_contig_labels.append(species.replace("_", ". "))
             curr_base = 0
 
             for repeat_cat, percentage in curr_spec_repeats.items():
                 # if repeat_cat not in type_association and percentage>0:
                 #     raise RuntimeError(f"=====> {repeat_cat} with {percentage}% not plotted")
-                
                 if repeat_cat not in type_association:
-                    continue
-                all_categories.append(repeat_cat)
+                    # some repeat categories in curr_spec_repeats are subcategories of others, exclude those by only explicitly using the named top-categories in type_association
+                    continue 
 
+                print(f"\t- {repeat_cat}: {percentage:.2f}%")
+                all_categories.append(repeat_cat)
+                
                 try:
                     ax.bar(x_index, percentage, width=width, label=repeat_cat, bottom=curr_base, color = colors[type_association[repeat_cat]])
                     curr_base += percentage
                 except:
                     raise RuntimeError(f"orginal repeat category {repeat_cat} could not be associated with any key in {type_association.keys()}")
 
-    x_contig_labels = [species.replace("_", ". ") for species in x_contig_labels]
+    x_contig_labels = [f"\\textit{{{species}}}" for species in x_contig_labels]
+
     # ax.set_xticklabels(x_contig_labels, rotation=90, fontsize=fs)
     ax.set_xticks(x_contig_coords, x_contig_labels, rotation=90, fontsize=fs)
     ax.tick_params(axis='y', labelsize=fs)
@@ -208,7 +215,7 @@ def plot_wg_repeat_stats(repeat_stats_dict:dict[dict[str,float]], filename = "wh
     ax.set_ylim(0, 105)
     ax.set_xlim(-0.5, len(x_contig_coords)-0.5)
     ax.set_ylabel("repeat content", fontsize=fs+4, rotation = 90, labelpad = 30)
-    ax.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 101 and x<1 else f'{int(x)}%'))
+    ax.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 101 and x<1 else f'{int(x)}\%'))
 
     # make legend patches and labels
     handles = []

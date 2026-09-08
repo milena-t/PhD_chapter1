@@ -258,7 +258,7 @@ def plot_TE_abundance(before_filepath:str, after_filepath:str, sig_transcripts:i
     if legend:
         ax.set_xlim([-num_bp, num_bp*1.35])
         plt.legend(loc = "upper right", fontsize = fs)
-        plt.title(f"{species} transcript surroundings {num_bp} bp up and downstream \n({num_sig_transcripts} significant transcripts of {all_transcripts} in CAFE analysis)", fontsize = fs*1.25)
+        plt.title(f"{species} gene surroundings {num_bp} bp up and downstream \n({num_sig_transcripts} significant transcripts of {all_transcripts} in CAFE analysis)", fontsize = fs*1.25)
     else:
         
         solid = Line2D([0], [0], color='black', linestyle='-', linewidth=2)
@@ -270,9 +270,9 @@ def plot_TE_abundance(before_filepath:str, after_filepath:str, sig_transcripts:i
         labels.append(f"significant transcripts ({num_sig_transcripts})")
         labels.append(f"all CAFE transcripts ({all_transcripts})")
         plt.legend(handles, labels, loc = "upper center", fontsize = fs)
-        plt.title(f"{species} transcript surroundings {num_bp} bp up and downstream", fontsize = fs*1.25)
+        plt.title(f"{species} gene surroundings {num_bp} bp up and downstream", fontsize = fs*1.25)
     
-    plt.xlabel(f"basepairs upstream and downstream from transcript", fontsize = fs)
+    plt.xlabel(f"basepairs upstream and downstream from gene", fontsize = fs)
 
     plt.ylabel(f"percent of transcripts in which this base is a repeat", fontsize = fs)
     ax.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 99 and x<1 else f'{int(x)}%'))

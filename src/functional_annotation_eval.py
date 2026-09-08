@@ -65,6 +65,9 @@ def plot_selected_OGs(orthogroups_path:str, OG_IDs:list[list[str]], colors:list,
     The colors list is then these colors, in the same order as the lists in OG_IDs
     """
     # plot each column in the dataframe as a line in the same plot thorugh a for-loop
+    plt.rcParams['text.usetex'] = True # use \textit{} for species names
+    plt.rcParams['text.latex.preamble'] = r'\usepackage{sfmath} \renewcommand{\familydefault}{\sfdefault}'
+    plt.rcParams['font.family'] = 'sans-serif'
     fig = plt.figure(figsize=(15,10))
     ax = fig.add_subplot(1, 1, 1)
 
@@ -120,7 +123,9 @@ def plot_selected_OGs(orthogroups_path:str, OG_IDs:list[list[str]], colors:list,
 
     ylab="number of gene family members"
     ax.set_ylabel(ylab, fontsize = fs)
-    plt.xticks(labels=[species.replace("_", ". ") for species in species_names], ticks=species_names, rotation = 90, fontsize = fs)
+    xtick_labels_ = [species.replace("_", ". ") for species in species_names]
+    xtick_labels = [f"\\textit{{{species}}}" for species in xtick_labels_]
+    plt.xticks(labels=xtick_labels, ticks=species_names, rotation = 90, fontsize = fs)
 
     handles, labels = ax.get_legend_handles_labels()
     ax.legend(handles, labels, fontsize = fs, loc='upper center')
@@ -600,7 +605,7 @@ if __name__ == "__main__":
 
 ## overall functional proportions
     
-    if True:
+    if False:
         # remember that some are overlapping! do list(set()) for top-level categories to keep the numbers right
         functional_categories_dict = {
             "Chemosensory" : {
@@ -653,7 +658,7 @@ if __name__ == "__main__":
     ## CHEMICAL COMMUNICATION
 
     # --> CHEMOSENSORY
-    if False:
+    if True:
         cols_list = [
             "#0063da",
             "#ff8b2d",
@@ -680,10 +685,10 @@ if __name__ == "__main__":
             tree_path=tree_path, filename="chemosensory.png", # filename="polyethylene_clusters.png", 
             out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/new_eval/", 
             title = "Chemosensory function", 
-            transparent_bg=True, svg = False, ymax_set=99, fs = 25)
+            transparent_bg=True, svg = False, ymax_set=99, fs = 30)
 
     # --> OLFACTORY RECEPTORS
-    if False:
+    if True:
         cols_list = [
             "#b9cf74",
             "#A3C149",
@@ -707,10 +712,10 @@ if __name__ == "__main__":
             tree_path=tree_path, filename="ionotropic_receptors.png", # filename="polyethylene_clusters.png", 
             out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/new_eval/", 
             title = "Ionotropic receptors", 
-            transparent_bg=True, svg = False, ymax_set=14, fs = 25)
+            transparent_bg=True, svg = False, ymax_set=14, fs = 30)
 
     # --> PHEROMONE SYNTHESIS
-    if False:
+    if True:
         cols_list = ["#686900",
             "#ff85eb",
             "#ff475c",
@@ -737,10 +742,10 @@ if __name__ == "__main__":
             tree_path=tree_path, filename="pheromone_synthesis.png", # filename="polyethylene_clusters.png", 
             out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/new_eval/", 
             title = "Pheromone synthesis", 
-            transparent_bg=True, svg = False, ymax_set=99, fs = 25)
+            transparent_bg=True, svg = False, ymax_set=99, fs = 30)
 
     # --> CUTICULAR HYDROCARBONS
-    if False:
+    if True:
         cols_list = [
             "#1FDAFF",
             "#00add0",
@@ -765,10 +770,10 @@ if __name__ == "__main__":
             tree_path=tree_path, filename="cuticular_hydrocarbons.png", # filename="polyethylene_clusters.png", 
             out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/new_eval/", 
             title = "Cuticular hydrocarbons: fatty acid synthetase and elongase", 
-            transparent_bg=True, svg = False, ymax_set=21, fs = 25)
+            transparent_bg=True, svg = False, ymax_set=21, fs = 30)
 
     # --> DETOXIFICATION (HOST ADAPTATION)
-    if False:
+    if True:
         cols_list = ["#448300",
             "#556ffa",
             "#991276"]
@@ -788,10 +793,10 @@ if __name__ == "__main__":
             tree_path=tree_path, filename="detoxification.png", # filename="polyethylene_clusters.png", 
             out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/new_eval/", 
             title = "Detoxification in host adaptation", 
-            transparent_bg=True, svg = False, ymax_set=79, fs = 25)
+            transparent_bg=True, svg = False, ymax_set=79, fs = 30)
 
     # --> FLUORESCENCE IN ELATERIFORMIA
-    # This group is expanding in elateriformia
+    # True group is expanding in elateriformia
     if False:
         cols_list = [
             #"#885E5E",
@@ -814,10 +819,10 @@ if __name__ == "__main__":
             tree_path=tree_path, filename="fluorescence_elateriformia.png", 
             out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/new_eval/", 
             title = "Expansions Acyl-CoA related to fluorescence", 
-            transparent_bg=True, svg = False, ymax_set=24, fs = 25) # fs=30 for the poster
+            transparent_bg=True, svg = False, ymax_set=24, fs = 30) # fs=30 for the poster
 
     # --> REPRODUCTION
-    if False:
+    if True:
         cols_list = [
             "#ff883e",
             "#0289d7",
@@ -838,231 +843,232 @@ if __name__ == "__main__":
             tree_path=tree_path, filename="sexual_reproduction.png", 
             out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/new_eval/", 
             title = "Sexual reproduction and immunity", 
-            transparent_bg=True, svg = False, ymax_set=45, fs = 25)
+            transparent_bg=True, svg = False, ymax_set=45, fs = 30)
 
 
 ### old versions of more basic functional analysis
-
-    # --> GENERAL ""ENRICHMENT"" OF GENE GROUP FUNCTION IN RAPIDLY EXPANDING ORTHOGROUPS
     if False:
-        investigate_large_gene_families(tree_path=tree_path, DAVID_table_path=DAVID_path, orthogroups_path=orthogroups_orthoDB_filepath, verbose = False)
 
-    # --> AOBT EXPANSION
-    if False:
-        OGs_title = " and ".join(OG_lists_dict["Aobt_expansion"])
-        image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Aobt_expansion"], tree_path=tree_path, filename="Aobt_expansion_GF_sizes.png", title = f"A. obtectus expansion: {OGs_title}")
+        # --> GENERAL ""ENRICHMENT"" OF GENE GROUP FUNCTION IN RAPIDLY EXPANDING ORTHOGROUPS
+        if True:
+            investigate_large_gene_families(tree_path=tree_path, DAVID_table_path=DAVID_path, orthogroups_path=orthogroups_orthoDB_filepath, verbose = False)
 
-    # --> DETOXIFICATION
-    if False:
-        cols_list = [
-            "#a9c5e2",
-            "#434b4c",
-            "#DE6449",
-            ] # first light blue: "#a9c5e2"
-        labels_list = [
-            "Cluster 1: Cytochrome P450", 
-            "Cluster 3: lipid metabolic process",
-            "Cluster 18: aldehyde oxidase", 
+        # --> AOBT EXPANSION
+        if True:
+            OGs_title = " and ".join(OG_lists_dict["Aobt_expansion"])
+            image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Aobt_expansion"], tree_path=tree_path, filename="Aobt_expansion_GF_sizes.png", title = f"A. obtectus expansion: {OGs_title}")
+
+        # --> DETOXIFICATION
+        if True:
+            cols_list = [
+                "#a9c5e2",
+                "#434b4c",
+                "#DE6449",
+                ] # first light blue: "#a9c5e2"
+            labels_list = [
+                "Cluster 1: Cytochrome P450", 
+                "Cluster 3: lipid metabolic process",
+                "Cluster 18: aldehyde oxidase", 
+                ]
+            IDs_lists = [
+                OG_lists_dict["Gene Group 1"],
+                OG_lists_dict["Gene Group 3"],
+                OG_lists_dict["Gene Group 18"],
             ]
-        IDs_lists = [
-            OG_lists_dict["Gene Group 1"],
-            OG_lists_dict["Gene Group 3"],
-            OG_lists_dict["Gene Group 18"],
-        ]
-        linestyles = [
-            "solid",#"dotted",
-            "solid",
-            "solid",            
-        ]
-        image_path = plot_selected_OGs(
-            orthogroups_path=orthogroups_orthoDB_filepath, 
-            OG_IDs=IDs_lists, colors=cols_list, labels=labels_list, 
-            tree_path=tree_path, filename="detoxification_clusters.png", # filename="polyethylene_clusters.png", 
-            out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", 
-            title = "Detoxification-related clusters", 
-            transparent_bg=True, svg = False, linestyles_list=linestyles, ymax_set=95)
-        
-    # --> ODORANT BINDING AND PHEROMONE SENSING
-    if False:
-        cols_list = [
-            "#a9c5e2",
-            "#91584B",
-            "#899D58",
-            ] # first light blue: "#a9c5e2"
-        labels_list = [
-            "Cluster 7: odorant binding", 
-            "Cluster 30: pheromone sensing", 
-            "Cluster 20: transmembrane transport (in antennae)",
+            linestyles = [
+                "solid",#"dotted",
+                "solid",
+                "solid",            
             ]
-        IDs_lists = [
-            OG_lists_dict["Gene Group 7"],
-            OG_lists_dict["Gene Group 30"],
-            OG_lists_dict["Gene Group 20"],
-        ]
-        linestyles = [
-            "solid",
-            "solid",
-            "solid",            
-        ]
-        image_path = plot_selected_OGs(
-            orthogroups_path=orthogroups_orthoDB_filepath, 
-            OG_IDs=IDs_lists, colors=cols_list, labels=labels_list, 
-            tree_path=tree_path, filename="pheromone_sensing_clusters.png", 
-            out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", 
-            title = "Pheromone sensing related clusters", 
-            transparent_bg=True, svg = False, linestyles_list=linestyles, ymax_set=98)
-
-    # --> CHITIN AND CUTICULAR PROTEIN
-    if False:
-        cols_list = [
-            # "#A9C4D9",
-            "#331E36",
-            "#5C48AD",
-            "#7F98C7",
-            ] # first light blue: "#a9c5e2"
-        labels_list = [
-            # "Cluster 26: glycolysis and early development",
-            "Cluster 11: Adenosine deaminase-related growth factor",
-            "Cluster 15: chitin-related", 
-            "Cluster 24: Cuticular protein", 
+            image_path = plot_selected_OGs(
+                orthogroups_path=orthogroups_orthoDB_filepath, 
+                OG_IDs=IDs_lists, colors=cols_list, labels=labels_list, 
+                tree_path=tree_path, filename="detoxification_clusters.png", # filename="polyethylene_clusters.png", 
+                out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", 
+                title = "Detoxification-related clusters", 
+                transparent_bg=True, svg = False, linestyles_list=linestyles, ymax_set=95)
+            
+        # --> ODORANT BINDING AND PHEROMONE SENSING
+        if True:
+            cols_list = [
+                "#a9c5e2",
+                "#91584B",
+                "#899D58",
+                ] # first light blue: "#a9c5e2"
+            labels_list = [
+                "Cluster 7: odorant binding", 
+                "Cluster 30: pheromone sensing", 
+                "Cluster 20: transmembrane transport (in antennae)",
+                ]
+            IDs_lists = [
+                OG_lists_dict["Gene Group 7"],
+                OG_lists_dict["Gene Group 30"],
+                OG_lists_dict["Gene Group 20"],
             ]
-        IDs_lists = [
-            # OG_lists_dict["Gene Group 26"],
-            OG_lists_dict["Gene Group 11"],
-            OG_lists_dict["Gene Group 15"],
-            OG_lists_dict["Gene Group 24"],
-        ]
-        image_path = plot_selected_OGs(
-            orthogroups_path=orthogroups_orthoDB_filepath, 
-            OG_IDs=IDs_lists, colors=cols_list, labels=labels_list, 
-            tree_path=tree_path, filename="early_development.png", 
-            out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", 
-            title = "chitin formation and Adenosine deaminase-related growth factor", 
-            transparent_bg=True, svg = True)
-
-        ## only gene group 26
-        cols_list = [
-            "#719EC1",
-            ] # first light blue: "#a9c5e2"
-        labels_list = [
-            "Cluster 26: glycolysis and early development",
+            linestyles = [
+                "solid",
+                "solid",
+                "solid",            
             ]
-        IDs_lists = [
-            OG_lists_dict["Gene Group 26"],
-        ]
-        image_path = plot_selected_OGs(
-            orthogroups_path=orthogroups_orthoDB_filepath, 
-            OG_IDs=IDs_lists, colors=cols_list, labels=labels_list, 
-            tree_path=tree_path, filename="early_development_GF_cluster_26.png", 
-            out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", 
-            title = "glycolysis and early development", 
-            transparent_bg=True, svg = True)
+            image_path = plot_selected_OGs(
+                orthogroups_path=orthogroups_orthoDB_filepath, 
+                OG_IDs=IDs_lists, colors=cols_list, labels=labels_list, 
+                tree_path=tree_path, filename="pheromone_sensing_clusters.png", 
+                out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", 
+                title = "Pheromone sensing related clusters", 
+                transparent_bg=True, svg = False, linestyles_list=linestyles, ymax_set=98)
 
-    # --> ORTHOGROUPS CORRELATED WITH GS
-    if False:
-    # These are the outdated orthogroups from linear models, not the new ones for the correlation!!
-        {
-        "N0.HOG0001353": "Dmel ortholog has no flybase match",
-        "N0.HOG0000469": "Dmel ortholog has no flybase match",
-        "N0.HOG0001504": "No Gene family cluster, FBgn0034460, uncharacterized",
-        "N0.HOG0003221": "No Gene family cluster, FBgn0061361 (Threonyl-carbamoyl synthesis 1), tRNA threonylcarbamoyladenosine modification",
-        "N0.HOG0002042": "No Gene family cluster, FBgn0029843 (Neprilysin 1), proteolysis",
-        "N0.HOG0006000": "No Gene family cluster, FBgn0260759, cilium organization",
-        "N0.HOG0001328": "No Gene family cluster, FBgn0261802, cell-cell junction organization",
-        "N0.HOG0000827": "No Gene family cluster, FBgn0261555, postsynaptic actin cytoskeleton organization",
-        "N0.HOG0001579": "No Gene family cluster, FBgn0032136 (Apolipoprotein lipid transfer particle), lipid transport and transport across blood-brain barrier.",
-        "N0.HOG0000761": "Gene family cluster 20 (transmembrane transport (olfactory)), FBgn0032456 (Multidrug-Resistance like Protein 1), transmembrane transporter activity",
-        "N0.HOG0002614": "Gene Family cluster 30 (pheromone sensing)",
-        "N0.HOG0001786": "Gene family cluster 31 (chromatin organization and transcription regulation)",
-        "N0.HOG0001396": "Gene family cluster 36 (uncharacterized), FBgn0267689",
-        }
-
-        genome_sizes_dict = {"D_melanogaster" : 180,
-                            "I_luminosus" : 842,
-                            "P_pyralis" : 471,
-                            "C_septempunctata" : 399,
-                            "A_verrucosus" : 250,
-                            "T_castaneum" : 204,
-                            "T_molitor" : 258,
-                            "Z_morio" : 461,
-                            "R_ferrugineus" : 589,
-                            "D_ponderosae" : 223,
-                            "A_obtectus" : 949,
-                            "B_siliquastri" : 375,
-                            "C_chinensis" : 701,
-                            "C_maculatus" : 1202 
-                            # "C_analis" : 971,
-                            }
-        
-        # We are especially interested in two that are related to olfactory stuff and pheromone sensing
-        {"N0.HOG0000761": "Gene family cluster 20 (transmembrane transport (olfactory)), FBgn0032456 (Multidrug-Resistance like Protein 1), transmembrane transporter activity",
-        "N0.HOG0002614": "Gene Family cluster 30 (pheromone sensing)"}
-
-        cols_list = [
-            "#9CD3B9", # lighter green "#7FC6A4", # light green
-            "#A3C0E1", #lighter blue "#74A0D2", #light blue
-            "#397F5D", # dark green
-            "#2D598B", #dark blue
-            ] # first light blue: "#a9c5e2"
-        labels_list = [
-            "Gene Group 20 (transmembrane transport (olfactory) ",
-            "Gene Group 30 (pheromone sensing)", 
-            "N0.HOG0000761 (cluster 20)",
-            "N0.HOG0002614 (cluster 30)",
+        # --> CHITIN AND CUTICULAR PROTEIN
+        if True:
+            cols_list = [
+                # "#A9C4D9",
+                "#331E36",
+                "#5C48AD",
+                "#7F98C7",
+                ] # first light blue: "#a9c5e2"
+            labels_list = [
+                # "Cluster 26: glycolysis and early development",
+                "Cluster 11: Adenosine deaminase-related growth factor",
+                "Cluster 15: chitin-related", 
+                "Cluster 24: Cuticular protein", 
+                ]
+            IDs_lists = [
+                # OG_lists_dict["Gene Group 26"],
+                OG_lists_dict["Gene Group 11"],
+                OG_lists_dict["Gene Group 15"],
+                OG_lists_dict["Gene Group 24"],
             ]
-        IDs_lists = [
-            OG_lists_dict["Gene Group 20"],
-            OG_lists_dict["Gene Group 30"],
-            ["N0.HOG0000761"],
-            ["N0.HOG0002614"],
-        ]
-        linestyles = [
-            "dotted",
-            "dotted",
-            "solid",
-            "solid",            
-        ]
-        image_path = plot_selected_OGs(
-            orthogroups_path=orthogroups_orthoDB_filepath, 
-            OG_IDs=IDs_lists, colors=cols_list, labels=labels_list, linestyles_list = linestyles,
-            tree_path=tree_path, filename="olfactory_sig_association_withGS.png", 
-            out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", 
-            title = "Two gene groups with members that are significantly correlated with GS", 
-            transparent_bg=True, svg = False, ymax_set = 9.9) # add fs=30 for the poster
+            image_path = plot_selected_OGs(
+                orthogroups_path=orthogroups_orthoDB_filepath, 
+                OG_IDs=IDs_lists, colors=cols_list, labels=labels_list, 
+                tree_path=tree_path, filename="early_development.png", 
+                out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", 
+                title = "chitin formation and Adenosine deaminase-related growth factor", 
+                transparent_bg=True, svg = True)
 
-    # --> CORRELATED WITH GENOME SIZE
-    if False:
-        cols_list = [
-            "#9CD3B9", # lighter green "#7FC6A4", # light green
-            "#A3C0E1", #lighter blue "#74A0D2", #light blue
-            "#397F5D", # dark green
-            "#2D598B", #dark blue
-            ] # first light blue: "#a9c5e2"
-        labels_list = [
-            "Gene family cluster 20",# (transmembrane transport (olfactory) ",
-            "Gene family cluster 30",# (pheromone sensing)", 
-            "N0.HOG0000761 (cluster 20)",
-            "N0.HOG0002614 (cluster 30)",
+            ## only gene group 26
+            cols_list = [
+                "#719EC1",
+                ] # first light blue: "#a9c5e2"
+            labels_list = [
+                "Cluster 26: glycolysis and early development",
+                ]
+            IDs_lists = [
+                OG_lists_dict["Gene Group 26"],
             ]
-        IDs_lists = [
-            OG_lists_dict["Gene Group 20"],
-            OG_lists_dict["Gene Group 30"],
-            ["N0.HOG0000761"],
-            ["N0.HOG0002614"],
-        ]
-        linestyles = [
-            "dotted",
-            "dotted",
-            "solid",
-            "solid",            
-        ]
-         
-        image_path = plot_selected_OGs_vs_GS(
-            orthogroups_path=orthogroups_orthoDB_filepath, 
-            OG_IDs=IDs_lists, colors=cols_list, labels=labels_list, linestyles_list = linestyles,
-            genome_sizes=genome_sizes_dict, filename="olfactory_sig_association_withGS_vs_GS_plot.png", 
-            out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", 
-            title = "Two gene groups with members \nthat are significantly correlated with GS", 
-            transparent_bg=False, svg = False, ymax_set = 10.5)#, fs = 30) # fs=30 for the poster
+            image_path = plot_selected_OGs(
+                orthogroups_path=orthogroups_orthoDB_filepath, 
+                OG_IDs=IDs_lists, colors=cols_list, labels=labels_list, 
+                tree_path=tree_path, filename="early_development_GF_cluster_26.png", 
+                out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", 
+                title = "glycolysis and early development", 
+                transparent_bg=True, svg = True)
 
-# 
+        # --> ORTHOGROUPS CORRELATED WITH GS
+        if True:
+        # These are the outdated orthogroups from linear models, not the new ones for the correlation!!
+            {
+            "N0.HOG0001353": "Dmel ortholog has no flybase match",
+            "N0.HOG0000469": "Dmel ortholog has no flybase match",
+            "N0.HOG0001504": "No Gene family cluster, FBgn0034460, uncharacterized",
+            "N0.HOG0003221": "No Gene family cluster, FBgn0061361 (Threonyl-carbamoyl synthesis 1), tRNA threonylcarbamoyladenosine modification",
+            "N0.HOG0002042": "No Gene family cluster, FBgn0029843 (Neprilysin 1), proteolysis",
+            "N0.HOG0006000": "No Gene family cluster, FBgn0260759, cilium organization",
+            "N0.HOG0001328": "No Gene family cluster, FBgn0261802, cell-cell junction organization",
+            "N0.HOG0000827": "No Gene family cluster, FBgn0261555, postsynaptic actin cytoskeleton organization",
+            "N0.HOG0001579": "No Gene family cluster, FBgn0032136 (Apolipoprotein lipid transfer particle), lipid transport and transport across blood-brain barrier.",
+            "N0.HOG0000761": "Gene family cluster 20 (transmembrane transport (olfactory)), FBgn0032456 (Multidrug-Resistance like Protein 1), transmembrane transporter activity",
+            "N0.HOG0002614": "Gene Family cluster 30 (pheromone sensing)",
+            "N0.HOG0001786": "Gene family cluster 31 (chromatin organization and transcription regulation)",
+            "N0.HOG0001396": "Gene family cluster 36 (uncharacterized), FBgn0267689",
+            }
+
+            genome_sizes_dict = {"D_melanogaster" : 180,
+                                "I_luminosus" : 842,
+                                "P_pyralis" : 471,
+                                "C_septempunctata" : 399,
+                                "A_verrucosus" : 250,
+                                "T_castaneum" : 204,
+                                "T_molitor" : 258,
+                                "Z_morio" : 461,
+                                "R_ferrugineus" : 589,
+                                "D_ponderosae" : 223,
+                                "A_obtectus" : 949,
+                                "B_siliquastri" : 375,
+                                "C_chinensis" : 701,
+                                "C_maculatus" : 1202 
+                                # "C_analis" : 971,
+                                }
+            
+            # We are especially interested in two that are related to olfactory stuff and pheromone sensing
+            {"N0.HOG0000761": "Gene family cluster 20 (transmembrane transport (olfactory)), FBgn0032456 (Multidrug-Resistance like Protein 1), transmembrane transporter activity",
+            "N0.HOG0002614": "Gene Family cluster 30 (pheromone sensing)"}
+
+            cols_list = [
+                "#9CD3B9", # lighter green "#7FC6A4", # light green
+                "#A3C0E1", #lighter blue "#74A0D2", #light blue
+                "#397F5D", # dark green
+                "#2D598B", #dark blue
+                ] # first light blue: "#a9c5e2"
+            labels_list = [
+                "Gene Group 20 (transmembrane transport (olfactory) ",
+                "Gene Group 30 (pheromone sensing)", 
+                "N0.HOG0000761 (cluster 20)",
+                "N0.HOG0002614 (cluster 30)",
+                ]
+            IDs_lists = [
+                OG_lists_dict["Gene Group 20"],
+                OG_lists_dict["Gene Group 30"],
+                ["N0.HOG0000761"],
+                ["N0.HOG0002614"],
+            ]
+            linestyles = [
+                "dotted",
+                "dotted",
+                "solid",
+                "solid",            
+            ]
+            image_path = plot_selected_OGs(
+                orthogroups_path=orthogroups_orthoDB_filepath, 
+                OG_IDs=IDs_lists, colors=cols_list, labels=labels_list, linestyles_list = linestyles,
+                tree_path=tree_path, filename="olfactory_sig_association_withGS.png", 
+                out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", 
+                title = "Two gene groups with members that are significantly correlated with GS", 
+                transparent_bg=True, svg = False, ymax_set = 9.9) # add fs=30 for the poster
+
+        # --> CORRELATED WITH GENOME SIZE
+        if True:
+            cols_list = [
+                "#9CD3B9", # lighter green "#7FC6A4", # light green
+                "#A3C0E1", #lighter blue "#74A0D2", #light blue
+                "#397F5D", # dark green
+                "#2D598B", #dark blue
+                ] # first light blue: "#a9c5e2"
+            labels_list = [
+                "Gene family cluster 20",# (transmembrane transport (olfactory) ",
+                "Gene family cluster 30",# (pheromone sensing)", 
+                "N0.HOG0000761 (cluster 20)",
+                "N0.HOG0002614 (cluster 30)",
+                ]
+            IDs_lists = [
+                OG_lists_dict["Gene Group 20"],
+                OG_lists_dict["Gene Group 30"],
+                ["N0.HOG0000761"],
+                ["N0.HOG0002614"],
+            ]
+            linestyles = [
+                "dotted",
+                "dotted",
+                "solid",
+                "solid",            
+            ]
+            
+            image_path = plot_selected_OGs_vs_GS(
+                orthogroups_path=orthogroups_orthoDB_filepath, 
+                OG_IDs=IDs_lists, colors=cols_list, labels=labels_list, linestyles_list = linestyles,
+                genome_sizes=genome_sizes_dict, filename="olfactory_sig_association_withGS_vs_GS_plot.png", 
+                out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/", 
+                title = "Two gene groups with members \nthat are significantly correlated with GS", 
+                transparent_bg=False, svg = False, ymax_set = 10.5)#, fs = 30) # fs=30 for the poster
+
+    # 

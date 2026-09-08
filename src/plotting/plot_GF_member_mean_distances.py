@@ -255,6 +255,8 @@ def plot_all_OGs_transcript_distances(same_contig_proportion_all_species, GF_pos
     cols = columns
     rows = int(len(species_list)/cols)  +1
     plt.rcParams['text.usetex'] = True # use \textit{} for species names
+    plt.rcParams['text.latex.preamble'] = r'\usepackage{sfmath} \renewcommand{\familydefault}{\sfdefault}'
+    plt.rcParams['font.family'] = 'sans-serif'
     fig, axes = plt.subplots(rows, cols, figsize=(12, 17))
     fs = 21
 

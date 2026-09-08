@@ -16,7 +16,7 @@ def filepaths_native():
         "B_siliquastri" : f"{native_annot_dir}B_siliquastri_annotation_isoform_filtered.gff",
         "C_analis" : f"{native_annot_dir}C_analis_annotation_isoform_filtered.gff",
         "C_chinensis" : f"{native_annot_dir}C_chinensis_annotation_isoform_filtered.gff",
-        "C_maculatus" : f"{native_annot_dir}C_maculatus_superscaffolded_liftover_annotation.gff",
+        "C_maculatus" : f"{native_annot_dir}superscaffolded_C_maculatus_annotation_isoform_filtered.gff",
         "C_septempunctata" : f"{native_annot_dir}C_septempunctata_annotation_isoform_filtered.gff",
         "D_melanogaster" : f"{native_annot_dir}D_melanogaster_annotation_isoform_filtered.gff",
         "D_ponderosae" : f"{native_annot_dir}D_ponderosae_annotation_isoform_filtered.gff",
@@ -62,7 +62,7 @@ def filepaths_orthoDB():
         "B_siliquastri" : f"{orthoDB_annot_dir}B_siliquastri_braker_isoform_filtered.gff",
         # "C_analis" : f"{orthoDB_annot_dir}C_analis_braker_isoform_filtered.gff",
         "C_chinensis" : f"{orthoDB_annot_dir}C_chinensis_braker_isoform_filtered.gff",
-        "C_maculatus" : f"{orthoDB_annot_dir}C_maculatus_superscaffolded_annotation_isoform_filtered.gff",
+        "C_maculatus" : f"{orthoDB_annot_dir}superscaffolded_C_maculatus_annotation_isoform_filtered.gff",
         "C_septempunctata" : f"{orthoDB_annot_dir}C_septempunctata_braker_isoform_filtered.gff",
         "D_melanogaster" : f"{orthoDB_annot_dir}D_melanogaster_braker_isoform_filtered.gff",
         "D_ponderosae" : f"{orthoDB_annot_dir}D_ponderosae_braker_isoform_filtered.gff",
@@ -130,34 +130,48 @@ def get_single_exon_proportion(OGs_dict, annot_dict, species):
     return all_transcripts, single_exon
 
 
-def plot_percentages(perc_sig_dict, perc_all_dict, tree_path, filename = "single_exon_percentages.png"):
+def plot_percentages(perc_sig_dict, perc_all_dict, tree_path, filename = "single_exon_percentages.png", plot_tree=False):
     fs = 18 # set font size
     lw =  3 #linewidth
     # plot each column in the dataframe as a line in the same plot thorugh a for-loop
 
     # speciesnames = gff.make_species_order_from_tree(species_tree)
-    fig, (ax_data, ax_tree) = plt.subplots(2, 1, figsize=(10, 15), gridspec_kw={'height_ratios': [1, 2]}, constrained_layout=True)
-    species_names_unsorted = my_plotting.plot_tree_manually(tree_path, ax_tree)
+    plt.rcParams['text.usetex'] = True # use \\textit{{{}}} for species names
+    plt.rcParams['text.latex.preamble'] = r'\usepackage{sfmath} \renewcommand{\familydefault}{\sfdefault}'
+    plt.rcParams['font.family'] = 'sans-serif'
+    if plot_tree:
+        fs = 22 # set font size
+        fig, (ax_data, ax_tree) = plt.subplots(2, 1,figsize=(10,15), gridspec_kw={'height_ratios': [2, 3]}, constrained_layout=True)
+        species_names_unsorted = my_plotting.plot_tree_manually(tree_path, ax_tree)
+    else:
+        fs = 38
+        aspect_ratio = 26 / 16
+        height_pixels = 1200  # Height in pixels
+        width_pixels = int(height_pixels * aspect_ratio)  # Width in pixels
+        fig, ax_data = plt.subplots(figsize=(width_pixels / 100, height_pixels / 100), dpi=100)
+        species_names_unsorted = my_plotting.plot_tree_manually(tree_path)
     # get species order from plotted tree
     species_coords_sorted = sorted(list(species_names_unsorted.keys()))
     speciesnames = [species_names_unsorted[species_coord] for species_coord in species_coords_sorted]
     
-    ylab="single-exon transcripts"
+    ylab="single-exon genes"
 
     perc_all_vec = [perc_all_dict[species] for species in speciesnames]
     perc_sig_vec = [perc_sig_dict[species] for species in speciesnames]
-    ax_data.plot(speciesnames, perc_sig_vec, label = f"significant transcripts", color = "#ED7D3A", linewidth=lw)
-    ax_data.plot(speciesnames, perc_all_vec, linestyle=':', label = f"all CAFE transcripts", color = "#ED7D3A", linewidth=lw)
+    ax_data.plot(speciesnames, perc_sig_vec, label = f"genes in sig. rapidly evolving gene families", color = "#ED7D3A", linewidth=lw)
+    ax_data.plot(speciesnames, perc_all_vec, linestyle=':', label = f"genes included in CAFE analysis", color = "#ED7D3A", linewidth=lw)
 
     ax_data.legend(loc='upper center', fontsize = fs*0.8)
     # set grid only for X axis ticks 
     ax_data.grid(True)
     ax_data.yaxis.grid(False)
     ax_data.set_ylabel(ylab, fontsize = fs)
-    ax_data.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x < 0 else f'{int(x)} %'))
+    ax_data.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x < 0 else f'{int(x)}\%'))
     ax_data.tick_params(axis='y', labelsize=fs)
-    ax_data.set_xticklabels([species.replace("_", ". ") for species in speciesnames], rotation=90, fontsize=fs)
+    x_tick_list = [species.replace("_", ". ") for species in speciesnames]
+    ax_data.set_xticklabels([f"\\textit{{{species}}}" for species in x_tick_list], rotation=90, fontsize=fs)
 
+    plt.tight_layout()
     plt.savefig(filename, dpi = 300, transparent = True)
     print("Figure saved in the current working directory directory as: "+filename)
 
