@@ -60,30 +60,38 @@ def plot_gene_overlap_hist(outfile_overlap, filename, reference_annotation, x_la
     print(f"plot saved in the current working directory as: {filename}")
 
 
-def plot_all_species_gene_overlap(filenames_list, outfile_overlap_path, plot_filename = "gene_overlap_14_species_transcripts.png", x_label = "how many orthoDB genes overlap with the position of a single native gene (no. all genes)", cols = 3, color = "#4d7298", dark_mode=False):
+def plot_all_species_gene_overlap(filenames_list, outfile_overlap_path, x_max = 8, plot_filename = "gene_overlap_14_species_transcripts.png", x_label = "how many orthoDB genes overlap with the position of a single native gene (no. all genes)", cols = 3, color = "#4d7298", dark_mode=False):
 
     if dark_mode:
         plt.style.use('dark_background')
     # plot all species at once in a grid
     cols = cols
-    rows = int(len(filenames_list)/cols) # +1
+    rows = int(len(filenames_list)/cols) +1
+
+    plt.rcParams['text.usetex'] = True # use \textit{} for species names
+    plt.rcParams['text.latex.preamble'] = r'\usepackage{sfmath} \renewcommand{\familydefault}{\sfdefault}'
+    plt.rcParams['font.family'] = 'sans-serif'
     fig, axes = plt.subplots(rows, cols, figsize=(12, 15))
 
     print(f"plot in {rows} x {cols} grid")
-
+    fs=20
+    
     # customize x axis
-    x_max = 11 # originally 15
     x_min = -0.5
-    # Create custom ticks: every integer until 10, then every 2nd integer
-    ticks_up_to_10 = np.arange(int(x_min+0.5), 11, 1)  # Integers from x_min to 10
-    ticks_after_10 = np.arange(10, x_max + 1, 2)  # Every 2nd integer after 10
-    custom_ticks = np.unique(np.concatenate((ticks_up_to_10, ticks_after_10)))  # Combine and remove duplicates
-
+    if x_max>=10:
+        # Create custom ticks: every integer until 10, then every 2nd integer
+        ticks_up_to_10 = np.arange(int(x_min+0.5), 11, 1)  # Integers from x_min to 10
+        ticks_after_10 = np.arange(10, x_max + 1, 2)  # Every 2nd integer after 10
+        custom_ticks = np.unique(np.concatenate((ticks_up_to_10, ticks_after_10)))  # Combine and remove duplicates
+    else:
+        custom_ticks = np.arange(int(x_min+0.5), x_max, 1)
+    feature_name = "exons"
+    if "transcripts" in x_label:
+        feature_name = "transcripts"
 
     # Loop over each file path and corresponding subplot axis
     for idx, file_path in enumerate(filenames_list):
         file_path = outfile_overlap_path+file_path
-        
 
         # Calculate row and column indices for the current subplot
         row = idx // cols
@@ -101,7 +109,8 @@ def plot_all_species_gene_overlap(filenames_list, outfile_overlap_path, plot_fil
         # header_name = file_path.split("/")[-1].split("_gene_overlap_")[0]
         header_name = file_path.split("/")[-1]
         header_name = split_at_second_occurrence(header_name)
-        axes[row, col].set_title(f'{header_name} ({no_genes} in ref.)')
+        header_name=header_name.replace("_", ". ")
+        axes[row, col].set_title(f'\\textit{{{header_name}}}\n({no_genes} {feature_name} in ref.)', fontsize=fs)
         axes[row, col].set_xlabel('')
         axes[row, col].set_ylabel('')
 
@@ -109,10 +118,18 @@ def plot_all_species_gene_overlap(filenames_list, outfile_overlap_path, plot_fil
         axes[row, col].set_ylim(0, no_genes)
         axes[row, col].set_xlim(x_min, x_max)
         axes[row, col].set_xticks(custom_ticks)
-
+        axes[row, col].tick_params(axis ='y', labelsize = fs) 
+        axes[row, col].tick_params(axis ='x', labelsize = fs) 
+    
+    ## last box empty
+    idx_max = len(filenames_list)
+    row = idx_max // cols
+    col = idx_max % cols
+    axes[row, col].axis('off')
+    axes[row, col].set_title(f'')
 
     # Set a single x-axis label for all subplots
-    fig.text(0.5, 0.04, x_label, ha='center', va='center', fontsize=12)
+    fig.text(0.5, 0.04, x_label, ha='center', va='center', fontsize=fs)
     # Adjust layout to prevent overlap
     plt.tight_layout(rect=[0, 0.05, 1, 1])
 
@@ -131,7 +148,7 @@ filenames_list_orthoDB_query = [
     "A_obtectus_transcript_overlap_stats_numbers_only_orthodb_query.txt",
     "A_verrucosus_transcript_overlap_stats_numbers_only_orthodb_query.txt",
     "B_siliquastri_transcript_overlap_stats_numbers_only_orthodb_query.txt",
-    "C_analis_transcript_overlap_stats_numbers_only_orthodb_query.txt",
+    # "C_analis_transcript_overlap_stats_numbers_only_orthodb_query.txt",
     "C_chinensis_transcript_overlap_stats_numbers_only_orthodb_query.txt",
     #"C_maculatus_Lu2024_transcript_overlap_stats_numbers_only_orthodb_query.txt",
     "C_maculatus_superscaffolded_transcript_overlap_stats_numbers_only_orthodb_query.txt",
@@ -150,7 +167,7 @@ filenames_list_native_query = [
     "A_obtectus_transcript_overlap_stats_numbers_only_native_query.txt",
     "A_verrucosus_transcript_overlap_stats_numbers_only_native_query.txt",
     "B_siliquastri_transcript_overlap_stats_numbers_only_native_query.txt",
-    "C_analis_transcript_overlap_stats_numbers_only_native_query.txt",
+    # "C_analis_transcript_overlap_stats_numbers_only_native_query.txt",
     "C_chinensis_transcript_overlap_stats_numbers_only_native_query.txt",
     #"C_maculatus_Lu2024_transcript_overlap_stats_numbers_only_native_query.txt",
     "C_maculatus_superscaffolded_transcript_overlap_stats_numbers_only_native_query.txt",
@@ -165,10 +182,10 @@ filenames_list_native_query = [
     "Z_morio_transcript_overlap_stats_numbers_only_native_query.txt"
 ]
 
+outdir="/Users/miltr339/work/PhD_code/PhD_chapter1/data"
 
-
-plot_all_species_gene_overlap(filenames_list_orthoDB_query, outfile_overlap_path, plot_filename = "transcript_overlap_14_species_orthoDB_query.png", x_label = "number of native transcripts overlaping with one orthoDB transcript (no. transcripts in reference)", color = "#b82946") # red color
-plot_all_species_gene_overlap(filenames_list_native_query, outfile_overlap_path, plot_filename = "transcript_overlap_14_species_native_query.png", x_label = "number of orthoDB transcripts overlaping with one native transcript (no. transcripts in reference)", color = "#F2933A") #yellow color
+plot_all_species_gene_overlap(filenames_list_orthoDB_query, outfile_overlap_path, plot_filename = f"{outdir}/transcript_overlap_14_species_orthoDB_query.png", x_label = "number of native transcripts overlaping with one standardized transcript (no. transcripts in reference)", color = "#b82946") # red color
+plot_all_species_gene_overlap(filenames_list_native_query, outfile_overlap_path, plot_filename = f"{outdir}/transcript_overlap_14_species_native_query.png", x_label = "number of standardized transcripts overlaping with one native transcript (no. transcripts in reference)", color = "#F2933A") #yellow color
 
 exon_overlaps_dir = "/Users/miltr339/work/gene_position_comparison_native_vs_orhtoDB/exon_overlaps/"
 
@@ -177,7 +194,7 @@ filenames_exon_native_query = [
     "A_obtectus_transcript_overlap_stats_numbers_only_native_query.txt",
     "A_verrucosus_transcript_overlap_stats_numbers_only_native_query.txt",
     "B_siliquastri_transcript_overlap_stats_numbers_only_native_query.txt",
-    "C_analis_transcript_overlap_stats_numbers_only_native_query.txt",
+    # "C_analis_transcript_overlap_stats_numbers_only_native_query.txt",
     "C_chinensis_transcript_overlap_stats_numbers_only_native_query.txt",
     #"C_maculatus_Lu2024_transcript_overlap_stats_numbers_only_native_query.txt",
     "C_maculatus_superscaffolded_transcript_overlap_stats_numbers_only_native_query.txt",
@@ -197,7 +214,7 @@ filenames_exon_orthoDB_query = [
     "A_obtectus_transcript_overlap_stats_numbers_only_orthodb_query.txt",
     "A_verrucosus_transcript_overlap_stats_numbers_only_orthodb_query.txt",
     "B_siliquastri_transcript_overlap_stats_numbers_only_orthodb_query.txt",
-    "C_analis_transcript_overlap_stats_numbers_only_orthodb_query.txt",
+    # "C_analis_transcript_overlap_stats_numbers_only_orthodb_query.txt",
     "C_chinensis_transcript_overlap_stats_numbers_only_orthodb_query.txt",
     #"C_maculatus_Lu2024_transcript_overlap_stats_numbers_only_orthodb_query.txt",
     "C_maculatus_superscaffolded_transcript_overlap_stats_numbers_only_orthodb_query.txt",
@@ -213,8 +230,8 @@ filenames_exon_orthoDB_query = [
     "Z_morio_transcript_overlap_stats_numbers_only_orthodb_query.txt"
 ]
 
-plot_all_species_gene_overlap(filenames_exon_orthoDB_query, exon_overlaps_dir, plot_filename = "exon_overlap_14_species_orthoDB_query.png", x_label = "number of native exons overlaping with one orthoDB exon (no. exons in reference)", color = "#b82946") # red color
-plot_all_species_gene_overlap(filenames_exon_native_query, exon_overlaps_dir, plot_filename = "exon_overlap_14_species_native_query.png", x_label = "number of orthoDB exons overlaping with one native exon (no. exons in reference)", color = "#F2933A") #yellow color
+plot_all_species_gene_overlap(filenames_exon_orthoDB_query, exon_overlaps_dir, plot_filename = f"{outdir}/exon_overlap_14_species_orthoDB_query.png", x_label = "number of native exons overlaping with one standardized exon (no. exons in reference)", color = "#b82946") # red color
+plot_all_species_gene_overlap(filenames_exon_native_query, exon_overlaps_dir, plot_filename = f"{outdir}/exon_overlap_14_species_native_query.png", x_label = "number of standardized exons overlaping with one native exon (no. exons in reference)", color = "#F2933A") #yellow color
 
 
 

@@ -658,7 +658,7 @@ if __name__ == "__main__":
     ## CHEMICAL COMMUNICATION
 
     # --> CHEMOSENSORY
-    if True:
+    if False:
         cols_list = [
             "#0063da",
             "#ff8b2d",
@@ -688,7 +688,7 @@ if __name__ == "__main__":
             transparent_bg=True, svg = False, ymax_set=99, fs = 30)
 
     # --> OLFACTORY RECEPTORS
-    if True:
+    if False:
         cols_list = [
             "#b9cf74",
             "#A3C149",
@@ -715,7 +715,7 @@ if __name__ == "__main__":
             transparent_bg=True, svg = False, ymax_set=14, fs = 30)
 
     # --> PHEROMONE SYNTHESIS
-    if True:
+    if False:
         cols_list = ["#686900",
             "#ff85eb",
             "#ff475c",
@@ -745,7 +745,7 @@ if __name__ == "__main__":
             transparent_bg=True, svg = False, ymax_set=99, fs = 30)
 
     # --> CUTICULAR HYDROCARBONS
-    if True:
+    if False:
         cols_list = [
             "#1FDAFF",
             "#00add0",
@@ -773,7 +773,7 @@ if __name__ == "__main__":
             transparent_bg=True, svg = False, ymax_set=21, fs = 30)
 
     # --> DETOXIFICATION (HOST ADAPTATION)
-    if True:
+    if False:
         cols_list = ["#448300",
             "#556ffa",
             "#991276"]
@@ -795,8 +795,7 @@ if __name__ == "__main__":
             title = "Detoxification in host adaptation", 
             transparent_bg=True, svg = False, ymax_set=79, fs = 30)
 
-    # --> FLUORESCENCE IN ELATERIFORMIA
-    # True group is expanding in elateriformia
+    # --> FLUORESCENCE IN ELATERIFORMIA # group is expanding in elateriformia
     if False:
         cols_list = [
             #"#885E5E",
@@ -822,7 +821,7 @@ if __name__ == "__main__":
             transparent_bg=True, svg = False, ymax_set=24, fs = 30) # fs=30 for the poster
 
     # --> REPRODUCTION
-    if True:
+    if False:
         cols_list = [
             "#ff883e",
             "#0289d7",
@@ -850,16 +849,16 @@ if __name__ == "__main__":
     if False:
 
         # --> GENERAL ""ENRICHMENT"" OF GENE GROUP FUNCTION IN RAPIDLY EXPANDING ORTHOGROUPS
-        if True:
+        if False:
             investigate_large_gene_families(tree_path=tree_path, DAVID_table_path=DAVID_path, orthogroups_path=orthogroups_orthoDB_filepath, verbose = False)
 
         # --> AOBT EXPANSION
-        if True:
+        if False:
             OGs_title = " and ".join(OG_lists_dict["Aobt_expansion"])
             image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Aobt_expansion"], tree_path=tree_path, filename="Aobt_expansion_GF_sizes.png", title = f"A. obtectus expansion: {OGs_title}")
 
         # --> DETOXIFICATION
-        if True:
+        if False:
             cols_list = [
                 "#a9c5e2",
                 "#434b4c",
@@ -889,7 +888,7 @@ if __name__ == "__main__":
                 transparent_bg=True, svg = False, linestyles_list=linestyles, ymax_set=95)
             
         # --> ODORANT BINDING AND PHEROMONE SENSING
-        if True:
+        if False:
             cols_list = [
                 "#a9c5e2",
                 "#91584B",
@@ -919,7 +918,7 @@ if __name__ == "__main__":
                 transparent_bg=True, svg = False, linestyles_list=linestyles, ymax_set=98)
 
         # --> CHITIN AND CUTICULAR PROTEIN
-        if True:
+        if False:
             cols_list = [
                 # "#A9C4D9",
                 "#331E36",
@@ -965,7 +964,7 @@ if __name__ == "__main__":
                 transparent_bg=True, svg = True)
 
         # --> ORTHOGROUPS CORRELATED WITH GS
-        if True:
+        if False:
         # These are the outdated orthogroups from linear models, not the new ones for the correlation!!
             {
             "N0.HOG0001353": "Dmel ortholog has no flybase match",
@@ -1037,7 +1036,7 @@ if __name__ == "__main__":
                 transparent_bg=True, svg = False, ymax_set = 9.9) # add fs=30 for the poster
 
         # --> CORRELATED WITH GENOME SIZE
-        if True:
+        if False:
             cols_list = [
                 "#9CD3B9", # lighter green "#7FC6A4", # light green
                 "#A3C0E1", #lighter blue "#74A0D2", #light blue

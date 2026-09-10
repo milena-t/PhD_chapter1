@@ -336,22 +336,21 @@ def plot_all_species_seq_properties_distribution(native_files:dict, orthoDB_file
     plot a grid of histograms for all species. input is dictionaries with species names as keys and filepaths to aminoacid fasta files as values
     """
     plt.rcParams['text.usetex'] = True # use \\textit{{{}}} for species names
-    
     plt.rcParams['text.latex.preamble'] = r'\usepackage{sfmath} \renewcommand{\familydefault}{\sfdefault}'
     plt.rcParams['font.family'] = 'sans-serif'
 
 
     colors = {
         "orthoDB" : "#F2933A",
-        "native" : "#4d7298", # uniform_unfiltered blue
-        # "native" : "#b82946", # native red
+        # "native" : "#4d7298", # uniform_unfiltered blue
+        "native" : "#b82946", # native red
         "third" : "#9C4C32",
     }
     if GC_content:
         colors = {
             "orthoDB" : "#F2933A",
-            "native" : "#4d7298", # uniform_unfiltered blue
-            # "native" : "#b82946", # native red
+            # "native" : "#4d7298", # uniform_unfiltered blue
+            "native" : "#b82946", # native red
             "third" : "#9C4C32",
         }
         test_difference=False
@@ -391,7 +390,11 @@ def plot_all_species_seq_properties_distribution(native_files:dict, orthoDB_file
         if third_column_files == {}:
             species_name = species.replace("_", ". ")
         else:
-            species_name = species.replace("_", " ")
+            fs=30
+            species_abbr,loc = species.replace("_", " ").split(" ")
+            loc = loc.replace("SI", "South India")
+            species_abbr = species_abbr.replace("Cmac", "\\textit{{{C. maculatus}}}")
+            species_name = f"RNA-seq from {loc}"
 
         if test_difference:
             ## test for a difference in distribution between the two lengths
@@ -736,13 +739,18 @@ def plot_wilcoxon_vs_rep_association_by_category(rep_abundances, wilcoxon_result
     types_list = list(type_association.keys())
     species_list = list(rep_abundances.keys())
     rows = int(len(types_list)/cols)  +1
+
+    plt.rcParams['text.usetex'] = True # use \\textit{{{}}} for species names
+    plt.rcParams['text.latex.preamble'] = r'\usepackage{sfmath} \renewcommand{\familydefault}{\sfdefault}'
+    plt.rcParams['font.family'] = 'sans-serif'
+
     if rows>2:
         fig, axes = plt.subplots(rows, cols, figsize=(12, 15)) # for more than three rows
         mid_row = int(rows/2)
     else:
         fig, axes = plt.subplots(rows, cols, figsize=(15, 10)) # for more than three rows
         mid_row = 0
-    fs = 22
+    fs = 26
     pointsize = 100
 
     colors = {
@@ -819,9 +827,9 @@ def plot_wilcoxon_vs_rep_association_by_category(rep_abundances, wilcoxon_result
             if len(category_genome_content) ==0:
                 continue
             if max(category_genome_content) <9 : 
-                axes[row, col].yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 100 else f'{x:.2}%'))
+                axes[row, col].yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 100 else f'{x:.2}\%'))
             else:
-                axes[row, col].yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 100 else f'{int(x)}%'))
+                axes[row, col].yaxis.set_major_formatter(FuncFormatter(lambda x, pos: '' if x > 100 else f'{int(x)}\%'))
             axes[row, col].tick_params(axis='x', labelsize=fs*0.8)
             axes[row, col].tick_params(axis='y', labelsize=fs*0.8)
     
@@ -834,8 +842,8 @@ def plot_wilcoxon_vs_rep_association_by_category(rep_abundances, wilcoxon_result
         print(f"\tin position {row+1},{col+1}: \tlegend")
         axes[row, col].axis('off')
         axes[row, col].set_title(f'')
-        axes[row, col].scatter([-1], [-1], color='black', label = "before transcript", s=pointsize)
-        axes[row, col].scatter([-1], [-1], color='black', label = "after transcript", s=pointsize, marker="v")
+        axes[row, col].scatter([-1], [-1], color='black', label = "before gene", s=pointsize)
+        axes[row, col].scatter([-1], [-1], color='black', label = "after gene", s=pointsize, marker="v")
         axes[row, col].set_xlim(0, 0.1)
         axes[row, col].set_ylim(0, 0.1)
         axes[row, col].legend(fontsize = fs*0.75, loc='center', title_fontsize = fs)
@@ -1057,7 +1065,7 @@ if __name__ == "__main__":
         }
     
     # plot
-    if True:
+    if False:
         ## plot all species in a grid, 
         # native/standard comparison
         # plot_all_species_seq_properties_distribution(native_files, orthoDB_files, filename=f"{data}/protein_lengths_histogram.png", dark_mode=False, test_difference=True)
@@ -1078,19 +1086,19 @@ if __name__ == "__main__":
     if False:
         annot_com_dir = "/Users/miltr339/work/c_maculatus/annotation_comparison/superscaffolded_annotation"
         comparison_files = {
-            "Cmac_Lome_diverse" : f"{annot_com_dir}/Cmac_Lome_diverse_filtered.faa",
-            "Cmac_Nigeria_simple" : f"{annot_com_dir}/Cmac_Lu_simple_filtered.faa",
-            "Cmac_SI_diverse" : f"{annot_com_dir}/Cmac_SI_diverse_filtered.faa",
+            "Cmac_Lome" : f"{annot_com_dir}/Cmac_Lome_diverse_filtered.faa",
+            "Cmac_Nigeria" : f"{annot_com_dir}/Cmac_Lu_simple_filtered.faa",
+            "Cmac_SI" : f"{annot_com_dir}/Cmac_SI_diverse_filtered.faa",
         }
         native_files = {
-            "Cmac_Lome_diverse" : f"{native_dir}/C_maculatus_Kaufmann2023.faa",
-            "Cmac_Nigeria_simple" : f"{native_dir}/C_maculatus_Kaufmann2023.faa",
-            "Cmac_SI_diverse" : f"{native_dir}/C_maculatus_Kaufmann2023.faa",
+            "Cmac_Lome" : f"{native_dir}/C_maculatus_Kaufmann2023.faa",
+            "Cmac_Nigeria" : f"{native_dir}/C_maculatus_Kaufmann2023.faa",
+            "Cmac_SI" : f"{native_dir}/C_maculatus_Kaufmann2023.faa",
         }
         orthoDB_files = {
-            "Cmac_Lome_diverse" : f"{orthoDB_dir}/C_maculatus_filtered_proteinfasta_TE_filtered.fa",
-            "Cmac_Nigeria_simple" : f"{orthoDB_dir}/C_maculatus_filtered_proteinfasta_TE_filtered.fa",
-            "Cmac_SI_diverse" : f"{orthoDB_dir}/C_maculatus_filtered_proteinfasta_TE_filtered.fa",
+            "Cmac_Lome" : f"{orthoDB_dir}/C_maculatus_filtered_proteinfasta_TE_filtered.fa",
+            "Cmac_Nigeria" : f"{orthoDB_dir}/C_maculatus_filtered_proteinfasta_TE_filtered.fa",
+            "Cmac_SI" : f"{orthoDB_dir}/C_maculatus_filtered_proteinfasta_TE_filtered.fa",
         }
     # plot
         plot_all_species_seq_properties_distribution(native_files, orthoDB_files, third_column_files= comparison_files, columns=2, max_length=1500, filename=f"{data}/Lome_RNA_annot_comparison/protein_lengths_histogram.png")
@@ -1112,7 +1120,7 @@ if __name__ == "__main__":
         outdir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data"
         plot_TE_filtering(filter_stats=filter_stats, species_tree=tree, filename=f"{outdir}/TE_filtering_stats.png")
 
-    if False:
+    if True:
         import plot_repeats_whole_genome_stats as wg_reps
         # plot the genome wide repeat abundance for each category against the p-value of the wilcoxon test to see if genome wide more abundant transcripts are more significant
         wilcoxon_results = {
