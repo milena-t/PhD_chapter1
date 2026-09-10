@@ -479,7 +479,7 @@ if __name__ == "__main__":
         darkmode_bool = False
 
         species_names.remove("D_melanogaster")
-
+        
         if True:
             print(f"\n\t\t * Genome size")
             ## spearman correlation
@@ -490,6 +490,7 @@ if __name__ == "__main__":
             GS_inclines = plot_slopes(coefficients,p_values,p_values_BH,return_dict,OG_sizes, x_label = "Genome size in Mb",  filename = f"{data_dir}correlations/sig_OGs_vs_GS_coefficients_bh_corrected_PIC.png", sig_list=orthoDB_sig_list ,log_possible=False, svg=svg_bool, dark_mode=darkmode_bool, norm_coeffs = norm_coeffs)
             gff.write_dict_to_file(GS_inclines, f"{data_dir}sig_OGs_vs_GS_correlations_pvalues.tsv", header=f"OG\tcorrelation_coeff\tp-value\tsig_after_multiple_testing", separator="\t")
 
+        if False:
             print(f"\n\t\t * repeat content")
             ## spearman correlation
             coefficients,p_values,p_values_BH,OG_sizes,return_dict = get_plot_values_spearman(GF_sizes_dict=orthoDB_dict, species_list = species_names, exp_dict=repeat_percentages, sig_list=orthoDB_sig_list, tree_path=tree)
@@ -498,7 +499,7 @@ if __name__ == "__main__":
             gff.write_dict_to_file(TE_inclines, f"{data_dir}sig_OGs_vs_reps_correlations_pvalues.tsv", header=f"OG\tcorrelation_coeff\tp-value\tsig_after_multiple_testing", separator="\t")
 
         ## do the individual repeat categories
-        if True:
+        if False:
             repeats_categories_dict = read_repeat_categories(repeat_categories_in_species)
 
             for repeat_category in repeats_categories_dict.keys():

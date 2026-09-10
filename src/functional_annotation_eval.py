@@ -844,9 +844,61 @@ if __name__ == "__main__":
             title = "Sexual reproduction and immunity", 
             transparent_bg=True, svg = False, ymax_set=45, fs = 30)
 
+    ## ASSOCIATED WITH GENOME SIZE
+    # --> OLFACTORY RECEPTORS
+    if False:
+        cols_list = [
+            "#001427ff",
+            "#708d81ff",
+            "#f4d58dff",
+            "#bf0603ff"]
+        labels_list = [
+            "Snurportin", 
+            "MRP",
+            "uncharacterized (FBgn0028931)",
+            "cag",
+            ]
+        IDs_lists = [
+            ["N0.HOG0002345"], 
+            ["N0.HOG0000761"], 
+            ["N0.HOG0000296"], 
+            ["N0.HOG0000049"]
+        ]
+        image_path = plot_selected_OGs(
+            orthogroups_path=orthogroups_orthoDB_filepath, 
+            OG_IDs=IDs_lists, colors=cols_list, labels=labels_list, 
+            tree_path=tree_path, filename="GS_associated.png", # filename="polyethylene_clusters.png", 
+            out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/new_eval/", 
+            title = "Sig. correlation with genome size", 
+            transparent_bg=True, svg = False, ymax_set=75, fs = 30)
+
+
+    # --> AOBT EXPANSION
+    if True:
+
+        cols_list = [
+            "#F2933A",
+            "#BA722E"
+            ]
+        labels_list = [
+            "N0.HOG0000035",
+            "N0.HOG0000014"
+            ]
+        IDs_lists = [
+            ["N0.HOG0000035"],
+            ["N0.HOG0000014"]
+        ]
+        image_path = plot_selected_OGs(
+            orthogroups_path="/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_uniform/N0_original.tsv", 
+            OG_IDs=IDs_lists, colors=cols_list, labels=labels_list, 
+            tree_path=tree_path, filename="Aobt_expansion_GF_sizes.png", # filename="polyethylene_clusters.png", 
+            out_dir = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/functional_annot_eval/new_eval/", 
+            title = "Gene family expansions in \\textit{{{A. obtectus}}}", 
+            transparent_bg=True, svg = False, ymax_set=149, fs = 30)
+
 
 ### old versions of more basic functional analysis
-    if False:
+    if True:
 
         # --> GENERAL ""ENRICHMENT"" OF GENE GROUP FUNCTION IN RAPIDLY EXPANDING ORTHOGROUPS
         if False:
@@ -854,6 +906,7 @@ if __name__ == "__main__":
 
         # --> AOBT EXPANSION
         if False:
+            
             OGs_title = " and ".join(OG_lists_dict["Aobt_expansion"])
             image_path = plot_selected_OGs(orthogroups_path=orthogroups_orthoDB_filepath, OG_IDs=OG_lists_dict["Aobt_expansion"], tree_path=tree_path, filename="Aobt_expansion_GF_sizes.png", title = f"A. obtectus expansion: {OGs_title}")
 
