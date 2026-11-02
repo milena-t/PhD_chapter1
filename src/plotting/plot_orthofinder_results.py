@@ -235,10 +235,13 @@ def plot_general_annotation_comparisons(native = {}, orthoDB = {}, proteinseqs =
     plt.rcParams['text.usetex'] = True # use \\textit{{{}}} for species names
     if tree:
         fs = 21 # set font size
+        lw =  3 #linewidth
+        print(f"----- plot with tree ------")
         fig, (ax_data, ax_tree) = plt.subplots(2, 1, figsize=(10, 10), gridspec_kw={'height_ratios': [1, 1]}, constrained_layout=True)
-        species_names_unsorted = my_plotting.plot_tree_manually(species_tree, ax_tree)
+        species_names_unsorted = my_plotting.plot_tree_manually(species_tree=species_tree, ax_tree=ax_tree, lw=lw, add_leaf_label=True)
     else:
         fs = 28
+        lw =  3 #linewidth
         fig, ax_data = plt.subplots(1, 1, figsize=(17, 12))
         species_names_unsorted = my_plotting.plot_tree_manually(species_tree)
     # get species order from plotted tree
@@ -252,7 +255,6 @@ def plot_general_annotation_comparisons(native = {}, orthoDB = {}, proteinseqs =
 
     legend_labels = []
     ncol_legend = 0
-    lw =  3 #linewidth
 
     if len(orthoDB)>0:
         legend_labels = list(orthoDB.keys())

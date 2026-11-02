@@ -89,13 +89,15 @@ def get_coords(tree):
 
 
 
-def plot_tree_manually(species_tree, ax_tree = None, add_leaf_label=False):
+def plot_tree_manually(species_tree, lw = 3, ax_tree = None, add_leaf_label=False):
     """
     plot a phylogenetic tree (newick format in a file in species_tree)
     manually so that the leaves point upwards. 
     ax_tree is the plot axis defined in fig, (ax_data, ax_tree) = plt.subplots()
     """
     tree = Phylo.read(species_tree, "newick")
+    Phylo.draw_ascii(tree)
+
     tree.ladderize()
     coords, max_depth = get_coords(tree)
     leaf_names = {}
@@ -109,16 +111,19 @@ def plot_tree_manually(species_tree, ax_tree = None, add_leaf_label=False):
 
             if ax_tree != None:
                 # Vertical line
-                ax_tree.plot([x2, x2], [y, y2], color="black")
+                ax_tree.plot([x2, x2], [y, y2], color="black", linewidth=lw)
                 # Horizontal line
-                ax_tree.plot([x, x2], [y, y], color="black")
+                ax_tree.plot([x, x2], [y, y], color="black", linewidth=lw)
 
         # Draw labels on tips
         if clade.is_terminal():
             if ax_tree != None:
-                ax_tree.plot([x, x], [y, y + max_depth-y + 0.2], color="black")
+                if not add_leaf_label:
+                    ax_tree.plot([x, x], [y, y + max_depth-y + 0.2], color="black", linewidth=lw)
                 if add_leaf_label:
-                    ax_tree.text(x, y + max_depth-y + 0.25, clade.name, ha="center", va="bottom", rotation=90)
+                    pad = 0.02 * max_depth          # small gap above the tip, scales with the tree
+                    # ax_tree.text(x, y + pad, clade.name, ha="center", va="bottom", rotation=90)
+                    ax_tree.plot([x, x], [y, max_depth], color="black", linestyle=":", linewidth=lw*0.75)
             leaf_names[x] = clade.name
 
     # Adjust and flip y-axis so tree grows upwards
