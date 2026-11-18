@@ -441,10 +441,12 @@ if __name__ == '__main__':
 
     ## calculate all the numbers from input data
     try:
-        tree_path = "/Users/milena/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_only_species_names.nw"
+        username = "milena"
+        tree_path = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_only_species_names.nw"
         species_names = make_species_order_from_tree(tree_path)
     except:
-        tree_path = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_only_species_names.nw"
+        username = "miltr339"
+        tree_path = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/orthofinder_native/SpeciesTree_native_only_species_names.nw"
         species_names = make_species_order_from_tree(tree_path)
 
     # from quast results for all assemblies
@@ -586,9 +588,9 @@ if __name__ == '__main__':
 
     if True:
 
-        single_exon_dict_orthoDB, num_single_exon_dict_orthoDB, num_transcripts_dict_orthoDB = get_single_exon_genes("/Users/miltr339/work/single_exon_genes/orthoDB", species_names, write_to_file=False, outfile_name="orthoDB_single_exon_transcripts_list_14_species.txt", include_total_gene_num = True)
-        single_exon_dict_orthoDB_unmasked, num_single_exon_dict_orthoDB_unmasked, num_transcripts_dict_orthoDB_unmasked = get_single_exon_genes("/Users/miltr339/work/single_exon_genes/orthoDB_old", species_names, write_to_file=False, outfile_name="orthoDB_single_exon_transcripts_list_14_species.txt", include_total_gene_num = True)
-        single_exon_dict_native, num_single_exon_dict_native, num_transcripts_dict_native = get_single_exon_genes("/Users/miltr339/work/single_exon_genes/native", species_names, write_to_file=False, outfile_name="native_single_exon_transcripts_list_14_species.txt", include_total_gene_num = True)
+        single_exon_dict_orthoDB, num_single_exon_dict_orthoDB, num_transcripts_dict_orthoDB = get_single_exon_genes(f"/Users/{username}/work/single_exon_genes/orthoDB", species_names, write_to_file=False, outfile_name="orthoDB_single_exon_transcripts_list_14_species.txt", include_total_gene_num = True)
+        single_exon_dict_orthoDB_unmasked, num_single_exon_dict_orthoDB_unmasked, num_transcripts_dict_orthoDB_unmasked = get_single_exon_genes(f"/Users/{username}/work/single_exon_genes/orthoDB_old", species_names, write_to_file=False, outfile_name="orthoDB_single_exon_transcripts_list_14_species.txt", include_total_gene_num = True)
+        single_exon_dict_native, num_single_exon_dict_native, num_transcripts_dict_native = get_single_exon_genes(f"/Users/{username}/work/single_exon_genes/native", species_names, write_to_file=False, outfile_name="native_single_exon_transcripts_list_14_species.txt", include_total_gene_num = True)
 
         orthodb_numbers = {
             "num_single_exon_genes" : num_single_exon_dict_orthoDB,
@@ -608,7 +610,7 @@ if __name__ == '__main__':
         print()
         
 
-        data = "/Users/miltr339/work/PhD_code/PhD_chapter1/data/"
+        data = f"/Users/{username}/work/PhD_code/PhD_chapter1/data/"
         
         ### plot all three annotations
         plot_single_exon_no_species_specific_three_annot(native_numbers, orthodb_numbers = orthodb_numbers, orthoDB_unmasked_numbers = orthodb_unmasked_numbers, species_names = species_names, filename = f"{data}single_exon_Genes_14_species_3_annotations.png", L50_values = L50_values)
